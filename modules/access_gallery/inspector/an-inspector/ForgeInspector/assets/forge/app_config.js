@@ -1,0 +1,1 @@
+window.forge = {}; window.forge.config = {"modules": {"inspector": {"version": "1.0"}, "access_gallery": {"version": "0.7", "config": {}}}}; window.forge.module_mapping = {"inspector": "inspector", "access_gallery": "access_gallery"};
