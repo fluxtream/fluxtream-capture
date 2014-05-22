@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="pictures">
+<html lang="en" ng-app="fluxtream-capture-app">
   <head>
     <meta charset="utf-8">
-    <script src="js/lib/jquery-2.0.2.js"></script>
-    <script src="js/lib/bootstrap.js"></script>
-    <script src="js/lib/angular.min.js"></script>
-    <script src="js/main.js"></script>
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/main.css" rel="stylesheet">
-    <!-- TODO Remove the follinwing line, used for debugging -->
+    <link href="style/bootstrap.css" rel="stylesheet">
+    <link href="style/main.css" rel="stylesheet">
+    <script src="scripts/libs/jquery-2.0.2.js"></script>
+    <script src="scripts/libs/bootstrap.js"></script>
+    <script src="scripts/libs/angular.min.js"></script>
+    <script src="scripts/libs/angular-route.min.js"></script>
+    <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/controllers.js"></script>
+    <!-- TODO Remove the following line, used for debugging -->
     <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
   </head>
   <body>
@@ -19,43 +21,8 @@
         </div>
       </div>
     </div>
-    <div class="container-narrow" ng-controller="PictureController">
-      <div ng-if="loaded">
-        <!-- Number of pictures -->
-        <p ng-if="pictureCount > 1">There are {{ pictureCount }} pictures</p>
-        <p ng-if="pictureCount == 1">There is 1 picture</p>
-        <p ng-if="pictureCount == 0">There is no picture</p>
-        <!-- Pictures -->
-        <div ng-repeat="picture in pictures" style="margin: 5px">
-          <div class="picture-wrapper">
-            <div class="picture-image">
-              <img src="{{ picture.src }}" width="100" />
-            </div>
-            <div class="picture-info">
-              <!-- Picture status -->
-              <p ng-if="picture.upload_status == 'uploaded'">Uplodaded</p>
-              <p ng-if="picture.upload_status == 'pending'">Upload pending</p>
-              <p ng-if="picture.upload_status == 'failed'">Upload failed, trying again later</p>
-              <p ng-if="picture.upload_status == 'uploading'">Uploading...</p>
-              <p ng-if="picture.upload_status == 'none'">
-                <a class="btn-small btn-primary" ng-click="uploadPicture(picture)">
-                  Upload
-                </a>
-              </p>
-              <!-- Picture orientation -->
-              <p>Orientation: {{ picture.orientation }}°</p>
-            </div>
-          </div>
-        </div>
-        <p ng-if="pictureCount != pictures.length">
-          Loading next pictures...
-        </p>
-      </div>
-      <div ng-if="!loaded">
-        <p>
-          Loading your pictures...
-        </p>
-      </div>
+    <div class="container-narrow">
+      <div ng-view></div>
     </div>
   </body>
 </html>
