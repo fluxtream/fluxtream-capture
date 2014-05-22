@@ -20,7 +20,7 @@ function uploadPicture(pictureURI, successCallback, errorCallback) {
       type: 'image'
     }],
     data: {
-      'metadata': 'capture_time_secs_utc:1400689661'
+      'metadata': '{capture_time_secs_utc:1400689661}'
     },
     headers: {
       'Authorization': 'Basic SnVsZHVwOmp1bGllbjIy' // Juldup:julien22 in base64
