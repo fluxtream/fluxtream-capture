@@ -1,7 +1,0 @@
-{
-	"description": "My module template",
-	"min_platform_version": "v2.1.6",
-	"namespace": "access_gallery",
-	"platform_version": "v2.1.6",
-	"version": "0.11"
-}

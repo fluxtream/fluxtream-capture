@@ -6,14 +6,14 @@ fluxtreamcapture/src/identity.json
 fluxtreamcapture/.template
 fluxtreamcapture/.lib
 
-modules/access_gallery/.trigger
-modules/access_gallery/inspector/an-inspector.*
-modules/access_gallery/inspector/an-inspector/ForgeModule/bin
-modules/access_gallery/inspector/an-inspector/ForgeModule/gen
-modules/access_gallery/inspector/an-inspector/ForgeModule/trigger-gen
-modules/access_gallery/inspector/an-inspector/ForgeModule/libs
-modules/access_gallery/inspector/an-inspector/ForgeInspector/bin
-modules/access_gallery/inspector/an-inspector/ForgeInspector/gen
+modules/fc_gallery/.trigger
+modules/fc_gallery/inspector/an-inspector.*
+modules/fc_gallery/inspector/an-inspector/ForgeModule/bin
+modules/fc_gallery/inspector/an-inspector/ForgeModule/gen
+modules/fc_gallery/inspector/an-inspector/ForgeModule/trigger-gen
+modules/fc_gallery/inspector/an-inspector/ForgeModule/libs
+modules/fc_gallery/inspector/an-inspector/ForgeInspector/bin
+modules/fc_gallery/inspector/an-inspector/ForgeInspector/gen
 
 nbproject
 

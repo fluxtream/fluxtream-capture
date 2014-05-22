@@ -110,7 +110,7 @@ angular.module('pictures', [])
    */
   $scope.addAllPicturesFromGallery = function() {
     // Call native module to get picture list
-    forge.access_gallery.getPictureList(
+    forge.fc_gallery.getPictureList(
       // Success
       function(jsonArray) {
         var pictureArray = JSON.parse(jsonArray);
