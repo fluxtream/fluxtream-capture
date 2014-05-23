@@ -13,7 +13,7 @@ define([
       password: "",
       target: "fluxtream.org",
       pictures_portrait: false, // 90°
-      pictures_upsite_down: false, // 270°
+      pictures_upside_down: false, // 270°
       pictures_landscape_left: false, // 180°
       pictures_landscape_right: false // 0°
     };
