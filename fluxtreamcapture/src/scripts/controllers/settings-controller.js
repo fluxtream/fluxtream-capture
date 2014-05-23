@@ -2,9 +2,8 @@
  * Angular controller for the configuration page
  */
 define([
-  'libs/jquery-2.0.2',
   'controllers/controller-module'
-], function(_, controllers) {
+], function(controllers) {
   // Config controller
   controllers.controller('SettingsController', function($scope) {
     
@@ -32,13 +31,13 @@ define([
             $scope.settings[settingName] = value;
           }
           $scope.valuesToLoad--;
-          $scope.$apply();
+          $scope.$$phase || $scope.$apply();
         },
         // Error
         function(content) {
           forge.logging.info("An error occurred while loading a setting: " + content);
           $scope.error = true;
-          $scope.$apply();
+          $scope.$$phase || $scope.$apply();
         }
       );
     };

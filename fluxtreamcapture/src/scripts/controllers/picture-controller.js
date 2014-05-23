@@ -2,9 +2,8 @@
  * Angular controller for the picture page
  */
 define([
-  'libs/jquery-2.0.2',
   'controllers/controller-module'
-], function(_, controllers) {
+], function(controllers) {
   
   // Picture controller
   controllers.controller('PictureController', function($scope) {
@@ -130,7 +129,12 @@ define([
     };
     
     // Initially load pictures
-    $scope.addAllPicturesFromGallery();
+    if (!forge.is.web()) {
+      $scope.addAllPicturesFromGallery();
+    } else {
+      // Web app, no picture library
+      $scope.loaded = true;
+    }
     
   });
   

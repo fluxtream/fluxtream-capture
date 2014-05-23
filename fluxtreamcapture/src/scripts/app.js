@@ -2,10 +2,6 @@
 // forge.enableDebug();
 
 require([
-  'libs/jquery-2.0.2',
-  'libs/bootstrap',
-  'libs/angular.min',
-  'libs/angular-route.min',
   'controllers/controller-loader'
 ], function() {
   forge.logging.info("Starting Fluxtream Capture app");
