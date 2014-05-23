@@ -9,7 +9,6 @@ forge.fc_gallery = {
 
 // Register for our native event
 forge.internal.addEventListener("fc_gallery.resume", function () {
-	alert("Welcome back!");
 });
 
 })();

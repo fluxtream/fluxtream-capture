@@ -1,5 +1,3 @@
-//forge.logging.info("app.js");
-
 // // Enable this for debugging
 // forge.enableDebug();
 
@@ -72,13 +70,13 @@ require([
           templateUrl: 'views/pictures.html',
           controller: 'PictureController'
         }).
-        when('/sreports', {
-          templateUrl: 'views/sreports.html',
-          controller: 'SreportsController'
+        when('/self-reports', {
+          templateUrl: 'views/self-reports.html',
+          controller: 'SelfReportsController'
         }).
-        when('/config', {
-          templateUrl: 'views/config.html',
-          controller: 'ConfigController'
+        when('/settings', {
+          templateUrl: 'views/settings.html',
+          controller: 'SettingsController'
         }).
         when('/polar-h7', {
           templateUrl: 'views/polar-h7.html',
@@ -91,9 +89,23 @@ require([
     }
   ]);
   
-  //angular.bootstrap(document.body, 'fluxtream-capture-app');
+  // Bootstrap app
   angular.element(document).ready(function() {
     angular.bootstrap(document, ['fluxtream-capture-app']);
   });
+  
+  // Redirect to settings screen if the user has not set his/her username
+  forge.prefs.get('settings.username',
+    // Success
+    function(value) {
+      if (!value) {
+        window.location = "#settings";
+      }
+    },
+    // Error
+    function(content) {
+      forge.logging.info("An error occurred while getting the username from prefs")
+    }
+  );
   
 });

@@ -5,8 +5,8 @@ define([
   'controllers/picture-controller',
   'controllers/main-menu-controller',
   'controllers/polar-h7-controller',
-  'controllers/sreports-controller',
-  'controllers/config-controller'
+  'controllers/self-reports-controller',
+  'controllers/settings-controller'
 ], function() {
   
 });
