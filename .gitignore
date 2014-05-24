@@ -12,5 +12,42 @@ modules/fc_gallery/inspector/an-inspector/ForgeModule/trigger-gen
 modules/fc_gallery/inspector/an-inspector/ForgeInspector/bin
 modules/fc_gallery/inspector/an-inspector/ForgeInspector/gen
 
+# Numerous always-ignore extensions
+*.diff
+*.err
+*.orig
+*.log
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.sass-cache
+*.iml
+
+# OS or Editor folders
+.DS_Store
+._*
+Thumbs.db
+.cache
+.project
+.settings
+.tmproj
+*.esproj
 nbproject
+*.sublime-project
+*.sublime-workspace
+
+# IntelliJ IDEA files to ignore (see http://devnet.jetbrains.net/message/5252436#5252436)
+workspace.xml
+tasks.xml
+
+# Komodo
+*.komodoproject
+.komodotools
+
+# Folders to ignore
+.hg
+.svn
+.CVS
 
