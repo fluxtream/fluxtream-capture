@@ -1,9 +1,7 @@
 // // Enable this for debugging
 // forge.enableDebug();
 
-require([
-  'controllers/controller-loader'
-], function() {
+require([], function() {
   forge.logging.info("Starting Fluxtream Capture app");
   
   // Angular pictures module
