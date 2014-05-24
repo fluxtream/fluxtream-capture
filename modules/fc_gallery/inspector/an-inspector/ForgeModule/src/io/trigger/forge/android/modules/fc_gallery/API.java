@@ -25,7 +25,7 @@ public class API {
 				// Get all images
 				Cursor cursor = ForgeApp.getActivity().getContentResolver().query(
 						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-						new String[] { ImageColumns._ID, ImageColumns.ORIENTATION },
+						new String[] { ImageColumns._ID, ImageColumns.ORIENTATION, ImageColumns.DATE_TAKEN },
 						null, null, null);
 				// JSON result container
 				JsonArray pictureList = new JsonArray();
@@ -36,6 +36,7 @@ public class API {
 					imageObject.addProperty("id", imageId);
 					imageObject.addProperty("uri", "content://media/external/images/media/" + imageId);
 					imageObject.addProperty("orientation", cursor.getInt(1));
+					imageObject.addProperty("date_taken", cursor.getLong(2) / 1000);
 					// Get thumbnail if any
 					Cursor thumbCursor = ForgeApp.getActivity().getContentResolver().query(
 							MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,

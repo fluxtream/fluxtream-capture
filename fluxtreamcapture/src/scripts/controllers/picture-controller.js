@@ -28,24 +28,27 @@ define([
   /**
    * Tries to upload a picture to the fluxtream server
    * 
-   * @param {string} pictureURI  The local URI of the picture to upload
+   * @param {string} picture  The picture object (with uri: the local URI, date_taken: the date in UTC seconds)
    * @param {function()} successCallback  Called on success
    * @param {function(error)} errorCallback Called on error with error data
    * @return {boolean} False if the crendentials are not set, true if the request has been sent
    */
-  function uploadPicture(pictureURI, successCallback, errorCallback) {
-    if (!username || !password) return false;
+  function uploadPicture(picture, successCallback, errorCallback) {
+    if (!username || !password) {
+      forge.logging.warning("Impossible to upload picture: no username or password");
+      return false;
+    }
     var url = (uploadTarget.indexOf("://") > 0 ? "" : "http://") + uploadTarget + "/api/bodytrack/photoUpload?connector_name=fluxtream_capture";
     forge.request.ajax({
       type: 'POST',
       url: url,
       files: [{
-        uri: pictureURI,
+        uri: picture.uri,
         name: 'photo',
         type: 'image'
       }],
       data: {
-        'metadata': '{capture_time_secs_utc:1400689661}' // TODO get date from picture
+        'metadata': "{capture_time_secs_utc:" + picture.date_taken + "}" // TODO get date from picture
       },
       headers: {
         'Authorization': 'Basic ' + btoa(username + ":" + password)
@@ -93,7 +96,8 @@ define([
         orientation: pictureData.orientation,
         id: pictureData.id,
         upload_status: 'unknown',
-        uri: pictureData.uri
+        uri: pictureData.uri,
+        date_taken: pictureData.date_taken
       };
       // Add it to the picture list
       $scope.pictures.push(newPicture);
@@ -242,7 +246,7 @@ define([
         var picture = $scope.pictures[i];
         if (picture.upload_status === 'pending') {
           // This picture's upload is pending, upload it now
-          var uploadStarted = uploadPicture(picture.uri,
+          var uploadStarted = uploadPicture(picture,
             // Success
             function() {
               // Mark picture as uploaded
