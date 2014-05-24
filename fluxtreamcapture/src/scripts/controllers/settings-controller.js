@@ -35,7 +35,7 @@ define([
         },
         // Error
         function(content) {
-          forge.logging.info("An error occurred while loading a setting: " + content);
+          forge.logging.error("An error occurred while loading a setting: " + content);
           $scope.error = true;
           $scope.$$phase || $scope.$apply();
         }
@@ -54,7 +54,7 @@ define([
         },
         // Error
         function(content) {
-          forge.logging.info("Error while persisting " + settingName + ": " + content);
+          forge.logging.error("Error while persisting settings." + settingName + ": " + content);
           $scope.error = true;
           $scope.$apply();
         }

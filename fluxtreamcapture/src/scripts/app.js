@@ -6,42 +6,6 @@ require([
 ], function() {
   forge.logging.info("Starting Fluxtream Capture app");
   
-  /**
-   * Tries to upload a picture to the fluxtream server
-   * 
-   * @param {string} pictureURI  The local URI of the picture to upload
-   * @param {function} successCallback()  Called on success
-   * @param {function} errorCallback(error) Called on error with error data
-   */
-  function uploadPicture(pictureURI, successCallback, errorCallback) {
-    forge.request.ajax({
-      type: 'POST',
-      url: 'http://fluxtream.org/api/bodytrack/photoUpload?connector_name=fluxtream_capture',
-      files: [{
-        uri: pictureURI,
-        name: 'photo',
-        type: 'image'
-      }],
-      data: {
-        'metadata': '{capture_time_secs_utc:1400689661}'
-      },
-      headers: {
-        'Authorization': 'Basic SnVsZHVwOmp1bGllbjIy' // Juldup:julien22 in base64
-      },
-      success: function(data, headers) {
-        forge.logging.info("Successful request");
-        forge.logging.info(data);
-        forge.logging.info(headers);
-        successCallback();
-      },
-      error: function(error) {
-        forge.logging.info("Request error");
-        forge.logging.info(error);
-        errorCallback(error);
-      }
-    });
-  }
-  
   // Angular pictures module
   var fluxtreamCaptureApp = angular.module('fluxtream-capture-app', [
     'ngRoute',
@@ -100,7 +64,7 @@ require([
     },
     // Error
     function(content) {
-      forge.logging.info("An error occurred while getting the username from prefs")
+      forge.logging.error("An error occurred while getting the username from prefs");
     }
   );
   

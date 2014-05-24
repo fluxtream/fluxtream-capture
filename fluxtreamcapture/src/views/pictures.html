@@ -14,7 +14,12 @@
           <!-- Picture status -->
           <p ng-if="picture.upload_status == 'uploaded'">Uplodaded</p>
           <p ng-if="picture.upload_status == 'pending'">Upload pending</p>
-          <p ng-if="picture.upload_status == 'failed'">Upload failed, trying again later</p>
+          <p ng-if="picture.upload_status == 'failed'">
+            Upload failed
+            <a class="btn-small btn-primary" ng-click="uploadPicture(picture)">
+              Try again
+            </a>
+          </p>
           <p ng-if="picture.upload_status == 'uploading'">Uploading...</p>
           <p ng-if="picture.upload_status == 'none'">
             <a class="btn-small btn-primary" ng-click="uploadPicture(picture)">

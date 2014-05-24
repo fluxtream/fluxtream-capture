@@ -1,9 +1,66 @@
 /**
  * Angular controller for the picture page
+ * 
+ * NOTE: Currently, the pictures are being uploaded only when this page is active.
+ * This functionnality should be moved to a background task.
  */
 define([
   'controllers/controller-module'
 ], function(controllers) {
+  
+  // Get fluxtream credentials and target from user prefs
+  var username = "";
+  var password = "";
+  var uploadTarget = "fluxtream.org"
+  forge.prefs.get('settings.username',
+    function(value) { username = value; }, // Success
+    function(content) { forge.logging.error("Error while getting username from user prefs: " + content); } // Error
+  );
+  forge.prefs.get('settings.password',
+    function(value) { password = value; }, // Success
+    function(content) { forge.logging.error("Error while getting password from user prefs: " + content); } // Error
+  );
+  forge.prefs.get('settings.target',
+    function(value) { if (value) uploadTarget = value; }, // Success
+    function(content) { forge.logging.error("Error while getting target from user prefs: " + content); } // Error
+  );
+  
+  /**
+   * Tries to upload a picture to the fluxtream server
+   * 
+   * @param {string} pictureURI  The local URI of the picture to upload
+   * @param {function()} successCallback  Called on success
+   * @param {function(error)} errorCallback Called on error with error data
+   * @return {boolean} False if the crendentials are not set, true if the request has been sent
+   */
+  function uploadPicture(pictureURI, successCallback, errorCallback) {
+    if (!username || !password) return false;
+    var url = (uploadTarget.indexOf("://") > 0 ? "" : "http://") + uploadTarget + "/api/bodytrack/photoUpload?connector_name=fluxtream_capture";
+    forge.request.ajax({
+      type: 'POST',
+      url: url,
+      files: [{
+        uri: pictureURI,
+        name: 'photo',
+        type: 'image'
+      }],
+      data: {
+        'metadata': '{capture_time_secs_utc:1400689661}' // TODO get date from picture
+      },
+      headers: {
+        'Authorization': 'Basic ' + btoa(username + ":" + password)
+      },
+      success: function(data, headers) {
+        successCallback();
+      },
+      error: function(error) {
+        forge.logging.warning("Error while uploading a picture:");
+        forge.logging.warning(error);
+        errorCallback(error);
+      }
+    });
+    return true;
+  }
   
   // Picture controller
   controllers.controller('PictureController', function($scope) {
@@ -41,18 +98,23 @@ define([
       // Add it to the picture list
       $scope.pictures.push(newPicture);
       // Refresh the UI
-      $scope.$apply();
+      $scope.$$phase || $scope.$apply();
       // Get picture upload status from player prefs if any
       forge.prefs.get('picture-' + newPicture.id + '-status',
         // Success
         function(value) {
           if (!value) value = 'none';
+          if (value === 'uploading' || value === 'failed') value = 'pending'; // Upload failed in previous session
           newPicture.upload_status = value;
-          $scope.$apply();
+          $scope.$$phase || $scope.$apply();
+          // See if this picture needs to be marked for upload because of its orientation
+          $scope.autoUploadOrientations.forEach(function(degrees) {
+            $scope.markForUploadIfOrientationMatches(newPicture, degrees);
+          });
         },
         // Error
         function(content) {
-          forge.logging.info("Error while getting picture status: " + content);
+          forge.logging.error("Error while getting picture status: " + content);
         }
       );
       // Add next pictures (wrapped in a timeout to avoid blocking the UI)
@@ -75,14 +137,60 @@ define([
           $scope.addPicturesFromGallery(pictureArray);
           // Set loaded status
           $scope.loaded = true;
-          $scope.$apply();
+          $scope.$$phase || $scope.$apply();
+          // Mark for upload by orientation
+          $scope.markForUploadByOrientation();
+          // Upload pictures waiting for upload (if any)
+          $scope.uploadNextPicture();
         },
         // Error
         function(error) {
-          forge.logging.info("Error while calling getPictureList");
-          forge.logging.info(error);
+          forge.logging.error("Error while calling getPictureList:");
+          forge.logging.error(error);
         }
       );
+    };
+    
+    // The list of orientations (in degrees: 0, 90, 180, 270) that will be automatically uploaded
+    $scope.autoUploadOrientations = [];
+    
+    /**
+     * (Private) Marks for upload the unuploaded pictures that match
+     * the auto-upload by orientation criteria
+     */
+    $scope.markForUploadByOrientation = function() {
+      var orientations = [
+        {name:'portrait', degrees:90},
+        {name:'upside_down', degrees: 270},
+        {name:'landscape_left', degrees: 180},
+        {name:'landscape_right', degrees: 0}
+      ];
+      orientations.forEach(function(orientation) {
+        forge.prefs.get("settings.pictures_" + orientation.name,
+          // Success
+          function(value) {
+            if (value) {
+              $scope.pictures.forEach(function(picture) {
+                $scope.markForUploadIfOrientationMatches(picture, orientation.degrees);
+              });
+              $scope.autoUploadOrientations.push(orientation.degrees);
+              $scope.uploadNextPicture();
+            }
+          },
+          // Error
+          function(content) {}
+        );
+      });
+    };
+    
+    /**
+     * (Private) Tests if a picture's orientation matches the given orientation
+     * and if they match and the picture's status is none, mark the picture for upload
+     */
+    $scope.markForUploadIfOrientationMatches = function(picture, orientation) {
+      if (picture.upload_status === 'none' && picture.orientation === orientation) {
+        $scope.updatePictureStatus(picture, 'pending');
+      }
     };
     
     /**
@@ -97,11 +205,11 @@ define([
         // Success
         function() {
           picture.upload_status = status;
-          $scope.$apply();
+          $scope.$$phase || $scope.$apply();
         },
         // Error
         function(content) {
-          forge.logging.info("Error while saving picture status: " + content);
+          forge.logging.error("Error while saving picture status: " + content);
         }
       );
     };
@@ -112,20 +220,68 @@ define([
      * @param {object} picture  The object containing the picture data (see @scope.pictures documentation for details)
      */
     $scope.uploadPicture = function(picture) {
-      forge.logging.info("Upload picture");
-      $scope.updatePictureStatus(picture, 'uploading');
-      uploadPicture(picture.uri,
-        // Success
-        function() {
-          forge.logging.info("Upload successful");
-          $scope.updatePictureStatus(picture, 'uploaded');
-        },
-        // Error
-        function() {
-          forge.logging.info("Error while uploading photo");
-          $scope.updatePictureStatus(picture, 'failed');
+      // Mark picture for future upload
+      $scope.updatePictureStatus(picture, 'pending');
+      // Try uploading picture
+      $scope.uploadNextPicture();
+    };
+    
+    // Variable keeping track of whether an upload is running
+    $scope.anUploadIsActive = false;
+    
+    /**
+     * (Private) Tries uploading all the pictures marked for upload one by one
+     */
+    $scope.uploadNextPicture = function() {
+      // Don't process queue if an upload is already active
+      if ($scope.anUploadIsActive) {
+        return;
+      }
+      // Search through pictures for pending uploads
+      for (var i = 0; i < $scope.pictures.length; i++) {
+        var picture = $scope.pictures[i];
+        if (picture.upload_status === 'pending') {
+          // This picture's upload is pending, upload it now
+          var uploadStarted = uploadPicture(picture.uri,
+            // Success
+            function() {
+              // Mark picture as uploaded
+              $scope.updatePictureStatus(picture, 'uploaded');
+              // Now, upload next
+              $scope.anUploadIsActive = false;
+              $scope.uploadNextPicture();
+            },
+            // Error
+            function() {
+              // Mark upload as failed
+              $scope.updatePictureStatus(picture, 'failed');
+              // Now, upload next
+              $scope.anUploadIsActive = false;
+              $scope.uploadNextPicture();
+            }
+          );
+          if (uploadStarted) {
+            // Prevent concurrent uploads
+            $scope.anUploadIsActive = true;
+            // Set picture status
+            $scope.updatePictureStatus(picture, 'uploading');
+            $scope.$$phase || $scope.$apply();
+            // Return, as an upload has started
+            return;
+          } else {
+            // Mark picture upload as failed
+            $scope.updatePictureStatus(picture, 'failed');
+          }
         }
-      );
+        if (picture.upload_status === 'unknown') {
+          // Some pictures' statuses are not ready (they are loaded asynchronously), try again later
+          setTimeout(function() {
+            $scope.uploadNextPicture();
+          }, 1000);
+          return;
+        }
+      }
+      // There is no pending upload anymore
     };
     
     // Initially load pictures
