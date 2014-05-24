@@ -1,20 +1,16 @@
 {
-	"general": {
-	},
+	"general": {},
 	"ios": {
 		"profiles": {
-			"DEFAULT": {
-				"provisioning_profile": ""
-			}
-		}
+			"DEFAULT": {}
+		},
+		"simulatorsdk": "7.1",
+		"simulatorfamily": "iphone",
+		"simulatorvariant": "default"
 	},
 	"android": {
-		"sdk": "",
 		"profiles": {
-			"DEFAULT": {
-				"keystore": "",
-				"keyalias": ""
-			}
+			"DEFAULT": {}
 		}
 	}
 }
