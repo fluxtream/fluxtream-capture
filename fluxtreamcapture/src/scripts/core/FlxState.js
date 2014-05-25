@@ -2,8 +2,8 @@ define([], function() {
 
   var FlxState = {};
   FlxState.router = new Backbone.Router();
-  FlxState.apps = ["settings", "self-report", "heart-rate", "pictures-upload"];
-  FlxState.defaultApp = "settings";
+  FlxState.apps = ["settings", "self-report", "heart-rate", "photo-upload"];
+  FlxState.defaultApp = "self-report";
 
   var storage = {};
 

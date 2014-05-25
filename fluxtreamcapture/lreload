@@ -1,0 +1,3 @@
+#!/bin/bash
+cp -r src/index.html development/web/src/index.html
+cp -r src/scripts/* development/web/src/scripts/

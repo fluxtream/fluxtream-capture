@@ -1,32 +1,57 @@
-.container-narrow {
-  margin: 0 auto;
-  max-width: 700px;
-  padding: 20px;
+
+/* CORE */
+
+.application.active {
+    display: block;
 }
 
-.container-narrow > hr {
-  margin: 30px 0;
+.application.dormant { //hacky way of fixing comment display bug
+position:fixed;
+    top:0px;
+    margin-top:-1000px;
+    height:500px;
+    overflow:hidden;
+//display: none;
 }
 
-.picture-wrapper {
-  width: 100%;
-  margin-bottom: 20px;
-  min-height: 60px;
-}
+/* END CORE */
 
-.picture-image {
-  float: left;
-  margin-right: 10px;
-  width: 50%;
-}
+ /*JULIEN */
+/*.container-narrow {*/
+  /*margin: 0 auto;*/
+  /*max-width: 700px;*/
+  /*padding: 20px;*/
+/*}*/
 
-.picture-info {
-  margin-top: 5px;
-}
+/*.container-narrow > hr {*/
+  /*margin: 30px 0;*/
+/*}*/
+
+/*.picture-wrapper {*/
+  /*width: 100%;*/
+  /*margin-bottom: 20px;*/
+  /*min-height: 60px;*/
+/*}*/
+
+/*.picture-image {*/
+  /*float: left;*/
+  /*margin-right: 10px;*/
+  /*width: 50%;*/
+/*}*/
+
+/*.picture-info {*/
+  /*margin-top: 5px;*/
+/*}*/
+/* END JULIEN */
+
+
+
+
+
+
+/* SETTINGS */
 
 body {
-    padding-top: 40px;
-    padding-bottom: 40px;
     background-color: #eee;
 }
 
@@ -65,3 +90,14 @@ body {
     border-top-right-radius: 0;
 }
 
+.nav.nav-stacked {
+    padding: 0 300px;
+}
+
+@media(min-width: 768px) {
+    .nav.nav-stacked {
+        padding: 0;
+    }
+
+}
+/* END SETTINGS */

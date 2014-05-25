@@ -57,7 +57,7 @@ define(["core/FlxState"], function(FlxState) {
         this.params = params;
         if (this.params == null)
             this.params = {};
-        var url = "app/" + this.name;
+        var url = "/" + this.name;
         if (state) {
             url += "/" + state;
         }

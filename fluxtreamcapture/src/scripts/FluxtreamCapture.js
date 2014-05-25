@@ -27,7 +27,7 @@ define(
 
                 loadAppTemplates();
                 var now = new Date().getTime();
-                forge.logging.info("app is now fully initialized: " + (now-then) + " ms");
+//                forge.logging.info("app is now fully initialized: " + (now-then) + " ms");
             });
         }
 
@@ -40,7 +40,7 @@ define(
         }
 
         function loadAppTemplates() {
-            forge.logging.info("loading app templates");
+//            forge.logging.info("loading app templates");
             var apps = _.values(App.apps),
                 appTemplates = apps.map(function (app) {
                     return "text!applications/" + app.name + "/template.html";
@@ -80,12 +80,12 @@ define(
                     app = App.apps[appName];
                 renderDefault(app);
             });
-            FlxState.router.route("app/:name", "app-default", function(appName) {
+            FlxState.router.route("/:name", "app-default", function(appName) {
                 console.log("app-default route: name=" + appName);
                 var app = App.apps[appName];
                 renderDefault(app);
             });
-            FlxState.router.route("app/:name/*state", "app", function(appName, state) {
+            FlxState.router.route("/:name/*state", "app", function(appName, state) {
                 console.log("app route: name=" + appName + ", state=" + state);
                 var app = App.apps[appName];
                 if (_.isUndefined(app)) {
@@ -132,6 +132,13 @@ define(
             }
         }
 
+        App.renderApp = function(appName, state, params) {
+            var app = App.apps[appName];
+            if (_.isUndefined(state)) {
+                state = FlxState.getState(appName);
+            }
+            app.navigateState(state,params);
+        }
 
         window.App = App;
         return App;
