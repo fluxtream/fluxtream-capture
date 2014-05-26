@@ -11,6 +11,11 @@
 				"level": "DEBUG"
 			},
 			"reload": true
+		},
+		"ios": {
+			"minimum_version": "4.3",
+			"device_family": "any",
+			"package_name": "org.fluxtream.capture.*\""
 		}
 	},
 	"modules": {

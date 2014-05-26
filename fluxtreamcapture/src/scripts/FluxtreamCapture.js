@@ -9,6 +9,29 @@ define(
         var compiledTemplates = {};
 
         App.initialize = function() {
+            forge.logging.info("making cors request...");
+
+            // fluxtream.dev here needs to be replaced by whatever your API host is
+            $.ajax({url: "http://fluxtream.dev/cors",
+            method: "POST",
+            success: function() {
+                $.ajax({url: "http://fluxtream.dev/api/v1/guest",
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    dataType : "json",
+                    success:function(result) {
+                        forge.logging.info("haha");
+                        forge.logging.info(result);
+                    },
+                    error : function(){
+                        forge.logging.info("ERROR");
+                    }
+                });
+            },
+            error: function() {
+
+            }});
             loadApps();
         };
 
