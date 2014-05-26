@@ -70,9 +70,13 @@ define(
 
             FlxState.router.route("", "default", function(path) {
                 console.log("default route: path=" + path);
-                var appName = FlxState.defaultApp,
-                    app = App.apps[appName];
-                renderDefault(app);
+                var scrollPosition = $(window).scrollTop();
+                forge.logging.debug("saving scrollPosition: " + scrollPosition);
+                $("#flx-applications").hide();
+                if (!_.isUndefined(App.activeApp))
+                    App.activeApp.scrollPosition = scrollPosition;
+                $(".navbar-text.app-name").html("");
+                $("#menu").show();
             });
 
             FlxState.router.route(":name", "app-default", function(appName) {
@@ -135,12 +139,10 @@ define(
         };
 
         App.renderMenu = function() {
-            var scrollPosition = $(window).scrollTop();
-            forge.logging.debug("saving scrollPosition: " + scrollPosition);
-            $("#flx-applications").hide();
-            App.activeApp.scrollPosition = scrollPosition;
-            $(".navbar-text.app-name").html("");
-            $("#menu").show();
+            FlxState.router.navigate("", {trigger: true});
+            if (typeof(ga)!="undefined") {
+                ga("send", "pageview", "");
+            }
         };
 
         App.renderApp = function(appName, state, params) {
