@@ -5,13 +5,8 @@
     display: block;
 }
 
-.application.dormant { //hacky way of fixing comment display bug
-position:fixed;
-    top:0px;
-    margin-top:-1000px;
-    height:500px;
-    overflow:hidden;
-//display: none;
+.application.dormant {
+    display: none;
 }
 
 /* END CORE */
@@ -43,11 +38,6 @@ position:fixed;
   /*margin-top: 5px;*/
 /*}*/
 /* END JULIEN */
-
-
-
-
-
 
 /* SETTINGS */
 
@@ -96,7 +86,7 @@ body {
 
 /* END SETTINGS */
 
-/* MAIN MENU */
+/* MAIN MENU AND NAVIGATION*/
 
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 
@@ -104,8 +94,6 @@ body {
 .site-wrapper {
     display: table;
     width: 100%;
-    height: 100%; /* For at least Firefox */
-    min-height: 100%;
 }
 .site-wrapper-inner {
     display: table-cell;
@@ -126,11 +114,25 @@ body {
     width: 100%; /* Must be percentage or pixels for horizontal alignment */
 }
 
-
 /* Padding for spacing */
 .inner {
     padding: 30px;
 }
 
+.navbar-text.app-name {
+    position: absolute;
+    text-align: center;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
 
-/* END MAIN MENU */
+body {
+    padding-top: 70px;
+}
+
+a {
+    cursor: pointer;
+}
+
+/* END MAIN MENU AND NAVIGATION */

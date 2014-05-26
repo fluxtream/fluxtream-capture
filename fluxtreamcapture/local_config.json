@@ -6,7 +6,8 @@
 		},
 		"simulatorsdk": "7.1",
 		"simulatorfamily": "iphone",
-		"simulatorvariant": "default"
+		"simulatorvariant": "default",
+		"device": "device"
 	},
 	"android": {
 		"profiles": {

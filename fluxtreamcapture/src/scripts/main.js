@@ -1,4 +1,5 @@
-require(['FluxtreamCapture'], function (FluxtreamCapture) {
+$(document).ready(function(){
+    require(['FluxtreamCapture'], function (FluxtreamCapture) {
 //  forge.prefs.get('settings.username',
 //      // Success
 //      function(value) {
@@ -10,5 +11,6 @@ require(['FluxtreamCapture'], function (FluxtreamCapture) {
 //        forge.logging.error("An error occurred while getting the username from prefs");
 //      }
 //  );
-    FluxtreamCapture.initialize();
+        FluxtreamCapture.initialize();
+    });
 });

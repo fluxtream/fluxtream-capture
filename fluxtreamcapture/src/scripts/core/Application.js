@@ -5,6 +5,7 @@ define(["core/FlxState"], function(FlxState) {
 		this.author = author;
 		this.icon = icon;
         this.prettyName = prettyName;
+        this.scrollPosition = 0;
 	}
 
     Application.prototype.initialize = function() {};
@@ -48,10 +49,6 @@ define(["core/FlxState"], function(FlxState) {
 
 	Application.prototype.renderState = function(state) {
 	};
-
-    Application.prototype.getParams = function(){
-        return this.params;
-    }
 
     Application.prototype.navigateState = function(state,params) {
         this.params = params;

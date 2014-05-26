@@ -13,7 +13,6 @@ define(
         };
 
         function loadApps() {
-            var then = new Date().getTime();
             var appModules = FlxState.apps.map(function (appName) {
                 return "applications/" + appName + "/App";
             });
@@ -26,21 +25,16 @@ define(
                 }
 
                 loadAppTemplates();
-                var now = new Date().getTime();
-//                forge.logging.info("app is now fully initialized: " + (now-then) + " ms");
             });
         }
 
         function renderAppTemplate(app, html) {
-            var appDiv = $("<div/>", {
-                class: "application",
-                id: app.name + "-app"
-            }).addClass("dormant").html(html);
-            $("#applications").append(appDiv);
+            var appDiv = $("<div/>", { class: "application", id: app.name + "-app" }).addClass("dormant").html(html);
+            $("#flx-applications").append(appDiv);
         }
 
         function loadAppTemplates() {
-//            forge.logging.info("loading app templates");
+            forge.logging.info("loading app templates");
             var apps = _.values(App.apps),
                 appTemplates = apps.map(function (app) {
                     return "text!applications/" + app.name + "/template.html";
@@ -74,18 +68,20 @@ define(
                 });
             }
 
-            FlxState.router.route("*path", "default", function(path) {
+            FlxState.router.route("", "default", function(path) {
                 console.log("default route: path=" + path);
                 var appName = FlxState.defaultApp,
                     app = App.apps[appName];
                 renderDefault(app);
             });
-            FlxState.router.route("/:name", "app-default", function(appName) {
+
+            FlxState.router.route(":name", "app-default", function(appName) {
                 console.log("app-default route: name=" + appName);
                 var app = App.apps[appName];
                 renderDefault(app);
             });
-            FlxState.router.route("/:name/*state", "app", function(appName, state) {
+
+            FlxState.router.route(":name/*state", "app", function(appName, state) {
                 console.log("app route: name=" + appName + ", state=" + state);
                 var app = App.apps[appName];
                 if (_.isUndefined(app)) {
@@ -108,15 +104,13 @@ define(
 
             function maybeSwapApps(app) {
 
+                $("#menu").hide();
+
                 function setAppDivEnabled(app, enabled) {
                     var appDiv = $("#" + app.name + "-app");
                     appDiv.toggleClass("active", enabled);
                     appDiv.toggleClass("dormant", !enabled);
                 }
-
-                // TODO: add destroy()/setup() calls again...
-                $(".appMenuBtn.active").removeClass("active");
-                $("#"+app.name+"MenuButton").addClass('active');
                 var appChanged = app !== App.activeApp;
                 if (appChanged) {
                     if (!_.isUndefined(App.activeApp)) {
@@ -124,13 +118,30 @@ define(
                     }
                     App.activeApp = app;
                 }
+
                 setAppDivEnabled(app, true);
+
+                $(".navbar-text.app-name").html(app.prettyName);
+                $("#flx-applications").show();
+
+                var scrollPosition = app.scrollPosition;
+                forge.logging.debug("restoring scrollPosition to " + scrollPosition);
+                $(window).scrollTop(scrollPosition);
             }
 
             if (!Backbone.history.start({pushState : window.history && window.history.pushState})) {
-                console.log("error loading routes!");
+                forge.logging.error("error loading routes!");
             }
-        }
+        };
+
+        App.renderMenu = function() {
+            var scrollPosition = $(window).scrollTop();
+            forge.logging.debug("saving scrollPosition: " + scrollPosition);
+            $("#flx-applications").hide();
+            App.activeApp.scrollPosition = scrollPosition;
+            $(".navbar-text.app-name").html("");
+            $("#menu").show();
+        };
 
         App.renderApp = function(appName, state, params) {
             var app = App.apps[appName];
@@ -138,7 +149,7 @@ define(
                 state = FlxState.getState(appName);
             }
             app.navigateState(state,params);
-        }
+        };
 
         window.App = App;
         return App;
