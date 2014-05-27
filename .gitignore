@@ -1,5 +1,6 @@
 .idea
 
+fluxtreamcapture/src/scripts/env.js
 fluxtreamcapture/development
 fluxtreamcapture/release
 fluxtreamcapture/forge-error.log

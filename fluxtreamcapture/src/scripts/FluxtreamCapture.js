@@ -1,6 +1,6 @@
 define(
-    [ "core/FlxState" ],
-    function (FlxState) {
+    [ "core/FlxState", "env" ],
+    function (FlxState, env) {
 
         var App = {};
 
@@ -9,13 +9,12 @@ define(
         var compiledTemplates = {};
 
         App.initialize = function() {
-            forge.logging.info("making cors request...");
-
+            forge.logging.info("making cors request..." + env["fluxtream.home.url"]);
             // fluxtream.dev here needs to be replaced by whatever your API host is
-            $.ajax({url: "http://fluxtream.dev/cors",
+            $.ajax({url: env["fluxtream.home.url"]+"cors",
             method: "POST",
             success: function() {
-                $.ajax({url: "http://fluxtream.dev/api/v1/guest",
+                $.ajax({url: env["fluxtream.home.url"]+"api/v1/guest",
                     xhrFields: {
                         withCredentials: true
                     },
