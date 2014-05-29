@@ -48,6 +48,7 @@ define(["core/FlxState"], function(FlxState) {
     };
 
 	Application.prototype.renderState = function(state) {
+
 	};
 
     Application.prototype.navigateState = function(state,params) {

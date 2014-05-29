@@ -9,30 +9,44 @@ define(
         var compiledTemplates = {};
 
         App.initialize = function() {
-            forge.logging.info("making cors request..." + env["fluxtream.home.url"]);
-            // fluxtream.dev here needs to be replaced by whatever your API host is
-            $.ajax({url: env["fluxtream.home.url"]+"cors",
-            method: "POST",
-            success: function() {
+            checkAuth();
+        };
+
+        function checkAuth() {
+            if (forge.is.web) {
                 $.ajax({url: env["fluxtream.home.url"]+"api/v1/guest",
                     xhrFields: {
                         withCredentials: true
                     },
-                    dataType : "json",
-                    success:function(result) {
-                        forge.logging.info("haha");
-                        forge.logging.info(result);
+                    headers: {
+                        'Content-Type': 'application/json'
                     },
-                    error : function(){
-                        forge.logging.info("ERROR");
+                    dataType: "json",
+                    success:function(guestModel, textStatus) {
+                        forge.logging.debug(guestModel);
+                        if (!_.isUndefined(guestModel.username))
+                            loadApps();
+                        else {
+                            forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                            $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+                        }
+                    },
+                    error : function(jqXHR, textStatus, stackTrace){
+                        forge.logging.debug("status: " + jqXHR.status);
+                        forge.logging.debug("status: " + stackTrace);
+                        if (jqXHR.status===401) {
+                            forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest (status.result is not \"OK\"): "+textStatus);
+                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
+                        } else {
+                            forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                            $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+                        }
                     }
                 });
-            },
-            error: function() {
-
-            }});
-            loadApps();
-        };
+            } else {
+                // todo: auth check for mobile
+            }
+        }
 
         function loadApps() {
             var appModules = FlxState.apps.map(function (appName) {
@@ -155,7 +169,7 @@ define(
                 $(window).scrollTop(scrollPosition);
             }
 
-            if (!Backbone.history.start({pushState : window.history && window.history.pushState})) {
+            if (!Backbone.history.start({pushState : false})) {
                 forge.logging.error("error loading routes!");
             }
         };
