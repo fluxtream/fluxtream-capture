@@ -3,7 +3,7 @@
 	"ios": {
 		"profiles": {
 			"DEFAULT": {
-				"provisioning_profile": "/Users/candide/Downloads/Fluxtream_Capture.mobileprovision",
+				"provisioning_profile": "/Users/candide/BTSync/Fluxtream/Fluxtream_Capture.mobileprovision",
 				"developer_certificate": "Candide Kemmler"
 			}
 		},

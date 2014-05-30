@@ -10,7 +10,11 @@
 			"logging": {
 				"level": "DEBUG"
 			},
-			"reload": true
+			"reload": true,
+			"trusted_urls": [
+				"http://fluxtream.dev/*",
+				"http://fluxtream.org/*"
+			]
 		},
 		"ios": {
 			"minimum_version": "4.3",
