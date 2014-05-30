@@ -15,6 +15,7 @@
 	"android": {
 		"profiles": {
 			"DEFAULT": {}
-		}
+		},
+		"purge": true
 	}
 }

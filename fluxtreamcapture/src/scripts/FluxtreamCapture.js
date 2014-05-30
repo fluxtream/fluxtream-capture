@@ -61,7 +61,11 @@ define(
                     forge.logging.debug("status: " + stackTrace);
                     if (jqXHR.status===401) {
                         forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest (status.result is not \"OK\"): "+textStatus);
-                        window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
+                        if (forge.is.web()) {
+                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
+                        } else {
+                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r=fluxtream://mainmenu";
+                        }
                     } else {
                         forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
                         $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")

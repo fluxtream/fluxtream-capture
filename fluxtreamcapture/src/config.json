@@ -39,6 +39,12 @@
 		},
 		"fc_gallery": {
 			"version": "0.3"
+		},
+		"urlhandler": {
+			"version": "2.0",
+			"config": {
+				"scheme": "fluxtream"
+			}
 		}
 	}
 }
