@@ -9,7 +9,7 @@ define(["core/Application", "core/FlxState"], function(Application, FlxState) {
                 $scope.greetMe = 'World';
             }]);
         angular.element(document).ready(function() {
-            angular.bootstrap(document, ['SettingsApp']);
+            angular.bootstrap("#settings-app", ['SettingsApp']);
         });
     };
 
