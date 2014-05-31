@@ -1,4 +1,4 @@
-define(["core/Application", "core/FlxState"], function(Application, FlxState) {
+define(["core/Application", "core/FlxState", "env"], function(Application, FlxState, env) {
 
     var SelfReport = new Application("self-report", "Yury Chernushenko", "icon-pencil", "Self Report");
 
@@ -6,7 +6,27 @@ define(["core/Application", "core/FlxState"], function(Application, FlxState) {
         forge.logging.info("initializing the SelfReport app");
         angular.module('SelfReportApp', [])
             .controller('SelfReportController', ['$scope', function ($scope) {
-                $scope.greetMe = 'Old Pal';
+                forge.logging.debug("retrieving guest model...");
+                $scope.getGuest = function() {
+                    forge.request.ajax({
+                        type: "GET",
+                        url: env["fluxtream.home.url"]+"api/v1/guest",
+                        dataType: "json",
+                        success: function(guestModel, textStatus) {
+                            forge.logging.debug(guestModel);
+                            if (_.isUndefined(guestModel.username)) {
+                                forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                                $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+                            } else
+                                $scope.greetMe = guestModel.username;
+                        },
+                        error : function(response, content, type) {
+                            forge.logging.debug(response.statusCode);
+                            forge.logging.debug("this is an error, status: " + response.statusCode);
+                            forge.logging.debug("this is an error, stack trace: " + content);
+                        }
+                    });
+                }
             }]);
         angular.element(document).ready(function() {
             angular.bootstrap("#self-report-app", ['SelfReportApp']);
