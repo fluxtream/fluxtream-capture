@@ -11,25 +11,43 @@ define(["core/Application", "core/FlxState", "env"], function(Application, FlxSt
         App.angularApp
             .controller('SelfReportController', ['$scope', function ($scope) {
                 forge.logging.debug("retrieving guest model...");
+                var handleSuccess = function(guestModel, textStatus) {
+                    forge.logging.debug(guestModel);
+                    if (_.isUndefined(guestModel.username)) {
+                        forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                        $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+                    } else
+                        $scope.greetMe = guestModel.username;
+                };
                 $scope.getGuest = function() {
-                    forge.request.ajax({
-                        type: "GET",
-                        url: env["fluxtream.home.url"]+"api/v1/guest",
-                        dataType: "json",
-                        success: function(guestModel, textStatus) {
-                            forge.logging.debug(guestModel);
-                            if (_.isUndefined(guestModel.username)) {
-                                forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
-                                $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
-                            } else
-                                $scope.greetMe = guestModel.username;
-                        },
-                        error : function(response, content, type) {
-                            forge.logging.debug(response.statusCode);
-                            forge.logging.debug("this is an error, status: " + response.statusCode);
-                            forge.logging.debug("this is an error, stack trace: " + content);
-                        }
-                    });
+                    if (forge.is.web()) {
+                        $.ajax({
+                            url: env["fluxtream.home.url"]+"api/v1/guest",
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            success: handleSuccess,
+                            error : function(qXHR, textStatus, stackTrace) {
+                                forge.logging.debug("status: " + jqXHR.status);
+                                forge.logging.debug("status: " + stackTrace);
+                            }
+                        });
+                    } else {
+                        forge.request.ajax({
+                            type: "GET",
+                            url: env["fluxtream.home.url"]+"api/v1/guest",
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            dataType: "json",
+                            success: handleSuccess,
+                            error : function(response, content, type) {
+                                forge.logging.debug(response.statusCode);
+                                forge.logging.debug("this is an error, status: " + response.statusCode);
+                                forge.logging.debug("this is an error, stack trace: " + content);
+                            }
+                        });
+                    }
                 }
             }]);
     }

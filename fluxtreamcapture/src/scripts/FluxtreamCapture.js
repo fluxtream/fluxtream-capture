@@ -22,6 +22,45 @@ define(
         }
 
         function checkAuth() {
+            if (forge.is.web())
+                checkAuthOnWeb();
+            else
+                checkAuthOnDevice();
+        }
+
+        function checkAuthOnWeb() {
+            forge.logging.info("checking auth on web...");
+            $.ajax({
+                type: "GET",
+                url: env["fluxtream.home.url"]+"api/v1/guest",
+                xhrFields: {
+                    withCredentials: true
+                },
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                dataType: "json",
+                success: handleAuthSuccessResponse,
+                error : function(jqXHR, textStatus, stackTrace){
+                    forge.logging.debug("status: " + jqXHR.status);
+                    forge.logging.debug("status: " + stackTrace);
+                    if (jqXHR.status===401) {
+                        forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest (status.result is not \"OK\"): "+textStatus);
+                        if (forge.is.web()) {
+                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
+                        } else {
+                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r=fluxtream://mainmenu";
+                        }
+                    } else {
+                        forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                        $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+                    }
+                }
+            });
+        }
+
+        function checkAuthOnDevice(){
+            forge.logging.info("checking auth on device...");
             forge.request.ajax({
                 type: "GET",
                 headers: {
@@ -29,33 +68,37 @@ define(
                 },
                 url: env["fluxtream.home.url"]+"api/v1/guest",
                 dataType: "json",
-                success: function(guestModel, textStatus) {
-                    forge.logging.debug(guestModel);
-                    if (!_.isUndefined(guestModel.username))
-                        loadApps();
-                    else {
-                        forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
-                        $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
-                    }
-                },
-                error : function(response, content, type){
-                    forge.logging.debug(response.statusCode);
-                    forge.logging.debug("this is an error, status: " + response.statusCode);
-                    forge.logging.debug("this is an error, stack trace: " + content);
-                    if (response.statusCode===401) {
-                        forge.logging.info("This user is not yet authenticated (http code is 401): \"" + content + "\", redirecting to signIn URL");
-                        if (forge.is.web()) {
-                            window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
-                        } else {
-                            forge.logging.info("user has wrong credentials, let's let him fix that");
-                            App.renderApp("settings");
-                        }
-                    } else {
-                        forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + response.statusCode);
-                        $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + response.statusCode + "</h1>")
-                    }
-                }
+                success: handleAuthSuccessResponse,
+                error : handleAuthErrorResponse
             });
+        }
+
+        function handleAuthSuccessResponse(guestModel, textStatus) {
+            forge.logging.debug(guestModel);
+            if (!_.isUndefined(guestModel.username))
+                loadApps();
+            else {
+                forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus);
+                $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + textStatus + "</h1>")
+            }
+        }
+
+        function handleAuthErrorResponse(response, content, type) {
+            forge.logging.debug(response.statusCode);
+            forge.logging.debug("this is an error, status: " + response.statusCode);
+            forge.logging.debug("this is an error, stack trace: " + content);
+            if (response.statusCode===401) {
+                forge.logging.info("This user is not yet authenticated (http code is 401): \"" + content + "\", redirecting to signIn URL");
+                if (forge.is.web()) {
+                    window.location=env["fluxtream.home.url"]+"mobile/signIn?r="+env["loggedIn.redirect_uri"];
+                } else {
+                    forge.logging.info("user has wrong credentials, let's let him fix that");
+                    App.renderApp("settings");
+                }
+            } else {
+                forge.logging.info("Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + response.statusCode);
+                $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"]+"api/v1/guest: " + response.statusCode + "</h1>")
+            }
         }
 
         function loadApps() {
