@@ -4,7 +4,11 @@ define(["core/Application", "core/FlxState", "env"], function(Application, FlxSt
 
     SelfReport.setup = function() {
         forge.logging.info("initializing the SelfReport app");
-        angular.module('SelfReportApp', [])
+        forge.logging.info(App.angularApp);
+    };
+
+    SelfReport.angularSetup = function() {
+        App.angularApp
             .controller('SelfReportController', ['$scope', function ($scope) {
                 forge.logging.debug("retrieving guest model...");
                 $scope.getGuest = function() {
@@ -28,10 +32,7 @@ define(["core/Application", "core/FlxState", "env"], function(Application, FlxSt
                     });
                 }
             }]);
-        angular.element(document).ready(function() {
-            angular.bootstrap("#self-report-app", ['SelfReportApp']);
-        });
-    };
+    }
 
     return SelfReport;
 });

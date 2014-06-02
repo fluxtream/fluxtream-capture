@@ -12,6 +12,15 @@ define(
             checkAuth();
         };
 
+        function initializeAngular() {
+            App.angularApp = angular.module('fluxtreamCapture', ["mobile-angular-ui"]);
+            for (var appName in App.apps)
+                App.apps[appName].angularSetup();
+            angular.element(document).ready(function() {
+                angular.bootstrap(document, ['fluxtreamCapture']);
+            });
+        }
+
         function checkAuth() {
             forge.request.ajax({
                 type: "GET",
@@ -50,6 +59,7 @@ define(
         }
 
         function loadApps() {
+            forge.logging.debug("loading apps");
             var appModules = FlxState.apps.map(function (appName) {
                 return "applications/" + appName + "/App";
             });
@@ -173,6 +183,9 @@ define(
             if (!Backbone.history.start({pushState : false})) {
                 forge.logging.error("error loading routes!");
             }
+
+            initializeAngular();
+
         };
 
         App.renderMenu = function() {

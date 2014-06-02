@@ -12,10 +12,6 @@ $(document).ready(function(){
 //      }
 //  );
         FluxtreamCapture.initialize();
-        forge.urlhandler.urlLoaded.addListener(function(urlHandle){
-            forge.logging.info(urlHandle);
-        }, function(content){
-            forge.logging.error(content);
-        })
     });
 });
+

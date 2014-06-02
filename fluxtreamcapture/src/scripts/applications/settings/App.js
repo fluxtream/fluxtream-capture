@@ -4,14 +4,13 @@ define(["core/Application", "core/FlxState"], function(Application, FlxState) {
 
     Settings.setup = function() {
         forge.logging.info("initializing the Settings app");
-        angular.module('SettingsApp', [])
-            .controller('SettingsController', ['$scope', function ($scope) {
-                $scope.greetMe = 'World';
-            }]);
-        angular.element(document).ready(function() {
-            angular.bootstrap("#settings-app", ['SettingsApp']);
-        });
     };
+
+    Settings.angularSetup = function() {
+        App.angularApp.controller('SettingsController', ['$scope', function ($scope) {
+            $scope.greetMe = 'World';
+        }]);
+    }
 
     return Settings;
 });

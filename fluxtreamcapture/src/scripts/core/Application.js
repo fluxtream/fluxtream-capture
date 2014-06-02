@@ -24,6 +24,9 @@ define(["core/FlxState"], function(FlxState) {
 	Application.prototype.saveState = function() {
 	};
 
+    Application.prototype.angularSetup= function() {
+    };
+
 	/**
 	 * Bind controls for intra-app interaction. This is called by the
 	 * render function, when the app's template is loaded

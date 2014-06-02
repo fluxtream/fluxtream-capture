@@ -91,51 +91,51 @@ body {
 /* Extra markup and styles for table-esque vertical and horizontal centering */
 
 
-.site-wrapper {
-    display: table;
-    width: 100%;
-}
-.site-wrapper-inner {
-    display: table-cell;
-    vertical-align: middle;
-}
-.cover-container {
-    margin-top: 20%;
-    margin-right: auto;
-    margin-left: auto;
-}
+/*.site-wrapper {*/
+    /*display: table;*/
+    /*width: 100%;*/
+/*}*/
+/*.site-wrapper-inner {*/
+    /*display: table-cell;*/
+    /*vertical-align: middle;*/
+/*}*/
+/*.cover-container {*/
+    /*margin-top: 20%;*/
+    /*margin-right: auto;*/
+    /*margin-left: auto;*/
+/*}*/
 
 /* Start the vertical centering */
-.site-wrapper-inner {
-    vertical-align: middle;
-}
+/*.site-wrapper-inner {*/
+    /*vertical-align: middle;*/
+/*}*/
 /* Handle the widths */
-.cover-container {
-    width: 100%; /* Must be percentage or pixels for horizontal alignment */
-}
+/*.cover-container {*/
+    /*width: 100%; *//* Must be percentage or pixels for horizontal alignment */
+/*}*/
 
 /* Padding for spacing */
-.inner {
-    padding: 30px;
-}
+/*.inner {*/
+    /*padding: 30px;*/
+/*}*/
 
-.navbar-text.app-name {
-    position: absolute;
-    text-align: center;
-    left: 0;
-    right: 0;
-    width: 100%;
-}
+/*.navbar-text.app-name {*/
+    /*position: absolute;*/
+    /*text-align: center;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*width: 100%;*/
+/*}*/
 
-.sireg-form-wrapper {
-    padding: 0 35px;
-}
+/*.sireg-form-wrapper {*/
+    /*padding: 0 35px;*/
+/*}*/
 
-body {
-    padding-top: 70px;
-}
+/*body {*/
+    /*padding-top: 70px;*/
+/*}*/
 
-a {
-    cursor: pointer;
-}
+/*a {*/
+    /*cursor: pointer;*/
+/*}*/
 /* END MAIN MENU AND NAVIGATION */
