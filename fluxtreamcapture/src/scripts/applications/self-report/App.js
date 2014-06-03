@@ -7,6 +7,13 @@ define(["core/Application", "core/FlxState", "env"], function(Application, FlxSt
         forge.logging.info(App.angularApp);
     };
 
+    SelfReport.renderState = function(state) {
+        forge.logging.info(state);
+        require(["text!applications/self-report/" + state + ".html"], function (otherTemplate) {
+            forge.logging.info(otherTemplate);
+        });
+    }
+
     SelfReport.angularSetup = function() {
         App.angularApp
             .controller('SelfReportController', ['$scope', function ($scope) {
@@ -48,6 +55,9 @@ define(["core/Application", "core/FlxState", "env"], function(Application, FlxSt
                             }
                         });
                     }
+                }
+                $scope.goSomewhereElse = function() {
+                    FlxState.router.navigate("self-report/somewhereElse", {trigger: true});
                 }
             }]);
     }
