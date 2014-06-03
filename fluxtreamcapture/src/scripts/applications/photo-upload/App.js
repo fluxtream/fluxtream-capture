@@ -1,4 +1,4 @@
-@define(["core/Application", "core/FlxState"], function(Application, FlxState) {
+define(["core/Application", "core/FlxState"], function(Application, FlxState) {
 
     var PicturesUpload = new Application("photo-upload", "Julien Dupuis", "glyphicon-camera", "Photo Upload");
 
