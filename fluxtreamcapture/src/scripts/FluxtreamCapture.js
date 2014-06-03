@@ -13,9 +13,25 @@ define(
         };
 
         function initializeAngular() {
-            App.angularApp = angular.module('fluxtreamCapture', ["mobile-angular-ui"]);
+            App.angularApp = angular.module('fluxtreamCapture', ["ionic"]);
             for (var appName in App.apps)
                 App.apps[appName].angularSetup();
+            // main nav/sidebar controller
+            App.angularApp
+                .controller('ContentController', function ($scope, $ionicSideMenuDelegate) {
+                    forge.logging.debug("retrieving guest model...");
+                    $scope.toggleLeft = function() {
+                        $ionicSideMenuDelegate.toggleLeft();
+                    };
+                    $scope.toggleRight = function() {
+                        $ionicSideMenuDelegate.toggleRight();
+                    };
+                    $scope.renderApp = function(appName) {
+                        App.renderApp(appName);
+                        $ionicSideMenuDelegate.toggleRight();
+                    };
+                }
+            );
             angular.element(document).ready(function() {
                 angular.bootstrap(document, ['fluxtreamCapture']);
             });
