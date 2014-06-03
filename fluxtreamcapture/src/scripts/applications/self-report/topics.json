@@ -1,0 +1,11 @@
+{"id": "1",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Weight", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "2",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Weight", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "3",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Food", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "4",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Food", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "5",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Food", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "6",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Light", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "7",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Food", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "8",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Light", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "9",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Speed", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "10",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Speed", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"},
+{"id": "11",  "guestId": "1", "creationTime": "123", "timeUpdated": "23423", "name":  "Speed", "type": "1", "step": "1", "defaultValue": "1", "status":  "1"}

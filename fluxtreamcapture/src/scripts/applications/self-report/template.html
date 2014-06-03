@@ -1,6 +1,18 @@
 <div class="flx-application" ng-controller="SelfReportController">
-    <p>This is the self report app</p>
-    <p>Hello {{greetMe}}</p>
-    <button ng-click="getGuest()" class="button button-outline button-positive">get guest</button>
-    <button ng-click="goSomewhereElse()" class="button button-outline button-positive">Go Somewhere Else!</button>
+    
+
+	<ul class="list">
+		<a ng-click="createObservation({{topic.id}})" href={{topic.name}} data-ng-repeat="topic in topics">
+	        <li class="item">
+		        <div class='flex-item' style='width: 70%; float:left; padding: 0em; margin: 0em; line-height: 10vh;'>
+		            {{topic.name}}
+		        </div>
+
+		        <div class='flex-item' style="width: 30%; line-height: 10vh; float:left; padding: 0em; margin: 0em; text-align: right;">
+		            {{observations[topic.id].value}}
+		        </div>
+	        </li>
+    	</a>
+	</ul>
+
 </div>
