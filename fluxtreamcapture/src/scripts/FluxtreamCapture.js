@@ -29,6 +29,7 @@ define(
                     $scope.renderApp = function(appName) {
                         App.renderApp(appName);
                         $ionicSideMenuDelegate.toggleRight();
+                        $("h1.title").html(App.activeApp.prettyName);
                     };
                 }
             );
