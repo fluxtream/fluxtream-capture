@@ -1,10 +1,10 @@
 var app = angular.module('fluxtreamCapture', ['ionic']);
 
 app.controller('NavController', function($scope, $ionicSideMenuDelegate) {
-    forge.logging.debug("initializing NavController...");
-    $scope.toggleRight = function() {
+    $scope.navigateTo = function(url) {
+        window.location = url;
         $ionicSideMenuDelegate.toggleRight();
-    }
+    };
 });
 
 app.config(function($stateProvider, $urlRouterProvider) {
