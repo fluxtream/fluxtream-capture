@@ -13,95 +13,96 @@
     <script src='../_forge/app_config.js'></script>
     <script src='../_forge/all.js'></script>
     <script src="js/ionic.bundle.min.js"></script>
-    <script src="js/app.js"></script>
+    <script src="scripts/libs/jquery-2.0.2.js"></script>
+    <script data-main="scripts/app.js" src="scripts/libs/require-2.1.11.js"></script>
     <!-- TODO Remove the following line, used for debugging -->
     <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
 </head>
-<body ng-app="fluxtreamCapture">
 
-<ion-side-menus>
-    <!-- Center content -->
-    <ion-side-menu-content drag-content="true">
-        <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-            <ion-nav-back-button class="button-clear">
-                <i class="ion-arrow-left-c"></i> Back
-            </ion-nav-back-button>
-            <ion-nav-buttons side="right">
-                <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-            </ion-nav-buttons>
-        </ion-nav-bar>
+<body>
+    <ion-side-menus>
+        <!-- Center content -->
+        <ion-side-menu-content drag-content="true">
+            <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+                <ion-nav-back-button class="button-clear">
+                    <i class="ion-arrow-left-c"></i> Back
+                </ion-nav-back-button>
+                <ion-nav-buttons side="right">
+                    <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+                </ion-nav-buttons>
+            </ion-nav-bar>
 
-        <ion-nav-view animation="slide-left-right">
+            <ion-nav-view animation="slide-left-right">
 
-        </ion-nav-view>
-    </ion-side-menu-content>
+            </ion-nav-view>
+        </ion-side-menu-content>
 
-    <!-- Right menu -->
-    <ion-side-menu side="right" ng-controller="NavController">
-        <ion-list>
-            <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
-            <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
-        </ion-list>
-    </ion-side-menu>
-</ion-side-menus>
+        <!-- Right menu -->
+        <ion-side-menu side="right" ng-controller="NavController">
+            <ion-list>
+                <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
+                <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
+            </ion-list>
+        </ion-side-menu>
+    </ion-side-menus>
 
-<script id="home.html" type="text/ng-template">
+    <script id="home.html" type="text/ng-template">
 
-    <ion-tabs class="tabs-icon-top tabs-dark">
+        <ion-tabs class="tabs-icon-top tabs-dark">
 
-        <ion-tab title="Home" icon="ion-home" href="#/home/report">
-            <ion-nav-view name="report-tab"></ion-nav-view>
-        </ion-tab>
+            <ion-tab title="Home" icon="ion-home" href="#/home/report">
+                <ion-nav-view name="report-tab"></ion-nav-view>
+            </ion-tab>
 
-        <ion-tab title="Topics" icon="ion-ios7-information" href="#/home/topics">
-            <ion-nav-view name="topics-tab"></ion-nav-view>
-        </ion-tab>
+            <ion-tab title="Topics" icon="ion-ios7-information" href="#/home/topics">
+                <ion-nav-view name="topics-tab"></ion-nav-view>
+            </ion-tab>
 
-    </ion-tabs>
-</script>
+        </ion-tabs>
+    </script>
 
-<script id="report.html" type="text/ng-template">
-    <ion-view title="Report">
-        <ion-content class="padding">
-            <p>This is the home screen for the self report app</p>
-            <p>
-                <a class="button icon icon-right ion-chevron-right" href="#/home/topics">create a topic</a>
-            </p>
-        </ion-content>
-    </ion-view>
-</script>
+    <script id="report.html" type="text/ng-template">
+        <ion-view title="Report">
+            <ion-content class="padding">
+                <p>This is the home screen for the self report app</p>
+                <p>
+                    <a class="button icon icon-right ion-chevron-right" href="#/home/topics">create a topic</a>
+                </p>
+            </ion-content>
+        </ion-view>
+    </script>
 
-<script id="topics.html" type="text/ng-template">
-    <ion-view title="Topics" class="padding">
-        <ion-content>
-            <p>Banging your head against a wall uses 150 calories an hour.</p>
-            <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
-            <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
-            <p>A cockroach will live nine days without it's head, before it starves to death.</p>
-            <p>Polar bears are left handed.</p>
-            <p>
-                <a class="button icon ion-home" href="#/home"> Home</a>
-            </p>
-        </ion-content>
-    </ion-view>
-</script>
+    <script id="topics.html" type="text/ng-template">
+        <ion-view title="Topics" class="padding">
+            <ion-content>
+                <p>Banging your head against a wall uses 150 calories an hour.</p>
+                <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
+                <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
+                <p>A cockroach will live nine days without it's head, before it starves to death.</p>
+                <p>Polar bears are left handed.</p>
+                <p>
+                    <a class="button icon ion-home" href="#/home"> Home</a>
+                </p>
+            </ion-content>
+        </ion-view>
+    </script>
 
-<script id="settings.html" type="text/ng-template">
-    <ion-view title="Settings">
-        <ion-content class="padding">
-            <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
-            <p>1 in every 4 Americans has appeared on T.V.</p>
-            <p>11% of the world is left-handed.</p>
-            <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
-            <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
-            <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
-            <p>
-                <a class="button icon ion-home" href="#/tab/home"> Home</a>
-                <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
-            </p>
-        </ion-content>
-    </ion-view>
-</script>
+    <script id="settings.html" type="text/ng-template">
+        <ion-view title="Settings">
+            <ion-content class="padding">
+                <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
+                <p>1 in every 4 Americans has appeared on T.V.</p>
+                <p>11% of the world is left-handed.</p>
+                <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
+                <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
+                <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
+                <p>
+                    <a class="button icon ion-home" href="#/tab/home"> Home</a>
+                    <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
+                </p>
+            </ion-content>
+        </ion-view>
+    </script>
 
 </body>
 </html>

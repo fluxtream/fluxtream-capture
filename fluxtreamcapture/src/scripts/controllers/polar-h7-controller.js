@@ -2,10 +2,10 @@
  * Angular controller for the Polar H7 page
  */
 define([
-  'controllers/controller-module'
-], function(controllers) {
+  'FluxtreamCapture'
+], function(FluxtreamCapture) {
   // Polar H7 controller
-  controllers.controller('PolarH7Controller', function($scope) {
+  FluxtreamCapture.app.controller('PolarH7Controller', function($scope) {
     
   });
 });

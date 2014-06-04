@@ -2,10 +2,10 @@
  * Angular controller for the self-reports page
  */
 define([
-  'controllers/controller-module'
-], function(controllers) {
+  'FluxtreamCapture'
+], function(FluxtreamCapture) {
   // Self-reports controller
-  controllers.controller('SelfReportsController', function($scope) {
+    FluxtreamCapture.app.controller('SelfReportsController', function($scope) {
     
   });
 });

@@ -5,9 +5,9 @@
  * This functionnality should be moved to a background task.
  */
 define([
-  'controllers/controller-module'
-], function(controllers) {
-  
+  'FluxtreamCapture'
+], function(FluxtreamCapture) {
+
   // Get fluxtream credentials and target from user prefs
   var username = "";
   var password = "";
@@ -66,7 +66,7 @@ define([
   }
   
   // Picture controller
-  controllers.controller('PictureController', function($scope) {
+  FluxtreamCapture.app.controller('PictureController', function($scope) {
     
     // List of available pictures, pictures are object of type {
     //   src:           the html src of the picture

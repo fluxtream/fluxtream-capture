@@ -2,10 +2,10 @@
  * Angular controller for the configuration page
  */
 define([
-  'controllers/controller-module'
-], function(controllers) {
+  'FluxtreamCapture'
+], function(FluxtreamCapture) {
   // Config controller
-  controllers.controller('SettingsController', function($scope) {
+    FluxtreamCapture.app.controller('SettingsController', function($scope) {
     
     // Current settings values
     $scope.settings = {
