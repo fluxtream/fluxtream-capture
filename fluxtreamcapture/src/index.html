@@ -12,47 +12,96 @@
 
     <script src='../_forge/app_config.js'></script>
     <script src='../_forge/all.js'></script>
-    <script src="scripts/libs/underscore-1.6.0.min.js"></script>
-    <script src="scripts/libs/jquery-2.0.2.js"></script>
-    <script src="scripts/libs/backbone-1.1.2.min.js"></script>
-    <script src="js/angular/angular.min.js"></script>
-    <script src="js/angular/angular-animate.min.js"></script>
     <script src="js/ionic.bundle.min.js"></script>
-    <script data-main="scripts/main" src="scripts/libs/require-2.1.11.js"></script>
+    <script src="js/app.js"></script>
     <!-- TODO Remove the following line, used for debugging -->
     <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
 </head>
-<body>
+<body ng-app="fluxtreamCapture">
 
-<div ng-controller="ContentController">
-    <ion-side-menus is-enabled="true">
-        <!-- Center content -->
-        <ion-side-menu-content drag-content="true">
-            <ion-header-bar class="bar-dark">
-                <h1 class="title">Fluxtream Capture</h1>
-                <button class="button button-icon" ng-click="toggleRight()">
-                    <i class="icon ion-navicon"></i>
-                </button>
-            </ion-header-bar>
-            <ion-content>
-                <div id="flx-applications">
+<ion-side-menus ng-controller="NavController">
+    <!-- Center content -->
+    <ion-side-menu-content drag-content="true">
+        <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+            <ion-nav-back-button class="button-clear">
+                <i class="ion-arrow-left-c"></i> Back
+            </ion-nav-back-button>
+            <ion-nav-buttons side="right">
+                <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+            </ion-nav-buttons>
+        </ion-nav-bar>
 
-                </div>
-            </ion-content>
-        </ion-side-menu-content>
+        <ion-nav-view animation="slide-left-right">
 
-        <!-- Left menu -->
-        <ion-side-menu side="right">
-            <ion-list>
-                <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="renderApp('self-report');" href="javascript:void(0);">Home</button></ion-item>
-                <ion-item><button class="button icon-left ion-camera button-clear button-dark" ng-click="renderApp('photo-upload');" href="javascript:void(0);">Photo Upload</button></ion-item>
-                <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="renderApp('heart-rate');" href="javascript:void(0);">Heart Rate</button></ion-item>
-                <ion-item><button class="button icon-left ion-settings button-clear button-dark" ng-click="renderApp('settings');" href="javascript:void(0);">Settings</button></ion-item>
-            </ion-list>
-        </ion-side-menu>
+        </ion-nav-view>
+    </ion-side-menu-content>
 
-    </ion-side-menus>
-</div>
+    <!-- Right menu -->
+    <ion-side-menu side="right">
+        <ion-list>
+            <ion-item><a class="button icon-left ion-clipboard button-clear button-dark" onclick="toggleRight()" href="#/home/report">Home</a></ion-item>
+            <ion-item><a class="button icon-left ion-heart button-clear button-dark" onclick="toggleRight()" href="#/settings">Settings</a></ion-item>
+        </ion-list>
+    </ion-side-menu>
+</ion-side-menus>
+
+<script id="home.html" type="text/ng-template">
+
+    <ion-tabs class="tabs-icon-top tabs-dark">
+
+        <ion-tab title="Home" icon="ion-home" href="#/home/report">
+            <ion-nav-view name="report-tab"></ion-nav-view>
+        </ion-tab>
+
+        <ion-tab title="Topics" icon="ion-ios7-information" href="#/home/topics">
+            <ion-nav-view name="topics-tab"></ion-nav-view>
+        </ion-tab>
+
+    </ion-tabs>
+</script>
+
+<script id="report.html" type="text/ng-template">
+    <ion-view title="Report">
+        <ion-content class="padding">
+            <p>This is the home screen for the self report app</p>
+            <p>
+                <a class="button icon icon-right ion-chevron-right" href="#/home/topics">create a topic</a>
+            </p>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="topics.html" type="text/ng-template">
+    <ion-view title="Topics" class="padding">
+        <ion-content>
+            <p>Banging your head against a wall uses 150 calories an hour.</p>
+            <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
+            <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
+            <p>A cockroach will live nine days without it's head, before it starves to death.</p>
+            <p>Polar bears are left handed.</p>
+            <p>
+                <a class="button icon ion-home" href="#/home"> Home</a>
+            </p>
+        </ion-content>
+    </ion-view>
+</script>
+
+<script id="settings.html" type="text/ng-template">
+    <ion-view title="Settings">
+        <ion-content class="padding">
+            <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
+            <p>1 in every 4 Americans has appeared on T.V.</p>
+            <p>11% of the world is left-handed.</p>
+            <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
+            <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
+            <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
+            <p>
+                <a class="button icon ion-home" href="#/tab/home"> Home</a>
+                <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
+            </p>
+        </ion-content>
+    </ion-view>
+</script>
 
 </body>
 </html>
