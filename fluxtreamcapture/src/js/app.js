@@ -26,7 +26,7 @@ app.config(function($stateProvider, $urlRouterProvider) {
         .state('home.topics', {
             url: "/topics",
             views: {
-                'topics-tab': {
+                'report-tab': {
                     templateUrl: "topics.html"
                 }
             }
