@@ -94,25 +94,15 @@ define( [ "env" ], function (env) {
         app.config(function($stateProvider, $urlRouterProvider) {
 
             $stateProvider
-                .state('home', {
-                    url: "/home",
-                    abstract: true,
-                    templateUrl: "home.html",
+                .state('listTopics', {
+                    url: "/makeObservation",
+                    templateUrl: "listTopics.html",
+                    controller: "listTopicsController"
                 })
-                .state('home.report', {
-                    url: "/report",
-                    views: {
-                        'report-tab': {
-                            templateUrl: "report.html"                        }
-                    }
-                })
-                .state('home.topics', {
-                    url: "/topics",
-                    views: {
-                        'topics-tab': {
-                            templateUrl: "topics.html"
-                        }
-                    }
+                .state('makeObservation', {
+                    url: "/makeObservation/:topicId",
+                    templateUrl: "makeObservation.html",
+                    controller: "makeObservationController"
                 })
                 .state('settings', {
                     url: "/settings",
@@ -120,7 +110,7 @@ define( [ "env" ], function (env) {
                 });
 
 
-            $urlRouterProvider.otherwise("/home/report");
+            $urlRouterProvider.otherwise("/makeObservation");
 
         });
         // now that App.app is defined, let's load up all controllers

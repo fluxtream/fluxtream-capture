@@ -27,7 +27,7 @@
         <ion-side-menu-content drag-content="true">
             <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
                 <ion-nav-back-button class="button-clear">
-                    <i class="ion-arrow-left-c"></i> Back
+                    <i class="ion-chevron-left"></i> Back
                 </ion-nav-back-button>
                 <ion-nav-buttons side="right">
                     <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -46,45 +46,47 @@
                 <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
             </ion-list>
         </ion-side-menu>
+
+        <!-- Footer -->
+        <div class="bar bar-footer bar-dark tabs-icon-only">
+          <button class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></button>
+          <!-- <div class="title">Title</div> -->
+          <button class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></button>
+        </div>
+
     </ion-side-menus>
 
-    <script id="home.html" type="text/ng-template">
-
-        <ion-tabs class="tabs-icon-top tabs-dark">
-
-            <ion-tab title="Home" icon="ion-home" href="#/home/report">
-                <ion-nav-view name="report-tab"></ion-nav-view>
-            </ion-tab>
-
-            <ion-tab title="Topics" icon="ion-ios7-information" href="#/home/topics">
-                <ion-nav-view name="topics-tab"></ion-nav-view>
-            </ion-tab>
-
-        </ion-tabs>
-    </script>
-
-    <script id="report.html" type="text/ng-template">
-        <ion-view title="Report">
+    <script id="listTopics.html" type="text/ng-template">
+        <ion-view title="Make Observation">
             <ion-content class="padding">
-                <p>This is the home screen for the self report app</p>
-                <p>
-                    <a class="button icon icon-right ion-chevron-right" href="#/home/topics">create a topic</a>
-                </p>
+                <ion-list>
+
+                    <div data-ng-repeat="topic in topics">
+                        <a href="#/makeObservation/{{topic.id}}">
+                            <div class='flex-item' style='width: 70%; float:left; padding: 0em; margin: 0em; line-height: 10vh;'>
+                                {{topic.name}}
+                            </div>
+
+                            <div class='flex-item' style="width: 30%; line-height: 10vh; float:left; padding: 0em; margin: 0em; text-align: right;">
+                                {{observations[topic.id].value}}
+                            </div>
+                        </a>
+                    </div>
+
+                </ion-list>
             </ion-content>
         </ion-view>
     </script>
 
-    <script id="topics.html" type="text/ng-template">
-        <ion-view title="Topics" class="padding">
-            <ion-content>
-                <p>Banging your head against a wall uses 150 calories an hour.</p>
-                <p>Dogs have four toes on their hind feet, and five on their front feet.</p>
-                <p>The ant can lift 50 times its own weight, can pull 30 times its own weight and always falls over on its right side when intoxicated.</p>
-                <p>A cockroach will live nine days without it's head, before it starves to death.</p>
-                <p>Polar bears are left handed.</p>
-                <p>
-                    <a class="button icon ion-home" href="#/home"> Home</a>
-                </p>
+    <script id="makeObservation.html" type="text/ng-template">
+        <ion-view title={{name}}>
+            <ion-content class="padding">
+                <ion-list>
+
+                    Hello
+                    {{topicId}}
+
+                </ion-list>
             </ion-content>
         </ion-view>
     </script>
