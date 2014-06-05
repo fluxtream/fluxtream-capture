@@ -87,7 +87,7 @@ define( [ "env" ], function (env) {
     }
 
     function loadApps() {
-        var app = angular.module('fluxtreamCapture', ['ionic']);
+        var app = angular.module('fluxtreamCapture', ['ionic', 'fluxtreamCaptureControllers']);
 
         App.app = app;
 
@@ -97,20 +97,20 @@ define( [ "env" ], function (env) {
                 .state('home', {
                     url: "/home",
                     abstract: true,
-                    templateUrl: "home.html"
+                    templateUrl: "home.html",
+                    controller: "NavController"
                 })
                 .state('home.report', {
                     url: "/report",
                     views: {
                         'report-tab': {
-                            templateUrl: "report.html"
-                        }
+                            templateUrl: "report.html"                        }
                     }
                 })
                 .state('home.topics', {
                     url: "/topics",
                     views: {
-                        'report-tab': {
+                        'topics-tab': {
                             templateUrl: "topics.html"
                         }
                     }
