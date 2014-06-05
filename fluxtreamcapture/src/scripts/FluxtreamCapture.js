@@ -98,7 +98,6 @@ define( [ "env" ], function (env) {
                     url: "/home",
                     abstract: true,
                     templateUrl: "home.html",
-                    controller: "NavController"
                 })
                 .state('home.report', {
                     url: "/report",
