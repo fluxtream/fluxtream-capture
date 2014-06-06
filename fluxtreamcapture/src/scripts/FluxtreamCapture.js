@@ -104,6 +104,16 @@ define( [ "env" ], function (env) {
                     templateUrl: "makeObservation.html",
                     controller: "makeObservationController"
                 })
+                .state('history', {
+                    url: "/history",
+                    templateUrl: "history.html",
+                    controller: "historyController"
+                })
+                .state('editTopics', {
+                    url: "/editTopics",
+                    templateUrl: "editTopics.html",
+                    controller: "editTopicsController"
+                })
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "settings.html"
