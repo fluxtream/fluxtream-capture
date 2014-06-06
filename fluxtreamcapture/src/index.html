@@ -49,20 +49,10 @@
 
     <script id="listTopics.html" type="text/ng-template">
         <ion-view title="Make Observation">
-            <ion-content class="padding">
-
-                    <div data-ng-repeat="topic in topics">
-                        <a href="#/makeObservation/{{topic.id}}">
-                            <div class='flex-item' style='width: 70%; float:left; padding: 0em; margin: 0em; line-height: 10vh;'>
-                                {{topic.name}}
-                            </div>
-
-                            <div class='flex-item' style="width: 30%; line-height: 10vh; float:left; padding: 0em; margin: 0em; text-align: right;">
-                                {{observations[topic.id].value}}
-                            </div>
-                        </a>
-                    </div>
-
+            <ion-content>
+                <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+                    <h2>{{topic.name}}</h2>
+                </a>
             </ion-content>
 
             <!-- Footer -->
@@ -144,7 +134,7 @@
 
             <!-- Footer -->
             <div id="footer" class="bar bar-footer bar-dark">
-              <a id="footer-left" href="#/history" class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></a>
+
               <!-- <div class="title">Title</div> -->
               <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
             </div>
@@ -158,6 +148,12 @@
                     Edit Topics
 
             </ion-content>
+
+            <div id="footer" class="bar bar-footer bar-dark">
+
+              <!-- <div class="title">Title</div> -->
+              <a id="footer-right" href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+            </div>
         </ion-view>
     </script>
 
