@@ -25,8 +25,11 @@
     <ion-side-menus>
         <!-- Center content -->
         <ion-side-menu-content drag-content="true">
-            <ion-nav-bar id="navbar" class="nav-title-slide-ios7 bar-dark">
-                
+            <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+                <ion-nav-back-button class="button-clear">
+                    <i class="ion-chevron-left"></i> Back
+                </ion-nav-back-button>
+
                 <ion-nav-buttons side="right">
                     <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
                 </ion-nav-buttons>
@@ -50,9 +53,11 @@
     <script id="listTopics.html" type="text/ng-template">
         <ion-view title="Make Observation">
             <ion-content>
-                <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
-                    <h2>{{topic.name}}</h2>
-                </a>
+                <div class="list">
+                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+                        <h2>{{topic.name}}</h2>
+                    </a>
+                </div>
             </ion-content>
 
             <!-- Footer -->
@@ -126,9 +131,35 @@
 
     <script id="history.html" type="text/ng-template">
         <ion-view title="History">
-            <ion-content class="padding">
+            <ion-content>
 
-                    History
+                <div class="list">
+                    <div class="item item-divider">
+                        Sun, 2 Mar
+                    </div>
+
+                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+                        {{topic.name}}
+
+                        <span class="item-note">
+                          {{observations[topic.id].value}}
+                        </span>
+
+                    </a>
+
+                    <div class="item item-divider">
+                        Wed, 28 Feb
+                    </div>
+
+                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+                        {{topic.name}}
+
+                        <span class="item-note">
+                          {{observations[topic.id].value}}
+                        </span>
+                    </a>
+
+                </div>
 
             </ion-content>
 

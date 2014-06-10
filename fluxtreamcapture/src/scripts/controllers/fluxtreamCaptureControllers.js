@@ -3,6 +3,11 @@ var fluxtreamCaptureControllers = angular.module('fluxtreamCaptureControllers', 
 fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', 
     function ($scope) {	
 
+    	//Delete back button if any
+ 		if ($('#backButton').find('a').length > 0) {
+			$('#backButton').removeChild($('#backButton').childNodes[0]);
+ 		}	
+
     	$scope.topics = [
             {"id": 1, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
             {"id": 2, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
@@ -190,7 +195,9 @@ fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '
  		//$( "#footer-right" ).children().replaceWith( "Save" );
 
  		//Show back button
- 		//$( "#navbar" ).children().append( "<ion-nav-back-button class="button-clear"><i class="ion-chevron-left"></i> Back </ion-nav-back-button>" );
+ 		//if ($('#backButton').find('a').length == 0) {
+ 		//	$("#backButton").append("<a href='#/makeObservation' class='button icon-left ion-chevron-left button-clear'>Back</a>");
+ 		//}	
      }]);
 
 fluxtreamCaptureControllers.controller('historyController', ['$scope',
@@ -200,9 +207,6 @@ fluxtreamCaptureControllers.controller('historyController', ['$scope',
             {"id": 2, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
             {"id": 3, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
             {"id": 4, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-            {"id": 5, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-            {"id": 6, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Light1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-            {"id": 7, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food4", "type": 1, "step": 1, "defaultValue": 1, "status": 1}
         ];
         //$http.get('/topics.json');
 
