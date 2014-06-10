@@ -16,6 +16,7 @@
     <script src="scripts/libs/jquery-2.0.2.js"></script>
     <script data-main="scripts/app.js" src="scripts/libs/require-2.1.11.js"></script>
     <script src="scripts/controllers/fluxtreamCaptureControllers.js"></script>
+    <script src="js/draganddrop.js"></script>
 
     <!-- TODO Remove the following line, used for debugging -->
     <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
@@ -95,7 +96,6 @@
                           Time
                         </div>
 
-                        
                       </label>
 
                       <label class="item item-input item-select">
@@ -174,11 +174,18 @@
 
     <script id="editTopics.html" type="text/ng-template">
         <ion-view title="Edit Topics">
-            <ion-content class="padding">
+            <ion-content>
 
-                    Edit Topics
+                <ion-list show-reorder="data.showReorder = true">
+                  <ion-item ng-repeat="topic in topics">
+                    {{topic.name}}
+                    <ion-reorder-button class="ion-ios7-drag push-left"
+                                        on-reorder="moveItem(topic, $fromIndex, $toIndex)">
+                    </ion-reorder>
+                  </ion-item>
+                </ion-list>
 
-            </ion-content>
+              </ion-content>
 
             <div id="footer" class="bar bar-footer bar-dark">
 
