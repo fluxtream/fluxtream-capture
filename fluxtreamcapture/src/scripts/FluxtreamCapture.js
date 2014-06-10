@@ -114,6 +114,11 @@ define( [ "env" ], function (env) {
                     templateUrl: "editTopics.html",
                     controller: "editTopicsController"
                 })
+                .state('ediTopic', {
+                    url: "/editTopic/:topicId",
+                    templateUrl: "editTopic.html",
+                    controller: "editTopicController"
+                })
                 .state('settings', {
                     url: "/settings",
                     templateUrl: "settings.html"

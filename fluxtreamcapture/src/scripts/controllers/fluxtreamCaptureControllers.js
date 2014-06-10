@@ -200,6 +200,21 @@ fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '
  		//}	
      }]);
 
+fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$stateParams', 
+    function ($scope, $stateParams) {   
+        $scope.topicId = $stateParams.topicId;
+        $scope.name = "Weight";
+
+        //  Change footer
+        //$( "#footer-left" ).children().replaceWith( "Cancel" );
+        //$( "#footer-right" ).children().replaceWith( "Save" );
+
+        //Show back button
+        //if ($('#backButton').find('a').length == 0) {
+        //  $("#backButton").append("<a href='#/makeObservation' class='button icon-left ion-chevron-left button-clear'>Back</a>");
+        //} 
+     }]);
+
 fluxtreamCaptureControllers.controller('historyController', ['$scope',
     function ($scope) {	
     	$scope.topics = [
