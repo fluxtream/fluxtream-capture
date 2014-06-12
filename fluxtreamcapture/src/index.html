@@ -1,273 +1,250 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="yes" />
-
-    <link href="css/main.css" rel="stylesheet">
-    <link href="css/ionic-1.0.0-beta.6.css" rel="stylesheet">
-
-    <script src='../_forge/app_config.js'></script>
-    <script src='../_forge/all.js'></script>
-    <script src="js/libs/ionic/ionic.bundle-1.0.0-beta.6.min.js"></script>
-    <script src="js/libs/jquery/jquery-2.0.2.js"></script>
-    <script data-main="js/app.js" src="js/libs/require/require-2.1.11.js"></script>
-    <script src="js/controllers/fluxtreamCaptureControllers.js"></script>
-    <script src="js/draganddrop.js"></script>
-
-    <!-- TODO Remove the following line, used for debugging -->
-    <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="yes" />
+  
+  <link href="css/main.css" rel="stylesheet">
+  <link href="css/libs/ionic-1.0.0-beta.6.css" rel="stylesheet">
+  
+  <script src='../_forge/app_config.js'></script>
+  <script src='../_forge/all.js'></script>
+  <script src="js/libs/ionic/ionic.bundle-1.0.0-beta.6.min.js"></script>
+  <script src="js/libs/jquery/jquery-2.0.2.js"></script>
+  <script data-main="js/app.js" src="js/libs/require/require-2.1.11.js"></script>
+  <script src="js/controllers/fluxtreamCaptureControllers.js"></script>
+  <script src="js/draganddrop.js"></script>
+  
+  <!-- TODO Remove the following line, used for debugging -->
+  <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
 </head>
 
 <body>
-    <ion-side-menus>
-        <!-- Center content -->
-        <ion-side-menu-content drag-content="true">
-            <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-                <ion-nav-back-button class="button-clear">
-                    <i class="ion-chevron-left"></i> Back
-                </ion-nav-back-button>
+  <ion-side-menus>
+    <!-- Center content -->
+    <ion-side-menu-content drag-content="true">
+      <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+        <ion-nav-back-button class="button-clear">
+          <i class="ion-chevron-left"></i> Back
+        </ion-nav-back-button>
 
-                <ion-nav-buttons side="right">
-                    <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-                </ion-nav-buttons>
-            </ion-nav-bar>
-
-            <ion-nav-view animation="slide-left-right">
-
-            </ion-nav-view>
-        </ion-side-menu-content>
-
-        <!-- Right menu -->
-        <ion-side-menu side="right" ng-controller="NavController">
-            <ion-list>
-                <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
-                <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
-            </ion-list>
-        </ion-side-menu>
-
-    </ion-side-menus>
-
-    <script id="listTopics.html" type="text/ng-template">
-        <ion-view title="Make Observation">
-            <ion-content>
-                <div class="list">
-                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
-                        <h2>{{topic.name}}</h2>
-                    </a>
-                </div>
-            </ion-content>
-
-            <!-- Footer -->
-            <div id="footer" class="bar bar-footer bar-dark">
-              <a id="footer-left" href="#/history" class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></a>
-              <!-- <div class="title">Title</div> -->
-              <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
+        <ion-nav-buttons side="right">
+          <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+      </ion-nav-bar>
+      
+      <ion-nav-view animation="slide-left-right">
+      </ion-nav-view>
+    </ion-side-menu-content>
+    
+    <!-- Right menu -->
+    <ion-side-menu side="right" ng-controller="NavController">
+      <ion-list>
+        <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
+        <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
+      </ion-list>
+    </ion-side-menu>
+  </ion-side-menus>
+  
+  <script id="listTopics.html" type="text/ng-template">
+    <ion-view title="Make Observation">
+      <ion-content>
+          <div class="list">
+              <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+                  <h2>{{topic.name}}</h2>
+              </a>
+          </div>
+      </ion-content>
+      
+      <!-- Footer -->
+      <div id="footer" class="bar bar-footer bar-dark">
+        <a id="footer-left" href="#/history" class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></a>
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
+      </div>
+      
+    </ion-view>
+  </script>
+  
+  <script id="makeObservation.html" type="text/ng-template">
+    <ion-view title={{name}}>
+      <ion-content>
+        <div class="list">
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Value
             </div>
-
-        </ion-view>
-    </script>
-
-    <script id="makeObservation.html" type="text/ng-template">
-        <ion-view title={{name}}>
-            <ion-content>
-
-                    <div class="list">
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Value
-                        </div>
-                        <select>
-                          <option>1</option>
-                          <option selected>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
-                          <option>6</option>
-                        </select>
-                      </label>
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Time
-                        </div>
-
-                      </label>
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Timezone
-                        </div>
-                        <select>
-                          <option selected>Eastern Standard Time</option>
-                          <option>Central Time Zone</option>
-                          <option>Mountain Time Zone</option>
-                          <option>Pacific Time Zone</option>
-                        </select>
-                      </label>
-
-                      <label class="item item-input">
-                        <textarea placeholder="Comments"></textarea>
-                      </label>
-
-                    </div>
-
-            </ion-content>
-
-            <!-- Footer -->
-            <div id="footer" class="bar bar-footer bar-dark">
-              <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
-              <!-- <div class="title">Title</div> -->
-              <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+            <select>
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Time
             </div>
-
-        </ion-view>
-    </script>
-
-
-    <script id="history.html" type="text/ng-template">
-        <ion-view title="History">
-            <ion-content>
-
-                <div class="list">
-                    <div class="item item-divider">
-                        Sun, 2 Mar
-                    </div>
-
-                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
-                        {{topic.name}}
-
-                        <span class="item-note">
-                          {{observations[topic.id].value}}
-                        </span>
-
-                    </a>
-
-                    <div class="item item-divider">
-                        Wed, 28 Feb
-                    </div>
-
-                    <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
-                        {{topic.name}}
-
-                        <span class="item-note">
-                          {{observations[topic.id].value}}
-                        </span>
-                    </a>
-
-                </div>
-
-            </ion-content>
-
-            <!-- Footer -->
-            <div id="footer" class="bar bar-footer bar-dark">
-
-              <!-- <div class="title">Title</div> -->
-              <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
+          </label>
+          
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Timezone
             </div>
-        </ion-view>
-    </script>
-
-    <script id="editTopics.html" type="text/ng-template">
-        <ion-view title="Edit Topics">
-            <ion-content>
-
-                <ion-list show-reorder="data.showReorder = true">
-                  <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
-                      {{topic.name}}
-                      <ion-reorder-button class="ion-ios7-drag push-left"
-                                          on-reorder="moveItem(topic, $fromIndex, $toIndex)">
-                      </ion-reorder>
-                  </ion-item>
-                </ion-list>
-
-              </ion-content>
-
-            <div id="footer" class="bar bar-footer bar-dark">
-
-              <!-- <div class="title">Title</div> -->
-              <a id="footer-right" href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+            <select>
+              <option selected>Eastern Standard Time</option>
+              <option>Central Time Zone</option>
+              <option>Mountain Time Zone</option>
+              <option>Pacific Time Zone</option>
+            </select>
+          </label>
+          
+          <label class="item item-input">
+            <textarea placeholder="Comments"></textarea>
+          </label>
+        </div>
+      </ion-content>
+      
+      <!-- Footer -->
+      <div id="footer" class="bar bar-footer bar-dark">
+        <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+      </div>
+      
+    </ion-view>
+  </script>
+  
+  <script id="history.html" type="text/ng-template">
+    <ion-view title="History">
+      <ion-content>
+        <div class="list">
+          <div class="item item-divider">
+            Sun, 2 Mar
+          </div>
+          
+          <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+            {{topic.name}}
+            
+            <span class="item-note">
+              {{observations[topic.id].value}}
+            </span>
+          </a>
+          
+          <div class="item item-divider">
+            Wed, 28 Feb
+          </div>
+          
+          <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item"> 
+            {{topic.name}}
+            <span class="item-note">
+              {{observations[topic.id].value}}
+            </span>
+          </a>
+        </div>
+      </ion-content>
+      
+      <!-- Footer -->
+      <div id="footer" class="bar bar-footer bar-dark">
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
+      </div>
+    </ion-view>
+  </script>
+  
+  <script id="editTopics.html" type="text/ng-template">
+    <ion-view title="Edit Topics">
+      <ion-content>
+        <ion-list show-reorder="data.showReorder = true">
+          <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
+            {{topic.name}}
+            <ion-reorder-button class="ion-ios7-drag push-left"
+                                on-reorder="moveItem(topic, $fromIndex, $toIndex)">
+            </ion-reorder>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+      
+      <div id="footer" class="bar bar-footer bar-dark">
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+      </div>
+    </ion-view>
+  </script>
+  
+  <script id="editTopic.html" type="text/ng-template">
+    <ion-view title="Edit Topic">
+      <ion-content>
+        <div class="list">
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Value
             </div>
-        </ion-view>
-    </script>
-
-    <script id="editTopic.html" type="text/ng-template">
-        <ion-view title="Edit Topic">
-            <ion-content>
-
-                    <div class="list">
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Value
-                        </div>
-                        <select>
-                          <option>1</option>
-                          <option selected>2</option>
-                          <option>3</option>
-                          <option>4</option>
-                          <option>5</option>
-                          <option>6</option>
-                        </select>
-                      </label>
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Time
-                        </div>
-
-                      </label>
-
-                      <label class="item item-input item-select">
-                        <div class="input-label">
-                          Timezone
-                        </div>
-                        <select>
-                          <option selected>Eastern Standard Time</option>
-                          <option>Central Time Zone</option>
-                          <option>Mountain Time Zone</option>
-                          <option>Pacific Time Zone</option>
-                        </select>
-                      </label>
-
-                      <label class="item item-input">
-                        <textarea placeholder="Comments"></textarea>
-                      </label>
-
-                    </div>
-
-            </ion-content>
-
-            <!-- Footer -->
-            <div id="footer" class="bar bar-footer bar-dark">
-              <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
-              <!-- <div class="title">Title</div> -->
-              <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+            <select>
+              <option>1</option>
+              <option selected>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+            </select>
+          </label>
+          
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Time
             </div>
-
-        </ion-view>
-    </script>
-
-    <script id="settings.html" type="text/ng-template">
-        <ion-view title="Settings">
-            <ion-content class="padding">
-                <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
-                <p>1 in every 4 Americans has appeared on T.V.</p>
-                <p>11% of the world is left-handed.</p>
-                <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
-                <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
-                <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
-                <p>
-                    <a class="button icon ion-home" href="#/tab/home"> Home</a>
-                    <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
-                </p>
-            </ion-content>
-        </ion-view>
-    </script>
-
+          </label>
+          
+          <label class="item item-input item-select">
+            <div class="input-label">
+              Timezone
+            </div>
+            <select>
+              <option selected>Eastern Standard Time</option>
+              <option>Central Time Zone</option>
+              <option>Mountain Time Zone</option>
+              <option>Pacific Time Zone</option>
+            </select>
+          </label>
+          
+          <label class="item item-input">
+            <textarea placeholder="Comments"></textarea>
+          </label>
+        </div>
+      </ion-content>
+      
+      <!-- Footer -->
+      <div id="footer" class="bar bar-footer bar-dark">
+        <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+      </div>
+    </ion-view>
+  </script>
+  
+  <script id="settings.html" type="text/ng-template">
+    <ion-view title="Settings">
+      <ion-content class="padding">
+        <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
+        <p>1 in every 4 Americans has appeared on T.V.</p>
+        <p>11% of the world is left-handed.</p>
+        <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
+        <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
+        <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
+        <p>
+          <a class="button icon ion-home" href="#/tab/home"> Home</a>
+          <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
+        </p>
+      </ion-content>
+    </ion-view>
+  </script>
+  
 </body>
 </html>

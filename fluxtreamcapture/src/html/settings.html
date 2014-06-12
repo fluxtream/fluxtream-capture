@@ -1,45 +1,45 @@
 <div id="">
-    <div ng-if="valuesToLoad == 0 && error == false">
-        <p>
-            <strong>Connection to fluxtream</strong>
-        </p>
-        <p ng-if="!settings.username || !settings.password" class="alert alert-danger">
-            Using this app requires your Fluxtream username and password
-        </p>
-        <p>
-            Username: <input type="text" ng-model="settings.username" ng-change="save('username')">
-        </p>
-        <p>
-            Password: <input type="password" ng-model="settings.password" ng-change="save('password')">
-        </p>
-        <p>
-            Target: <input type="text" ng-model="settings.target" ng-change="save('target')" placeholder="fluxtream.org">
-        </p>
-        <hr>
-        <p>
-            <strong>Automatic photo upload</strong>
-        </p>
-        <p>
-            Portrait: <input type="checkbox" ng-model="settings.pictures_portrait" ng-change="save('pictures_portrait')">
-        </p>
-        <p>
-            Upside Down <input type="checkbox" ng-model="settings.pictures_upside_down" ng-change="save('pictures_upside_down')">
-        </p>
-        <p>
-            Landscape Left: <input type="checkbox" ng-model="settings.pictures_landscape_left" ng-change="save('pictures_landscape_left')">
-        </p>
-        <p>
-            Landscape Right: <input type="checkbox" ng-model="settings.pictures_landscape_right" ng-change="save('pictures_landscape_right')">
-        </p>
-    </div>
-    <div ng-if="valuesToLoad != 0 && error == false">
-        <p>
-            Loading settings...
-        </p>
-    </div>
-    <div ng-if="error">
-        <p>
-            An error occurred while loading the settings. Please restart the app.
-        </p>
-    </div>
+  <div ng-if="valuesToLoad == 0 && error == false">
+    <p>
+      <strong>Connection to fluxtream</strong>
+    </p>
+    <p ng-if="!settings.username || !settings.password" class="alert alert-danger">
+      Using this app requires your Fluxtream username and password
+    </p>
+    <p>
+      Username: <input type="text" ng-model="settings.username" ng-change="save('username')">
+    </p>
+    <p>
+      Password: <input type="password" ng-model="settings.password" ng-change="save('password')">
+    </p>
+    <p>
+      Target: <input type="text" ng-model="settings.target" ng-change="save('target')" placeholder="fluxtream.org">
+    </p>
+    <hr>
+    <p>
+      <strong>Automatic photo upload</strong>
+    </p>
+    <p>
+      Portrait: <input type="checkbox" ng-model="settings.pictures_portrait" ng-change="save('pictures_portrait')">
+    </p>
+    <p>
+      Upside Down <input type="checkbox" ng-model="settings.pictures_upside_down" ng-change="save('pictures_upside_down')">
+    </p>
+    <p>
+      Landscape Left: <input type="checkbox" ng-model="settings.pictures_landscape_left" ng-change="save('pictures_landscape_left')">
+    </p>
+    <p>
+      Landscape Right: <input type="checkbox" ng-model="settings.pictures_landscape_right" ng-change="save('pictures_landscape_right')">
+    </p>
+  </div>
+  <div ng-if="valuesToLoad != 0 && error == false">
+    <p>
+      Loading settings...
+    </p>
+  </div>
+  <div ng-if="error">
+    <p>
+      An error occurred while loading the settings. Please restart the app.
+    </p>
+  </div>
 </div>
