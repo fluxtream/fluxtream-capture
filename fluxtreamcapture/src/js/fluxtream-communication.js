@@ -17,7 +17,7 @@ define([
     var guestIsAuthenticated = false;
     
     /**
-     * Checks authentification to the fluxtream server
+     * (Public) Checks authentification to the fluxtream server
      * 
      * @param {function} success  The function that is called if the authentication succeeded
      */
@@ -29,18 +29,48 @@ define([
         checkAuthOnDevice();
     }
     
+    /**
+     * (Public) Makes an ajax call to the fluxtream server regardless of whether
+     * we are on mobile or web.
+     * On mobile, the credentials are always added to the request.
+     * On web, the withCredentials XHR field is set to true.
+     * 
+     * @param {type} options  Ajax options
+     * @param {type} username  Username (mobile only)
+     * @param {type} password  User password (mobile only)
+     */
+    function ajax(options, username, password) {
+      if (forge.is.web()) {
+        if (typeof options.xhrFields === 'undefined') options.xhrFields = {};
+        options.xhrFields.withCredentials = true;
+        $.ajax(options);
+      } else {
+        if (typeof options.headers === 'undefined') options.headers = {};
+        options.headers.Authorization = 'Basic ' + btoa(username + ":" + password);
+        forge.request.ajax(options);
+      }
+    }
+    
+    /**
+     * (Private) Makes an ajax call to check if the user is authenticated
+     * 
+     * @param {type} options  The success and error callbacks
+     * @param {type} username  Username (mobile only)
+     * @param {type} password  User password (mobile only)
+     */
+    function ajaxCheckAuth(options, username, password) {
+      options.type = "GET";
+      options.url = env["fluxtream.home.url"] + "api/v1/guest";
+      options.headers = {
+        'Content-Type': 'application/json'
+      };
+      options.dataType = "json";
+      ajax(options, username, password);
+    }
+    
     function checkAuthOnWeb() {
       forge.logging.info("Checking auth on web...");
-      $.ajax({
-        type: "GET",
-        url: env["fluxtream.home.url"] + "api/v1/guest",
-        xhrFields: {
-          withCredentials: true
-        },
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        dataType: "json",
+      ajaxCheckAuth({
         success: handleAuthSuccessResponse,
         error: function(jqXHR, textStatus, stackTrace) {
           forge.logging.debug("status: " + jqXHR.status);
@@ -74,19 +104,13 @@ define([
             if (username && password) {
               // Username and password retrieved, try logging in with them
               forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");
-              forge.request.ajax({
-                type: "GET",
-                headers: {
-                  'Authorization': 'Basic ' + btoa(username + ":" + password)
-                },
-                url: env["fluxtream.home.url"] + "api/v1/guest",
-                dataType: "json",
+              ajaxCheckAuth({
                 success: handleAuthSuccessResponse,
                 error: function(response, content, type) {
                   forge.logging.info("Logging in failed");
                   handleAuthErrorResponseOnMobile(response.statusCode);
                 }
-              });
+              }, username, password);
             } else
               handleAuthErrorResponseOnMobile();
           },
@@ -143,13 +167,17 @@ define([
       }
     }
     
+    /**
+     * (Public) Returns authentication status (true/false)
+     */
     function isAuthenticated() {
       return guestIsAuthenticated;
     }
     
     return {
       checkAuth: checkAuth,
-      isAuthenticated: guestIsAuthenticated
+      isAuthenticated: guestIsAuthenticated,
+      ajax: ajax
     };
     
   });
