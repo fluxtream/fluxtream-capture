@@ -1,3 +1,6 @@
+/**
+ * Copy this file to env.js to set parameters for your environment
+ */
 define(function() {
   return {
     "fluxtream.home.url" : "http://fluxtream.dev/",

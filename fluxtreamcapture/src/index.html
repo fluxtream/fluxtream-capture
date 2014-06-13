@@ -15,8 +15,6 @@
   <script src="js/libs/ionic/ionic.bundle-1.0.0-beta.6.min.js"></script>
   <script src="js/libs/jquery/jquery-2.0.2.js"></script>
   <script data-main="js/app.js" src="js/libs/require/require-2.1.11.js"></script>
-  <script src="js/controllers/fluxtreamCaptureControllers.js"></script>
-  <script src="js/draganddrop.js"></script>
   
   <!-- TODO Remove the following line, used for debugging -->
   <script src="https://trigger.io/catalyst/target/target-script-min.js#F002C893-CB53-43E3-A55D-75DE1052DC4C"></script>
@@ -48,6 +46,13 @@
       </ion-list>
     </ion-side-menu>
   </ion-side-menus>
+  
+  <script id="init.html" type="text/ng-template">
+    <ion-view title="Initializing...">
+      <ion-content>
+      </ion-content>
+    </ion-view>
+  </script>
   
   <script id="listTopics.html" type="text/ng-template">
     <ion-view title="Make Observation">
@@ -241,6 +246,25 @@
         <p>
           <a class="button icon ion-home" href="#/tab/home"> Home</a>
           <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
+        </p>
+      </ion-content>
+    </ion-view>
+  </script>
+  
+  <script id="login.html" type="text/ng-template">
+    <ion-view title="Login">
+      <ion-content class="padding">
+        <p>
+          Username: <input type="text" ng-model="settings.username" ng-change="save('username')">
+        </p>
+        <p>
+          Password: <input type="password" ng-model="settings.password" ng-change="save('password')">
+        </p>
+        <p>
+          Target: <input type="text" ng-model="settings.target" ng-change="save('target')" placeholder="fluxtream.org">
+        </p>
+        <p>
+          <button ng-click="login()">Log in</button>
         </p>
       </ion-content>
     </ion-view>

@@ -1,4 +1,4 @@
 #!/bin/bash
 cp -r src/index.html development/web/src/index.html
-cp -r src/style/* development/web/src/style/
+cp -r src/css/* development/web/src/css/
 cp -r src/js/* development/web/src/js/
