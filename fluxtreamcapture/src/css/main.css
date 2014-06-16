@@ -55,3 +55,5 @@ body {
 .flx-application {
   padding: 10px;
 }
+
+textarea.noResize { resize:none; }
