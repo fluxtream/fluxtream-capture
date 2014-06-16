@@ -42,6 +42,11 @@ define([
         templateUrl: "html/templates/editTopic.html",
         controller: "editTopicController"
       })
+      .state('createTopic', {
+          url: "/createTopic",
+          templateUrl: "html/templates/createTopic.html",
+          controller: "createTopicController"
+      })
       .state('settings', {
         url: "/settings",
         templateUrl: "html/templates/settings.html"

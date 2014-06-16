@@ -208,6 +208,11 @@ define([
     }
   ]);
 
+  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$stateParams',
+      function($scope, $stateParams) {
+      }
+  ]);
+
   fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$stateParams',
     function($scope, $stateParams) {
       $scope.topicId = $stateParams.topicId;
