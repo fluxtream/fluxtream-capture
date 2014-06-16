@@ -4,9 +4,10 @@
 define([
   'flxModules',
   'env',
+  'storage'
 ], function(flxModules, env) {
   
-  flxModules.flxServices.factory('FluxtreamCommunication', function() {
+  flxModules.flxServices.factory('FluxtreamCommunication', ["StorageService", function(storage) {
     
     /**
      * The callback function after a successful authentication
@@ -92,39 +93,28 @@ define([
     
     function checkAuthOnDevice() {
       forge.logging.info("Checking auth on device...");
-      // Get username and password from user prefs
-      forge.prefs.get('settings.username',
-        // Success
-        function(username) {
-          if (!username && env['test.username']) username = env['test.username'];
-          forge.prefs.get('settings.password',
-          // Success
-          function(password) {
-            if (!password && env['test.password']) password = env['test.password'];
-            if (username && password) {
-              // Username and password retrieved, try logging in with them
-              forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");
-              ajaxCheckAuth({
-                success: handleAuthSuccessResponse,
-                error: function(response, content, type) {
-                  forge.logging.info("Logging in failed");
-                  handleAuthErrorResponseOnMobile(response.statusCode);
-                }
-              }, username, password);
-            } else
-              handleAuthErrorResponseOnMobile();
-          },
-          // Error getting password
-          function() {
-            handleAuthErrorResponseOnMobile();
-          }
-          );
-        },
-        // Error getting username
-        function() {
+      // Execute after storage access has been initialized
+      storage.onReady(function() {
+        // Get username and password from user prefs
+        var username = storage.get('settings.username');
+        var password = storage.get('settings.password');
+        if (!username && env['test.username']) username = env['test.username'];
+        if (!password && env['test.password']) password = env['test.password'];
+        if (username && password) {
+          // Username and password retrieved, try logging in with them
+          forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");
+          ajaxCheckAuth({
+            success: handleAuthSuccessResponse,
+            error: function(response, content, type) {
+              forge.logging.info("Logging in failed");
+              handleAuthErrorResponseOnMobile(response.statusCode);
+            }
+          }, username, password);
+        } else {
+          // Username and password not set
           handleAuthErrorResponseOnMobile();
         }
-      );
+      });
     }
     
     function handleAuthSuccessResponse(guestModel, textStatus) {
@@ -180,6 +170,6 @@ define([
       ajax: ajax
     };
     
-  });
+  }]);
   
 });

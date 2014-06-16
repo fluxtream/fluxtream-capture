@@ -20,7 +20,7 @@ define([
         // Load page
         window.location = initialRoute;
         // Clear navigation history to prevent going back to the initialization page
-        $ionicViewService.clearHistory()
+        $ionicViewService.clearHistory();
       });
     }
   ]);

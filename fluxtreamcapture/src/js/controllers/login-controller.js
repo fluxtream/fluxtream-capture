@@ -2,11 +2,13 @@
  * Offers the functionalies for the user to log in to the fluxtream server (mobile only)
  */
 define([
-  'flxModules'
+  'flxModules',
+  'storage',
+  'fluxtream-communication'
 ], function(flxModules) {
   
-  flxModules.flxControllers.controller('loginController', ['$scope', 'FluxtreamCommunication',
-    function($scope, flxCom) {
+  flxModules.flxControllers.controller('loginController', ['$scope', 'FluxtreamCommunication', 'StorageService',
+    function($scope, flxCom, storage) {
       
       // Current setting values
       $scope.settings = {
@@ -17,42 +19,18 @@ define([
       
       // Load initial settings
       $scope.valuesToLoad = Object.keys($scope.settings).length;
-      $scope.loadSettingsValue = function(settingName) {
-        forge.prefs.get('settings.' + settingName,
-          // Success
-          function(value) {
-            if (value) {
-              $scope.settings[settingName] = value;
-            }
-            $scope.valuesToLoad--;
-            $scope.$$phase || $scope.$apply();
-          },
-          // Error
-          function(content) {
-            forge.logging.error("An error occurred while loading a setting: " + content);
-            $scope.error = true;
-            $scope.$$phase || $scope.$apply();
-          }
-        );
-      };
-      for (var settingName in $scope.settings) {
-        $scope.loadSettingsValue(settingName);
-      }
+      storage.onReady(function() {
+        for (var settingName in $scope.settings) {
+          $scope.settings[settingName] = storage.get("settings." + settingName);
+        }
+        $scope.$$phase || $scope.$apply();
+      });
       
       // Save settings on change
       $scope.save = function(settingName) {
-        forge.prefs.set('settings.' + settingName, $scope.settings[settingName],
-          // Success
-          function() {
-            // Setting saved to user prefs
-          },
-          // Error
-          function(content) {
-            forge.logging.error("Error while persisting settings." + settingName + ": " + content);
-            $scope.error = true;
-            $scope.$apply();
-          }
-        );
+        storage.onReady(function() {
+          storage.set('settings.' + settingName, $scope.settings[settingName]);
+        });
       };
       
       // Try logging in to fluxtream
