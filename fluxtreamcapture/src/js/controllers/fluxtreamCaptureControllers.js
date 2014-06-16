@@ -195,6 +195,8 @@ define([
       $scope.topicId = $stateParams.topicId;
       $scope.name = "Weight";
 
+
+
       //	Change footer
       //$( "#footer-left" ).children().replaceWith( "Cancel" );
       //$( "#footer-right" ).children().replaceWith( "Save" );

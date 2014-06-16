@@ -9,12 +9,12 @@ define([
     $stateProvider
       .state('init', {
         url: "/init",
-        templateUrl: "init.html",
+        templateUrl: "html/templates/init.html",
         controller: "initController"
       })
       .state('login', {
         url: "/login",
-        templateUrl: "login.html",
+        templateUrl: "html/templates/login.html",
         controller: "loginController"
       })
       .state('listTopics', {
@@ -44,7 +44,7 @@ define([
       })
       .state('settings', {
         url: "/settings",
-        templateUrl: "settings.html"
+        templateUrl: "html/templates/settings.html"
       });
     // Default route
     $urlRouterProvider.otherwise("/init");

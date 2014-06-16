@@ -21,74 +21,22 @@
 </head>
 
 <body>
-  <ion-side-menus>
-    <!-- Center content -->
-    <ion-side-menu-content drag-content="true">
-      <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-        <ion-nav-back-button class="button-clear">
-          <i class="ion-chevron-left"></i> Back
-        </ion-nav-back-button>
 
-        <ion-nav-buttons side="right">
-          <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
-      </ion-nav-bar>
-      
-      <ion-nav-view animation="slide-left-right">
-      </ion-nav-view>
-    </ion-side-menu-content>
-    
-    <!-- Right menu -->
-    <ion-side-menu side="right" ng-controller="NavController">
-      <ion-list>
-        <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
-        <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
-      </ion-list>
-    </ion-side-menu>
-  </ion-side-menus>
-  
-  <script id="init.html" type="text/ng-template">
-    <ion-view title="Initializing...">
-      <ion-content>
-      </ion-content>
-    </ion-view>
-  </script>
-  
-  <script id="settings.html" type="text/ng-template">
-    <ion-view title="Settings">
-      <ion-content class="padding">
-        <p>111,111,111 x 111,111,111 = 12,345,678,987,654,321</p>
-        <p>1 in every 4 Americans has appeared on T.V.</p>
-        <p>11% of the world is left-handed.</p>
-        <p>1 in 8 Americans has worked at a McDonalds restaurant.</p>
-        <p>$283,200 is the absolute highest amount of money you can win on Jeopardy.</p>
-        <p>101 Dalmatians, Peter Pan, Lady and the Tramp, and Mulan are the only Disney cartoons where both parents are present and don't die throughout the movie.</p>
-        <p>
-          <a class="button icon ion-home" href="#/tab/home"> Home</a>
-          <a class="button icon ion-chevron-left" href="#/tab/facts"> Scientific Facts</a>
-        </p>
-      </ion-content>
-    </ion-view>
-  </script>
-  
-  <script id="login.html" type="text/ng-template">
-    <ion-view title="Login">
-      <ion-content class="padding">
-        <p>
-          Username: <input type="text" ng-model="settings.username" ng-change="save('username')">
-        </p>
-        <p>
-          Password: <input type="password" ng-model="settings.password" ng-change="save('password')">
-        </p>
-        <p>
-          Target: <input type="text" ng-model="settings.target" ng-change="save('target')" placeholder="fluxtream.org">
-        </p>
-        <p>
-          <button ng-click="login()">Log in</button>
-        </p>
-      </ion-content>
-    </ion-view>
-  </script>
-  
+    <ion-side-menus>
+        <!-- Center content -->
+        <ion-side-menu-content drag-content="true">
+            <ion-nav-view animation="slide-left-right">
+            </ion-nav-view>
+        </ion-side-menu-content>
+
+        <!-- Right menu -->
+        <ion-side-menu side="right" ng-controller="NavController">
+             <ion-list>
+                 <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/makeObservation')">Home</button></ion-item>
+                 <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
+             </ion-list>
+        </ion-side-menu>
+    </ion-side-menus>
+
 </body>
 </html>

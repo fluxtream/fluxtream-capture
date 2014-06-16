@@ -1,4 +1,14 @@
 <ion-view title="Edit Topics">
+    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+
+        <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+
+        <ion-nav-buttons side="right">
+            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+
+    </ion-nav-bar>
+
     <ion-content>
         <ion-list show-reorder="data.showReorder = true">
             <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
@@ -10,6 +20,7 @@
         </ion-list>
     </ion-content>
 
+    <!-- Footer -->
     <div id="footer" class="bar bar-footer bar-dark">
         <!-- <div class="title">Title</div> -->
         <a id="footer-right" href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>

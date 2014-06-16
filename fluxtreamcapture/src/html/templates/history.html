@@ -1,27 +1,14 @@
-<ion-side-menus>
-    <!-- Center content -->
-    <ion-side-menu-content drag-content="true">
-        <ion-nav-bar id="navigationBar" class="nav-title-slide-ios7 bar-dark">
-
-            <ion-nav-buttons side="right">
-                <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-            </ion-nav-buttons>
-        </ion-nav-bar>
-
-        <ion-nav-view animation="slide-left-right">
-        </ion-nav-view>
-    </ion-side-menu-content>
-
-    <!-- Right menu -->
-    <ion-side-menu side="right" ng-controller="NavController">
-        <ion-list>
-            <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('#/home/report')">Home</button></ion-item>
-            <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('#/settings')">Settings</button></ion-item>
-        </ion-list>
-    </ion-side-menu>
-</ion-side-menus>
-
 <ion-view title="History">
+
+    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+
+        <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+
+        <ion-nav-buttons side="right">
+            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+        </ion-nav-buttons>
+
+    </ion-nav-bar>
 
     <ion-content>
         <div class="list">
@@ -53,6 +40,5 @@
     <!-- Footer -->
     <div id="footer" class="bar bar-footer bar-dark">
         <!-- <div class="title">Title</div> -->
-        <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
     </div>
 </ion-view>
