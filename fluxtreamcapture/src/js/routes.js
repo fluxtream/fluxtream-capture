@@ -19,27 +19,27 @@ define([
       })
       .state('listTopics', {
         url: "/makeObservation",
-        templateUrl: "listTopics.html",
+        templateUrl: "html/templates/listTopics.html",
         controller: "listTopicsController"
       })
       .state('makeObservation', {
         url: "/makeObservation/:topicId",
-        templateUrl: "makeObservation.html",
+        templateUrl: "html/templates/makeObservation.html",
         controller: "makeObservationController"
       })
       .state('history', {
         url: "/history",
-        templateUrl: "history.html",
+        templateUrl: "html/templates/history.html",
         controller: "historyController"
       })
       .state('editTopics', {
         url: "/editTopics",
-        templateUrl: "editTopics.html",
+        templateUrl: "html/templates/editTopics.html",
         controller: "editTopicsController"
       })
-      .state('ediTopic', {
+      .state('editTopic', {
         url: "/editTopic/:topicId",
-        templateUrl: "editTopic.html",
+        templateUrl: "html/templates/editTopic.html",
         controller: "editTopicController"
       })
       .state('settings', {

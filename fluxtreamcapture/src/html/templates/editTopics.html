@@ -1,0 +1,17 @@
+<ion-view title="Edit Topics">
+    <ion-content>
+        <ion-list show-reorder="data.showReorder = true">
+            <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
+                {{topic.name}}
+                <ion-reorder-button class="ion-ios7-drag push-left"
+                                    on-reorder="moveItem(topic, $fromIndex, $toIndex)">
+                    </ion-reorder>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+
+    <div id="footer" class="bar bar-footer bar-dark">
+        <!-- <div class="title">Title</div> -->
+        <a id="footer-right" href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+    </div>
+</ion-view>
