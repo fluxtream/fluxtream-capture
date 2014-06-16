@@ -4,13 +4,16 @@ define([
 
   var fluxtreamCaptureControllers = flxModules.flxControllers;
 
-  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope',
-    function($scope) {
+  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout',
+    function($scope, $timeout) {
 
-      // Delete back button if any
-      if ($('#backButton').find('a').length > 0) {
-        $('#backButton').removeChild($('#backButton').childNodes[0]);
-      }
+      $scope.loadMoreObservations = function() {
+          $timeout(function() {
+              $scope.topics.push({"id": 18, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "LightNew", "type": 1, "step": 1, "defaultValue": 1, "status": 1});
+              $scope.$broadcast('scroll.infiniteScrollComplete');
+              $scope.$broadcast('scroll.resize');
+          }, 1000);
+      };
 
       $scope.topics = [
         {"id": 1, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
@@ -19,7 +22,17 @@ define([
         {"id": 4, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
         {"id": 5, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
         {"id": 6, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Light1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 7, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food4", "type": 1, "step": 1, "defaultValue": 1, "status": 1}
+        {"id": 7, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food4", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 8, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 9, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 10, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 11, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 12, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 13, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 14, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 15, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 16, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 17, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1}
       ];
       //$http.get('/topics.json');
 

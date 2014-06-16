@@ -9,11 +9,17 @@
     </ion-nav-bar>
 
     <ion-content>
-        <div class="list">
-            <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
-                <h2>{{topic.name}}</h2>
-            </a>
-        </div>
+
+        <ion-list>
+          <ion-item ng-repeat="topic in topics" href=#/makeObservation/{{topic.id}}" type="item-link">
+              {{topic.name}}
+          </ion-item>
+        </ion-list>
+
+        <ion-infinite-scroll
+                on-infinite="loadMoreObservations()"
+                distance="1%">
+        </ion-infinite-scroll>
     </ion-content>
 
     <!-- Footer -->
