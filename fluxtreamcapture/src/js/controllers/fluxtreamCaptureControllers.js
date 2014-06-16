@@ -213,6 +213,13 @@ define([
       }
   ]);
 
+  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams',
+      function($scope, $stateParams) {
+          $scope.topicId = $stateParams.topicId;
+          $scope.name = "Weight";
+      }
+  ]);
+
   fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$stateParams',
     function($scope, $stateParams) {
       $scope.topicId = $stateParams.topicId;

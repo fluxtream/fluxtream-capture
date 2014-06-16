@@ -16,7 +16,7 @@
                 Sun, 2 Mar
             </div>
 
-            <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
+            <a href="#/editObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
                 {{topic.name}}
 
                 <span class="item-note">
@@ -24,16 +24,6 @@
                 </span>
             </a>
 
-            <div class="item item-divider">
-                Wed, 28 Feb
-            </div>
-
-            <a href="#/makeObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
-                {{topic.name}}
-                <span class="item-note">
-                    {{observations[topic.id].value}}
-                </span>
-            </a>
         </div>
     </ion-content>
 

@@ -27,6 +27,11 @@ define([
         templateUrl: "html/templates/makeObservation.html",
         controller: "makeObservationController"
       })
+      .state('editObservation', {
+          url: "/editObservation/:topicId",
+          templateUrl: "html/templates/editObservation.html",
+          controller: "editObservationController"
+      })
       .state('history', {
         url: "/history",
         templateUrl: "html/templates/history.html",
