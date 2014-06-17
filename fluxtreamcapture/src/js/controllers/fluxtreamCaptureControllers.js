@@ -208,7 +208,10 @@ define([
       $scope.topicId = $stateParams.topicId;
       $scope.name = "Weight";
 
-
+        // Called when the form is submitted
+      $scope.createObservation = function(observation) {
+          window.alert(observation);
+      };
 
       //	Change footer
       //$( "#footer-left" ).children().replaceWith( "Cancel" );
