@@ -50,21 +50,31 @@
 			"version": "2.2",
 			"config": {
 				"android": {
-					"36": "icons/f-36x36.png",
-					"48": "icons/f-48x48.png",
-					"72": "icons/f-72x72.png",
-					"96": "icons/f-96x96.png",
-					"144": "icons/f-144x144.png"
+					"36": "img/icons/f-36x36.png",
+					"48": "img/icons/f-48x48.png",
+					"72": "img/icons/f-72x72.png",
+					"96": "img/icons/f-96x96.png",
+					"144": "img/icons/f-144x144.png"
 				},
 				"ios": {
-					"57": "icons/f-57x57.png",
-					"72": "icons/f-72x72.png",
-					"76": "icons/f-76x76.png",
-					"114": "icons/f-114x114.png",
-					"120": "icons/f-120x120.png",
-					"144": "icons/f-144x144.png",
-					"152": "icons/f-152x152.png"
+					"57": "img/icons/f-57x57.png",
+					"72": "img/icons/f-72x72.png",
+					"76": "img/icons/f-76x76.png",
+					"114": "img/icons/f-114x114.png",
+					"120": "img/icons/f-120x120.png",
+					"144": "img/icons/f-144x144.png",
+					"152": "img/icons/f-152x152.png"
 				}
+			}
+		},
+		"launchimage": {
+			"version": "2.4",
+			"config": {
+				"background-size": "cover",
+				"background-color": "#FFFFFF",
+				"android": "img/launch/launch-f-1536x2008.png",
+				"android-landscape": "img/launch/launch-f-2048x1496.png",
+				"hide-manually": true
 			}
 		}
 	}

@@ -21,6 +21,8 @@ define([
         window.location = initialRoute;
         // Clear navigation history to prevent going back to the initialization page
         $ionicViewService.clearHistory();
+        // Hide launch screen
+        forge.launchimage.hide();
       });
     }
   ]);

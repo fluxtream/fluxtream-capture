@@ -155,6 +155,8 @@ define([
         if (typeof onSuccessFunction === 'function') onSuccessFunction();
         window.location = "#/login";
       }
+      // Hide launch screen
+      forge.launchimage.hide();
     }
     
     /**
