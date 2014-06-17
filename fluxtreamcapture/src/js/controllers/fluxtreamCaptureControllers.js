@@ -208,6 +208,9 @@ define([
       $scope.topicId = $stateParams.topicId;
       $scope.name = "Weight";
 
+      //Set current date and time
+      $scope.currentDate = new Date();
+
         // Called when the form is submitted
       $scope.createObservation = function(observation) {
           window.alert(observation);

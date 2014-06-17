@@ -30,14 +30,22 @@
                     <div class="input-label">
                         Date
                     </div>
-                    <input type="date">
+                    <input type="date" value="{{currentDate | date:'yyyy-MM-dd'}}">
                 </label>
+
+                <!-- Further testing
+                <label class="item item-input">
+                    <div class="input-label">
+                        Time
+                    </div>
+                    <input type="datetime-local" value="2013-12-09T18:38">
+                </label> -->
 
                 <label class="item item-input">
                     <div class="input-label">
                         Time
                     </div>
-                    <input type="time">
+                    <input type="time" value="{{currentDate | date:'HH:mm'}}">
                 </label>
 
                 <label class="item item-input item-select">
