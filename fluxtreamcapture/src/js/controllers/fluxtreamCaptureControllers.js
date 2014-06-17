@@ -8,11 +8,11 @@ define([
     function($scope, $timeout) {
 
       $scope.loadMoreObservations = function() {
-          $timeout(function() {
-              $scope.topics.push({"id": 18, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "LightNew", "type": 1, "step": 1, "defaultValue": 1, "status": 1});
-              $scope.$broadcast('scroll.infiniteScrollComplete');
-              $scope.$broadcast('scroll.resize');
-          }, 1000);
+        $timeout(function() {
+          $scope.topics.push({"id": 18, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "LightNew", "type": 1, "step": 1, "defaultValue": 1, "status": 1});
+          $scope.$broadcast('scroll.infiniteScrollComplete');
+          $scope.$broadcast('scroll.resize');
+        }, 1000);
       };
 
       $scope.topics = [
@@ -211,9 +211,9 @@ define([
       //Set current date and time
       $scope.currentDate = new Date();
 
-        // Called when the form is submitted
+      // Called when the form is submitted
       $scope.createObservation = function(observation) {
-          window.alert(observation);
+        window.alert(observation);
       };
 
       //	Change footer
@@ -228,15 +228,15 @@ define([
   ]);
 
   fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$stateParams',
-      function($scope, $stateParams) {
-      }
+    function($scope, $stateParams) {
+    }
   ]);
 
   fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams',
-      function($scope, $stateParams) {
-          $scope.topicId = $stateParams.topicId;
-          $scope.name = "Weight";
-      }
+    function($scope, $stateParams) {
+      $scope.topicId = $stateParams.topicId;
+      $scope.name = "Weight";
+    }
   ]);
 
   fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$stateParams',
@@ -616,7 +616,7 @@ define([
           'value': "14"
         }
       ];
-        }
+    }
   ]);
 
 });

@@ -6,6 +6,7 @@ fluxtreamcapture/release
 fluxtreamcapture/forge-error.log
 fluxtreamcapture/.template
 fluxtreamcapture/.lib
+fluxtreamcapture/src/test/
 
 modules/fc_gallery/.trigger
 modules/fc_gallery/inspector/an-inspector.*

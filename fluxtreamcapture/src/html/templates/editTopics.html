@@ -1,28 +1,28 @@
 <ion-view title="Edit Topics">
-    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-        <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
-        <ion-nav-buttons side="right">
-            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
 
-    </ion-nav-bar>
+  </ion-nav-bar>
 
-    <ion-content>
-        <ion-list show-reorder="data.showReorder = true">
-            <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
-                {{topic.name}}
-                <ion-reorder-button class="ion-ios7-drag"
-                                    on-reorder="moveItem(topic, $fromIndex, $toIndex)">
-                </ion-reorder-button>
-            </ion-item>
-        </ion-list>
-    </ion-content>
+  <ion-content>
+    <ion-list show-reorder="data.showReorder = true">
+      <ion-item ng-repeat="topic in topics" href="#/editTopic/{{topic.id}}">
+        {{topic.name}}
+        <ion-reorder-button class="ion-ios7-drag"
+          on-reorder="moveItem(topic, $fromIndex, $toIndex)">
+        </ion-reorder-button>
+      </ion-item>
+    </ion-list>
+  </ion-content>
 </ion-view>
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-    <!-- <div class="title">Title</div> -->
-    <a id="footer-rigcreate" href="#/createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+  <!-- <div class="title">Title</div> -->
+  <a id="footer-rigcreate" href="#/createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
 </ion-footer-bar>

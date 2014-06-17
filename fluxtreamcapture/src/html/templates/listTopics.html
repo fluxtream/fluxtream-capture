@@ -1,32 +1,32 @@
 <ion-view title="Make Observation">
 
-    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-        <ion-nav-buttons side="right">
-            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
 
-    </ion-nav-bar>
+  </ion-nav-bar>
 
-    <ion-content>
+  <ion-content>
 
-        <ion-list>
-          <ion-item ng-repeat="topic in topics" href=#/makeObservation/{{topic.id}}" type="item-link">
-              {{topic.name}}
-          </ion-item>
-        </ion-list>
+    <ion-list>
+      <ion-item ng-repeat="topic in topics" href=#/makeObservation/{{topic.id}}" type="item-link">
+        {{topic.name}}
+      </ion-item>
+    </ion-list>
 
-        <ion-infinite-scroll
-                on-infinite="loadMoreObservations()"
-                distance="1%">
-        </ion-infinite-scroll>
-    </ion-content>
+    <ion-infinite-scroll
+        on-infinite="loadMoreObservations()"
+        distance="1%">
+    </ion-infinite-scroll>
+  </ion-content>
 
 </ion-view>
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-    <a id="footer-left" href="#/history" class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></a>
-    <!-- <div class="title">Title</div> -->
-    <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
+  <a id="footer-left" href="#/history" class="button button-clear pull-left"><i class="icon ion-ios7-time-outline"></i></a>
+  <!-- <div class="title">Title</div> -->
+  <a id="footer-right" href="#/editTopics" class="button button-clear pull-right"><i class="icon ion-ios7-information-outline"></i></a>
 </ion-footer-bar>
