@@ -1,3 +1,4 @@
+
 <ion-view title={{name}}>
 
     <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
@@ -9,58 +10,73 @@
     </ion-nav-bar>
 
     <ion-content>
-        <div class="list">
-            <label class="item item-input item-select">
-                <div class="input-label">
-                    Value
-                </div>
-                <select>
-                    <option>1</option>
-                    <option selected>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                </select>
-            </label>
 
-            <label class="item item-input">
-                <div class="input-label">
-                    Date
-                </div>
-                <input type="date">
-            </label>
+            <div class="list">
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Value
+                    </div>
+                    <select ng-model="observation">
+                        <option>1</option>
+                        <option selected>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                        <option>6</option>
+                    </select>
+                </label>
 
-            <label class="item item-input">
-                <div class="input-label">
-                    Time
-                </div>
-                <input type="time">
-            </label>
+                <label class="item item-input">
+                    <div class="input-label">
+                        Date
+                    </div>
+                    <input type="date" value="{{currentDate | date:'yyyy-MM-dd'}}">
+                </label>
 
-            <label class="item item-input item-select">
-                <div class="input-label">
-                    Timezone
-                </div>
-                <select>
-                    <option selected>Eastern Standard Time</option>
-                    <option>Central Time Zone</option>
-                    <option>Mountain Time Zone</option>
-                    <option>Pacific Time Zone</option>
-                </select>
-            </label>
+                <!-- Further testing
+                <label class="item item-input">
+                    <div class="input-label">
+                        Time
+                    </div>
+                    <input type="datetime-local" value="2013-12-09T18:38">
+                </label> -->
 
-            <label class="item item-input">
-                <textarea rows="10"></textarea>
-            </label>
-        </div>
+                <label class="item item-input">
+                    <div class="input-label">
+                        Time
+                    </div>
+                    <input type="time" value="{{currentDate | date:'HH:mm'}}">
+                </label>
+
+                <label class="item item-input item-select">
+                    <div class="input-label">
+                        Timezone
+                    </div>
+                    <select>
+                        <option selected>Eastern Standard Time</option>
+                        <option>Central Time Zone</option>
+                        <option>Mountain Time Zone</option>
+                        <option>Pacific Time Zone</option>
+                    </select>
+                </label>
+
+                <label class="item item-input item-stacked-label">
+                    <span class="input-label">Comment</span>
+                    <textarea rows="10" class="noResize"></textarea>
+                </label>
+
+                <label class="item item-input"></label> <!-- Workaround to have a border for comment -->
+            </div>
+
+
     </ion-content>
 
     <!-- Footer -->
-    <div id="footer" class="bar bar-footer bar-dark">
-        <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
+    <div class="bar bar-footer bar-dark">
+        <button id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</button>
         <!-- <div class="title">Title</div> -->
-        <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+        <!--href="#/makeObservation"-->
+        <button id="footer-right" class="button button-clear pull-right" ng-click="createObservation(observation)">Save</button>
     </div>
 
 </ion-view>

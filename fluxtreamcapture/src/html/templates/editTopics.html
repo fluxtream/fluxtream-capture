@@ -15,14 +15,14 @@
                 {{topic.name}}
                 <ion-reorder-button class="ion-ios7-drag"
                                     on-reorder="moveItem(topic, $fromIndex, $toIndex)">
-                </ion-reorder>
+                </ion-reorder-button>
             </ion-item>
         </ion-list>
     </ion-content>
-
-    <!-- Footer -->
-    <div id="footer" class="bar bar-footer bar-dark">
-        <!-- <div class="title">Title</div> -->
-        <a id="footer-rigcreate href="#/addTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
-    </div>
 </ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-dark">
+    <!-- <div class="title">Title</div> -->
+    <a id="footer-rigcreate" href="#/createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+</ion-footer-bar>
