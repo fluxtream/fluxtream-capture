@@ -76,3 +76,11 @@ textarea.noResize { resize:none; }
     -moz-transition-property: margin-left !important;
     transition-property: margin-left !important;
 }
+
+/*******************************************
+ * Photo upload screen
+ *******************************************/
+
+.photo-wrapper {
+  padding: 10px;
+}

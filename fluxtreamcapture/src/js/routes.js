@@ -52,6 +52,11 @@ define([
           templateUrl: "html/templates/createTopic.html",
           controller: "createTopicController"
       })
+      .state('photo-upload', {
+        url: "/photo-upload",
+        templateUrl: "html/photo-upload.html",
+        controller: "PhotoUploadController"
+      })
       .state('settings', {
         url: "/settings",
         templateUrl: "html/templates/settings.html"

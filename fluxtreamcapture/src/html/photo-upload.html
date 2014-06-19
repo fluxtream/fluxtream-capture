@@ -1,0 +1,51 @@
+<ion-view title="Photo Upload">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-content>
+    <div ng-if="loaded">
+      <!-- Number of photos -->
+      <p ng-if="rawPhotoList.length > 1">There are {{ rawPhotoList.length }} photos</p>
+      <p ng-if="rawPhotoList.length == 1">There is 1 photo</p>
+      <p ng-if="rawPhotoList.length == 0">There is no photo</p>
+      <!-- Photo list -->
+      <div class="list" style="background: red;">
+        <div class="photo-wrapper"
+             collection-repeat="photo in photos"
+             collection-item-width="'33%'"
+             collection-item-height="150"
+             ng-style="{height: 150}">
+          <div class="photo-image">
+            <img ng-src="{{ photo.src }}" width="100" />
+          </div>
+          <div class="photo-info">
+            <p ng-if="photo.upload_status == 'uploaded'">Uplodaded</p>
+            <p ng-if="photo.upload_status == 'pending'">Upload pending</p>
+            <p ng-if="photo.upload_status == 'failed'">
+              Upload failed
+              <a class="btn-small btn-primary" ng-click="uploadPhoto(photo)">
+                Try again
+              </a>
+            </p>
+            <p ng-if="photo.upload_status == 'uploading'">Uploading...</p>
+            <p ng-if="photo.upload_status == 'none'">
+              <a class="btn-small btn-primary" ng-click="uploadPhoto(photo)">
+                Upload
+              </a>
+            </p>
+            <p>Orientation: {{ photo.orientation }}°</p>
+          </div>
+        </div>
+      </div>
+      <!-- End of photo list -->
+    </div>
+    <div ng-if="!loaded">
+      <p>
+        Loading your photos...
+      </p>
+    </div>
+  </ion-content>
+</ion-view>
