@@ -1,31 +1,30 @@
 <ion-view title="History">
 
-    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-        <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
-        <ion-nav-buttons side="right">
-            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
 
-    </ion-nav-bar>
+  </ion-nav-bar>
 
-    <ion-content>
-        <div class="list">
-            <div class="item item-divider">
-                Sun, 2 Mar
-            </div>
+  <ion-content>
+    <div class="list">
+      <div class="item item-divider">
+        Sun, 2 Mar
+      </div>
 
-            <a href="#/editObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
-                {{topic.name}}
+      <a href="#/editObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
+        {{topic.name}}
+          <span class="item-note">
+            {{observations[topic.id].value}}
+          </span>
+      </a>
 
-                <span class="item-note">
-                    {{observations[topic.id].value}}
-                </span>
-            </a>
-
-        </div>
-    </ion-content>
+    </div>
+  </ion-content>
 
 </ion-view>
 

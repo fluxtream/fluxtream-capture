@@ -1,67 +1,67 @@
 <ion-view title="Edit Topic">
 
-    <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-        <a href="#/editTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a href="#/editTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
-        <ion-nav-buttons side="right">
-            <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
-        </ion-nav-buttons>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
 
-    </ion-nav-bar>
+  </ion-nav-bar>
 
-    <ion-content>
-        <div class="list">
-            <label class="item item-input">
-                <span class="input-label">Topic Name</span>
-                <input type="text" value="{{name}}">
-            </label>
+  <ion-content>
+    <div class="list">
+      <label class="item item-input">
+        <span class="input-label">Topic Name</span>
+        <input type="text" value="{{name}}">
+      </label>
 
-            <label class="item item-input item-select">
-                <div class="input-label">
-                    Entry Type
-                </div>
-                <select>
-                    <option selected>None</option>
-                    <option>Numeric</option>
-                    <option>Range</option>
-                </select>
-            </label>
-
-            <label class="item item-input">
-                <div class="input-label">
-                    Default
-                </div>
-                <input type="number">
-            </label>
-
-            <label class="item item-input">
-                <div class="input-label">
-                    Range start
-                </div>
-                <input type="number">
-            </label>
-
-            <label class="item item-input">
-                <div class="input-label">
-                    Range end
-                </div>
-                <input type="number">
-            </label>
-
-            <label class="item item-input">
-                <div class="input-label">
-                    Step
-                </div>
-                <input type="number" placeholder="1">
-            </label>
+      <label class="item item-input item-select">
+        <div class="input-label">
+          Entry Type
         </div>
-    </ion-content>
+        <select>
+          <option selected>None</option>
+          <option>Numeric</option>
+          <option>Range</option>
+        </select>
+      </label>
+
+      <label class="item item-input">
+        <div class="input-label">
+          Default
+        </div>
+        <input type="number">
+      </label>
+
+      <label class="item item-input">
+        <div class="input-label">
+          Range start
+        </div>
+        <input type="number">
+      </label>
+
+      <label class="item item-input">
+        <div class="input-label">
+          Range end
+        </div>
+        <input type="number">
+      </label>
+
+      <label class="item item-input">
+        <div class="input-label">
+          Step
+        </div>
+        <input type="number" placeholder="1">
+      </label>
+    </div>
+  </ion-content>
 </ion-view>
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-    <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
-    <!-- <div class="title">Title</div> -->
-    <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+  <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
+  <!-- <div class="title">Title</div> -->
+  <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
 </ion-footer-bar>
