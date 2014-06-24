@@ -92,6 +92,10 @@ define([
      */
     function pushValue(key, value) {
       if (!initialized) throw "Storage not initialized yet.";
+      if (values[key] == null) {
+        values[key] = [];
+      }
+
       values[key].push(value);
       //forge.prefs.set(key, value);
     }

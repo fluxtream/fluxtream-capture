@@ -30,6 +30,7 @@ define([
         creationDate: "",
         creationTime: "",
         timezone: "",
+        topicId: $stateParams.topicId,
         comment: ""
       }
 
@@ -42,8 +43,7 @@ define([
 
       // Called when the form is submitted
       $scope.createObservation = function() {
-        $scope.topicId = $stateParams.topicId;
-        storage.push('observations['+ $scope.topicId +']', $scope.observation);
+        storage.push('observations', $scope.observation);
         $location.path("makeObservation");
       };
 
