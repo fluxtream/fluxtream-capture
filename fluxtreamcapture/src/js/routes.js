@@ -9,47 +9,47 @@ define([
     $stateProvider
       .state('init', {
         url: "/init",
-        templateUrl: "html/templates/init.html",
+        templateUrl: "html/self-report/init.html",
         controller: "initController"
       })
       .state('login', {
         url: "/login",
-        templateUrl: "html/templates/login.html",
+        templateUrl: "html/self-report/login.html",
         controller: "loginController"
       })
       .state('listTopics', {
         url: "/makeObservation",
-        templateUrl: "html/templates/listTopics.html",
+        templateUrl: "html/self-report/listTopics.html",
         controller: "listTopicsController"
       })
       .state('makeObservation', {
         url: "/makeObservation/:topicId",
-        templateUrl: "html/templates/makeObservation.html",
+        templateUrl: "html/self-report/makeObservation.html",
         controller: "makeObservationController"
       })
       .state('editObservation', {
           url: "/editObservation/:topicId",
-          templateUrl: "html/templates/editObservation.html",
+          templateUrl: "html/self-report/editObservation.html",
           controller: "editObservationController"
       })
       .state('history', {
         url: "/history",
-        templateUrl: "html/templates/history.html",
+        templateUrl: "html/self-report/history.html",
         controller: "historyController"
       })
       .state('editTopics', {
         url: "/editTopics",
-        templateUrl: "html/templates/editTopics.html",
+        templateUrl: "html/self-report/editTopics.html",
         controller: "editTopicsController"
       })
       .state('editTopic', {
         url: "/editTopic/:topicId",
-        templateUrl: "html/templates/editTopic.html",
+        templateUrl: "html/self-report/editTopic.html",
         controller: "editTopicController"
       })
       .state('createTopic', {
           url: "/createTopic",
-          templateUrl: "html/templates/createTopic.html",
+          templateUrl: "html/self-report/createTopic.html",
           controller: "createTopicController"
       })
       .state('photo-upload', {
@@ -59,7 +59,7 @@ define([
       })
       .state('settings', {
         url: "/settings",
-        templateUrl: "html/templates/settings.html"
+        templateUrl: "html/self-report/settings.html"
       });
     // Default route
     $urlRouterProvider.otherwise("/init");

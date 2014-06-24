@@ -86,6 +86,15 @@ define([
       values[key] = value;
       forge.prefs.set(key, value);
     }
+
+    /**
+     * (Public) Push value for the given key
+     */
+    function pushValue(key, value) {
+      if (!initialized) throw "Storage not initialized yet.";
+      values[key].push(value);
+      //forge.prefs.set(key, value);
+    }
     
     /**
      * (Public) Registers a function to call when the initialization has been done
@@ -105,6 +114,7 @@ define([
       isReady: function() { return initialized; },
       get: getValue,
       set: setValue,
+      push: pushValue,
       onReady: onReady
     };
     

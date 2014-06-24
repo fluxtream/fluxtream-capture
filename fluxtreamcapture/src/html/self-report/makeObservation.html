@@ -16,7 +16,7 @@
         <div class="input-label">
           Value
         </div>
-        <select ng-model="observation">
+        <select ng-model="observation.value">
           <option>1</option>
           <option selected>2</option>
           <option>3</option>
@@ -30,7 +30,7 @@
         <div class="input-label">
           Date
         </div>
-        <input type="date" value="{{currentDate | date:'yyyy-MM-dd'}}">
+        <input type="date" value="{{observation.date | date:'yyyy-MM-dd'}}" ng-model="observation.date">
       </label>
 
       <!-- Further testing
@@ -45,14 +45,14 @@
         <div class="input-label">
           Time
         </div>
-        <input type="time" value="{{currentDate | date:'HH:mm'}}">
+        <input type="time" value="{{observation.time | date:'HH:mm'}}" ng-model="observation.time">
       </label>
 
       <label class="item item-input item-select">
         <div class="input-label">
           Timezone
         </div>
-        <select>
+        <select ng-model="observation.timezone">
           <option selected>Eastern Standard Time</option>
           <option>Central Time Zone</option>
           <option>Mountain Time Zone</option>
@@ -62,7 +62,7 @@
 
       <label class="item item-input item-stacked-label">
         <span class="input-label">Comment</span>
-        <textarea rows="10" class="noResize"></textarea>
+        <textarea rows="10" class="noResize" ng-model="observation.comment"></textarea>
       </label>
 
       <label class="item item-input"></label> <!-- Workaround to have a border for comment -->
@@ -73,7 +73,7 @@
 
   <!-- Footer -->
   <div class="bar bar-footer bar-dark">
-    <button id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</button>
+    <a href="#/makeObservation"> <button id="footer-left" class="button button-clear pull-left">Cancel</button> </a>
     <!-- <div class="title">Title</div> -->
     <!--href="#/makeObservation"-->
     <button id="footer-right" class="button button-clear pull-right" ng-click="createObservation(observation)">Save</button>

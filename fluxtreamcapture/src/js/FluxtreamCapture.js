@@ -31,8 +31,8 @@ define([
   // Configuration
   flxModules.flxApp.config(['$compileProvider', function($compileProvider) {
     // Allow image sources starting with "content://"
-    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|mailto|content):/);
-    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|content):/);
+    $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
+    $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
   }]);
   
   // Load initialization page

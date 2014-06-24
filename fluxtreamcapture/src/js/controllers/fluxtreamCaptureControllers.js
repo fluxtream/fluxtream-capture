@@ -1,219 +1,50 @@
 define([
-  'flxModules'
+  'flxModules',
+  'storage'
 ], function(flxModules) {
 
   var fluxtreamCaptureControllers = flxModules.flxControllers;
 
-  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout',
-    function($scope, $timeout) {
+  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'StorageService',
+    function($scope, $timeout, storage) {
 
+      // Infinite scroll
       $scope.loadMoreObservations = function() {
         $timeout(function() {
-          $scope.topics.push({"id": 18, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "LightNew", "type": 1, "step": 1, "defaultValue": 1, "status": 1});
+          //$scope.topics.push({"id": 18, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "LightNew", "type": 1, "step": 1, "defaultValue": 1, "status": 1});
           $scope.$broadcast('scroll.infiniteScrollComplete');
           $scope.$broadcast('scroll.resize');
         }, 1000);
       };
 
-      $scope.topics = [
-        {"id": 1, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 2, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 3, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 4, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 5, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 6, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Light1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 7, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food4", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 8, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 9, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 10, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 11, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 12, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 13, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 14, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 15, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 16, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 17, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food3", "type": 1, "step": 1, "defaultValue": 1, "status": 1}
-      ];
-      //$http.get('/topics.json');
-
-      $scope.observations = [
-        {
-          'id': "1",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "1",
-          'timezoneOffset': "123123",
-          'value': "1"
-        },
-        {
-          'id': "2",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "1",
-          'timezoneOffset': "123123",
-          'value': "4"
-        },
-        {
-          'id': "3",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "2",
-          'timezoneOffset': "123123",
-          'value': "2"
-        },
-        {
-          'id': "4",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "2",
-          'timezoneOffset': "123123",
-          'value': "12"
-        },
-        {
-          'id': "5",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "3",
-          'timezoneOffset': "123123",
-          'value': "3"
-        },
-        {
-          'id': "6",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "4",
-          'timezoneOffset': "123123",
-          'value': "0"
-        },
-        {
-          'id': "7",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "5",
-          'timezoneOffset': "123123",
-          'value': "13"
-        },
-        {
-          'id': "8",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "6",
-          'timezoneOffset': "123123",
-          'value': "12"
-        },
-        {
-          'id': "9",
-          'api': "1",
-          'comment': "qqq",
-          'end': "123",
-          'fullTextDescription': "qeqweqw",
-          'guestId': "1",
-          'isEmpty': "1",
-          'objectType': "1",
-          'start': "1231231",
-          'apiKeyId': "1",
-          'timeUpdated': "123123",
-          'tags': "1231231",
-          'creationTime': "123123",
-          'topicID': "7",
-          'timezoneOffset': "123123",
-          'value': "14"
-        }
-      ];
+      $scope.topics = storage.get('topics');
+      $scope.observations = storage.get('observations');
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '$stateParams',
-    function($scope, $stateParams) {
-      $scope.topicId = $stateParams.topicId;
+  fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
+    function($scope, $stateParams, $location, storage) {
+      $scope.observation = {
+        id: "",
+        value: "",
+        creationDate: "",
+        creationTime: "",
+        timezone: "",
+        comment: ""
+      }
+
+      //$stateParams.topicId
       $scope.name = "Weight";
 
       //Set current date and time
-      $scope.currentDate = new Date();
+      $scope.observation.creationDate = new Date();
+      $scope.observation.creationTime = new Date();
 
       // Called when the form is submitted
-      $scope.createObservation = function(observation) {
-        window.alert(observation);
+      $scope.createObservation = function() {
+        $scope.topicId = $stateParams.topicId;
+        storage.push('observations['+ $scope.topicId +']', $scope.observation);
+        $location.path("makeObservation");
       };
 
       //	Change footer
@@ -223,7 +54,7 @@ define([
       //Show back button
       //if ($('#backButton').find('a').length == 0) {
       //	$("#backButton").append("<a href='#/makeObservation' class='button icon-left ion-chevron-left button-clear'>Back</a>");
-      //}	
+      //}
     }
   ]);
 
@@ -255,13 +86,18 @@ define([
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('historyController', ['$scope',
-    function($scope) {
+  fluxtreamCaptureControllers.controller('historyController', ['$scope', 'StorageService',
+    function($scope, storage) {
+
+      storage.set('topics', [{"id": 1, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1}]);
+
+      $scope.observation = storage.get('observations[0]');
+
       $scope.topics = [
         {"id": 1, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
         {"id": 2, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Weight2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
         {"id": 3, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food1", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
-        {"id": 4, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1},
+        {"id": 4, "guestId": 1, "creationTime": 12312, "timeUpdated": 123, "name": "Food2", "type": 1, "step": 1, "defaultValue": 1, "status": 1}
       ];
       //$http.get('/topics.json');
 
