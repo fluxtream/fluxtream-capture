@@ -114,6 +114,9 @@ define([
       }
 
       values['observations'][key].push(value);
+
+      //serialized key and value, unique for a user, version of the value, decouple data structure from class
+      // setters and getters for
       //forge.prefs.set(key, value);
     }
     

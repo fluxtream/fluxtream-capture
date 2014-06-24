@@ -23,7 +23,9 @@ define([
         // Clear navigation history to prevent going back to the initialization page
         $ionicViewService.clearHistory();
         // Hide launch screen
-        forge.launchimage.hide();
+        if (!forge.is.web()) {
+          forge.launchimage.hide();
+        }
       });
     }
   ]);
