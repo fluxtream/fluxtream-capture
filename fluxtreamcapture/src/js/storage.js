@@ -99,6 +99,23 @@ define([
       values[key].push(value);
       //forge.prefs.set(key, value);
     }
+
+    /**
+     * (Public) Push observation for the given key
+     */
+    function pushObservation(key, value) {
+      if (!initialized) throw "Storage not initialized yet.";
+      if (values['observations'] == null) {
+        values['observations'] = [];
+      }
+
+      if (values['observations'][key] == null) {
+        values['observations'][key] = [];
+      }
+
+      values['observations'][key].push(value);
+      //forge.prefs.set(key, value);
+    }
     
     /**
      * (Public) Registers a function to call when the initialization has been done
@@ -119,6 +136,7 @@ define([
       get: getValue,
       set: setValue,
       push: pushValue,
+      pushObservation: pushObservation,
       onReady: onReady
     };
     

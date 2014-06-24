@@ -43,7 +43,7 @@ define([
 
       // Called when the form is submitted
       $scope.createObservation = function() {
-        storage.push('observations', $scope.observation);
+        storage.pushObservation($stateParams.topicId, $scope.observation);
         $location.path("makeObservation");
       };
 
