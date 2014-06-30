@@ -17,13 +17,22 @@ define([
         }, 1000);
       };
 
-      $scope.topics = storage.get('topics');
-      $scope.observations = storage.get('observations');
+      storage.getTopics(function(topics) {
+        $scope.topics = topics;
+      });
+
+      //$scope.observations = storage.get('observations');
     }
   ]);
 
   fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
     function($scope, $stateParams, $location, storage) {
+      storage.getTopic($stateParams.topicId, function(topic) {
+        $scope.topic = topic;
+        console.log("Topic ID value: ");
+        console.log($scope.topic);
+      });
+
       $scope.observation = {
         id: "",
         value: "",
@@ -33,9 +42,6 @@ define([
         topicId: $stateParams.topicId,
         comment: ""
       }
-
-      //$stateParams.topicId
-      $scope.name = "Weight";
 
       //Set current date and time
       $scope.observation.creationDate = new Date();

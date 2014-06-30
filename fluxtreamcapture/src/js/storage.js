@@ -5,7 +5,7 @@ define([
   'flxModules'
 ], function(flxModules) {
   
-  flxModules.flxServices.factory('StorageService', function() {
+  flxModules.flxServices.factory('StorageService', function($http) {
     
     // The values stored in memory for synchronous access
     var values = {};
@@ -18,6 +18,9 @@ define([
     
     // The number of items to initialize
     var itemCount;
+
+    //Stores Topics information
+    var cachedTopics;
     
     // Initialize
     forge.prefs.keys(
@@ -119,6 +122,21 @@ define([
       // setters and getters for
       //forge.prefs.set(key, value);
     }
+
+    /**
+     * (Public) Get Topics from the file
+     */
+    function getTopics(callback){
+      if(cachedTopics){
+        callback(cachedTopics);
+      } else {
+        $http.get('../../html/testing_data/topics.json').success(function(data){
+          cachedTopics = data;
+          //Put preprocessing of data
+          callback(data);
+        });
+      }
+    }
     
     /**
      * (Public) Registers a function to call when the initialization has been done
@@ -139,6 +157,15 @@ define([
       get: getValue,
       set: setValue,
       push: pushValue,
+      getTopics: getTopics,
+      getTopic: function(topicId, callback){
+        getTopics(function(data){
+          var topic = data.filter(function(entry){
+            return entry.id == topicId;
+          })[0];
+          callback(topic);
+        });
+      },
       pushObservation: pushObservation,
       onReady: onReady
     };

@@ -23,7 +23,7 @@ define([
         controller: "listTopicsController"
       })
       .state('makeObservation', {
-        url: "/makeObservation/:topicId",
+        url: '/makeObservation/:topicId',
         templateUrl: "html/self-report/makeObservation.html",
         controller: "makeObservationController"
       })
