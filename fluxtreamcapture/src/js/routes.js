@@ -28,7 +28,7 @@ define([
         controller: "makeObservationController"
       })
       .state('editObservation', {
-          url: "/editObservation/:topicId",
+          url: "/editObservation/:observationId",
           templateUrl: "html/self-report/editObservation.html",
           controller: "editObservationController"
       })

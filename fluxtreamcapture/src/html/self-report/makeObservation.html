@@ -16,7 +16,7 @@
         <div class="input-label">
           Value
         </div>
-        <select ng-model="observation.value">
+        <select id="observation.value">
           <option>1</option>
           <option selected>2</option>
           <option>3</option>
@@ -30,7 +30,7 @@
         <div class="input-label">
           Date
         </div>
-        <input type="date" value="{{observation.date | date:'yyyy-MM-dd'}}" ng-model="observation.date">
+        <input type="date" value="{{observation.observationDate | date:'yyyy-MM-dd'}}" id="observation.observationDate">
       </label>
 
       <!-- Further testing
@@ -45,14 +45,14 @@
         <div class="input-label">
           Time
         </div>
-        <input type="time" value="{{observation.time | date:'HH:mm'}}" ng-model="observation.time">
+        <input type="time" value="{{observation.observationTime | date:'HH:mm'}}" id="observation.observationTime">
       </label>
 
       <label class="item item-input item-select">
         <div class="input-label">
           Timezone
         </div>
-        <select ng-model="observation.timezone">
+        <select id="observation.timezone">
           <option selected>Eastern Standard Time</option>
           <option>Central Time Zone</option>
           <option>Mountain Time Zone</option>
@@ -62,7 +62,7 @@
 
       <label class="item item-input item-stacked-label">
         <span class="input-label">Comment</span>
-        <textarea rows="10" class="noResize" ng-model="observation.comment"></textarea>
+        <textarea rows="10" class="noResize" id="observation.comment"></textarea>
       </label>
 
       <label class="item item-input"></label> <!-- Workaround to have a border for comment -->

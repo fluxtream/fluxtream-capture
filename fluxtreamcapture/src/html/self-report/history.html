@@ -12,17 +12,18 @@
 
   <ion-content>
     <div class="list">
-      <div class="item item-divider">
-        Sun, 2 Mar
+      <div data-ng-repeat="date in uniqueDates">
+        <div class="item item-divider">
+          {{ date | date:"EEEE, d MMM" }}
+        </div>
+
+        <a href="#/editObservation/{{observation.id}}" data-ng-repeat="observation in observations | filter:date" class="item">
+          {{topics[observation.topicId].name}}
+            <span class="item-note">
+              {{observation.value}}
+            </span>
+        </a>
       </div>
-
-      <a href="#/editObservation/{{topic.id}}" data-ng-repeat="topic in topics" class="item">
-        {{topic.name}}
-          <span class="item-note">
-            {{observations[topic.id].value}}
-          </span>
-      </a>
-
     </div>
   </ion-content>
 
