@@ -91,6 +91,15 @@ define([
     }
 
     /**
+     * (Public) Sets the value for the given key[index]
+     */
+    function setIndexValue(key, index, value){
+      if (!initialized) throw "Storage not initialized yet.";
+      values[key][index] = value;
+      forge.prefs.set(key[index], value);
+    }
+
+    /**
      * (Public) Push value for the given key
      */
     function pushValue(key, value) {
@@ -100,28 +109,13 @@ define([
       }
 
       values[key].push(value);
-      //forge.prefs.set(key, value);
+      //TODO forge.prefs.set(key, value);
     }
 
     /**
      * (Public) Get Topics from the file
      */
     function getTopics(callback){
-      if(cachedTopics){
-        callback(cachedTopics);
-      } else {
-        $http.get('../../html/testing_data/topics.json').success(function(data){
-          cachedTopics = data;
-          //Put preprocessing of data
-          callback(data);
-        });
-      }
-    }
-
-    /**
-     * (Public) Get History from the file and observations
-     */
-    function getHistory(callback){
       if(cachedTopics){
         callback(cachedTopics);
       } else {
@@ -161,7 +155,7 @@ define([
           callback(topic);
         });
       },
-      getHistory: getHistory,
+      setIndexValue: setIndexValue,
       onReady: onReady
     };
     

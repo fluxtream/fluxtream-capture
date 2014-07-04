@@ -76,15 +76,43 @@ define([
 
   fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', 'StorageService',
     function($scope, $stateParams, storage) {
-      $scope.observations = storage.get("observations");
+      var str = new String($stateParams.observationId);
+      var IDs = str.split("_");
+      var topicId = IDs[1];
 
-      storage.getTopic(observations[$stateParams.observationId].topicId, function(topic) {
+      storage.getTopic(topicId, function(topic) {
         $scope.topic = topic;
-        console.log("Topic ID value: ");
-        console.log($scope.topic);
       });
 
+      $scope.observations = storage.get("observations");
 
+      $scope.observation = $scope.observations.filter(function(entry){
+        return entry.id == $stateParams.observationId;
+      })[0];
+
+      document.getElementById('observation.value').value = $scope.observation.value;
+      document.getElementById('observation.observationDate').value = $scope.observation.observationDate;
+      document.getElementById('observation.observationTime').value = $scope.observation.observationTime;
+      document.getElementById('observation.timezone').value = $scope.observation.timezone;
+      document.getElementById('observation.comment').value = $scope.observation.comment;
+
+      // Called when the form is submitted
+      $scope.editObservation = function() {
+        //Set values of observation
+        $scope.observation.value = document.getElementById('observation.value').value;
+        $scope.observation.creationDate = new Date();
+        $scope.observation.creationTime = $scope.observation.creationDate;
+        $scope.observation.observationDate = document.getElementById('observation.observationDate').value;
+        $scope.observation.observationTime = document.getElementById('observation.observationTime').value;
+        $scope.observation.timezone = document.getElementById('observation.timezone').value;
+        $scope.observation.comment = document.getElementById('observation.comment').value;
+        //TODO change creation time of add new change time
+
+        console.log($scope.observation);
+
+        storage.setIndexValue("observations", $scope.observation.id, $scope.observation);
+        $location.path("makeObservation");
+      };
     }
   ]);
 

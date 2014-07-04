@@ -1,5 +1,5 @@
 #!/bin/bash
 cp -r src/index.html development/web/src/index.html
-cp -r src/html/self-report/* development/web/src/html/self-report/
+cp -r src/html/* development/web/src/html/
 cp -r src/css/* development/web/src/css/
 cp -r src/js/* development/web/src/js/
