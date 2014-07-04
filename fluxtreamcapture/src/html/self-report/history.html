@@ -19,7 +19,7 @@
 
         <a href="#/editObservation/{{observation.id}}" data-ng-repeat="observation in observations | filter:date | orderBy:'observationTime':true" class="item">
           <i style="font-size:8pt;">{{observation.observationTime | date : 'h:mm:ss a'}}</i>
-          <b> {{topics[observation.topicId].name}} </b>
+          {{topics[observation.topicId].name}}
           <span class="item-note">
             {{observation.value}}
           </span>

@@ -71,6 +71,18 @@ define([
 
   fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$stateParams',
     function($scope, $stateParams) {
+      $scope.changeType = function(){
+        var type = document.getElementById('topic.type').value;
+        if (type != "Range"){
+          document.getElementById('rangeStartItem').style.display = "none";
+          document.getElementById('rangeEndItem').style.display = "none";
+          document.getElementById('stepItem').style.display = "none";
+        } else {
+          document.getElementById('rangeStartItem').style.display = "";
+          document.getElementById('rangeEndItem').style.display = "";
+          document.getElementById('stepItem').style.display = "";
+        }
+      };
     }
   ]);
 
