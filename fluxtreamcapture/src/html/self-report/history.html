@@ -12,16 +12,17 @@
 
   <ion-content>
     <div class="list">
-      <div data-ng-repeat="date in uniqueDates | orderBy:'toString()':reverse">
+      <div data-ng-repeat="date in uniqueDates | orderBy:'toString()':true">
         <div class="item item-divider">
           {{ date | date:"EEEE, d MMM" }}
         </div>
 
-        <a href="#/editObservation/{{observation.id}}" data-ng-repeat="observation in observations | filter:date | orderBy:observation.observationTime:reverse" class="item">
-          {{topics[observation.topicId].name}}
-            <span class="item-note">
-              {{observation.value}}
-            </span>
+        <a href="#/editObservation/{{observation.id}}" data-ng-repeat="observation in observations | filter:date | orderBy:'observationTime':true" class="item">
+          <i style="font-size:8pt;">{{observation.observationTime | date : 'h:mm:ss a'}}</i>
+          <b> {{topics[observation.topicId].name}} </b>
+          <span class="item-note">
+            {{observation.value}}
+          </span>
         </a>
       </div>
     </div>
