@@ -18,9 +18,6 @@ define([
     
     // The number of items to initialize
     var itemCount;
-
-    //Stores Topics information
-    var cachedTopics;
     
     // Initialize
     forge.prefs.keys(
@@ -91,12 +88,34 @@ define([
     }
 
     /**
-     * (Public) Sets the value for the given key[index]
+     * (Public) Registers a function to call when the initialization has been done
      */
-    function setIndexValue(key, index, value){
-      if (!initialized) throw "Storage not initialized yet.";
-      values[key][index] = value;
-      forge.prefs.set(key[index], value);
+    function onReady(functionToExecute) {
+      if ($.isFunction(functionToExecute)) {
+        if (initialized) {
+          functionToExecute();
+        } else {
+          executeOnReady.push(functionToExecute);
+        }
+      }
+    }
+
+    // Self report functionality ------------------------------------------------------------
+    //ToDo setValue observations
+
+    //Stores Topics information
+    var cachedTopics;
+
+    function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
+      this.id = id;
+      this.creationTime = creationTime;
+      this.updateTime = updateTime;
+      this.name = name;
+      this.type = type;
+      this.defaultValue = defaultValue;
+      this.rangeStart = rangeStart;
+      this.rangeEnd = rangeEnd;
+      this.step = step;
     }
 
     /**
@@ -126,25 +145,46 @@ define([
         });
       }
     }
-    
+
     /**
-     * (Public) Registers a function to call when the initialization has been done
+     * (Public) Sets the value for the given key[index]
      */
-    function onReady(functionToExecute) {
-      if ($.isFunction(functionToExecute)) {
-        if (initialized) {
-          functionToExecute();
-        } else {
-          executeOnReady.push(functionToExecute);
+    function setIndexValue(key, index, value){
+      if (!initialized) throw "Storage not initialized yet.";
+      values[key][index] = value;
+      forge.prefs.set(key[index], value);
+    }
+
+    /**
+     * (Public) Save Topic into storage
+     */
+    function saveTopic(){
+      cachedTopics.push(arguments[0]);
+    }
+
+    /**
+     * (Public) Update Topic in storage
+     */
+    function updateTopic(){
+      //Find Topic
+
+      var topicsArrayLength = cachedTopics.length;
+      for(var i=0; i< topicsArrayLength; i++){
+        if (cachedTopics[i].id == arguments[0].id) {
+          cachedTopics[i] = arguments[0];
+          break;
         }
       }
     }
+
+    // Self report functionality end ------------------------------------------------------------
     
     // Public API
     return {
       isReady: function() { return initialized; },
       get: getValue,
       set: setValue,
+      onReady: onReady,
       push: pushValue,
       getTopics: getTopics,
       getTopic: function(topicId, callback){
@@ -156,7 +196,9 @@ define([
         });
       },
       setIndexValue: setIndexValue,
-      onReady: onReady
+      Topic : Topic,
+      saveTopic: saveTopic,
+      updateTopic: updateTopic
     };
     
   });

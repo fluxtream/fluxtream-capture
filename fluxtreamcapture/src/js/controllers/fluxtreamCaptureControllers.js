@@ -69,8 +69,10 @@ define([
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$stateParams',
-    function($scope, $stateParams) {
+  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
+    function($scope, $location, $stateParams, storage) {
+
+      // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
         var type = document.getElementById('topic.type').value;
         if (type != "Range"){
@@ -83,6 +85,39 @@ define([
           document.getElementById('stepItem').style.display = "";
         }
       };
+
+      // Called when the form is submitted
+      $scope.createTopic = function() {
+        //Set values of topic
+        var currentTime = new Date();
+        storage.getTopics(function(topics) {
+          $scope.topics = topics;
+        });
+        var length = $scope.topics.length;
+
+        //ToDo Topic Name is a mandatory field
+        //ToDo If user is pressing + and save button very fast he would get empty entry (if name could be empty)
+        //ToDo How we generate the ID for the Topic?
+        //Todo any placeholders?
+        //ToDo what to do with "status" field
+        $scope.newTopic = new storage.Topic(
+          length+1,
+          currentTime,
+          currentTime,
+          document.getElementById('topic.name').value,
+          document.getElementById('topic.type').value,
+          document.getElementById('topic.defaultValue').value,
+          document.getElementById('topic.rangeStart').value,
+          document.getElementById('topic.rangeEnd').value,
+          document.getElementById('topic.step').value
+        );
+
+        console.log($scope.newTopic);
+
+        storage.saveTopic($scope.newTopic);
+        $location.path("editTopics");
+      };
+
     }
   ]);
 
@@ -128,10 +163,62 @@ define([
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$stateParams',
-    function($scope, $stateParams) {
+  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
+    function($scope, $location, $stateParams, storage) {
       $scope.topicId = $stateParams.topicId;
-      $scope.name = "Weight";
+
+      // Toggle range boundaries and step based on topic type none/numeric/range
+      $scope.changeType = function(){
+        var type = document.getElementById('topic.type').value;
+        if (type != "Range"){
+          document.getElementById('rangeStartItem').style.display = "none";
+          document.getElementById('rangeEndItem').style.display = "none";
+          document.getElementById('stepItem').style.display = "none";
+        } else {
+          document.getElementById('rangeStartItem').style.display = "";
+          document.getElementById('rangeEndItem').style.display = "";
+          document.getElementById('stepItem').style.display = "";
+        }
+      };
+
+      storage.getTopic($scope.topicId, function(topic) {
+        $scope.topic = topic;
+
+        // Fill the data initially
+        document.getElementById('topic.name').value = $scope.topic.name;
+        document.getElementById('topic.type').value = $scope.topic.type;
+        document.getElementById('topic.defaultValue').value = $scope.topic.defaultValue;
+        document.getElementById('topic.rangeStart').value = $scope.topic.rangeStart;
+        document.getElementById('topic.rangeEnd').value = $scope.topic.rangeEnd;
+        document.getElementById('topic.step').value = $scope.topic.step;
+
+        // Hide/show rangeStart/Stop fields and Steps
+        $scope.changeType();
+      });
+
+      // Called when the form is submitted
+      $scope.saveTopic = function() {
+        var currentTime = new Date();
+
+        //ToDo do we need to save rangeStart/rangeEnd if it was defined before, but then type was changed to none
+        $scope.newTopic = new storage.Topic(
+          $scope.topic.id,
+          $scope.topic.creationTime,
+          currentTime,
+          document.getElementById('topic.name').value,
+          document.getElementById('topic.type').value,
+          document.getElementById('topic.defaultValue').value,
+          document.getElementById('topic.rangeStart').value,
+          document.getElementById('topic.rangeEnd').value,
+          document.getElementById('topic.step').value
+        );
+
+        console.log($scope.newTopic);
+
+        storage.updateTopic($scope.newTopic);
+        $location.path("editTopics");
+      };
+
     }
   ]);
 

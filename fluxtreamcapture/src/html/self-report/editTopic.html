@@ -14,14 +14,14 @@
     <div class="list">
       <label class="item item-input">
         <span class="input-label">Topic Name</span>
-        <input type="text" value="{{name}}">
+        <input type="text" id="topic.name">
       </label>
 
       <label class="item item-input item-select">
         <div class="input-label">
           Entry Type
         </div>
-        <select>
+        <select id="topic.type" onchange="angular.element(this).scope().changeType()">
           <option selected>None</option>
           <option>Numeric</option>
           <option>Range</option>
@@ -32,28 +32,28 @@
         <div class="input-label">
           Default
         </div>
-        <input type="number">
+        <input type="number" id="topic.defaultValue">
       </label>
 
-      <label class="item item-input">
+      <label class="item item-input" id="rangeStartItem" style="display: none;">
         <div class="input-label">
           Range start
         </div>
-        <input type="number">
+        <input type="number" id="topic.rangeStart">
       </label>
 
-      <label class="item item-input">
+      <label class="item item-input"  id="rangeEndItem" style="display: none;">
         <div class="input-label">
           Range end
         </div>
-        <input type="number">
+        <input type="number" id="topic.rangeEnd">
       </label>
 
-      <label class="item item-input">
+      <label class="item item-input" id="stepItem" style="display: none;">
         <div class="input-label">
           Step
         </div>
-        <input type="number" placeholder="1">
+        <input type="number" id="topic.step" >
       </label>
     </div>
   </ion-content>
@@ -61,7 +61,7 @@
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-  <a id="footer-left" href="#/makeObservation" class="button button-clear pull-left">Cancel</a>
+  <a id="footer-left" href="#/editTopics" class="button button-clear pull-left">Cancel</a>
   <!-- <div class="title">Title</div> -->
-  <a id="footer-right" href="#/makeObservation" class="button button-clear pull-right">Save</a>
+  <button id="footer-right" class="button button-clear pull-right" ng-click="saveTopic()">Save</button>
 </ion-footer-bar>
