@@ -28,11 +28,11 @@
         </select>
       </label>
 
-      <label class="item item-input">
+      <label class="item item-input" id="defaultValueItem" style="display: none;">
         <div class="input-label">
           Default
         </div>
-        <input type="number" id="defaultValueItem" style="display: none;">
+        <input type="number" id="topic.defaultValue" >
       </label>
 
       <label class="item item-input" id="rangeStartItem" style="display: none;">
@@ -63,5 +63,5 @@
 <ion-footer-bar class="bar-dark">
   <a id="footer-left" href="#/editTopics" class="button button-clear pull-left">Cancel</a>
   <!-- <div class="title">Title</div> -->
-  <button id="footer-right" class="button button-clear pull-right" ng-click="saveTopic()">Save</button>
+  <button id="footer-right" class="button button-clear pull-right" ng-click="editTopic()">Save</button>
 </ion-footer-bar>

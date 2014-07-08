@@ -1,4 +1,4 @@
-<ion-view title="{{topic.name}}">
+<ion-view title="{{oTopic.name}}">
 
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
@@ -10,18 +10,10 @@
 
   <ion-content>
     <div class="list">
-      <label class="item item-input item-select">
+      <label class="item item-input item-select" id="valueItem">
         <div class="input-label">
           Value
         </div>
-        <select id="observation.value">
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-          <option>4</option>
-          <option>5</option>
-          <option>6</option>
-        </select>
       </label>
 
       <label class="item item-input">
@@ -55,7 +47,7 @@
         <textarea rows="10" class="noResize" id="observation.comment"></textarea>
       </label>
 
-      <label class="item item-input"></label> <!-- Workaround to have a border for comment -->
+      <!-- Workaround to have a border for comment <label class="item item-input"></label> -->
     </div>
   </ion-content>
 

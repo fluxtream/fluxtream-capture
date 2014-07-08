@@ -11,8 +11,8 @@
   <ion-content>
 
     <ion-list>
-      <ion-item ng-repeat="topic in topics" href="#/makeObservation/{{topic.id}}" type="item-link">
-        {{topic.name}}
+      <ion-item ng-repeat="oTopic in aoTopics" href="#/createObservation/{{oTopic.id}}" type="item-link">
+        {{oTopic.name}}
       </ion-item>
     </ion-list>
 

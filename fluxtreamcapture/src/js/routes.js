@@ -22,10 +22,10 @@ define([
         templateUrl: "html/self-report/listTopics.html",
         controller: "listTopicsController"
       })
-      .state('makeObservation', {
-        url: '/makeObservation/:topicId',
-        templateUrl: "html/self-report/makeObservation.html",
-        controller: "makeObservationController"
+      .state('createObservation', {
+        url: '/createObservation/:topicId',
+        templateUrl: "html/self-report/createObservation.html",
+        controller: "createObservationController"
       })
       .state('editObservation', {
           url: "/editObservation/:observationId",

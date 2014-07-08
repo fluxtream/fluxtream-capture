@@ -2,12 +2,13 @@ define([
   'flxModules',
   'storage'
 ], function(flxModules) {
+  //TODO reload of the page doesn't work
 
   var fluxtreamCaptureControllers = flxModules.flxControllers;
 
   fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'StorageService',
     function($scope, $timeout, storage) {
-
+      //TODO test continuos scrolling
       // Infinite scroll
       $scope.loadMoreObservations = function() {
         $timeout(function() {
@@ -16,56 +17,44 @@ define([
         }, 1000);
       };
 
-      storage.getTopics(function(topics) {
-        $scope.topics = topics;
+      storage.readTopicsAsync(function(aoTopics) {
+        $scope.aoTopics = aoTopics;
       });
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('makeObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
-    function($scope, $stateParams, $location, storage) {
-      storage.getTopic($stateParams.topicId, function(topic) {
-        $scope.topic = topic;
-        console.log("Topic ID value: ");
-        console.log($scope.topic);
+  fluxtreamCaptureControllers.controller('historyController', ['$scope', 'StorageService',
+    function($scope, storage) {
+      //TODO initialize when the observations list is empty
+      //TODO check that dates are sorted correctly
+
+      storage.readTopicsAsync(function(topics) {
+        $scope.aoTopics = topics;
       });
 
-      //Create id generator
-      $scope.observation = {
-        id: "",
-        value: "",
-        creationDate: "",
-        creationTime: "",
-        observationDate: "",
-        observationTime: "",
-        timezone: "",
-        topicId: $stateParams.topicId,
-        comment: ""
+      storage.readObservationsAsync(function(aoObservations) {
+        $scope.aoObservations = aoObservations;
+      });
+
+      if ($scope.aoObservations != null) {
+        $scope.aoUniqueDates = storage.findUniqueDates($scope.aoObservations);
       }
+    }
+  ]);
 
-      $scope.observation.observationDate = new Date();
-      $scope.observation.observationTime = $scope.observation.observationDate;
-
-      //$scope.observation.id = Date.parse($scope.observation.observationTime);
-      //$scope.observation.observationDate = new Date(parseInt($scope.observation.time, 10));
-
-      // Called when the form is submitted
-      $scope.createObservation = function() {
-        //Set values of observation
-        $scope.observation.id = Date.parse($scope.observation.observationTime) + "_" + $scope.observation.topicId;
-        $scope.observation.value = document.getElementById('observation.value').value;
-        $scope.observation.creationDate = new Date();
-        $scope.observation.creationTime = $scope.observation.creationDate;
-        $scope.observation.observationDate = document.getElementById('observation.observationDate').value;
-        $scope.observation.observationTime = document.getElementById('observation.observationTime').value;
-        $scope.observation.timezone = document.getElementById('observation.timezone').value;
-        $scope.observation.comment = document.getElementById('observation.comment').value;
-
-        console.log($scope.observation);
-
-        storage.push("observations", $scope.observation);
-        $location.path("makeObservation");
+  fluxtreamCaptureControllers.controller('editTopicsController', ['$scope', 'StorageService',
+    function($scope, storage) {
+      //TODO bug in reordering (if reorder long enough)
+      $scope.moveItem = function(oTopic, fromIndex, toIndex) {
+        //Move the item in the array
+        $scope.aoTopics.splice(fromIndex, 1);
+        $scope.aoTopics.splice(toIndex, 0, oTopic);
       };
+
+      //Get list of Topics
+      storage.readTopicsAsync(function(aoTopics) {
+        $scope.aoTopics = aoTopics;
+      });
     }
   ]);
 
@@ -74,17 +63,20 @@ define([
 
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
-        var type = document.getElementById('topic.type').value;
-        if (type == "None"){
+        var sTypeOfTopic = document.getElementById('topic.type').value;
+        if (sTypeOfTopic == "None"){
           document.getElementById('defaultValueItem').style.display = "none";
           document.getElementById('rangeStartItem').style.display = "none";
           document.getElementById('rangeEndItem').style.display = "none";
           document.getElementById('stepItem').style.display = "none";
         }
-        else if (type == "Numeric") {
+        else if (sTypeOfTopic == "Numeric") {
           document.getElementById('defaultValueItem').style.display = "";
+          document.getElementById('rangeStartItem').style.display = "none";
+          document.getElementById('rangeEndItem').style.display = "none";
+          document.getElementById('stepItem').style.display = "none";
         }
-        else if (type == "Range"){
+        else if (sTypeOfTopic == "Range"){
           document.getElementById('defaultValueItem').style.display = "";
           document.getElementById('rangeStartItem').style.display = "";
           document.getElementById('rangeEndItem').style.display = "";
@@ -92,24 +84,26 @@ define([
         }
       };
 
+      //TODO what if the result would not be returned?
+      storage.readTopicsAsync(function(aoTopics) {
+        $scope.aoTopics = aoTopics;
+      });
+
       // Called when the form is submitted
       $scope.createTopic = function() {
         //Set values of topic
-        var currentTime = new Date();
-        storage.getTopics(function(topics) {
-          $scope.topics = topics;
-        });
-        var length = $scope.topics.length;
+        var tCurrentTime = new Date();
+        var nLength = $scope.aoTopics.length;
 
-        //ToDo Topic Name is a mandatory field
-        //ToDo If user is pressing + and save button very fast he would get empty entry (if name could be empty)
-        //ToDo How we generate the ID for the Topic?
-        //Todo any placeholders?
-        //ToDo what to do with "status" field
-        $scope.newTopic = new storage.Topic(
-          length+1,
-          currentTime,
-          currentTime,
+        //TODO Topic Name is a mandatory field
+        //TODO If user is pressing + and save button very fast he would get empty entry (if name could be empty)
+        //TODO How we generate the ID for the Topic?
+        //TODO any placeholders?
+        //TODO what to do with "status" field
+        $scope.oNewTopic = new storage.Topic(
+          nLength,
+          tCurrentTime,
+          tCurrentTime,
           document.getElementById('topic.name').value,
           document.getElementById('topic.type').value,
           document.getElementById('topic.defaultValue').value,
@@ -118,54 +112,10 @@ define([
           document.getElementById('topic.step').value
         );
 
-        console.log($scope.newTopic);
-
-        storage.saveTopic($scope.newTopic);
+        storage.createTopic($scope.oNewTopic);
         $location.path("editTopics");
       };
 
-    }
-  ]);
-
-  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', 'StorageService',
-    function($scope, $stateParams, storage) {
-      var str = new String($stateParams.observationId);
-      var IDs = str.split("_");
-      var topicId = IDs[1];
-
-      storage.getTopic(topicId, function(topic) {
-        $scope.topic = topic;
-      });
-
-      $scope.observations = storage.get("observations");
-
-      $scope.observation = $scope.observations.filter(function(entry){
-        return entry.id == $stateParams.observationId;
-      })[0];
-
-      document.getElementById('observation.value').value = $scope.observation.value;
-      document.getElementById('observation.observationDate').value = $scope.observation.observationDate;
-      document.getElementById('observation.observationTime').value = $scope.observation.observationTime;
-      document.getElementById('observation.timezone').value = $scope.observation.timezone;
-      document.getElementById('observation.comment').value = $scope.observation.comment;
-
-      // Called when the form is submitted
-      $scope.editObservation = function() {
-        //Set values of observation
-        $scope.observation.value = document.getElementById('observation.value').value;
-        $scope.observation.creationDate = new Date();
-        $scope.observation.creationTime = $scope.observation.creationDate;
-        $scope.observation.observationDate = document.getElementById('observation.observationDate').value;
-        $scope.observation.observationTime = document.getElementById('observation.observationTime').value;
-        $scope.observation.timezone = document.getElementById('observation.timezone').value;
-        $scope.observation.comment = document.getElementById('observation.comment').value;
-        //TODO change creation time of add new change time
-
-        console.log($scope.observation);
-
-        storage.setIndexValue("observations", $scope.observation.id, $scope.observation);
-        $location.path("makeObservation");
-      };
     }
   ]);
 
@@ -173,19 +123,23 @@ define([
     function($scope, $location, $stateParams, storage) {
       $scope.topicId = $stateParams.topicId;
 
+      //TODO whe the type is changed additional effort might be needed to recound all the values
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
-        var type = document.getElementById('topic.type').value;
-        if (type == "None"){
+        var sTypeOfTopic = document.getElementById('topic.type').value;
+        if (sTypeOfTopic == "None"){
           document.getElementById('defaultValueItem').style.display = "none";
           document.getElementById('rangeStartItem').style.display = "none";
           document.getElementById('rangeEndItem').style.display = "none";
           document.getElementById('stepItem').style.display = "none";
         }
-        else if (type == "Numeric") {
+        else if (sTypeOfTopic == "Numeric") {
           document.getElementById('defaultValueItem').style.display = "";
+          document.getElementById('rangeStartItem').style.display = "none";
+          document.getElementById('rangeEndItem').style.display = "none";
+          document.getElementById('stepItem').style.display = "none";
         }
-        else if (type == "Range"){
+        else if (sTypeOfTopic == "Range"){
           document.getElementById('defaultValueItem').style.display = "";
           document.getElementById('rangeStartItem').style.display = "";
           document.getElementById('rangeEndItem').style.display = "";
@@ -193,30 +147,29 @@ define([
         }
       };
 
-      storage.getTopic($scope.topicId, function(topic) {
-        $scope.topic = topic;
+      //TODO should be done async
+      $scope.oTopic = storage.readTopic($scope.topicId);
 
-        // Fill the data initially
-        document.getElementById('topic.name').value = $scope.topic.name;
-        document.getElementById('topic.type').value = $scope.topic.type;
-        document.getElementById('topic.defaultValue').value = $scope.topic.defaultValue;
-        document.getElementById('topic.rangeStart').value = $scope.topic.rangeStart;
-        document.getElementById('topic.rangeEnd').value = $scope.topic.rangeEnd;
-        document.getElementById('topic.step').value = $scope.topic.step;
+      // Fill the data initially
+      document.getElementById('topic.name').value = $scope.oTopic.name;
+      document.getElementById('topic.type').value = $scope.oTopic.type;
+      document.getElementById('topic.defaultValue').value = $scope.oTopic.defaultValue;
+      document.getElementById('topic.rangeStart').value = $scope.oTopic.rangeStart;
+      document.getElementById('topic.rangeEnd').value = $scope.oTopic.rangeEnd;
+      document.getElementById('topic.step').value = $scope.oTopic.step;
 
-        // Hide/show rangeStart/Stop fields and Steps
-        $scope.changeType();
-      });
+      // Hide/show rangeStart/Stop fields and Steps
+      $scope.changeType();
 
       // Called when the form is submitted
-      $scope.saveTopic = function() {
-        var currentTime = new Date();
+      $scope.editTopic = function() {
+        var tCurrentTime = new Date();
 
-        //ToDo do we need to save rangeStart/rangeEnd if it was defined before, but then type was changed to none
-        $scope.newTopic = new storage.Topic(
-          $scope.topic.id,
-          $scope.topic.creationTime,
-          currentTime,
+        //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
+        $scope.oNewTopic = new storage.Topic(
+          $scope.oTopic.id,
+          $scope.oTopic.creationTime,
+          tCurrentTime,
           document.getElementById('topic.name').value,
           document.getElementById('topic.type').value,
           document.getElementById('topic.defaultValue').value,
@@ -225,63 +178,180 @@ define([
           document.getElementById('topic.step').value
         );
 
-        console.log($scope.newTopic);
-
-        storage.updateTopic($scope.newTopic);
+        storage.updateTopic($scope.oNewTopic);
         $location.path("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('historyController', ['$scope', 'StorageService',
-    function($scope, storage) {
-      // Find unique dates in the array
-      var uniqueDate = function(data, key) {
-        var result = [];
-        for(var i=0; i<data.length; i++) {
-          var date = data[i]['observationDate'];
+  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
+    function($scope, $stateParams, $location, storage) {
+      //TODO refactor screen - no two lines for the comment field
 
-          if (result.indexOf(date) == -1) {
-            result.push(date);
-          }
+      $scope.oTopic = storage.readTopic($stateParams.topicId);
+      $scope.tObservationDate = new Date();
+      $scope.tObservationTime = $scope.tObservationDate;
+
+      //TODO when we save start and end of the range even if the value type was changes there might be confusion about the Default value (if changed several times)
+      //Arrange DOM
+      $scope.readType = function(){
+        var sTypeOfTopic = $scope.oTopic.type;
+        if (sTypeOfTopic == "None"){
+          document.getElementById('valueItem').style.display = "none";
         }
-        return result;
-      }; // unique
+        else if (sTypeOfTopic == "Numeric") {
+          document.getElementById('valueItem').style.display = "";
+          var elInput =  document.createElement("input");
+          elInput.type = "text";
+          elInput.id = "observation.value";
+          elInput.value = $scope.oTopic.defaultValue;
+          document.getElementById("valueItem").appendChild(elInput);
+          document.getElementById("valueItem").className = "item item-input";
+        }
+        else if (sTypeOfTopic == "Range"){
+          document.getElementById('valueItem').style.display = "";
+          var elSelect = document.createElement('select');
+          elSelect.id = "observation.value";
 
+          //TODO how define range?
+          var nCounter = Number($scope.oTopic.rangeStart);
+          var nRangeEnd = Number($scope.oTopic.rangeEnd);
+          var nRangeStep = Number($scope.oTopic.step);
 
-      //TODO initialize when the observations list is empty
-      storage.getTopics(function(topics) {
-        $scope.topics = topics;
-      });
+          while(nCounter <= nRangeEnd){
+            var opt = document.createElement('option');
+            opt.value = nCounter;
+            opt.innerHTML = nCounter;
+            elSelect.appendChild(opt);
+            nCounter += nRangeStep;
+          }
 
-      $scope.observations = storage.get("observations");
+          //TODO default value could be out of range?
+          elSelect.value = $scope.oTopic.defaultValue;
+          document.getElementById("valueItem").appendChild(elSelect);
+          document.getElementById("valueItem").className = "item item-input item-select";
+        }
+      };
 
-      if ($scope.observations != null) {
-        $scope.uniqueDates = uniqueDate($scope.observations);
-      }
+      $scope.readType();
 
-      console.log("Unique Dates: ");
-      console.log($scope.uniqueDates);
+      // Called when the form is submitted
+      $scope.createObservation = function() {
 
-      console.log("Observations: ");
-      console.log($scope.observations);
+        var tCreationDate = new Date();
+        var sObservationValue;
+
+        if ($scope.oTopic.type == "None") {
+          sObservationValue = null;
+        } else {
+          sObservationValue = document.getElementById('observation.value').value;
+        }
+
+        $scope.oNewObservation = new storage.Observation(
+          Date.parse($scope.tObservationTime) + "_" + $stateParams.topicId,
+          $stateParams.topicId,
+          sObservationValue,
+          tCreationDate,
+          tCreationDate,
+          document.getElementById('observation.observationDate').value,
+          document.getElementById('observation.observationTime').value,
+          tCreationDate,
+          document.getElementById('observation.timezone').value,
+          document.getElementById('observation.comment').value
+        );
+
+        storage.createObservation($scope.oNewObservation);
+        $location.path("makeObservation");
+      };
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicsController', ['$scope', 'StorageService',
-    function($scope, storage) {
-      $scope.moveItem = function(topic, fromIndex, toIndex) {
-        //Move the item in the array
-        $scope.topics.splice(fromIndex, 1);
-        $scope.topics.splice(toIndex, 0, topic);
+  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
+    function($scope, $stateParams, $location, storage) {
+      $scope.topicId = $stateParams.observationId.split("_")[1];
+
+      $scope.oTopic = storage.readTopic($scope.topicId);
+      $scope.oObservation = storage.readObservation($stateParams.observationId);
+
+      //Arrange DOM
+      //TODO test range and others with malicious input
+      $scope.readType = function(){
+        var sTypeOfTopic = $scope.oTopic.type;
+        if (sTypeOfTopic == "None"){
+          document.getElementById('valueItem').style.display = "none";
+        }
+        else if (sTypeOfTopic == "Numeric") {
+          document.getElementById('valueItem').style.display = "";
+          var elInput =  document.createElement("input");
+          elInput.type = "text";
+          elInput.id = "observation.value";
+          document.getElementById("valueItem").appendChild(elInput);
+          document.getElementById("valueItem").className = "item item-input";
+        }
+        else if (sTypeOfTopic == "Range"){
+          document.getElementById('valueItem').style.display = "";
+          var elSelect = document.createElement('select');
+          elSelect.id = "observation.value";
+
+          //TODO how define range?
+          var nCounter = Number($scope.oTopic.rangeStart);
+          var nRangeEnd = Number($scope.oTopic.rangeEnd);
+          var nRangeStep = Number($scope.oTopic.step);
+
+          while(nCounter <= nRangeEnd){
+            var opt = document.createElement('option');
+            opt.value = nCounter;
+            opt.innerHTML = nCounter;
+            elSelect.appendChild(opt);
+            nCounter += nRangeStep;
+          }
+
+          //TODO default value could be out of range?
+          document.getElementById("valueItem").appendChild(elSelect);
+          document.getElementById("valueItem").className = "item item-input item-select";
+        }
       };
 
-      //get list of Topics
-      storage.getTopics(function(topics) {
-        $scope.topics = topics;
-        console.log(topics);
-      });
+      $scope.readType();
+
+      if ($scope.oTopic.type != "None") {
+        document.getElementById('observation.value').value = $scope.oObservation.value;
+      }
+
+      document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
+      document.getElementById('observation.observationTime').value = $scope.oObservation.observationTime;
+      document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
+      document.getElementById('observation.comment').value = $scope.oObservation.comment;
+
+      // Called when the form is submitted
+      $scope.editObservation = function() {
+        //Set values of observation
+
+        var tCreationDate = new Date();
+
+        if ($scope.oTopic.type == "None") {
+          sObservationValue = null;
+        } else {
+          sObservationValue = document.getElementById('observation.value').value;
+        }
+
+        $scope.oNewObservation = new storage.Observation(
+          $scope.oObservation.id,
+          $scope.topicId,
+          sObservationValue,
+          $scope.oObservation.creationDate,
+          $scope.oObservation.creationTime,
+          document.getElementById('observation.observationDate').value,
+          document.getElementById('observation.observationTime').value,
+          tCreationDate,
+          document.getElementById('observation.timezone').value,
+          document.getElementById('observation.comment').value
+        );
+
+        storage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
+        $location.path("makeObservation");
+      };
     }
   ]);
 });
