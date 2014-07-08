@@ -75,11 +75,17 @@ define([
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
         var type = document.getElementById('topic.type').value;
-        if (type != "Range"){
+        if (type == "None"){
+          document.getElementById('defaultValueItem').style.display = "none";
           document.getElementById('rangeStartItem').style.display = "none";
           document.getElementById('rangeEndItem').style.display = "none";
           document.getElementById('stepItem').style.display = "none";
-        } else {
+        }
+        else if (type == "Numeric") {
+          document.getElementById('defaultValueItem').style.display = "";
+        }
+        else if (type == "Range"){
+          document.getElementById('defaultValueItem').style.display = "";
           document.getElementById('rangeStartItem').style.display = "";
           document.getElementById('rangeEndItem').style.display = "";
           document.getElementById('stepItem').style.display = "";
@@ -170,11 +176,17 @@ define([
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
         var type = document.getElementById('topic.type').value;
-        if (type != "Range"){
+        if (type == "None"){
+          document.getElementById('defaultValueItem').style.display = "none";
           document.getElementById('rangeStartItem').style.display = "none";
           document.getElementById('rangeEndItem').style.display = "none";
           document.getElementById('stepItem').style.display = "none";
-        } else {
+        }
+        else if (type == "Numeric") {
+          document.getElementById('defaultValueItem').style.display = "";
+        }
+        else if (type == "Range"){
+          document.getElementById('defaultValueItem').style.display = "";
           document.getElementById('rangeStartItem').style.display = "";
           document.getElementById('rangeEndItem').style.display = "";
           document.getElementById('stepItem').style.display = "";

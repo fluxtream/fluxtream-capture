@@ -118,6 +118,17 @@ define([
       this.step = step;
     }
 
+    function Observation (id, value, creationDate, creationTime, observationDate, observationTime, timezone, comment){
+      this.id = id;
+      this.value = value;
+      this.creationDate = creationDate;
+      this.creationTime = creationTime;
+      this.observationDate = observationDate;
+      this.observationTime = observationTime;
+      this.timezone = timezone;
+      this.comment = comment;
+    }
+
     /**
      * (Public) Push value for the given key
      */
