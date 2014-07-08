@@ -14,7 +14,7 @@
     <div class="list">
       <div data-ng-repeat="tDate in aoUniqueDates | orderBy:'toString()':true">
         <div class="item item-divider">
-          {{ tDate | date:"EEEE, d MMM" }}
+          {{ tDate | date:"EEEE, MMMM d " }}
         </div>
 
         <a href="#/editObservation/{{oObservation.id}}" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderBy:'observationTime':true" class="item">

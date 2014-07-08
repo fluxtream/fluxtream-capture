@@ -95,11 +95,11 @@ define([
         var tCurrentTime = new Date();
         var nLength = $scope.aoTopics.length;
 
-        //TODO Topic Name is a mandatory field
+        //TODO Topic Name is a mandatory field - Error/Notification message under the header
         //TODO If user is pressing + and save button very fast he would get empty entry (if name could be empty)
-        //TODO How we generate the ID for the Topic?
-        //TODO any placeholders?
-        //TODO what to do with "status" field
+        //TODO How we generate the ID for the Topic? - When connecting to server resolve topic Ids first
+        //TODO any placeholders? - Should be clear where to enter value
+        //TODO what to do with "status" field - use when archive for topics and delete for observations
         $scope.oNewTopic = new storage.Topic(
           nLength,
           tCurrentTime,
@@ -123,7 +123,7 @@ define([
     function($scope, $location, $stateParams, storage) {
       $scope.topicId = $stateParams.topicId;
 
-      //TODO whe the type is changed additional effort might be needed to recound all the values
+      //TODO when the type is changed it should affect only future created entries
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
         var sTypeOfTopic = document.getElementById('topic.type').value;
@@ -187,13 +187,13 @@ define([
 
   fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
     function($scope, $stateParams, $location, storage) {
-      //TODO refactor screen - no two lines for the comment field
+      //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
       $scope.oTopic = storage.readTopic($stateParams.topicId);
       $scope.tObservationDate = new Date();
       $scope.tObservationTime = $scope.tObservationDate;
 
-      //TODO when we save start and end of the range even if the value type was changes there might be confusion about the Default value (if changed several times)
+      //TODO is the type is range check that default value is in range
       //Arrange DOM
       $scope.readType = function(){
         var sTypeOfTopic = $scope.oTopic.type;
@@ -227,7 +227,7 @@ define([
             nCounter += nRangeStep;
           }
 
-          //TODO default value could be out of range?
+          //TODO default value could be out of range? - Yes should ask the user
           elSelect.value = $scope.oTopic.defaultValue;
           document.getElementById("valueItem").appendChild(elSelect);
           document.getElementById("valueItem").className = "item item-input item-select";
@@ -307,7 +307,7 @@ define([
             nCounter += nRangeStep;
           }
 
-          //TODO default value could be out of range?
+          //TODO default value could be out of range? - Should't allow
           document.getElementById("valueItem").appendChild(elSelect);
           document.getElementById("valueItem").className = "item item-input item-select";
         }
