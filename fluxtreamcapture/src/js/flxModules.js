@@ -8,7 +8,8 @@ define([], function() {
   var modules = {
     flxServices: angular.module('flxServices', []),
     flxControllers: angular.module('flxControllers', ['flxServices']),
-    flxApp: angular.module('flxApp', ['ionic', 'flxControllers', 'flxServices']),
+    flxFilters: angular.module('flxFilters', ['flxServices']),
+    flxApp: angular.module('flxApp', ['ionic', 'flxControllers', 'flxFilters', 'flxServices']),
   };
   return modules;
 });

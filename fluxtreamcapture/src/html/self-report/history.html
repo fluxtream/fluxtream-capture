@@ -12,13 +12,13 @@
 
   <ion-content>
     <div class="list">
-      <div data-ng-repeat="tDate in aoUniqueDates | orderBy:'toString()':true">
+      <div data-ng-repeat="tDate in aoUniqueDates | orderByDate:true">
         <div class="item item-divider">
           {{ tDate | date:"EEEE, MMMM d " }}
         </div>
 
-        <a href="#/editObservation/{{oObservation.id}}" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderBy:'observationTime':true" class="item">
-          <i style="font-size:8pt;">{{oObservation.observationTime | date : 'h:mm:ss a'}}</i>
+        <a href="#/editObservation/{{oObservation.id}}" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true" class="item">
+          <i style="font-size:8pt;">{{oObservation.observationTime | date : 'h:mm a'}}</i>
           {{aoTopics[oObservation.topicId].name}}
           <span class="item-note">
             {{oObservation.value}}

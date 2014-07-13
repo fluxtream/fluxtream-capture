@@ -4,6 +4,7 @@
 define([
   'controllers/nav-controller',
   'controllers/login-controller',
-  "controllers/fluxtreamCaptureControllers",
+  'controllers/fluxtreamCaptureControllers',
+  'controllers/fluxtreamFilters',
   'controllers/photo-upload-controller'
 ], function() {});

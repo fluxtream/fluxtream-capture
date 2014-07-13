@@ -3,8 +3,10 @@ define([
   'storage'
 ], function(flxModules) {
   //TODO reload of the page doesn't work
+  //TODO title of the page should be correct
 
   var fluxtreamCaptureControllers = flxModules.flxControllers;
+
 
   fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'StorageService',
     function($scope, $timeout, storage) {
@@ -255,7 +257,7 @@ define([
           tCreationDate,
           tCreationDate,
           document.getElementById('observation.observationDate').value,
-          document.getElementById('observation.observationTime').value,
+          new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
           tCreationDate,
           document.getElementById('observation.timezone').value,
           document.getElementById('observation.comment').value
@@ -266,6 +268,31 @@ define([
       };
     }
   ]);
+
+  /**
+   * Returns time in 24 format as a string
+   */
+  function helperGetTimeFromDate(observationTime){
+    var hour = observationTime.getHours();  /* Returns the hour (from 0-23) */
+    var minutes = observationTime.getMinutes();  /* Returns the minutes (from 0-59) */
+    var result = '';
+
+    if(hour < 10){
+      result = "0" + hour;
+    }else {
+      result += hour;
+    }
+
+    result += ":";
+
+    if(minutes < 10){
+      result += "0" + minutes;
+    }else {
+      result += minutes;
+    }
+
+    return result;
+  }
 
   fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
     function($scope, $stateParams, $location, storage) {
@@ -320,7 +347,7 @@ define([
       }
 
       document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
-      document.getElementById('observation.observationTime').value = $scope.oObservation.observationTime;
+      document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
       document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
       document.getElementById('observation.comment').value = $scope.oObservation.comment;
 
@@ -343,7 +370,7 @@ define([
           $scope.oObservation.creationDate,
           $scope.oObservation.creationTime,
           document.getElementById('observation.observationDate').value,
-          document.getElementById('observation.observationTime').value,
+          new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
           tCreationDate,
           document.getElementById('observation.timezone').value,
           document.getElementById('observation.comment').value
@@ -354,4 +381,5 @@ define([
       };
     }
   ]);
+
 });
