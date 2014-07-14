@@ -32,33 +32,6 @@ define([
       // Force use of IndexedDB Shim
       window.shimIndexedDB && window.shimIndexedDB.__useShim();
 
-      /**
-       * Check if database already was created
-       * @param {string} name Database name
-       * @param {function} callback Function to return the response
-       * @returns {bool} True if the database exists
-       */
-      function databaseExists(name,callback){
-        var dbExists = true;
-        var request = window.indexedDB.open(name);
-        request.onupgradeneeded = function (e){
-          if(request.result.version===1){
-            dbExists = false;
-            window.indexedDB.deleteDatabase(name);
-            if(callback)
-              callback(dbExists);
-          }
-
-        };
-        request.onsuccess = function(e) {
-          if(dbExists){
-            if(callback)
-              callback(dbExists);
-          }
-        };
-      };
-
-
       // Create database
       db.open({
         server: sDBName,
@@ -66,14 +39,12 @@ define([
         schema: {
           topics: {
             key: {
-              keyPath: 'id',
-              autoIncrement: true
+              keyPath: 'id'
             }
           },
           observations: {
             key: {
-              keyPath: 'id',
-              autoIncrement: true
+              keyPath: 'id'
             }
           }
         }
@@ -85,7 +56,7 @@ define([
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
-      this.topicId = id;
+      this.id = id;
       this.creationTime = creationTime;
       this.updateTime = updateTime;
       this.name = name;
@@ -117,7 +88,7 @@ define([
 
       // Save topic to client database
       selfReportDB.topics.add( {
-        topicId: oTopic.id,
+        id: oTopic.id,
         creationTime: oTopic.creationTime,
         updateTime: oTopic.updateTime,
         name: oTopic.name,
