@@ -8,8 +8,8 @@ define([
   var fluxtreamCaptureControllers = flxModules.flxControllers;
 
 
-  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'StorageService',
-    function($scope, $timeout, storage) {
+  fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'SelfReportStorageService',
+    function($scope, $timeout, selfReportStorage) {
       //TODO test continuos scrolling
       // Infinite scroll
       $scope.loadMoreObservations = function() {
@@ -19,33 +19,33 @@ define([
         }, 1000);
       };
 
-      storage.readTopicsAsync(function(aoTopics) {
+      selfReportStorage.readTopicsAsync(function(aoTopics) {
         $scope.aoTopics = aoTopics;
       });
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('historyController', ['$scope', 'StorageService',
-    function($scope, storage) {
+  fluxtreamCaptureControllers.controller('historyController', ['$scope', 'SelfReportStorageService',
+    function($scope, selfReportStorage) {
       //TODO initialize when the observations list is empty
       //TODO check that dates are sorted correctly
 
-      storage.readTopicsAsync(function(topics) {
+      selfReportStorage.readTopicsAsync(function(topics) {
         $scope.aoTopics = topics;
       });
 
-      storage.readObservationsAsync(function(aoObservations) {
+      selfReportStorage.readObservationsAsync(function(aoObservations) {
         $scope.aoObservations = aoObservations;
       });
 
       if ($scope.aoObservations != null) {
-        $scope.aoUniqueDates = storage.findUniqueDates($scope.aoObservations);
+        $scope.aoUniqueDates = selfReportStorage.findUniqueDates($scope.aoObservations);
       }
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicsController', ['$scope', 'StorageService',
-    function($scope, storage) {
+  fluxtreamCaptureControllers.controller('editTopicsController', ['$scope', 'SelfReportStorageService',
+    function($scope, selfReportStorage) {
       //TODO bug in reordering (if reorder long enough)
       $scope.moveItem = function(oTopic, fromIndex, toIndex) {
         //Move the item in the array
@@ -54,14 +54,14 @@ define([
       };
 
       //Get list of Topics
-      storage.readTopicsAsync(function(aoTopics) {
+      selfReportStorage.readTopicsAsync(function(aoTopics) {
         $scope.aoTopics = aoTopics;
       });
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
-    function($scope, $location, $stateParams, storage) {
+  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$location', '$stateParams', 'SelfReportStorageService',
+    function($scope, $location, $stateParams, selfReportStorage) {
 
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
@@ -87,7 +87,7 @@ define([
       };
 
       //TODO what if the result would not be returned?
-      storage.readTopicsAsync(function(aoTopics) {
+      selfReportStorage.readTopicsAsync(function(aoTopics) {
         $scope.aoTopics = aoTopics;
       });
 
@@ -102,7 +102,7 @@ define([
         //TODO How we generate the ID for the Topic? - When connecting to server resolve topic Ids first
         //TODO any placeholders? - Should be clear where to enter value
         //TODO what to do with "status" field - use when archive for topics and delete for observations
-        $scope.oNewTopic = new storage.Topic(
+        $scope.oNewTopic = new selfReportStorage.Topic(
           nLength,
           tCurrentTime,
           tCurrentTime,
@@ -114,15 +114,15 @@ define([
           document.getElementById('topic.step').value
         );
 
-        storage.createTopic($scope.oNewTopic);
+        selfReportStorage.createTopic($scope.oNewTopic);
         $location.path("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
-    function($scope, $location, $stateParams, storage) {
+  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$location', '$stateParams', 'SelfReportStorageService',
+    function($scope, $location, $stateParams, selfReportStorage) {
       $scope.topicId = $stateParams.topicId;
 
       //TODO when the type is changed it should affect only future created entries
@@ -150,7 +150,7 @@ define([
       };
 
       //TODO should be done async
-      $scope.oTopic = storage.readTopic($scope.topicId);
+      $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
 
       // Fill the data initially
       document.getElementById('topic.name').value = $scope.oTopic.name;
@@ -168,7 +168,7 @@ define([
         var tCurrentTime = new Date();
 
         //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
-        $scope.oNewTopic = new storage.Topic(
+        $scope.oNewTopic = new selfReportStorage.Topic(
           $scope.oTopic.id,
           $scope.oTopic.creationTime,
           tCurrentTime,
@@ -180,18 +180,18 @@ define([
           document.getElementById('topic.step').value
         );
 
-        storage.updateTopic($scope.oNewTopic);
+        selfReportStorage.updateTopic($scope.oNewTopic);
         $location.path("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
-    function($scope, $stateParams, $location, storage) {
+  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'SelfReportStorageService',
+    function($scope, $stateParams, $location, selfReportStorage) {
       //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
-      $scope.oTopic = storage.readTopic($stateParams.topicId);
+      $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
       $scope.tObservationDate = new Date();
       $scope.tObservationTime = $scope.tObservationDate;
 
@@ -250,7 +250,7 @@ define([
           sObservationValue = document.getElementById('observation.value').value;
         }
 
-        $scope.oNewObservation = new storage.Observation(
+        $scope.oNewObservation = new selfReportStorage.Observation(
           Date.parse($scope.tObservationTime) + "_" + $stateParams.topicId,
           $stateParams.topicId,
           sObservationValue,
@@ -263,7 +263,7 @@ define([
           document.getElementById('observation.comment').value
         );
 
-        storage.createObservation($scope.oNewObservation);
+        selfReportStorage.createObservation($scope.oNewObservation);
         $location.path("makeObservation");
       };
     }
@@ -294,12 +294,12 @@ define([
     return result;
   }
 
-  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
-    function($scope, $stateParams, $location, storage) {
+  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'SelfReportStorageService',
+    function($scope, $stateParams, $location, selfReportStorage) {
       $scope.topicId = $stateParams.observationId.split("_")[1];
 
-      $scope.oTopic = storage.readTopic($scope.topicId);
-      $scope.oObservation = storage.readObservation($stateParams.observationId);
+      $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+      $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
 
       //Arrange DOM
       //TODO test range and others with malicious input
@@ -363,7 +363,7 @@ define([
           sObservationValue = document.getElementById('observation.value').value;
         }
 
-        $scope.oNewObservation = new storage.Observation(
+        $scope.oNewObservation = new selfReportStorage.Observation(
           $scope.oObservation.id,
           $scope.topicId,
           sObservationValue,
@@ -376,7 +376,7 @@ define([
           document.getElementById('observation.comment').value
         );
 
-        storage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
+        selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
         $location.path("makeObservation");
       };
     }

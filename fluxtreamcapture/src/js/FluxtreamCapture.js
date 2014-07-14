@@ -6,6 +6,7 @@ define([
   "env",
   "routes",
   "fluxtream-communication",
+  "selfreport-storage",
   "controllers/controller-loader",
   "photo-list"
 ], function(flxModules, env, routes, flxCom) {

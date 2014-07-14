@@ -1,6 +1,5 @@
 define([
-  'flxModules',
-  'storage'
+  'flxModules'
 ], function(flxModules) {
 
   var fluxtreamCaptureFilters = flxModules.flxFilters;
