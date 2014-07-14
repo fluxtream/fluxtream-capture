@@ -24,8 +24,6 @@ define([
     //Database for the offline storage on the client side
     var selfReportDB;
     var sDBName = "SelfReportDB";
-    var request;
-
     //------------------------------------------------------------------------------------
 
     function initialize(){
@@ -34,18 +32,56 @@ define([
       // Force use of IndexedDB Shim
       window.shimIndexedDB && window.shimIndexedDB.__useShim();
 
+      /**
+       * Check if database already was created
+       * @param {string} name Database name
+       * @param {function} callback Function to return the response
+       * @returns {bool} True if the database exists
+       */
+      function databaseExists(name,callback){
+        var dbExists = true;
+        var request = window.indexedDB.open(name);
+        request.onupgradeneeded = function (e){
+          if(request.result.version===1){
+            dbExists = false;
+            window.indexedDB.deleteDatabase(name);
+            if(callback)
+              callback(dbExists);
+          }
+
+        };
+        request.onsuccess = function(e) {
+          if(dbExists){
+            if(callback)
+              callback(dbExists);
+          }
+        };
+      };
+
+
       // Create database
-      request = indexedDB.open(sDBName);
-
-      request.onupgradeneeded = function() {
-        // The database did not previously exist, so create object stores and indexes.
-        var db = request.result;
-        var store = db.createObjectStore("topics", {keyPath: "id"});
-      };
-
-      request.onsuccess = function() {
-        selfReportDB = request.result;
-      };
+      db.open({
+        server: sDBName,
+        version: 1,
+        schema: {
+          topics: {
+            key: {
+              keyPath: 'id',
+              autoIncrement: true
+            }
+          },
+          observations: {
+            key: {
+              keyPath: 'id',
+              autoIncrement: true
+            }
+          }
+        }
+      }).done(function(s){
+        selfReportDB = s;
+        console.log("Database Opened");
+        /* Code for ${db.open} */
+      });
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
@@ -79,11 +115,8 @@ define([
     function createTopic(oTopic){
       aoCachedTopics.push(oTopic);
 
-      var db = selfReportDB.transaction("topics", "readwrite");
-      var store = db.objectStore("topics");
-
       // Save topic to client database
-      store.put({
+      selfReportDB.topics.add( {
         topicId: oTopic.id,
         creationTime: oTopic.creationTime,
         updateTime: oTopic.updateTime,
@@ -93,11 +126,9 @@ define([
         rangeStart: oTopic.rangeStart,
         rangeEnd: oTopic.rangeEnd,
         step: oTopic.step
-      });
-
-      db.oncomplete = function() {
-        // All requests have succeeded and the transaction has committed.
-      };
+      } ).done( function ( item ) {
+        // item stored
+      } );
     }
 
     /**
