@@ -1,6 +1,6 @@
 [
   {
-    "_id": "0",
+    "id": "0",
     "guestId": "1",
     "creationTime": "12312213234",
     "updateTime": "123",
@@ -13,7 +13,7 @@
     "status": "1"
   },
   {
-    "_id": "1",
+    "id": "1",
     "guestId": "1",
     "creationTime": "12312",
     "updateTime": "123",
@@ -25,7 +25,7 @@
     "defaultValue": "1",
     "status": "1"
   },
-  {"_id": "2",
+  {"id": "2",
     "guestId": "1",
     "creationTime": "12312",
     "updateTime": "123",
@@ -38,7 +38,7 @@
     "status": "1"
   },
   {
-    "_id": "3",
+    "id": "3",
     "guestId": "1",
     "creationTime": "12312",
     "updateTime": "123",

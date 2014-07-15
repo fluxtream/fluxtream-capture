@@ -32,7 +32,7 @@ define([
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
-      this._id = id.toString();
+      this.id = id.toString();
       this.creationTime = creationTime;
       this.updateTime = updateTime;
       this.name = name;
@@ -44,7 +44,7 @@ define([
     }
 
     function Observation (id, topicId, value, creationDate, creationTime, observationDate, observationTime, updateTime, timezone, comment){
-      this._id = id.toString();
+      this.id = id.toString();
       this.topicId = topicId;
       this.value = value;
       this.creationDate = creationDate;
@@ -63,7 +63,18 @@ define([
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
-      db.put(oTopic, function callback(err, result) {
+      db.put({
+          _id: oTopic.id,
+          creationTime: oTopic.creationTime,
+          updateTime: oTopic.updateTime,
+          name: oTopic.name,
+          type: oTopic.type,
+          defaultValue: oTopic.defaultValue,
+          rangeStart: oTopic.rangeStart,
+          rangeEnd: oTopic.rangeEnd,
+          step: oTopic.step},
+
+        function callback(err, result) {
         if (!err) {
           console.log('Successfully saved a Topic!');
         } else {
@@ -83,7 +94,7 @@ define([
 
           for (var i = 0; i < nTopicsArrayLength; i++) {
             var oNextTopic = new Topic(
-              aoData[i]._id,
+              aoData[i].id,
               aoData[i].creationTime,
               aoData[i].updateTime,
               aoData[i].name,
@@ -100,7 +111,7 @@ define([
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
-        return oEntry._id == sTopicId;
+        return oEntry.id == sTopicId;
       })[0];
 
       return(oTopic);
@@ -114,7 +125,7 @@ define([
 
       var nTopicsArrayLength = aoCachedTopics.length;
       for (var i = 0; i < nTopicsArrayLength; i++) {
-        if (aoCachedTopics[i]._id == oTopic._id) {
+        if (aoCachedTopics[i].id == oTopic.id) {
           aoCachedTopics[i] = oTopic;
           break;
         }
@@ -145,7 +156,7 @@ define([
 
           for (var i = 0; i < nTopicsArrayLength; i++) {
             var oNextTopic = new Topic(
-              aoData[i]._id,
+              aoData[i].id,
               aoData[i].creationTime,
               aoData[i].updateTime,
               aoData[i].name,
@@ -188,7 +199,7 @@ define([
     function readTopicAsync(topicId, fCallback){
       readTopicsAsync(function(data){
         var oTopic = data.filter(function(entry){
-          return entry._id == topicId;
+          return entry.id == topicId;
         })[0];
         fCallback(oTopic);
       });
@@ -214,7 +225,7 @@ define([
       if (!initialized) throw "Storage not initialized yet.";
 
       var oCachedObservation = aoCachedObservations.filter(function(entry){
-        return entry._id == sObservationId;
+        return entry.id == sObservationId;
       })[0];
 
       return oCachedObservation;
@@ -229,7 +240,7 @@ define([
       var nNumberOfObservations = aoCachedObservations.length;
       var sNextId;
       for(var i=0; i<nNumberOfObservations; i++) {
-        sNextId = aoCachedObservations[i]._id;
+        sNextId = aoCachedObservations[i].id;
 
         if (sNextId == sObservationId) {
           aoCachedObservations[i] = oObservation;
