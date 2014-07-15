@@ -2,10 +2,11 @@
  * This service allows to save data for the offline mode on the client side
  */
 define([
-  'flxModules'
-], function(flxModules) {
+  'flxModules',
+  'fluxtream-communication'
+], function(flxModules, storage) {
 
-  flxModules.flxServices.factory('SelfReportStorageService', function($http) {
+  flxModules.flxServices.factory('SelfReportStorageService', ["$http", "FluxtreamCommunication", function($http,  flxCommunication) {
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
@@ -22,7 +23,7 @@ define([
 
     var db;
     var remoteCouch;
-    var dbName = "SelfReportDB";
+    var dbName = "SelfReportDB_" + flxCommunication.getUserName();
 
     function initialize(){
       initialized = true;
@@ -273,6 +274,6 @@ define([
       findUniqueDates: findUniqueDates
     };
 
-  });
+  }]);
 
 });

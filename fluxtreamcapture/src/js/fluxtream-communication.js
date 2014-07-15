@@ -165,11 +165,19 @@ define([
     function isAuthenticated() {
       return guestIsAuthenticated;
     }
+
+    /**
+     * (Public) Returns username
+     */
+    function getUserName(){
+      return guestData.username;
+    }
     
     return {
       checkAuth: checkAuth,
       isAuthenticated: guestIsAuthenticated,
-      ajax: ajax
+      ajax: ajax,
+      getUserName: getUserName
     };
     
   }]);
