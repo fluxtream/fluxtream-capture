@@ -169,7 +169,7 @@ define([
 
         //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
         $scope.oNewTopic = new selfReportStorage.Topic(
-          $scope.oTopic.id,
+          $scope.oTopic._id,
           $scope.oTopic.creationTime,
           tCurrentTime,
           document.getElementById('topic.name').value,
@@ -206,7 +206,7 @@ define([
           document.getElementById('valueItem').style.display = "";
           var elInput =  document.createElement("input");
           elInput.type = "text";
-          elInput.id = "observation.value";
+          elInput._id = "observation.value";
           elInput.value = $scope.oTopic.defaultValue;
           document.getElementById("valueItem").appendChild(elInput);
           document.getElementById("valueItem").className = "item item-input";
@@ -214,7 +214,7 @@ define([
         else if (sTypeOfTopic == "Range"){
           document.getElementById('valueItem').style.display = "";
           var elSelect = document.createElement('select');
-          elSelect.id = "observation.value";
+          elSelect._id = "observation.value";
 
           //TODO how define range?
           var nCounter = Number($scope.oTopic.rangeStart);
@@ -312,14 +312,14 @@ define([
           document.getElementById('valueItem').style.display = "";
           var elInput =  document.createElement("input");
           elInput.type = "text";
-          elInput.id = "observation.value";
+          elInput._id = "observation.value";
           document.getElementById("valueItem").appendChild(elInput);
           document.getElementById("valueItem").className = "item item-input";
         }
         else if (sTypeOfTopic == "Range"){
           document.getElementById('valueItem').style.display = "";
           var elSelect = document.createElement('select');
-          elSelect.id = "observation.value";
+          elSelect._id = "observation.value";
 
           //TODO how define range?
           var nCounter = Number($scope.oTopic.rangeStart);
@@ -364,7 +364,7 @@ define([
         }
 
         $scope.oNewObservation = new selfReportStorage.Observation(
-          $scope.oObservation.id,
+          $scope.oObservation._id,
           $scope.topicId,
           sObservationValue,
           $scope.oObservation.creationDate,
@@ -376,7 +376,7 @@ define([
           document.getElementById('observation.comment').value
         );
 
-        selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
+        selfReportStorage.updateObservation($scope.oObservation._id, $scope.oNewObservation);
         $location.path("makeObservation");
       };
     }

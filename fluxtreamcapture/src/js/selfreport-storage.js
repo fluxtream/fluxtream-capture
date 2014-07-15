@@ -20,43 +20,19 @@ define([
     // True once this has been initialized
     var initialized = false;
 
-    //------------------------------------------------------------------------------------
-    //Database for the offline storage on the client side
-    var selfReportDB;
-    var sDBName = "SelfReportDB";
-    //------------------------------------------------------------------------------------
+    var db;
+    var remoteCouch;
+    var dbName = "SelfReportDB";
 
     function initialize(){
       initialized = true;
 
-      // Force use of IndexedDB Shim
-      window.shimIndexedDB && window.shimIndexedDB.__useShim();
-
-      // Create database
-      db.open({
-        server: sDBName,
-        version: 1,
-        schema: {
-          topics: {
-            key: {
-              keyPath: 'id'
-            }
-          },
-          observations: {
-            key: {
-              keyPath: 'id'
-            }
-          }
-        }
-      }).done(function(s){
-        selfReportDB = s;
-        console.log("Database Opened");
-        /* Code for ${db.open} */
-      });
+      db = new PouchDB(dbName);
+      remoteCouch = false;
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
-      this.id = id;
+      this._id = id.toString();
       this.creationTime = creationTime;
       this.updateTime = updateTime;
       this.name = name;
@@ -68,7 +44,7 @@ define([
     }
 
     function Observation (id, topicId, value, creationDate, creationTime, observationDate, observationTime, updateTime, timezone, comment){
-      this.id = id;
+      this._id = id.toString();
       this.topicId = topicId;
       this.value = value;
       this.creationDate = creationDate;
@@ -87,19 +63,13 @@ define([
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
-      selfReportDB.topics.add( {
-        id: oTopic.id,
-        creationTime: oTopic.creationTime,
-        updateTime: oTopic.updateTime,
-        name: oTopic.name,
-        type: oTopic.type,
-        defaultValue: oTopic.defaultValue,
-        rangeStart: oTopic.rangeStart,
-        rangeEnd: oTopic.rangeEnd,
-        step: oTopic.step
-      } ).done( function ( item ) {
-        // item stored
-      } );
+      db.put(oTopic, function callback(err, result) {
+        if (!err) {
+          console.log('Successfully saved a Topic!');
+        } else {
+          console.log(err);
+        }
+      });
     }
 
     /**
@@ -113,7 +83,7 @@ define([
 
           for (var i = 0; i < nTopicsArrayLength; i++) {
             var oNextTopic = new Topic(
-              aoData[i].id,
+              aoData[i]._id,
               aoData[i].creationTime,
               aoData[i].updateTime,
               aoData[i].name,
@@ -130,7 +100,7 @@ define([
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
-        return oEntry.id == sTopicId;
+        return oEntry._id == sTopicId;
       })[0];
 
       return(oTopic);
@@ -144,7 +114,7 @@ define([
 
       var nTopicsArrayLength = aoCachedTopics.length;
       for (var i = 0; i < nTopicsArrayLength; i++) {
-        if (aoCachedTopics[i].id == oTopic.id) {
+        if (aoCachedTopics[i]._id == oTopic._id) {
           aoCachedTopics[i] = oTopic;
           break;
         }
@@ -175,7 +145,7 @@ define([
 
           for (var i = 0; i < nTopicsArrayLength; i++) {
             var oNextTopic = new Topic(
-              aoData[i].id,
+              aoData[i]._id,
               aoData[i].creationTime,
               aoData[i].updateTime,
               aoData[i].name,
@@ -218,7 +188,7 @@ define([
     function readTopicAsync(topicId, fCallback){
       readTopicsAsync(function(data){
         var oTopic = data.filter(function(entry){
-          return entry.id == topicId;
+          return entry._id == topicId;
         })[0];
         fCallback(oTopic);
       });
@@ -244,7 +214,7 @@ define([
       if (!initialized) throw "Storage not initialized yet.";
 
       var oCachedObservation = aoCachedObservations.filter(function(entry){
-        return entry.id == sObservationId;
+        return entry._id == sObservationId;
       })[0];
 
       return oCachedObservation;
@@ -259,7 +229,7 @@ define([
       var nNumberOfObservations = aoCachedObservations.length;
       var sNextId;
       for(var i=0; i<nNumberOfObservations; i++) {
-        sNextId = aoCachedObservations[i].id;
+        sNextId = aoCachedObservations[i]._id;
 
         if (sNextId == sObservationId) {
           aoCachedObservations[i] = oObservation;

@@ -11,7 +11,7 @@
 
   <ion-content>
     <ion-list show-reorder="data.showReorder = true">
-      <ion-item ng-repeat="oTopic in aoTopics" href="#/editTopic/{{oTopic.id}}">
+      <ion-item ng-repeat="oTopic in aoTopics" href="#/editTopic/{{oTopic._id}}">
         {{oTopic.name}}
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
