@@ -10,9 +10,10 @@ define([
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
-    //TODO Implement async versions of the fucntions
+    //TODO Implement async versions of the functions
     //TODO Does it required to save update time for Observation and Topic?
     //TODO How Topic ID would be generated?
+    //TODO timezone should be fixed - should be local time + offset in the timezone
 
     //Stores Topics information
     var aoCachedTopics;
@@ -66,8 +67,8 @@ define([
       // Save topic to client database
       db.put({
           _id: oTopic.id,
-          creationTime: oTopic.creationTime,
-          updateTime: oTopic.updateTime,
+          creationTime: oTopic.creationTime.toISOString(),
+          updateTime: oTopic.updateTime.toISOString(),
           name: oTopic.name,
           type: oTopic.type,
           defaultValue: oTopic.defaultValue,
