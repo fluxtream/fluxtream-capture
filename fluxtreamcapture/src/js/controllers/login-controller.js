@@ -7,8 +7,8 @@ define([
   'fluxtream-communication'
 ], function(flxModules) {
   
-  flxModules.flxControllers.controller('loginController', ['$scope', 'FluxtreamCommunication', 'StorageService',
-    function($scope, flxCom, storage) {
+  flxModules.flxControllers.controller('loginController', ['$scope', 'FluxtreamCommunication', 'StorageService', '$state',
+    function($scope, flxCom, storage, $state) {
       
       // Current setting values
       $scope.settings = {
