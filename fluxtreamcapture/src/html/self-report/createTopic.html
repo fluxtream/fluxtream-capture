@@ -1,7 +1,7 @@
 <ion-view title="Create Topic">
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-    <a href="#/editTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="editTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -61,7 +61,7 @@
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-  <a id="footer-left" href="#/editTopics" class="button button-clear pull-left">Cancel</a>
+  <a id="footer-left" ui-sref="editTopics" class="button button-clear pull-left">Cancel</a>
   <!-- <div class="title">Title</div> -->
   <button id="footer-right" class="button button-clear pull-right" ng-click="createTopic()">Save</button>
 </ion-footer-bar>

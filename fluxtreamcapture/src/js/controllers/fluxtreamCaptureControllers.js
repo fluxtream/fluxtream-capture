@@ -60,8 +60,8 @@ define([
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$location', '$stateParams', 'SelfReportStorageService',
-    function($scope, $location, $stateParams, selfReportStorage) {
+  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$state', '$stateParams', 'SelfReportStorageService',
+    function($scope, $state, $stateParams, selfReportStorage) {
 
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
@@ -95,7 +95,9 @@ define([
       $scope.createTopic = function() {
         //Set values of topic
         var tCurrentTime = new Date();
+
         //TODO when the Topics array is empty this would give and error (definetely on the mobile phone version)
+        if (!$scope.aoTopics) $scope.aoTopics = []; // TODO remove this line but fix initialization bug
         var nLength = $scope.aoTopics.length;
 
         //TODO Topic Name is a mandatory field - Error/Notification message under the header
@@ -115,15 +117,19 @@ define([
           document.getElementById('topic.step').value
         );
 
+
         selfReportStorage.createTopic($scope.oNewTopic);
-        $location.path("editTopics");
+        $state.go("editTopics");
+
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$location', '$stateParams', 'SelfReportStorageService',
-    function($scope, $location, $stateParams, selfReportStorage) {
+
+  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$state', '$stateParams', 'SelfReportStorageService',
+    function($scope, $state, $stateParams, selfReportStorage) {
+
       $scope.topicId = $stateParams.topicId;
 
       //TODO when the type is changed it should affect only future created entries
@@ -182,14 +188,15 @@ define([
         );
 
         selfReportStorage.updateTopic($scope.oNewTopic);
-        $location.path("editTopics");
+        $state.go("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'SelfReportStorageService',
-    function($scope, $stateParams, $location, selfReportStorage) {
+  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$state', 'SelfReportStorageService',
+    function($scope, $stateParams, $state, selfReportStorage) {
+
       //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
       $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
@@ -265,7 +272,7 @@ define([
         );
 
         selfReportStorage.createObservation($scope.oNewObservation);
-        $location.path("makeObservation");
+        $state.go("listTopics");
       };
     }
   ]);
@@ -295,8 +302,10 @@ define([
     return result;
   }
 
-  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'SelfReportStorageService',
-    function($scope, $stateParams, $location, selfReportStorage) {
+
+  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$state', 'SelfReportStorageService',
+    function($scope, $stateParams, $state, selfReportStorage) {
+
       $scope.topicId = $stateParams.observationId.split("_")[1];
 
       $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
@@ -377,8 +386,10 @@ define([
           document.getElementById('observation.comment').value
         );
 
+
         selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
-        $location.path("makeObservation");
+        $state.go("listTopics");
+
       };
     }
   ]);

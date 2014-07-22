@@ -7,7 +7,7 @@ define([
   'storage'
 ], function(flxModules, env) {
   
-  flxModules.flxServices.factory('FluxtreamCommunication', ["StorageService", function(storage) {
+  flxModules.flxServices.factory('FluxtreamCommunication', ["StorageService", "$state", function(storage, $state) {
     
     /**
      * The callback function after a successful authentication
@@ -143,7 +143,7 @@ define([
           // Credentials are incorrect
           forge.logging.info("The user credentials are incorrect, showing login page");
           if (typeof onSuccessFunction === 'function') onSuccessFunction();
-          window.location = "#/login";
+          $state.go("login");
         } else {
           // Another error happened
           forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + statusCode);
@@ -153,7 +153,7 @@ define([
         // Credentials are not set yet
         forge.logging.info("The user has not entered credentials yet, showing login page");
         if (typeof onSuccessFunction === 'function') onSuccessFunction();
-        window.location = "#/login";
+        $state.go('login');
       }
       // Hide launch screen
       forge.launchimage.hide();

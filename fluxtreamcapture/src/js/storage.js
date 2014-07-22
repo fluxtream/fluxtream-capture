@@ -99,7 +99,7 @@ define([
         }
       }
     }
-    
+
     // Public API
     return {
       //TODO create delete operations for the Topics and Observations
