@@ -15,10 +15,11 @@ define([
   if (!initialRoute || initialRoute === "#/init") initialRoute = "#/makeObservation";
   
   // Initialization controller
-  flxModules.flxControllers.controller('initController', ['FluxtreamCommunication', '$ionicViewService', 'PhotoListService' /* preloading photos */,
-    function(flxCom, $ionicViewService) {
+  flxModules.flxControllers.controller('initController', ['FluxtreamCommunication', '$ionicViewService', '$state', 'PhotoListService' /* preloading photos */,
+    function(flxCom, $ionicViewService, $state) {
       flxCom.checkAuth(function() {
         // Load page
+        $state.go("listTopics");
         window.location = initialRoute;
         // Clear navigation history to prevent going back to the initialization page
         $ionicViewService.clearHistory();

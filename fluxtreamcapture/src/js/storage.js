@@ -140,7 +140,8 @@ define([
     /**
      * (Public) Save Topic into storage
      */
-    function createTopic(oTopic){
+    function createTopic(oTopic) {
+      if (!aoCachedTopics) aoCachedTopics = []; // TODO remove this line but fix initialization issue
       aoCachedTopics.push(oTopic);
     }
 

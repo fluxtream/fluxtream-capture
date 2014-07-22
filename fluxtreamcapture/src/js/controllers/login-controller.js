@@ -37,7 +37,7 @@ define([
       $scope.login = function() {
         forge.logging.debug("Logging in...");
         flxCom.checkAuth(function() {
-          window.location = "#/makeObservation";
+          $state.go('listTopics');
         });
       };
       

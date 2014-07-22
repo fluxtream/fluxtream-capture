@@ -60,8 +60,8 @@ define([
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
-    function($scope, $location, $stateParams, storage) {
+  fluxtreamCaptureControllers.controller('createTopicController', ['$scope', '$state', '$stateParams', 'StorageService',
+    function($scope, $state, $stateParams, storage) {
 
       // Toggle range boundaries and step based on topic type none/numeric/range
       $scope.changeType = function(){
@@ -95,6 +95,7 @@ define([
       $scope.createTopic = function() {
         //Set values of topic
         var tCurrentTime = new Date();
+        if (!$scope.aoTopics) $scope.aoTopics = []; // TODO remove this line but fix initialization bug
         var nLength = $scope.aoTopics.length;
 
         //TODO Topic Name is a mandatory field - Error/Notification message under the header
@@ -115,14 +116,14 @@ define([
         );
 
         storage.createTopic($scope.oNewTopic);
-        $location.path("editTopics");
+        $state.go("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$location', '$stateParams', 'StorageService',
-    function($scope, $location, $stateParams, storage) {
+  fluxtreamCaptureControllers.controller('editTopicController', ['$scope', '$state', '$stateParams', 'StorageService',
+    function($scope, $state, $stateParams, storage) {
       $scope.topicId = $stateParams.topicId;
 
       //TODO when the type is changed it should affect only future created entries
@@ -181,14 +182,14 @@ define([
         );
 
         storage.updateTopic($scope.oNewTopic);
-        $location.path("editTopics");
+        $state.go("editTopics");
       };
 
     }
   ]);
 
-  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
-    function($scope, $stateParams, $location, storage) {
+  fluxtreamCaptureControllers.controller('createObservationController', ['$scope', '$stateParams', '$state', 'StorageService',
+    function($scope, $stateParams, $state, storage) {
       //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
       $scope.oTopic = storage.readTopic($stateParams.topicId);
@@ -264,7 +265,7 @@ define([
         );
 
         storage.createObservation($scope.oNewObservation);
-        $location.path("makeObservation");
+        $state.go("listTopics");
       };
     }
   ]);
@@ -294,8 +295,8 @@ define([
     return result;
   }
 
-  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$location', 'StorageService',
-    function($scope, $stateParams, $location, storage) {
+  fluxtreamCaptureControllers.controller('editObservationController', ['$scope', '$stateParams', '$state', 'StorageService',
+    function($scope, $stateParams, $state, storage) {
       $scope.topicId = $stateParams.observationId.split("_")[1];
 
       $scope.oTopic = storage.readTopic($scope.topicId);
@@ -377,7 +378,7 @@ define([
         );
 
         storage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
-        $location.path("makeObservation");
+        $state.go("listTopics");
       };
     }
   ]);

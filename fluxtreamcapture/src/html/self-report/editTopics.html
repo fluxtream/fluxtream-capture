@@ -1,7 +1,7 @@
 <ion-view title="Edit Topics">
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-    <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -11,7 +11,7 @@
 
   <ion-content>
     <ion-list show-reorder="data.showReorder = true">
-      <ion-item ng-repeat="oTopic in aoTopics" href="#/editTopic/{{oTopic.id}}">
+      <ion-item ng-repeat="oTopic in aoTopics" ui-sref="editTopic({topiId: oTopic.id})">
         {{oTopic.name}}
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
@@ -24,5 +24,5 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
   <!-- <div class="title">Title</div> -->
-  <a id="footer-rigcreate" href="#/createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+  <a id="footer-rigcreate" ui-sref="createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
 </ion-footer-bar>

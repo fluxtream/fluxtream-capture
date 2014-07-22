@@ -2,7 +2,7 @@
 
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
 
-    <a href="#/makeObservation" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
 
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -17,7 +17,7 @@
           {{ tDate | date:"EEEE, MMMM d " }}
         </div>
 
-        <a href="#/editObservation/{{oObservation.id}}" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true" class="item">
+        <a ui-sref="editObservation({observationId: oObservation.id})" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true" class="item">
           <i style="font-size:8pt;">{{oObservation.observationTime | date : 'h:mm a'}}</i>
           {{aoTopics[oObservation.topicId].name}}
           <span class="item-note">
