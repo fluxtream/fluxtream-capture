@@ -95,6 +95,7 @@ define([
       $scope.createTopic = function() {
         //Set values of topic
         var tCurrentTime = new Date();
+        //TODO when the Topics array is empty this would give and error (definetely on the mobile phone version)
         var nLength = $scope.aoTopics.length;
 
         //TODO Topic Name is a mandatory field - Error/Notification message under the header

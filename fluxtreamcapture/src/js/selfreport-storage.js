@@ -14,6 +14,8 @@ define([
     //TODO Does it required to save update time for Observation and Topic?
     //TODO How Topic ID would be generated?
     //TODO timezone should be fixed - should be local time + offset in the timezone
+    //TODO create user and database when user is created in fluxtream
+    //TODO couchdb communication should be changed to https
 
     //Stores Topics information
     var aoCachedTopics;
@@ -23,14 +25,13 @@ define([
     var initialized = false;
 
     var db;
-    var remoteCouch;
+    var remoteCouch = 'http://yury:secret@127.0.0.1:5984/yury';
     var dbName = "SelfReportDB_" + flxCommunication.getUserName();
 
     function initialize(){
       initialized = true;
 
       db = new PouchDB(dbName);
-      remoteCouch = false;
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
@@ -58,6 +59,18 @@ define([
       this.comment = comment;
     }
 
+    function onSyncComplete(info) {
+      console.log("Successfully saved Topic on the server side");
+    }
+
+    /**
+     * Actions if failed to sync with a servar database
+     */
+    function onSyncError(){
+      console.log("Error while saving Topic on the server side");
+      console.log(err);
+    }
+
     /**
      * (Public) Save Topic into storage
      */
@@ -65,6 +78,7 @@ define([
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
+      console.log("Saving Topic on the client side.");
       db.put({
           _id: oTopic.id,
           creationTime: oTopic.creationTime.toISOString(),
@@ -78,11 +92,17 @@ define([
 
         function callback(err, result) {
         if (!err) {
-          console.log('Successfully saved a Topic!');
+          console.log('Successfully saved a Topic on client side!');
         } else {
           console.log(err);
         }
       });
+
+      console.log("Saving Topic on the server side.");
+      //Push Topic to the server
+      db.replicate.to(remoteCouch)
+        .on('complete', onSyncComplete)
+        .on('error', onSyncError);
     }
 
     /**
