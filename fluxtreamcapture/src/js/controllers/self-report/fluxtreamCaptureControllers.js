@@ -1,11 +1,12 @@
 define([
-  'flxModules',
-  'storage'
-], function(flxModules) {
+  'app-modules',
+  'services/user-prefs-service',
+  'services/self-report-storage-service'
+], function(appModules) {
   //TODO reload of the page doesn't work
   //TODO title of the page should be correct
 
-  var fluxtreamCaptureControllers = flxModules.flxControllers;
+  var fluxtreamCaptureControllers = appModules.controllers;
 
 
   fluxtreamCaptureControllers.controller('listTopicsController', ['$scope', '$timeout', 'SelfReportStorageService',
@@ -169,6 +170,7 @@ define([
 
       // Hide/show rangeStart/Stop fields and Steps
       $scope.changeType();
+      $scope.showThis = true;
 
       // Called when the form is submitted
       $scope.editTopic = function() {
@@ -186,6 +188,7 @@ define([
           document.getElementById('topic.rangeEnd').value,
           document.getElementById('topic.step').value
         );
+        // TODO $scope.$$phase || $scope.$apply();
 
         selfReportStorage.updateTopic($scope.oNewTopic);
         $state.go("editTopics");

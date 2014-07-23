@@ -2,14 +2,14 @@
  * Angular controller for the photo upload screen
  */
 define([
-  'flxModules',
-  'photo-list',
-  'storage'
-], function(flxModules) {
+  'app-modules',
+  'services/photo-list-service',
+  'services/user-prefs-service'
+], function(appModules) {
   
   // Photo upload controller
-  flxModules.flxControllers.controller('PhotoUploadController', ["$scope", "PhotoListService", 'StorageService',
-    function($scope, photoListService, storage) {
+  appModules.controllers.controller('PhotoUploadController', ["$scope", "PhotoListService", 'UserPrefsService',
+    function($scope, photoListService, userPrefs) {
       
       // List of available photos, photos are object of type {
       //   src:           the html src of the photo for display (can be a thumb)
@@ -42,7 +42,7 @@ define([
         // Add it to the photo list
         $scope.photos.push(photoObject);
         // Get photo upload status from user prefs
-        var status = storage.get('photo-' + photoObject.id + '-status');
+        var status = userPrefs.get('photo-' + photoObject.id + '-status');
         if (!status) status = 'none';
         if (status === 'uploading' || status === 'failed') status = 'pending'; // Upload failed in previous session
         photoObject.upload_status = status;
@@ -71,7 +71,7 @@ define([
     };
     
     // Initially load photos
-    storage.onReady(function() {
+    userPrefs.onReady(function() {
       if (!forge.is.web()) {
         $scope.addAllPhotosFromGallery();
       } else {

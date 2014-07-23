@@ -2,10 +2,10 @@
  * This service exposes the asynchronous forge.prefs functions as synchronous functions.
  */
 define([
-  'flxModules'
-], function(flxModules) {
+  'app-modules'
+], function(appModules) {
   
-  flxModules.flxServices.factory('StorageService', function($http) {
+  appModules.services.factory('UserPrefsService', function($http) {
     
     // The values stored in memory for synchronous access
     var values = {};

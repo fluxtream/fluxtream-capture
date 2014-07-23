@@ -2,12 +2,12 @@
  * This service manages all communication with the fluxtream server
  */
 define([
-  'flxModules',
-  'env',
-  'storage'
-], function(flxModules, env) {
+  'app-modules',
+  'config/env',
+  'services/user-prefs-service'
+], function(appModules, env) {
   
-  flxModules.flxServices.factory('FluxtreamCommunication', ["StorageService", "$state", function(storage, $state) {
+  appModules.services.factory('LoginService', ['UserPrefsService', "$state", function(userPrefs, $state) {
     
     /**
      * The callback function after a successful authentication
@@ -93,11 +93,11 @@ define([
     
     function checkAuthOnDevice() {
       forge.logging.info("Checking auth on device...");
-      // Execute after storage access has been initialized
-      storage.onReady(function() {
+      // Execute after userPrefs access has been initialized
+      userPrefs.onReady(function() {
         // Get username and password from user prefs
-        var username = storage.get('settings.username');
-        var password = storage.get('settings.password');
+        var username = userPrefs.get('settings.username');
+        var password = userPrefs.get('settings.password');
         if (!username && env['test.username']) username = env['test.username'];
         if (!password && env['test.password']) password = env['test.password'];
         if (username && password) {

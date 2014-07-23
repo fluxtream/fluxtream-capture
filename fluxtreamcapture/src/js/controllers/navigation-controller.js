@@ -2,10 +2,10 @@
  * Angular controller for the main menu page
  */
 define([
-  'flxModules'
-], function(flxModules) {
+  'app-modules'
+], function(appModules) {
   // Main menu controller
-  flxModules.flxControllers.controller('NavController', function($scope, $ionicSideMenuDelegate, $state) {
+  appModules.controllers.controller('NavController', function($scope, $ionicSideMenuDelegate, $state) {
     $scope.navigateTo = function(route, params) {
       $state.go(route, params);
       $ionicSideMenuDelegate.toggleRight();

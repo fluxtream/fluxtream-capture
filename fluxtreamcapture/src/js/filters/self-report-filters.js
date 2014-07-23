@@ -1,10 +1,8 @@
 define([
-  'flxModules'
-], function(flxModules) {
+  'app-modules'
+], function(appModules) {
 
-  var fluxtreamCaptureFilters = flxModules.flxFilters;
-
-  fluxtreamCaptureFilters.filter('orderByTimestamp', function () {
+  appModules.filters.filter('orderByTimestamp', function () {
     return function (items, field, reverse) {
       var filtered = [];
       angular.forEach(items, function (item) {
@@ -18,7 +16,7 @@ define([
     };
   });
 
-  fluxtreamCaptureFilters.filter('orderByDate', function () {
+  appModules.filters.filter('orderByDate', function () {
     return function (items, reverse) {
       var filtered = [];
       angular.forEach(items, function (item) {
