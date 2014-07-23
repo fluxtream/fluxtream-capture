@@ -75,7 +75,7 @@ define([
      * (Public) Save Topic into storage
      */
     function createTopic(oTopic){
-      aoCachedTopics.push(oTopic);
+      aoCachedTopics.push(oTopic); // TODO Error on Android
 
       // Save topic to client database
       console.log("Saving Topic on the client side.");
