@@ -4,10 +4,10 @@
  * This works only in the mobile app.
  */
 define([
-  'flxModules'
-], function(flxModules) {
+  'app-modules'
+], function(appModules) {
   
-  flxModules.flxServices.factory("PhotoListService", function() {
+  appModules.services.factory("PhotoListService", function() {
     
     // Whether the photo list has been initialized
     var initialized = false;
