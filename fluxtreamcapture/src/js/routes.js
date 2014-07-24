@@ -10,6 +10,7 @@ define([
   'controllers/self-report/edit-topics-controller',
   'controllers/self-report/create-topic-controller',
   'controllers/self-report/create-observation-controller',
+  'controllers/self-report/edit-topic-controller',
   'controllers/self-report/edit-observation-controller',
   'controllers/photo-upload/photo-upload-controller'
 ], function(appModules) {
