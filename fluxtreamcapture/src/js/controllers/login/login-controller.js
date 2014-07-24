@@ -7,7 +7,7 @@ define([
   'services/login-service'
 ], function(appModules) {
   
-  appModules.controllers.controller('loginController', ['$scope', 'LoginService', 'UserPrefsService', '$state',
+  appModules.controllers.controller('LoginController', ['$scope', 'LoginService', 'UserPrefsService', '$state',
     function($scope, loginService, userPrefs, $state) {
       
       // Current setting values

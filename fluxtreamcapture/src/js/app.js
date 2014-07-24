@@ -13,10 +13,10 @@ $(document).ready(function() {
     
     // Get current page or set main page
     var initialRoute = window.location.hash;
-    if (!initialRoute || initialRoute === "#/init") initialRoute = "#/makeObservation";
+    if (!initialRoute || initialRoute === "#/init") initialRoute = "#/listTopics";
     
     // Initialization controller
-    appModules.controllers.controller('initController', ['LoginService', '$ionicViewService', '$state', 'PhotoListService' /* preloading photos */,
+    appModules.controllers.controller('InitController', ['LoginService', '$ionicViewService', '$state', 'PhotoListService' /* preloading photos */,
       function(loginService, $ionicViewService, $state) {
         loginService.checkAuth(function() {
           // Load page

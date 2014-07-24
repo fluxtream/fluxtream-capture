@@ -5,7 +5,12 @@ define([
   'app-modules',
   'controllers/navigation-controller',
   'controllers/login/login-controller',
-  'controllers/self-report/fluxtreamCaptureControllers',
+  'controllers/self-report/list-topics-controller',
+  'controllers/self-report/history-controller',
+  'controllers/self-report/edit-topics-controller',
+  'controllers/self-report/create-topic-controller',
+  'controllers/self-report/create-observation-controller',
+  'controllers/self-report/edit-observation-controller',
   'controllers/photo-upload/photo-upload-controller'
 ], function(appModules) {
   appModules.app.config(function($stateProvider, $urlRouterProvider) {
@@ -14,47 +19,47 @@ define([
       .state('init', {
         url: "/init",
         template: "",
-        controller: "initController"
+        controller: "InitController"
       })
       .state('login', {
         url: "/login",
         templateUrl: "html/login/login.html",
-        controller: "loginController"
+        controller: "LoginController"
       })
       .state('listTopics', {
-        url: "/makeObservation",
+        url: "/listTopics",
         templateUrl: "html/self-report/list-topics.html",
-        controller: "listTopicsController"
+        controller: "ListTopicsController"
       })
       .state('createObservation', {
         url: '/createObservation/:topicId',
         templateUrl: "html/self-report/create-observation.html",
-        controller: "createObservationController"
+        controller: "CreateObservationController"
       })
       .state('editObservation', {
           url: "/editObservation/:observationId",
           templateUrl: "html/self-report/edit-observation.html",
-          controller: "editObservationController"
+          controller: "EditObservationController"
       })
       .state('history', {
         url: "/history",
         templateUrl: "html/self-report/history.html",
-        controller: "historyController"
+        controller: "HistoryController"
       })
       .state('editTopics', {
         url: "/editTopics",
         templateUrl: "html/self-report/edit-topics.html",
-        controller: "editTopicsController"
+        controller: "EditTopicsController"
       })
       .state('editTopic', {
         url: "/editTopic/:topicId",
         templateUrl: "html/self-report/edit-topic.html",
-        controller: "editTopicController"
+        controller: "EditTopicController"
       })
       .state('createTopic', {
           url: "/createTopic",
           templateUrl: "html/self-report/create-topic.html",
-          controller: "createTopicController"
+          controller: "CreateTopicController"
       })
       .state('photo-upload', {
         url: "/photo-upload",
