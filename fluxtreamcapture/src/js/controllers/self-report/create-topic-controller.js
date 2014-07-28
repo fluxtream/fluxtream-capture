@@ -39,7 +39,7 @@ define([
         };
 
         //TODO what if the result would not be returned?
-        selfReportStorage.readTopicsAsync(function (aoTopics) {
+        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
         });
 

@@ -3,7 +3,7 @@
  */
 define([
   'app-modules',
-  'services/login-service',
+  'services/login-service'
 ], function(appModules, storage) {
 
   appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", function($http,  loginService) {
@@ -25,11 +25,12 @@ define([
     var initialized = false;
 
     var db;
-    var remoteCouch = 'http://yury:secret@127.0.0.1:5984/yury';
-    var dbName = "SelfReportDB_" + loginService.getUserName();
+    var dbName = "self_report_db_" + loginService.getUserName();
+    var remoteCouch = 'http://yury:secret@127.0.0.1:5984/' + dbName;
 
     function initialize(){
       initialized = true;
+      aoCachedTopics = [];
 
       db = new PouchDB(dbName);
     }
@@ -57,18 +58,6 @@ define([
       this.updateTime = updateTime;
       this.timezone = timezone;
       this.comment = comment;
-    }
-
-    function onSyncComplete(info) {
-      console.log("Successfully saved Topic on the server side");
-    }
-
-    /**
-     * Actions if failed to sync with a servar database
-     */
-    function onSyncError(){
-      console.log("Error while saving Topic on the server side");
-      console.log(err);
     }
 
     /**
@@ -101,8 +90,13 @@ define([
       console.log("Saving Topic on the server side.");
       //Push Topic to the server
       db.replicate.to(remoteCouch)
-        .on('complete', onSyncComplete)
-        .on('error', onSyncError);
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully saved Topic on the server side");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while saving Topic on the server side: " + err);
+        });
     }
 
     /**
@@ -197,6 +191,47 @@ define([
     }
 
     /**
+     * Actions on reading complete from server database
+     */
+    function onGetComplete(info) {
+      console.log("Successfully read Topics from the server");
+    }
+
+    /**
+     * Actions if failed to read Topics from server database
+     */
+    function onGetError(){
+      console.log("Error while reading Topics from the server");
+      console.log(err);
+    }
+
+    /**
+     * (Public) Get Topics asynchronously
+     */
+    function readTopicsAsyncDB(fCallback){
+      // Get Topics from the server and save locally
+      db.replicate.from(remoteCouch)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully read Topics on the server side");
+        }).on('error',  function (err) {
+          // Handle error
+          console.log("Error while reading Topics on the server side: " + err);
+        });
+
+      // Read all docs into memory
+      db.allDocs({include_docs: true}, function(err, response) {
+
+
+        //window.alert(response);
+
+      });
+
+      // Put pre-processing of data
+      fCallback(aoCachedTopics);
+    }
+
+    /**
      * (Public) Find unique dates in the array
      */
     function findUniqueDates(aoObservations) {
@@ -219,7 +254,7 @@ define([
      * (Public) Read Topic asynchronously
      */
     function readTopicAsync(topicId, fCallback){
-      readTopicsAsync(function(data){
+      readTopicsAsyncDB(function(data){
         var oTopic = data.filter(function(entry){
           return entry.id == topicId;
         })[0];
@@ -279,6 +314,7 @@ define([
     return {
       //TODO create delete operations for the Topics and Observations
       readTopicsAsync: readTopicsAsync,
+      readTopicsAsyncDB: readTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
       readTopicAsync: readTopicAsync,
 

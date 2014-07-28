@@ -13,7 +13,7 @@ define([
       //TODO initialize when the observations list is empty
       //TODO check that dates are sorted correctly
 
-      selfReportStorage.readTopicsAsync(function (topics) {
+      selfReportStorage.readTopicsAsyncDB(function (topics) {
         $scope.aoTopics = topics;
       });
 

@@ -21,7 +21,7 @@ define([
         }, 1000);
       };
 
-      selfReportStorage.readTopicsAsync(function (aoTopics) {
+      selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
       });
     }

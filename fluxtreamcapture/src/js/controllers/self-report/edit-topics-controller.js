@@ -20,7 +20,7 @@ define([
         $scope.aoTopics.splice(toIndex, 0, oTopic);
       };
 
-      selfReportStorage.readTopicsAsync(function (aoTopics) {
+      selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
       });
     }
