@@ -1,0 +1,20 @@
+[
+  {
+    "do": {
+      "android_add_permission": {
+        "permission": "android.permission.READ_EXTERNAL_STORAGE"
+      }
+    }
+  }, {
+    "do": {
+      "android_add_to_application_manifest": {
+        "element": {
+          "tag": "service",
+          "attributes": {
+            "android:name": "io.trigger.forge.android.modules.flx_photoupload.UploadService"
+          }
+        }
+      }
+    }
+  }
+]

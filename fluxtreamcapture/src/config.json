@@ -3,7 +3,7 @@
 	"name": "FluxtreamCapture",
 	"author": "julien.dupuis@gmail.com",
 	"version": "0.1",
-	"platform_version": "v2.1.7",
+	"platform_version": "v2.1.8",
 	"description": "An empty app created by default",
 	"core": {
 		"general": {
@@ -20,6 +20,9 @@
 			"minimum_version": "4.3",
 			"device_family": "any",
 			"package_name": "org.fluxtream.capture.*"
+		},
+		"android": {
+			"minimum_version": "16"
 		}
 	},
 	"modules": {
@@ -47,7 +50,7 @@
 			}
 		},
 		"icons": {
-			"version": "2.2",
+			"version": "2.3",
 			"config": {
 				"android": {
 					"36": "img/icons/f-36x36.png",
@@ -76,6 +79,9 @@
 				"android-landscape": "img/launch/launch-f-2048x1496.png",
 				"hide-manually": true
 			}
+		},
+		"flx_photoupload": {
+			"version": "0.3.8"
 		}
 	}
 }
