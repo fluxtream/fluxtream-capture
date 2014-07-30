@@ -64,7 +64,7 @@ define([
      * (Public) Save Topic into storage
      */
     function createTopic(oTopic){
-      aoCachedTopics.push(oTopic); // TODO Error on Android
+      aoCachedTopics.push(oTopic);
 
       // Save topic to client database
       console.log("Saving Topic on the client side.");
@@ -209,6 +209,9 @@ define([
      * (Public) Get Topics asynchronously
      */
     function readTopicsAsyncDB(fCallback){
+      // TODO should be fetching gradually
+      aoCachedTopics = [];
+
       // Get Topics from the server and save locally
       db.replicate.from(remoteCouch)
         .on('complete', function () {
@@ -222,8 +225,12 @@ define([
       // Read all docs into memory
       db.allDocs({include_docs: true}, function(err, response) {
 
-
         //window.alert(response);
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          aoCachedTopics.push(row.doc);
+        });
 
       });
 
