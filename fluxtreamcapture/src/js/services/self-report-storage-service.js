@@ -30,7 +30,9 @@ define([
 
     function initialize(){
       initialized = true;
-      aoCachedTopics = [];
+      if(aoCachedTopics == null){
+        aoCachedTopics = [];
+      }
 
       db = new PouchDB(dbName);
     }
@@ -134,6 +136,21 @@ define([
     }
 
     /**
+     * (Public) Read Topic from the database
+     */
+    function readTopicDB(sTopicId){
+      if(!aoCachedTopics){
+        // TODO Load topics here
+      }
+
+      var oTopic = aoCachedTopics.filter(function(oEntry){
+        return oEntry.id == sTopicId;
+      })[0];
+
+      return(oTopic);
+    }
+
+    /**
      * (Public) Update Topic in storage
      */
     function updateTopic(oTopic) {
@@ -163,7 +180,8 @@ define([
      * (Public) Get Observations asynchronously
      */
     function readTopicsAsync(fCallback){
-      if(aoCachedTopics){
+      // TODO this check should be changed
+      if(aoCachedTopics.length != 0){
         fCallback(aoCachedTopics);
       } else {
         $http.get('../../html/testing_data/topics.json').success(function(aoData){
@@ -224,18 +242,26 @@ define([
 
       // Read all docs into memory
       db.allDocs({include_docs: true}, function(err, response) {
-
-        //window.alert(response);
         response.rows.forEach( function (row)
         {
           //console.log(row.doc.name);
-          aoCachedTopics.push(row.doc);
+          var oNextTopic = new Topic(
+            row.doc._id,
+            row.doc.creationTime,
+            row.doc.updateTime,
+            row.doc.name,
+            row.doc.type,
+            row.doc.defaultValue,
+            row.doc.rangeStart,
+            row.doc.rangeEnd,
+            row.doc.step
+          );
+
+          aoCachedTopics.push(oNextTopic);
         });
-
+        // Put pre-processing of data
+        fCallback(aoCachedTopics);
       });
-
-      // Put pre-processing of data
-      fCallback(aoCachedTopics);
     }
 
     /**
@@ -261,7 +287,7 @@ define([
      * (Public) Read Topic asynchronously
      */
     function readTopicAsync(topicId, fCallback){
-      readTopicsAsyncDB(function(data){
+      readTopicsAsync(function(data){
         var oTopic = data.filter(function(entry){
           return entry.id == topicId;
         })[0];
@@ -328,6 +354,7 @@ define([
       Topic : Topic,
       createTopic: createTopic,
       readTopic: readTopic,
+      readTopicDB: readTopicDB,
       updateTopic: updateTopic,
 
       Observation : Observation,

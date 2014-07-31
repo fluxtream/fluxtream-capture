@@ -22,6 +22,7 @@ define([
 
       selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
+        $scope.$$phase || $scope.$apply();
       });
     }
   ]);
