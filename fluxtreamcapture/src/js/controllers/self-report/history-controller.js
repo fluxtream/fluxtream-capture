@@ -15,15 +15,19 @@ define([
 
       selfReportStorage.readTopicsAsyncDB(function (topics) {
         $scope.aoTopics = topics;
+        $scope.$$phase || $scope.$apply();
       });
 
-      selfReportStorage.readObservationsAsync(function (aoObservations) {
+      selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
         $scope.aoObservations = aoObservations;
+
+        if ($scope.aoObservations != null) {
+          $scope.aoUniqueDates = selfReportStorage.findUniqueDates($scope.aoObservations);
+          $scope.$$phase || $scope.$apply();
+        }
       });
 
-      if ($scope.aoObservations != null) {
-        $scope.aoUniqueDates = selfReportStorage.findUniqueDates($scope.aoObservations);
-      }
+
     }
   ]);
 

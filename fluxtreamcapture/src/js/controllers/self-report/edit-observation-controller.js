@@ -11,8 +11,9 @@ define([
    * Returns time in 24 format as a string
    */
   function helperGetTimeFromDate(observationTime){
-    var hour = observationTime.getHours();  /* Returns the hour (from 0-23) */
-    var minutes = observationTime.getMinutes();  /* Returns the minutes (from 0-59) */
+    var dObservationTime = new Date(observationTime);
+    var hour = dObservationTime.getHours();  /* Returns the hour (from 0-23) */
+    var minutes = dObservationTime.getMinutes();  /* Returns the minutes (from 0-59) */
     var result = '';
 
     if(hour < 10){

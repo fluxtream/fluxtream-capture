@@ -26,14 +26,15 @@ define([
 
     var dbTopics;
     var dbObservations;
-    var dbNameTopics = "self_report_db_topics" + loginService.getUserName();
-    var dbNameObservations = "self_report_db_observations" + loginService.getUserName();
+    var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
+    var dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
     var remoteCouchTopics = 'http://yury:secret@127.0.0.1:5984/' + dbNameTopics;
     var remoteCouchObservations = 'http://yury:secret@127.0.0.1:5984/' + dbNameObservations;
 
     function initialize(){
       initialized = true;
       aoCachedTopics = [];
+      aoCachedObservations = [];
 
       dbTopics = new PouchDB(dbNameTopics);
       dbObservations = new PouchDB(dbNameObservations);
@@ -213,6 +214,9 @@ define([
      * (Public) Get Topics asynchronously
      */
     function readTopicsAsyncDB(fCallback){
+      // TODO should be fetching gradually
+      aoCachedTopics = [];
+
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopics)
         .on('complete', function () {
@@ -224,7 +228,6 @@ define([
         });
 
       // Read all docs into memory
-
       dbTopics.allDocs({include_docs: true}, function(err, response) {
         response.rows.forEach( function (row)
         {
@@ -246,10 +249,50 @@ define([
         // Put pre-processing of data
         fCallback(aoCachedTopics);
       });
-
-      // Put pre-processing of data
-      fCallback(aoCachedTopics);
     }
+
+    /**
+     * (Public) Get Observations asynchronously
+     */
+    function readObservationsAsyncDB(fCallback){
+      // TODO should be fetching gradually
+      aoCachedObservations = [];
+
+      // Get Observations from the server and save locally
+      dbObservations.replicate.from(remoteCouchObservations)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully read Observations on the server side");
+        }).on('error',  function (err) {
+          // Handle error
+          console.log("Error while reading Observations on the server side: " + err);
+        });
+
+      // Read all docs into memory
+      dbObservations.allDocs({include_docs: true}, function(err, response) {
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          var oNextObservation = new Observation(
+            row.doc._id,
+            row.doc.topicId,
+            row.doc.value,
+            row.doc.creationDate,
+            row.doc.creationTime,
+            row.doc.observationDate,
+            row.doc.observationTime,
+            row.doc.updateTime,
+            row.doc.timezone,
+            row.doc.comment
+          );
+
+          aoCachedObservations.push(oNextObservation);
+        });
+        // Put pre-processing of data
+        fCallback(aoCachedObservations);
+      });
+    }
+
 
     /**
      * (Public) Find unique dates in the array
@@ -302,7 +345,7 @@ define([
         value: oObservation.value,
         creationDate: oObservation.creationDate.toISOString(),
         creationTime: oObservation.creationTime.toISOString(),
-        observationDate: oObservation.observationDate.toISOString(),
+        observationDate: oObservation.observationDate,
         observationTime: oObservation.observationTime.toISOString(),
         updateTime: oObservation.updateTime.toISOString(),
         timezone: oObservation.timezone,
@@ -369,6 +412,7 @@ define([
       readTopicsAsync: readTopicsAsync,
       readTopicsAsyncDB: readTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
+      readObservationsAsyncDB: readObservationsAsyncDB,
       readTopicAsync: readTopicAsync,
 
       Topic : Topic,
