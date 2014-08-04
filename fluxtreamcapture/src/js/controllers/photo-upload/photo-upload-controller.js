@@ -53,6 +53,9 @@ define([
         }
       };
       
+      /**
+       * Finds the photo with the given id in the photo list
+       */
       $scope.getPhoto = function(photoId) {
         var photoFound = null;
         $scope.photos.forEach(function(photo) {
@@ -62,7 +65,7 @@ define([
       };
       
       /**
-       * (Public) Loads all photos from the device image gallery
+       * Loads all photos from the device image gallery
        */
       $scope.addAllPhotosFromGallery = function() {
         photoListService.onReady(function() {
@@ -72,12 +75,54 @@ define([
           $scope.rawPhotoList.forEach(function(rawPhotoData) {
             $scope.addPhoto(rawPhotoData);
           });
-          // Set loaded status
-          $scope.loaded = true;
-          // Update UI
-          $scope.$$phase || $scope.$apply();
+          $scope.loadPhotoStatuses();
         });
       };
+      
+      /**
+       * Get the photos' upload status from the native module 
+       */
+      $scope.loadPhotoStatuses = function() {
+        var photos = [];
+        $scope.photos.forEach(function(photo) {
+          photos.push(photo.id);
+        });
+        forge.flx_photoupload.arePhotosUploaded(photos,
+          // Success
+          function(photoStatuses) {
+            // Set statuses
+            for (var i = 0; i < photoStatuses.length; i++) {
+              if (photoStatuses[i]) $scope.photos[i].upload_status = 'uploaded';
+            }
+            // Set loaded status
+            $scope.loaded = true;
+            // Update UI
+            $scope.$$phase || $scope.$apply();
+          },
+          // Error
+          function(error) {
+            forge.logging.info("Error while getting photo statuses");
+            forge.logging.info(error);
+          }
+        );
+      };
+      
+      // Initially set upload parameters
+      forge.flx_photoupload.setUploadParameters(
+        // Upload URL
+        env["fluxtream.home.url"] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
+        // Authentication
+				btoa(userPrefs.get('settings.username') + ":" + userPrefs.get('settings.password')),
+        // Success
+        function() {
+          logging.info("Call to setUploadParameters successful");
+        },
+        // Error
+        function(error) {
+          logging.info("Call to setUploadParameters failed");
+          logging.info(error);
+        }
+			);
       
       // Initially load photos
       userPrefs.onReady(function() {
