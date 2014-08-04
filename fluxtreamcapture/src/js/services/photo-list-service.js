@@ -32,6 +32,7 @@ define([
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
+          functionsToExecute = [];
         },
         // Error
         function(error) {
@@ -40,6 +41,20 @@ define([
         }
       );
     };
+    
+    /**
+     * Re-runs the photo loading process to update the photo list
+     */
+    function reloadPhotos() {
+      // Don't reload if loading is already in progress
+      if (!initialized) return;
+      // Reset initialization status
+      initialized = false;
+      functionsToExecute = [];
+      photoList = null;
+      // Reload photos
+      loadPhotos();
+    }
     
     /**
      * (Public) Executes a function once the photo list has been initialized
@@ -63,6 +78,7 @@ define([
     return {
       isInitialized: function() { return initialized; },
       getPhotoList: function() { return photoList; },
+      reloadPhotos: reloadPhotos,
       onReady: onReady
     };
     

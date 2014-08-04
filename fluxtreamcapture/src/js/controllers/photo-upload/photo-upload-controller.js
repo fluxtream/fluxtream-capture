@@ -69,6 +69,8 @@ define([
        */
       $scope.addAllPhotosFromGallery = function() {
         photoListService.onReady(function() {
+          // Empty photo list
+          $scope.photos = [];
           // Get raw photo list
           $scope.rawPhotoList = photoListService.getPhotoList();
           // Create photo list
@@ -153,6 +155,26 @@ define([
           }
         );
       };
+      
+      // Reload photos on resume
+      // TODO A new listener is being created each time this page is reloaded. This does no harm, but should be fixed.
+      forge.event.appResumed.addListener(
+        // Callback
+        function() {
+          if (!forge.is.web()) {
+            userPrefs.onReady(function() {
+              forge.logging.info("Reloading photo list");
+              photoListService.reloadPhotos();
+              $scope.addAllPhotosFromGallery();
+            });
+          }
+        },
+        // Error
+        function(content) {
+          forge.logging.info("Error on forge.event.appResumed.appListener");
+          forge.logging(content);
+        }
+      );
       
       // Add event listeners
       
