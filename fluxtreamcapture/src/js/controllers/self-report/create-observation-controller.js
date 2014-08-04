@@ -18,7 +18,7 @@ define([
 
         //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
-        $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
+        $scope.oTopic = selfReportStorage.readTopicDB($stateParams.topicId);
         $scope.tObservationDate = new Date();
         $scope.tObservationTime = $scope.tObservationDate;
 

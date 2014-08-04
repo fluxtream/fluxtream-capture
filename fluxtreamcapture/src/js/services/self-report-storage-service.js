@@ -24,15 +24,21 @@ define([
     // True once this has been initialized
     var initialized = false;
 
-    var db;
-    var dbName = "self_report_db_" + loginService.getUserName();
-    var remoteCouch = 'http://yury:secret@127.0.0.1:5984/' + dbName;
+    var dbTopics;
+    var dbObservations;
+    var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
+    var dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
+    var remoteCouchTopics = 'http://yury:secret@127.0.0.1:5984/' + dbNameTopics;
+    var remoteCouchObservations = 'http://yury:secret@127.0.0.1:5984/' + dbNameObservations;
 
     function initialize(){
       initialized = true;
       aoCachedTopics = [];
+      aoCachedObservations = [];
 
-      db = new PouchDB(dbName);
+
+      dbTopics = new PouchDB(dbNameTopics);
+      dbObservations = new PouchDB(dbNameObservations);
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
@@ -64,11 +70,11 @@ define([
      * (Public) Save Topic into storage
      */
     function createTopic(oTopic){
-      aoCachedTopics.push(oTopic); // TODO Error on Android
+      aoCachedTopics.push(oTopic);
 
       // Save topic to client database
       console.log("Saving Topic on the client side.");
-      db.put({
+      dbTopics.put({
           _id: oTopic.id,
           creationTime: oTopic.creationTime.toISOString(),
           updateTime: oTopic.updateTime.toISOString(),
@@ -89,7 +95,7 @@ define([
 
       console.log("Saving Topic on the server side.");
       //Push Topic to the server
-      db.replicate.to(remoteCouch)
+      dbTopics.replicate.to(remoteCouchTopics)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully saved Topic on the server side");
@@ -134,6 +140,21 @@ define([
     }
 
     /**
+     * (Public) Read Topic from the database
+     */
+    function readTopicDB(sTopicId){
+      if(!aoCachedTopics){
+        // TODO Load topics here
+      }
+
+      var oTopic = aoCachedTopics.filter(function(oEntry){
+        return oEntry.id == sTopicId;
+      })[0];
+
+      return(oTopic);
+    }
+
+    /**
      * (Public) Update Topic in storage
      */
     function updateTopic(oTopic) {
@@ -163,7 +184,8 @@ define([
      * (Public) Get Observations asynchronously
      */
     function readTopicsAsync(fCallback){
-      if(aoCachedTopics){
+      // TODO this check should be changed
+      if(aoCachedTopics.length != 0){
         fCallback(aoCachedTopics);
       } else {
         $http.get('../../html/testing_data/topics.json').success(function(aoData){
@@ -209,8 +231,11 @@ define([
      * (Public) Get Topics asynchronously
      */
     function readTopicsAsyncDB(fCallback){
+      // TODO should be fetching gradually
+      aoCachedTopics = [];
+
       // Get Topics from the server and save locally
-      db.replicate.from(remoteCouch)
+      dbTopics.replicate.from(remoteCouchTopics)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Topics on the server side");
@@ -220,16 +245,73 @@ define([
         });
 
       // Read all docs into memory
-      db.allDocs({include_docs: true}, function(err, response) {
 
+      dbTopics.allDocs({include_docs: true}, function(err, response) {
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          var oNextTopic = new Topic(
+            row.doc._id,
+            row.doc.creationTime,
+            row.doc.updateTime,
+            row.doc.name,
+            row.doc.type,
+            row.doc.defaultValue,
+            row.doc.rangeStart,
+            row.doc.rangeEnd,
+            row.doc.step
+          );
 
-        //window.alert(response);
+          aoCachedTopics.push(oNextTopic);
+        });
+        // Put pre-processing of data
+        fCallback(aoCachedTopics);
 
       });
-
-      // Put pre-processing of data
-      fCallback(aoCachedTopics);
     }
+
+    /**
+     * (Public) Get Observations asynchronously
+     */
+    function readObservationsAsyncDB(fCallback){
+      // TODO should be fetching gradually
+      aoCachedObservations = [];
+
+      // Get Observations from the server and save locally
+      dbObservations.replicate.from(remoteCouchObservations)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully read Observations on the server side");
+        }).on('error',  function (err) {
+          // Handle error
+          console.log("Error while reading Observations on the server side: " + err);
+        });
+
+      // Read all docs into memory
+      dbObservations.allDocs({include_docs: true}, function(err, response) {
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          var oNextObservation = new Observation(
+            row.doc._id,
+            row.doc.topicId,
+            row.doc.value,
+            row.doc.creationDate,
+            row.doc.creationTime,
+            row.doc.observationDate,
+            row.doc.observationTime,
+            row.doc.updateTime,
+            row.doc.timezone,
+            row.doc.comment
+          );
+
+          aoCachedObservations.push(oNextObservation);
+        });
+        // Put pre-processing of data
+        fCallback(aoCachedObservations);
+      });
+    }
+
 
     /**
      * (Public) Find unique dates in the array
@@ -254,7 +336,7 @@ define([
      * (Public) Read Topic asynchronously
      */
     function readTopicAsync(topicId, fCallback){
-      readTopicsAsyncDB(function(data){
+      readTopicsAsync(function(data){
         var oTopic = data.filter(function(entry){
           return entry.id == topicId;
         })[0];
@@ -265,14 +347,47 @@ define([
     /**
      * (Public) Save Observation
      */
-    function createObservation(observation) {
+    function createObservation(oObservation) {
       if (!initialized) throw "Storage not initialized yet.";
 
       if (aoCachedObservations == null) {
         aoCachedObservations = [];
       }
 
-      aoCachedObservations.push(observation);
+      aoCachedObservations.push(oObservation);
+
+      // Save observation to client database
+      console.log("Saving Observation on the client side.");
+      dbObservations.put({
+        _id: oObservation.id,
+        topicId: oObservation.topicId,
+        value: oObservation.value,
+        creationDate: oObservation.creationDate.toISOString(),
+        creationTime: oObservation.creationTime.toISOString(),
+        observationDate: oObservation.observationDate,
+        observationTime: oObservation.observationTime.toISOString(),
+        updateTime: oObservation.updateTime.toISOString(),
+        timezone: oObservation.timezone,
+        comment: oObservation.comment},
+
+        function callback(err, result) {
+          if (!err) {
+            console.log('Successfully saved Observation on client side!');
+          } else {
+            console.log(err);
+          }
+        });
+
+      console.log("Saving Observation on the server side.");
+      //Push Observation to the server
+      dbObservations.replicate.to(remoteCouchObservations)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully saved Observation on the server side");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while saving Observation on the server side: " + err);
+        });
     }
 
     /**
@@ -316,11 +431,13 @@ define([
       readTopicsAsync: readTopicsAsync,
       readTopicsAsyncDB: readTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
+      readObservationsAsyncDB: readObservationsAsyncDB,
       readTopicAsync: readTopicAsync,
 
       Topic : Topic,
       createTopic: createTopic,
       readTopic: readTopic,
+      readTopicDB: readTopicDB,
       updateTopic: updateTopic,
 
       Observation : Observation,
