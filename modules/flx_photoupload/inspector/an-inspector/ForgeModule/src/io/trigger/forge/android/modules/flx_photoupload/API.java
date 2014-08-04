@@ -9,6 +9,9 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images.ImageColumns;
 import android.util.Log;
 
 import com.google.gson.JsonArray;
@@ -25,6 +28,83 @@ import com.google.gson.JsonPrimitive;
  * - Whether it has been taken after a given date and time
  */
 public class API {
+	
+	/**
+	 * Creates a JSON list of the photos available on the device's local photo gallery
+	 * Each photo object will have the following information:
+	 * - id: the identifier of the photo
+	 * - uri: the local URI of the photo
+	 * - orientation: the orientation of the photo ("landscape" or "portrait")
+	 * - thumb_id: the identifier of the photo's thumbnail (if any)
+	 * - thumb_uri: the local URI of the photo's thumbnail (if any)
+	 */
+	public static void getPhotoList(final ForgeTask task) {
+		task.performAsync(new Runnable() {
+			public void run() {
+				// Get all images
+				Cursor cursor = ForgeApp.getActivity().getContentResolver().query(
+						MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+						new String[] {
+								MediaStore.Images.Media._ID,
+								MediaStore.Images.Media.WIDTH,
+								MediaStore.Images.Media.HEIGHT,
+								MediaStore.Images.Media.DATE_TAKEN
+								},
+						null, null, null);
+				// JSON result container
+				JsonArray photoList = new JsonArray();
+				// Construct result be adding each photo
+				while (cursor != null && cursor.moveToNext()) {
+					// Get photo info
+					int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+					int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
+					int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
+					long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+					// Construct json object
+					JsonObject photoObject = new JsonObject();
+					photoObject.addProperty("id", photoId);
+					photoObject.addProperty("uri", "content://media/external/images/media/" + photoId);
+					photoObject.addProperty("orientation", width > height ? "landscape" : "portrait");
+					photoObject.addProperty("date_taken", dateTaken);
+					// Get thumbnail if any
+					Cursor thumbCursor = ForgeApp.getActivity().getContentResolver().query(
+							MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+							new String[] { ImageColumns._ID },
+							MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
+							new String[] { photoId + "" },
+							null);
+					if (thumbCursor != null) {
+						if (!thumbCursor.moveToFirst()) {
+							// Thumbnail does not exist
+							// Force generation of thumbnail
+							Log.i("flx_photos", "Generate thumbnail for photo " + photoId);
+							MediaStore.Images.Thumbnails.getThumbnail(
+									ForgeApp.getActivity().getContentResolver(),
+									photoId,
+									MediaStore.Images.Thumbnails.MINI_KIND,
+									null);
+							// Get thumbnail again
+							thumbCursor = ForgeApp.getActivity().getContentResolver().query(
+									MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+									new String[] { ImageColumns._ID },
+									MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
+									new String[] { photoId + "" },
+									null);
+						}
+						if (thumbCursor.moveToFirst()) {
+							int thumbnailId = thumbCursor.getInt(0);
+							photoObject.addProperty("thumb_id", thumbnailId);
+							photoObject.addProperty("thumb_uri", "content://media/external/images/thumbnails/" + thumbnailId);
+						}
+					}
+					// Add photo to list
+					photoList.add(photoObject);
+				}
+				// Return photo list
+				task.success(photoList.toString());
+			}
+		});
+	}
 	
 	/**
 	 * Starts the service that will automatically upload photos to the Fluxtream server

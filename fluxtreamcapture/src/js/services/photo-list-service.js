@@ -23,7 +23,7 @@ define([
      */
     function loadPhotos() {
       // Call native module to get the photo list
-      forge.fc_gallery.getPictureList(
+      forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
           photoList = JSON.parse(jsonArray);
@@ -35,7 +35,7 @@ define([
         },
         // Error
         function(error) {
-          forge.logging.error("Error while calling getPictureList:");
+          forge.logging.error("Error while calling getPhotoList:");
           forge.logging.error(error);
         }
       );
