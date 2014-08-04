@@ -1,8 +1,0 @@
-{
-	"description": "Provides a method to get the list of pictures from the native image gallery.",
-	"min_platform_version": "v2.1.6",
-	"namespace": "fc_gallery",
-	"platform_version": "v2.1.6",
-	"version": "0.3",
-	"changes": "Return 'date taken' along with the other information."
-}
