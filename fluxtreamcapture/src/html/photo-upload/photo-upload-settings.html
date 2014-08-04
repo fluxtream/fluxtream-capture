@@ -1,0 +1,42 @@
+<ion-view title="Photo Upload">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="photo-upload" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content>
+    <ul class="list">
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.autoupload_enabled" ng-change="save()">
+        </label>
+        Enable auto-upload
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save()">
+        </label>
+        Upload portrait photos automatically
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save()">
+        </label>
+        Upload landscape photos automatically
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_only_future_photos" ng-change="save()">
+        </label>
+        Only upload future photos
+      </li>
+    </ul>
+  </ion-content>
+</ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-dark">
+</ion-footer-bar>

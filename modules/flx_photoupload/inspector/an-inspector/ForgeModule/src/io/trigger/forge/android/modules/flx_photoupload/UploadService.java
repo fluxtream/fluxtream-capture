@@ -1,6 +1,5 @@
 package io.trigger.forge.android.modules.flx_photoupload;
 
-import io.trigger.forge.android.core.ForgeApp;
 import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
@@ -69,6 +68,7 @@ public class UploadService extends Service {
 				new ContentObserver(new Handler()) {
 			@Override
 			public void onChange(boolean selfChange, Uri uri) {
+				Log.i("flx_photoupload", "A new photo was taken");
 				mAutoUploadThread.interrupt();
 			}
 		});
@@ -159,10 +159,14 @@ public class UploadService extends Service {
 	 * Reads the photo storage library and checks if unuploaded photos should be uploaded
 	 */
 	private synchronized void checkForNewPhotos() {
+		if (PhotoUploader.isUploading()) {
+			// Don't make simultaneous requests to the photo uploader
+			return;
+		}
 		if (autouploadEnabled) {
 			Log.i("flx_photoupload", "Checking for new photos");
 			// Get all images
-			Cursor cursor = ForgeApp.getActivity().getContentResolver().query(
+			Cursor cursor = this.getContentResolver().query(
 					MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
 					new String[] {
 							MediaStore.Images.Media._ID,
@@ -186,7 +190,9 @@ public class UploadService extends Service {
 				if (PhotoUploader.isPhotoUploaded(photoId)) mustBeUploaded = false;
 				// Enqueue photo for upload if needed
 				if (mustBeUploaded) {
+					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
 					PhotoUploader.uploadPhoto(photoId);
+					return;
 				}
 			}
 		}

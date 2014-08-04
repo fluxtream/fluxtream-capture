@@ -30,6 +30,7 @@ public class API {
 	 * Starts the service that will automatically upload photos to the Fluxtream server
 	 */
 	public static void startAutouploadService(final ForgeTask task) {
+		Log.i("flx_photoupload", "API: startUptouploadService");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -46,6 +47,7 @@ public class API {
 	 * @param authentication The basic authentication string (base64 of "{username}:{password}")
 	 */
 	public static void setUploadParameters(final ForgeTask task, @ForgeParam("uploadURL") final String uploadURL, @ForgeParam("authentication") final String authentication) {
+		Log.i("flx_photoupload", "API: setUploadParameters(" + uploadURL + ", " + authentication + ")");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -60,6 +62,7 @@ public class API {
 	 * for the list of allowed parameters. 
 	 */
 	public static void setAutouploadOptions(final ForgeTask task, @ForgeParam("params") final JsonObject params) {
+		Log.i("flx_photoupload", "API: setAutouploadOptions");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -89,6 +92,7 @@ public class API {
 	 * Stops the autoupload background service
 	 */
 	public static void stopAutouploadService(final ForgeTask task) {
+		Log.i("flx_photoupload", "API: stopAutouploadService");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -103,6 +107,7 @@ public class API {
 	 * Adds a photo to the pending upload list, and starts the upload process if it was idleoId
 	 */
 	public static void uploadPhoto(final ForgeTask task, @ForgeParam("photoId") final int photoId) {
+		Log.i("flx_photoupload", "API: uploadPhoto(" + photoId + ")");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -120,6 +125,7 @@ public class API {
 	 * @param photoIds
 	 */
 	public static void arePhotosUploaded(final ForgeTask task, @ForgeParam("photoIds") final JsonArray photoIds) {
+		Log.i("flx_photoupload", "API: arePhotosUploaded");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
@@ -139,6 +145,7 @@ public class API {
 	 * Tries canceling a photo upload, if it is not too late
 	 */
 	public static void cancelUpload(final ForgeTask task, @ForgeParam("photoId") final int photoId) {
+		Log.i("flx_photoupload", "API: cancelUpload(" + photoId + ")");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {

@@ -7,36 +7,34 @@
   </ion-nav-bar>
   <ion-content>
     <div ng-if="loaded">
-      <!-- Number of photos -->
-      <p ng-if="rawPhotoList.length > 1">There are {{ rawPhotoList.length }} photos</p>
-      <p ng-if="rawPhotoList.length == 1">There is 1 photo</p>
-      <p ng-if="rawPhotoList.length == 0">There is no photo</p>
       <!-- Photo list -->
-      <div class="list" style="background: red;">
+      <div class="list" style="margin-top: 10px;">
         <div class="photo-wrapper"
              collection-repeat="photo in photos"
              collection-item-width="'33%'"
              collection-item-height="150"
              ng-style="{height: 150}">
           <div class="photo-image">
-            <img ng-src="{{ photo.src }}" width="100" />
+            <img ng-src="{{ photo.src }}" />
           </div>
           <div class="photo-info">
-            <p ng-if="photo.upload_status == 'uploaded'">Uplodaded</p>
-            <p ng-if="photo.upload_status == 'pending'">Upload pending</p>
-            <p ng-if="photo.upload_status == 'failed'">
-              Upload failed
-              <a class="btn-small btn-primary" ng-click="uploadPhoto(photo)">
-                Try again
-              </a>
+            <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">
+              <span class="ion-checkmark-round"></span>
             </p>
-            <p ng-if="photo.upload_status == 'uploading'">Uploading...</p>
+            <p ng-if="photo.upload_status == 'pending'" class="photo-status-pending">
+              <span class="ion-load-d"></span>
+            </p>
+            <p ng-if="photo.upload_status == 'failed'" class="photo-status-failed">
+              <span class="ion-load-d"></span>
+            </p>
+            <p ng-if="photo.upload_status == 'uploading'" class="photo-status-uploading">
+              <span class="ion-loading-d"></span>
+            </p>
             <p ng-if="photo.upload_status == 'none'">
-              <a class="btn-small btn-primary" ng-click="uploadPhoto(photo)">
+              <button class="button button-stable button-small" ng-click="uploadPhoto(photo)">
                 Upload
-              </a>
+              </button>
             </p>
-            <p>Orientation: {{ photo.orientation }}°</p>
           </div>
         </div>
       </div>
@@ -49,3 +47,8 @@
     </div>
   </ion-content>
 </ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-dark">
+  <a id="footer-right" ui-sref="photo-upload-settings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
+</ion-footer-bar>

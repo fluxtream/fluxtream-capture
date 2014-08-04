@@ -12,7 +12,8 @@ define([
   'controllers/self-report/create-observation-controller',
   'controllers/self-report/edit-topic-controller',
   'controllers/self-report/edit-observation-controller',
-  'controllers/photo-upload/photo-upload-controller'
+  'controllers/photo-upload/photo-upload-controller',
+  'controllers/photo-upload/photo-upload-settings-controller'
 ], function(appModules) {
   appModules.app.config(function($stateProvider, $urlRouterProvider) {
     // Routing
@@ -66,6 +67,11 @@ define([
         url: "/photo-upload",
         templateUrl: "html/photo-upload/photo-upload.html",
         controller: "PhotoUploadController"
+      })
+      .state('photo-upload-settings', {
+        url: "/photo-upload-settings",
+        templateUrl: "html/photo-upload/photo-upload-settings.html",
+        controller: "PhotoUploadSettingsController"
       })
       .state('settings', {
         url: "/settings",

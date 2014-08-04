@@ -67,14 +67,17 @@ define([
         functionToExecute();
       });
     }
-      
+    
     /**
      * (Public) Returns the value for the given key
      */
-    function getValue(key) {
+    function getValue(key, defaultValue) {
       if (!initialized) throw "Storage not initialized yet.";
       var value = values[key];
-      if (typeof value === 'undefined') return null;
+      if (typeof value === 'undefined') {
+        if (typeof defaultValue === 'undefined') return null;
+        return defaultValue;
+      }
       return value;
     }
     

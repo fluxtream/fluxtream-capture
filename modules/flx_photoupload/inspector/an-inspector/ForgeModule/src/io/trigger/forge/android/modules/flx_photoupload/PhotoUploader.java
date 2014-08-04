@@ -24,6 +24,7 @@ import org.json.JSONObject;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -80,6 +81,7 @@ public class PhotoUploader {
 	 * @param authentication The authentication string for basic authentication
 	 */
 	public static void initialize(SharedPreferences prefs, String uploadURL, String authentication) {
+		Log.i("flx_photoupload", "Initializing PhotoUploader");
 		PhotoUploader.prefs = prefs;
 		PhotoUploader.uploadURL = uploadURL;
 		PhotoUploader.authentication = authentication;
@@ -97,18 +99,22 @@ public class PhotoUploader {
 	 * @param photoId
 	 */
 	public static void uploadPhoto(int photoId) {
+		Log.i("flx_photoupload", "Call to PhotoUploader.uploadPhoto(" + photoId + ")");
 		synchronized (mutex) {
 			// Check if the photo is currently being uploaded
 			if (currentPhoto == photoId) {
+				Log.i("flx_photoupload", "Upload of photo " + photoId + " already in progress");
 				ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
 				return;
 			}
 			// Check if the photo is already in the queue
 			if (pendingPhotos.contains(photoId)) {
+				Log.i("flx_photoupload", "Photo " + photoId + " already in upload queue");
 				return;
 			}
 			// Check if the photo is already uploaded
 			if (isPhotoUploaded(photoId)) {
+				Log.i("flx_photoupload", "Photo " + photoId + " is already uploaded");
 				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
 				return;
 			}
@@ -128,6 +134,7 @@ public class PhotoUploader {
 	 * photo might be marked as not uploaded though it has been uploaded.
 	 */
 	public static void cancelUpload(int photoId) {
+		Log.i("flx_photoupload", "Call to PhotoUploader.cancelUpload(" + photoId + ")");
 		synchronized (mutex) {
 			// Remove from pending upload queue
 			pendingPhotos.remove(photoId);
@@ -138,6 +145,13 @@ public class PhotoUploader {
 				if (uploadThread != null) uploadThread.interrupt();
 			}
 		}
+	}
+	
+	/**
+	 * Returns whether a photo is currently being uploaded
+	 */
+	public static boolean isUploading() {
+		return uploadThread != null;
 	}
 	
 	
@@ -164,6 +178,7 @@ public class PhotoUploader {
 	 * Mark a photo as uploaded, it won't be uploaded in the future
 	 */
 	private static void setPhotoUploaded(int photoId) {
+		Log.i("flx_photoupload", "Marking photo " + photoId + " as uploaded");
 		Editor editor = prefs.edit();
 		editor.putBoolean("photo_" + photoId + "_uploaded", true);
 		editor.apply();
@@ -279,9 +294,17 @@ public class PhotoUploader {
 						setPhotoUploaded(photoId);
 						currentPhoto = -1;
 					}
-				} catch (Exception e) {
+				} catch (CursorIndexOutOfBoundsException e) {
+					// The photo does not exist anymore
+					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
+					synchronized (mutex) {
+						currentPhoto = -1;
+						cancelCurrentUpload = false;
+					}
+				} catch (Throwable e) {
 					// An error occurred
 					if (cancelCurrentUpload) {
+						Log.i("flx_photoupload", "Upload of photo " + photoId + " canceled");
 						// Generate 'canceled' event
 						ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
 						synchronized (mutex) {
@@ -289,7 +312,7 @@ public class PhotoUploader {
 							cancelCurrentUpload = false;
 						}
 					} else {
-						Log.e("flx_photoupload", "Error while uploading photo: " + e.getMessage());
+						Log.e("flx_photoupload", "Error while uploading photo", e);
 						// Generate 'failed' event
 						JsonObject data = eventDataForPhotoId(photoId);
 						data.addProperty("error", e.getMessage());
