@@ -117,7 +117,16 @@ define([
 				btoa(userPrefs.get('settings.username') + ":" + userPrefs.get('settings.password')),
         // Success
         function() {
-          logging.info("Call to setUploadParameters successful");
+          forge.logging.info("Call to setUploadParameters successful");
+          // Initially load photos
+          userPrefs.onReady(function() {
+            if (!forge.is.web()) {
+              $scope.addAllPhotosFromGallery();
+            } else {
+              // Web app, no photo library
+              $scope.loaded = true;
+            }
+          });
         },
         // Error
         function(error) {
@@ -125,16 +134,6 @@ define([
           logging.info(error);
         }
 			);
-      
-      // Initially load photos
-      userPrefs.onReady(function() {
-        if (!forge.is.web()) {
-          $scope.addAllPhotosFromGallery();
-        } else {
-          // Web app, no photo library
-          $scope.loaded = true;
-        }
-      });
       
       /**
        * Marks a photo for upload and adds a photo to the upload queue

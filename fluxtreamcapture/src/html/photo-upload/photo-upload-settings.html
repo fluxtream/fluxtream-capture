@@ -11,27 +11,15 @@
     <ul class="list">
       <li class="item item-checkbox">
         <label class="checkbox">
-          <input type="checkbox" ng-model="settings.autoupload_enabled" ng-change="save()">
-        </label>
-        Enable auto-upload
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save()">
+          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
         </label>
         Upload portrait photos automatically
       </li>
       <li class="item item-checkbox">
         <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save()">
+          <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save('landscape')">
         </label>
         Upload landscape photos automatically
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_only_future_photos" ng-change="save()">
-        </label>
-        Only upload future photos
       </li>
     </ul>
   </ion-content>
