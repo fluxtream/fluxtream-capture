@@ -4,9 +4,10 @@ asyncTest("Enable autoupload", 1, function() {
 	askQuestion("Enable autoupload?", {
 		Yes: function () {
 			forge.flx_photoupload.setAutouploadOptions({
-				autoupload_enabled: true,
 				upload_landscape: true,
 				upload_portrait: false,
+				landscape_minimum_timestamp: Math.round(new Date().getTime() / 1000),
+				portrait_minimum_timestamp: Math.round(new Date().getTime() / 1000),
 				upload_url: "http://fluxtream.org/api/bodytrack/photoUpload?connector_name=fluxtream_capture",
 				authentication: btoa("dev:foobarfoobar")
 			});

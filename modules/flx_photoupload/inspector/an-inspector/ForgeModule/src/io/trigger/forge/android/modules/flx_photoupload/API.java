@@ -133,6 +133,7 @@ public class API {
 			public void run() {
 				SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
 				PhotoUploader.initialize(prefs, uploadURL, authentication);
+				task.success();
 			}
 		});
 	}
@@ -231,6 +232,24 @@ public class API {
 			public void run() {
 				PhotoUploader.cancelUpload(photoId);
 			};
+		});
+	}
+	
+	/**
+	 * Returns the facet id for the given photo
+	 */
+	public static void getFacetId(final ForgeTask task, @ForgeParam("photoId") final int photoId) {
+		Log.i("flx_photoupload", "API: getFacetId(" + photoId + ")");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				String facetId = PhotoUploader.getFacetId(photoId);
+				if (facetId != null) {
+					task.success(facetId);
+				} else {
+					task.error("Photo " + photoId + " has no recorded facet id");
+				}
+			}
 		});
 	}
 	

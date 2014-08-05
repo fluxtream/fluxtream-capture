@@ -154,6 +154,12 @@ public class PhotoUploader {
 		return uploadThread != null;
 	}
 	
+	/**
+	 * Returns the facet id of a given uploaded photo
+	 */
+	public static String getFacetId(int photoId) {
+		return prefs.getString("photo_" + photoId + "_facetId", null);
+	}
 	
 	/* Private methods */
 	
@@ -177,10 +183,11 @@ public class PhotoUploader {
 	/**
 	 * Mark a photo as uploaded, it won't be uploaded in the future
 	 */
-	private static void setPhotoUploaded(int photoId) {
+	private static void setPhotoUploaded(int photoId, String facetId) {
 		Log.i("flx_photoupload", "Marking photo " + photoId + " as uploaded");
 		Editor editor = prefs.edit();
 		editor.putBoolean("photo_" + photoId + "_uploaded", true);
+		editor.putString("photo_" + photoId + "_facetId", facetId);
 		editor.apply();
 	}
 	
@@ -194,9 +201,9 @@ public class PhotoUploader {
 	}
 	
 	/**
-	 * Uploads the given photo the the Fluxtream server
+	 * Uploads the given photo the the Fluxtream server. Returns the facet id of the photo.
 	 */
-	private static void uploadPhotoNow(int photoId) throws Exception {
+	private static String uploadPhotoNow(int photoId) throws Exception {
 		// Generate 'started' event
 		ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
 		
@@ -229,6 +236,7 @@ public class PhotoUploader {
 		while ((line = reader.readLine()) != null) {
 			responseBody = responseBody + line;
 		}
+		Log.i("flx_photoupload", "Upload response: " + responseBody);
 		
 		// Parse response
 		JSONObject json = new JSONObject(responseBody);
@@ -238,8 +246,13 @@ public class PhotoUploader {
 			throw new Exception("An error has occured: result=" + result + ", message=" + json.get("message"));
 		}
 		
+		// Get facet id
+		String facetId = ((JSONObject)json.get("payload")).get("id").toString();
+		
 		// Generate 'uploaded' event
 		ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
+		
+		return facetId;
 	}
 	
 	/**
@@ -288,10 +301,10 @@ public class PhotoUploader {
 				// Upload photo
 				try {
 					Log.i("flx_photoupload", "Uploading photo " + photoId);
-					uploadPhotoNow(photoId);
+					String facetId = uploadPhotoNow(photoId);
 					// Mark photo as uploaded
 					synchronized (mutex) {
-						setPhotoUploaded(photoId);
+						setPhotoUploaded(photoId, facetId);
 						currentPhoto = -1;
 					}
 				} catch (CursorIndexOutOfBoundsException e) {

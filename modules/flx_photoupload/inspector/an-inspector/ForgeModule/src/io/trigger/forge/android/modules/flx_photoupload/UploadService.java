@@ -14,26 +14,22 @@ import android.os.IBinder;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images.Media;
 import android.util.Log;
-import android.widget.Toast;
 
 /**
  * This Android Service runs in the background and uploads photos automatically
  * if they correspond to a given filter (landscape/portrait). 
  * 
  * When starting this service, the intent can carry the following parameters in its extras:
- * - "upload_landscape":       whether landscape photos are automatically uploaded
- * - "upload_portrait":        whether portrait photos are automatically uploaded
- * - "autoupload_enabled":     whether autoupload is enabled
- * - "upload_after_timestamp": minimum timestamp of the photos to automatically upload
- * - "upload_url":             URL at which the photos will be uploaded
- * - "authentication":         a base64 encoding of "{username}:{password}" for authentication
+ * - "upload_landscape":            whether landscape photos are automatically uploaded
+ * - "upload_portrait":             whether portrait photos are automatically uploaded
+ * - "landscape_minimum_timestamp": minimum timestamp of the landscape photos for automatic upload
+ * - "portrait_minimum_timestamp":  minimum timestamp of the landscape photos for automatic upload
+ * - "upload_url":                  URL at which the photos will be uploaded
+ * - "authentication":              a base64 encoding of "{username}:{password}" for authentication
  * 
  * @author Julien Dupuis
  */
 public class UploadService extends Service {
-	
-	// Whether this service is enabled (if false, the service should be stopped)
-	private boolean autouploadEnabled = false;
 	
 	// Whether landscape photos are being uploaded automatically
 	private boolean uploadLandscape = false;
@@ -41,17 +37,33 @@ public class UploadService extends Service {
 	// Whether portrait photos are being uploaded automatically
 	private boolean uploadPortrait = false;
 	
+	// Only photos after this timestamp will be uploaded automatically
+	private int landscapeMinimumTimestamp = 0;
+	private int portraitMinimumTimestamp = 0;
+	
 	// Fluxtream server URL at which the photos will be uploaded
 	private String uploadURL = "";
-	
-	// Only photos after this timestamp will be uploaded automatically
-	private int uploadAfterTimestamp = 0;
 	
 	// The shared preferences containing the configuration and the upload status of each photo
 	private SharedPreferences prefs = null;
 	
 	// The thread checking periodically for new photos to upload
 	private AutoUploadThread mAutoUploadThread;
+	
+	// Waiting delay in milliseconds when the photo uploader is active
+	private final long WAIT_ON_ACTIVE = 2000; // 1 second
+	
+	// Waiting delay in milliseconds when no photo was found for upload
+	private final long WAIT_ON_NO_PHOTO = 600000; // 10 minutes
+	
+	// Waiting delay in milliseconds when a photo is sent for upload
+	private final long WAIT_ON_UPLOAD = 2000; // 2 seconds
+	
+	// Waiting delay in milliseconds when autoupload is disabled
+	private final long WAIT_ON_DISABLED = 60000; // 1 minute
+	
+	// Waiting delay in milliseconds when an error occurred
+	private final long WAIT_ON_ERROR = 60000; // 1 minute
 	
 	@Override
 	public void onCreate() {
@@ -78,6 +90,10 @@ public class UploadService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		// Save parameters
 		this.saveParameters(intent);
+		// Interrupt autoupload thread
+		synchronized (mAutoUploadThread) {
+			mAutoUploadThread.notify();
+		}
 		// Make sure the service if restarted after being killed
 		return START_STICKY;
 	}
@@ -105,8 +121,8 @@ public class UploadService extends Service {
 		// Read parameters from preferences
 		this.uploadLandscape = prefs.getBoolean("upload_landscape", false);
 		this.uploadPortrait = prefs.getBoolean("upload_portrait", false);
-		this.autouploadEnabled = prefs.getBoolean("autoupload_enabled", false);
-		this.uploadAfterTimestamp = prefs.getInt("upload_after_timestamp", 0);
+		this.landscapeMinimumTimestamp = prefs.getInt("landscape_minimum_timestamp", 0);
+		this.portraitMinimumTimestamp = prefs.getInt("portrait_minimum_timestamp", 0);
 		this.uploadURL = prefs.getString("upload_url", "");
 		String authentication = prefs.getString("authentication", "");
 		// Send parameters to PhotoUploader
@@ -128,16 +144,15 @@ public class UploadService extends Service {
 		Editor prefEditor = prefs.edit();
 		
 		// Save boolean parameters
-		for (String paramName : new String[]{"upload_landscape", "upload_portrait", "autoupload_enabled"}) {
+		for (String paramName : new String[]{"upload_landscape", "upload_portrait"}) {
 			Object paramValue = intent.getExtras().get(paramName);
 			if (paramValue != null) {
 				prefEditor.putBoolean(paramName, (Boolean)paramValue);
-				Toast.makeText(this, "Set parameter " + paramName + ": " + paramValue, Toast.LENGTH_SHORT).show();
 			}
 		}
 		
 		// Save integer parameters
-		for (String paramName : new String[]{"upload_after_timestamp"}) {
+		for (String paramName : new String[]{"landscape_minimum_timestamp", "portrait_minimum_timestamp"}) {
 			Object paramValue = intent.getExtras().get(paramName);
 			if (paramValue != null) prefEditor.putInt(paramName, (Integer)paramValue);
 		}
@@ -156,14 +171,15 @@ public class UploadService extends Service {
 	}
 	
 	/**
-	 * Reads the photo storage library and checks if unuploaded photos should be uploaded
+	 * Reads the photo storage library and checks if unuploaded photos should be uploaded.
+	 * Returns the delay before the next check should be done.
 	 */
-	private synchronized void checkForNewPhotos() {
+	private synchronized long checkForNewPhotos() {
 		if (PhotoUploader.isUploading()) {
 			// Don't make simultaneous requests to the photo uploader
-			return;
+			return WAIT_ON_ACTIVE;
 		}
-		if (autouploadEnabled) {
+		if (uploadLandscape || uploadPortrait) {
 			Log.i("flx_photoupload", "Checking for new photos");
 			// Get all images
 			Cursor cursor = this.getContentResolver().query(
@@ -184,24 +200,33 @@ public class UploadService extends Service {
 				long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
 				// Check if photo needs to be uploaded
 				boolean mustBeUploaded = true;
-				if (!this.uploadLandscape && width >= height) mustBeUploaded = false;
-				if (!this.uploadPortrait && height >= width) mustBeUploaded = false;
-				if (dateTaken < this.uploadAfterTimestamp) mustBeUploaded = false;
+				if (width > height) {
+					// Landscape
+					if (!this.uploadLandscape) mustBeUploaded = false;
+					if (dateTaken < this.landscapeMinimumTimestamp) mustBeUploaded = false;
+				} else {
+					// Portrait
+					if (!this.uploadPortrait) mustBeUploaded = false;
+					if (dateTaken < this.portraitMinimumTimestamp) mustBeUploaded = false;
+				}
 				if (PhotoUploader.isPhotoUploaded(photoId)) mustBeUploaded = false;
 				// Enqueue photo for upload if needed
 				if (mustBeUploaded) {
 					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
 					PhotoUploader.uploadPhoto(photoId);
-					return;
+					return WAIT_ON_UPLOAD;
 				}
 			}
+			return WAIT_ON_NO_PHOTO;
 		}
+		return WAIT_ON_DISABLED;
 	}
 	
 	/**
 	 * This thread will periodically check if new photos are available.
-	 * New photos should be detected by the observer, this thread is just a
-	 * security in case the observer was inactive when a new photo was taken.
+	 * New photos should be detected by the observer.
+	 * This thread is just a useful if the observer was inactive when a new photo was taken,
+	 * or if a photo is taken while another photo is being uploaded.
 	 */
 	private class AutoUploadThread extends Thread {
 		
@@ -212,15 +237,18 @@ public class UploadService extends Service {
 		public void run() {
 			while (!mTerminated) {
 				// Check for new photos
+				long waitTime;
 				try {
-					checkForNewPhotos();
+					waitTime = checkForNewPhotos();
 				} catch (Exception e) {
 					Log.e("flx_autoupload", "Error while running autoupload thread", e);
+					waitTime = WAIT_ON_ERROR; // 1 minute
 				}
 				// Sleep for 10 minutes
 				synchronized (this) {
 					try {
-						wait(6000); // 10 minutes  // TODO 600000
+						Log.i("flx_photoupload", "Sleeping for " + waitTime/1000.0 + " seconds");
+						wait(waitTime);
 					} catch (InterruptedException e) {
 					}
 				}
