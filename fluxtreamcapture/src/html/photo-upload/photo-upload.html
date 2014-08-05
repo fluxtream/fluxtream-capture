@@ -14,7 +14,7 @@
              collection-item-width="'33%'"
              collection-item-height="150"
              ng-style="{height: 150}">
-          <div class="photo-image">
+          <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})">
             <img ng-src="{{ photo.src }}" />
           </div>
           <div class="photo-info">
@@ -50,5 +50,5 @@
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-  <a id="footer-right" ui-sref="photo-upload-settings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
+  <a id="footer-right" ui-sref="photoUploadSettings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
 </ion-footer-bar>

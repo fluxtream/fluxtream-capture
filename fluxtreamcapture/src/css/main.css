@@ -108,3 +108,15 @@ textarea.noResize { resize:none; }
 .photo-status-failed {
   color: red;
 }
+
+/*******************************************
+ * Photo preview screen
+ *******************************************/
+
+.photo-preview {
+  width: 100%;
+}
+
+.photo-preview img {
+  width: 100%;
+}

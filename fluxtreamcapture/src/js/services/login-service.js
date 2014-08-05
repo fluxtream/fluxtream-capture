@@ -98,8 +98,14 @@ define([
         // Get username and password from user prefs
         var username = userPrefs.get('settings.username');
         var password = userPrefs.get('settings.password');
-        if (!username && env['test.username']) username = env['test.username'];
-        if (!password && env['test.password']) password = env['test.password'];
+        if (!username && env['test.username']) {
+          username = env['test.username'];
+          userPrefs.set('settings.username', username);
+        }
+        if (!password && env['test.password']) {
+          password = env['test.password'];
+          userPrefs.set('settings.password', password);
+        }
         if (username && password) {
           // Username and password retrieved, try logging in with them
           forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");

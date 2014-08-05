@@ -2,6 +2,14 @@
  * Require.js entry point to load the Fluxtream Capture application
  */
 $(document).ready(function() {
+  // Configure
+  require.config({
+    paths: {
+      moment: 'libs/moment/moment-2.7.0',
+      "momentTz": 'libs/moment/moment-timezone-with-data-0.1.0'
+    }
+  });
+  // Start app
   require([
     "app-modules",
     "config/env",
