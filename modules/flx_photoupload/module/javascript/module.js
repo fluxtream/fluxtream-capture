@@ -23,6 +23,9 @@ forge.flx_photoupload = {
   },
   cancelUpload: function(photoId, success, error) {
     forge.internal.call('flx_photoupload.cancelUpload', {photoId: photoId}, success, error);
+  },
+  getFacetId: function(photoId, success, error) {
+    forge.internal.call('flx_photoupload.getFacetId', {photoId: photoId}, success, error);
   }
 };
 
