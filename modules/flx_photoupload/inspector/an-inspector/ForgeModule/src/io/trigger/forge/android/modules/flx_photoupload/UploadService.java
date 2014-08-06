@@ -2,6 +2,7 @@ package io.trigger.forge.android.modules.flx_photoupload;
 
 import android.app.Activity;
 import android.app.Service;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -30,6 +31,8 @@ import android.util.Log;
  * @author Julien Dupuis
  */
 public class UploadService extends Service {
+	
+	private static ContentResolver contentResolver;
 	
 	// Whether landscape photos are being uploaded automatically
 	private boolean uploadLandscape = false;
@@ -65,6 +68,10 @@ public class UploadService extends Service {
 	// Waiting delay in milliseconds when an error occurred
 	private final long WAIT_ON_ERROR = 60000; // 1 minute
 	
+	public static ContentResolver getServiceContentResolver() {
+		return contentResolver;
+	}
+	
 	@Override
 	public void onCreate() {
 		// Load preferences
@@ -76,7 +83,8 @@ public class UploadService extends Service {
 		mAutoUploadThread.start();
 		
 		// Subscribe to new photo event
-		getContentResolver().registerContentObserver(Media.EXTERNAL_CONTENT_URI, true,
+		contentResolver = getContentResolver();
+		contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI, true,
 				new ContentObserver(new Handler()) {
 			@Override
 			public void onChange(boolean selfChange, Uri uri) {

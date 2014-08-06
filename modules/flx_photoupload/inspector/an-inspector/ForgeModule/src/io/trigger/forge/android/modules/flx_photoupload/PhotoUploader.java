@@ -21,6 +21,7 @@ import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
+import android.content.ContentResolver;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
@@ -262,17 +263,25 @@ public class PhotoUploader {
 	 */
 	private static Map<String, String> getPhotoData(Uri contentUri) {
 		// Query file
-        Cursor cursor = ForgeApp.getActivity().getContentResolver().query(
-        		contentUri,
-        		new String[] { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN },
-        		null, null, null);
-        cursor.moveToFirst();
-        // Create result
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-        map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
-        // Return result map
-        return map;
+		ContentResolver contentResolver;
+		if (ForgeApp.getActivity() != null) {
+			// Current context is the Forge application
+			contentResolver = ForgeApp.getActivity().getContentResolver();
+		} else {
+			// Current context is the background service
+			contentResolver = UploadService.getServiceContentResolver();
+		}
+		Cursor cursor = contentResolver.query(
+				contentUri,
+				new String[] { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN },
+				null, null, null);
+		cursor.moveToFirst();
+		// Create result
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
+		map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
+		// Return result map
+		return map;
 	}
 	
 	

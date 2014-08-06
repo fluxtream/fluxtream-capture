@@ -24,10 +24,12 @@ asyncTest("Enable autoupload", 1, function() {
 asyncTest("Set upload parameters", 1, function() {
 	askQuestion("Set upload parameters?", {
 		Yes: function () {
-			forge.flx_photoupload.setUploadParameters({
-				uploadURL: "http://fluxtream.org/api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-				authentication: btoa("dev:foobarfoobar")
-			});
+			forge.flx_photoupload.setUploadParameters(
+				// Upload URL
+				"http://fluxtream.org/api/bodytrack/photoUpload?connector_name=fluxtream_capture",
+				// Authentication
+				btoa("dev:foobarfoobar")
+			);
 			ok(true, "User claims success");
 			start();
 		},
