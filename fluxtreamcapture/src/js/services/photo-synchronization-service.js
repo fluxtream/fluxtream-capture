@@ -10,6 +10,9 @@ define([
   appModules.services.factory("PhotoSynchronizationService", ["LoginService", "UserPrefsService",
     function(loginService, userPrefs) {
       
+      // No photos on web
+      if (forge.is.web()) return;
+      
       /* Initializing native photo upload module */
       
       // True once the native photo upload module has been initialized

@@ -17,6 +17,9 @@ define([
     "PhotoSynchronizationService",
     function($scope, photoListService, userPrefs, photoSync) {
       
+      // No photos on web
+      if (forge.is.web()) return;
+      
       // List of available photos, photos are object of type {
       //   src:           the html src of the photo for display (can be a thumb)
       //   orientation:   the photo's orientation when taken (0, 90, 180 or 270)
@@ -27,7 +30,7 @@ define([
       $scope.photos = [];
       
       // List of photos as come out of the photo list service
-      $scope.rawPhotoList;
+      $scope.rawPhotoList = [];
       
       // True once the local photos have been loaded
       $scope.loaded = false;

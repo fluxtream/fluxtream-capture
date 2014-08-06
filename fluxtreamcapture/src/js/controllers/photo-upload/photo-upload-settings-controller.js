@@ -11,6 +11,9 @@ define([
   appModules.controllers.controller('PhotoUploadSettingsController', ["$scope", 'UserPrefsService', "PhotoListService", "$ionicActionSheet",
     function($scope, userPrefs, photoListService, $ionicActionSheet) {
       
+      // No photos on web
+      if (forge.is.web()) return;
+      
       // Options for the user
       $scope.settings = {
         upload_portrait: userPrefs.get('photos.autoupload_portrait', false),
