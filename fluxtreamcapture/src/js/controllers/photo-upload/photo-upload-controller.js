@@ -5,12 +5,17 @@ define([
   'config/env',
   'app-modules',
   'services/photo-list-service',
-  'services/user-prefs-service'
+  'services/user-prefs-service',,
+  'services/photo-synchronization-service'
 ], function(env, appModules) {
   
   // Photo upload controller
-  appModules.controllers.controller('PhotoUploadController', ["$scope", "PhotoListService", 'UserPrefsService',
-    function($scope, photoListService, userPrefs) {
+  appModules.controllers.controller('PhotoUploadController', [
+    "$scope",
+    "PhotoListService",
+    'UserPrefsService',
+    "PhotoSynchronizationService",
+    function($scope, photoListService, userPrefs, photoSync) {
       
       // List of available photos, photos are object of type {
       //   src:           the html src of the photo for display (can be a thumb)
@@ -109,31 +114,19 @@ define([
         );
       };
       
-      // Initially set upload parameters
-      forge.flx_photoupload.setUploadParameters(
-        // Upload URL
-        env["fluxtream.home.url"] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-        // Authentication
-				btoa(userPrefs.get('settings.username') + ":" + userPrefs.get('settings.password')),
-        // Success
-        function() {
-          forge.logging.info("Call to setUploadParameters successful");
-          // Initially load photos
-          userPrefs.onReady(function() {
-            if (!forge.is.web()) {
-              $scope.addAllPhotosFromGallery();
-            } else {
-              // Web app, no photo library
-              $scope.loaded = true;
-            }
-          });
-        },
-        // Error
-        function(error) {
-          logging.info("Call to setUploadParameters failed");
-          logging.info(error);
-        }
-			);
+      // Initially load photos
+      photoSync.onReady(function() {
+        forge.logging.info("Call to setUploadParameters successful");
+        // Initially load photos
+        userPrefs.onReady(function() {
+          if (!forge.is.web()) {
+            $scope.addAllPhotosFromGallery();
+          } else {
+            // Web app, no photo library
+            $scope.loaded = true;
+          }
+        });
+      });
       
       /**
        * Marks a photo for upload and adds a photo to the upload queue
@@ -142,7 +135,7 @@ define([
         forge.logging.info("Uploading photo: " + photo.id);
         photo.upload_status = 'pending';
         $scope.$$phase || $scope.$apply();
-        forge.flx_photoupload.uploadPhoto(photo.id,
+        photoSync.uploadPhoto(photo.id,
           // Success
           function() {
             forge.logging.info("Upload photo call returned success")

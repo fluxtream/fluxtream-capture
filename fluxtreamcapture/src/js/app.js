@@ -16,7 +16,7 @@ $(document).ready(function() {
     "routes",
     "services/login-service",
     "services/photo-list-service",
-    "services/photo-metadata-service",
+    "services/photo-synchronization-service",
     'filters/self-report-filters'
   ], function(appModules, env, routes, flxCom) {
     
@@ -30,7 +30,7 @@ $(document).ready(function() {
       '$ionicViewService',
       '$state',
       'PhotoListService', // Preloading photos
-      'PhotoMetadataService', // Starting periodic retries of photo metadata synchronization
+      'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
       function(loginService, $ionicViewService, $state) {
         loginService.checkAuth(function() {
           // Load page

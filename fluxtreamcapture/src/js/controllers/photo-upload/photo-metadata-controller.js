@@ -6,12 +6,18 @@ define([
   'app-modules',
   'services/photo-list-service',
   'services/user-prefs-service',
-  'services/photo-metadata-service',
+  'services/photo-synchronization-service'
 ], function(env, appModules) {
   
   // Photo metadata controller
-  appModules.controllers.controller('PhotoMetadataController', ["$scope", "$state", "$stateParams", "LoginService", 'UserPrefsService', "PhotoMetadataService",
-    function($scope, $state, $stateParams, loginService, userPrefs, photoMetadataService) {
+  appModules.controllers.controller('PhotoMetadataController', [
+    "$scope",
+    "$state",
+    "$stateParams",
+    "LoginService",
+    'UserPrefsService',
+    "PhotoSynchronizationService",
+    function($scope, $state, $stateParams, loginService, userPrefs, photoSync) {
       
       // The photo id
       $scope.photoId = $stateParams.photoId;
@@ -80,9 +86,9 @@ define([
         userPrefs.set('photo.metadata.' + $scope.photoId, JSON.stringify(metadata));
         forge.logging.info("Metadata saved locally for photo " + $scope.photoId + ": " + JSON.stringify(metadata));
         // Upload photo if not uploaded yet
-        forge.flx_photoupload.uploadPhoto(parseInt($scope.photoId), function() {}, function() {});
+        photoSync.uploadPhoto(parseInt($scope.photoId), function() {}, function() {});
         // Upload metadata
-        photoMetadataService.synchronize($scope.photoId);
+        photoSync.synchronizeMetadata($scope.photoId);
         // Go to previous screen
         $state.go("photoPreview", {photoId: $scope.photoId});
       };
