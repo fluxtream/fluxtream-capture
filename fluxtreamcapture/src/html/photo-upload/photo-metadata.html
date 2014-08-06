@@ -6,7 +6,27 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <p>Edition of photo metadata coming soon</p>
-    <p>Photo id: {{ photoId }}</p>
+    <div class="list">
+      <div class="item item-divider">
+        Tags
+      </div>
+      <div ng-repeat="tag in tags" class="item item-input-inset">
+        <label class="item-input-wrapper">
+          <input type="text" ng-model="tag.value" ng-change="tagChanged()">
+        </label>
+        <a class="ion-close photo-metadata-remove" ng-click="deleteTag(tag)" ng-if="tags.indexOf(tag) !== tags.length -1"></a>
+      </div>
+      <div class="item item-divider">
+        Comment
+      </div>
+      <div class="item">
+        <textarea ng-model="comment.value"></textarea>
+      </div>
+    </div>
   </ion-content>
 </ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-dark">
+  <button id="footer-right" class="button button-clear pull-right" ng-click="applyChanges()">Save</button>
+</ion-footer-bar>

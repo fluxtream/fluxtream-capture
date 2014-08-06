@@ -16,6 +16,7 @@ $(document).ready(function() {
     "routes",
     "services/login-service",
     "services/photo-list-service",
+    "services/photo-metadata-service",
     'filters/self-report-filters'
   ], function(appModules, env, routes, flxCom) {
     
@@ -24,7 +25,12 @@ $(document).ready(function() {
     if (!initialRoute || initialRoute === "#/init") initialRoute = "#/listTopics";
     
     // Initialization controller
-    appModules.controllers.controller('InitController', ['LoginService', '$ionicViewService', '$state', 'PhotoListService' /* preloading photos */,
+    appModules.controllers.controller('InitController', [
+      'LoginService',
+      '$ionicViewService',
+      '$state',
+      'PhotoListService', // Preloading photos
+      'PhotoMetadataService', // Starting periodic retries of photo metadata synchronization
       function(loginService, $ionicViewService, $state) {
         loginService.checkAuth(function() {
           // Load page

@@ -46,6 +46,8 @@ define([
         options.xhrFields.withCredentials = true;
         $.ajax(options);
       } else {
+        if (!username) username = userPrefs.get('settings.username');
+        if (!password) password = userPrefs.get('settings.password');
         if (typeof options.headers === 'undefined') options.headers = {};
         options.headers.Authorization = 'Basic ' + btoa(username + ":" + password);
         forge.request.ajax(options);
@@ -179,11 +181,19 @@ define([
       return guestData.username;
     }
     
+    /**
+     * (Public) Returns the user's id
+     */
+    function getUserId(){
+      return guestData.id;
+    }
+    
     return {
       checkAuth: checkAuth,
       isAuthenticated: guestIsAuthenticated,
       ajax: ajax,
-      getUserName: getUserName
+      getUserName: getUserName,
+      getUserId: getUserId
     };
     
   }]);
