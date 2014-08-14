@@ -3,7 +3,7 @@
 	"name": "FluxtreamCapture",
 	"author": "julien.dupuis@gmail.com",
 	"version": "0.1",
-	"platform_version": "v2.1.8",
+	"platform_version": "v2.1.9",
 	"description": "An empty app created by default",
 	"core": {
 		"general": {
@@ -81,7 +81,7 @@
 			}
 		},
 		"flx_photoupload": {
-			"version": "0.3.21"
+			"version": "0.4.6"
 		}
 	}
 }

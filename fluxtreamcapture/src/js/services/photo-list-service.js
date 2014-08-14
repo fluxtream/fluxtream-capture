@@ -26,7 +26,15 @@ define([
       forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
-          photoList = JSON.parse(jsonArray);
+          forge.logging.info("Loaded photo list");
+          // Data can either be json-encoded string or an actual array
+          if (typeof jsonArray === 'string') {
+            // Json string, convert to array
+            photoList = JSON.parse(jsonArray);
+          } else {
+            // Acual array
+            photoList = jsonArray;
+          }
           initialized = true;
           forge.logging.info("Photo list has been initialized");
           functionsToExecute.forEach(function(functionToExecute) {

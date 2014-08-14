@@ -15,6 +15,7 @@ modules/*/inspector/an-inspector/ForgeModule/gen
 modules/*/inspector/an-inspector/ForgeModule/trigger-gen
 modules/*/inspector/an-inspector/ForgeInspector/bin
 modules/*/inspector/an-inspector/ForgeInspector/gen
+modules/*/inspector/ios-inspector.*
 
 # Numerous always-ignore extensions
 *.diff

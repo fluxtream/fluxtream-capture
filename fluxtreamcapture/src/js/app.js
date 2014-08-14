@@ -49,8 +49,8 @@ $(document).ready(function() {
     // Configuration
     appModules.app.config(['$compileProvider', function($compileProvider) {
       // Allow image sources starting with "content://"
-      $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
-      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
+      $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content|data):/);
+      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content|data):/);
     }]);
     
     // Load initialization page

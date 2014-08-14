@@ -15,7 +15,7 @@
              collection-item-height="150"
              ng-style="{height: 150}">
           <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})">
-            <img ng-src="{{ photo.src }}" />
+            <img data-ng-src="{{ photo.src }}" />
           </div>
           <div class="photo-info">
             <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">

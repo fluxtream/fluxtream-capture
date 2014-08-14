@@ -1,0 +1,340 @@
+TForgeModule
+v6
+r1
+cCheck dependencies
+cProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+cLibtool /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a normal i386
+cLibtool /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a normal x86_64
+cCreateUniversalBinary /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a normal i386\ x86_64
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk
+c0000000053119F8A0000000000000198
+t1393663882
+s408
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/SDKSettings.plist
+c0000000053CE347400000000000003B4
+t1406022772
+s948
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/CoreServices/SystemVersion.plist
+c00000000531149D9000000000000019E
+t1393641945
+s414
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/Frameworks/AssetsLibrary.framework/AssetsLibrary
+c0000000053CE34850000000000059340
+t1406022789
+s365376
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics
+c0000000053CE34880000000000446820
+t1406022792
+s4483104
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/Frameworks/Foundation.framework/Foundation
+c0000000053CE348B000000000088D8C0
+t1406022795
+s8968384
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/Frameworks/SystemConfiguration.framework/SystemConfiguration
+c0000000053CE348F00000000001081C0
+t1406022799
+s1081792
+
+N/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk/System/Library/Frameworks/UIKit.framework/UIKit
+c0000000053CE34950000000001F1DE10
+t1406022805
+s32628240
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/ForgeCore
+c0000000053E8F6E1000000000048C824
+t1407776481
+s4769828
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch
+c0000000053E87B490000000000000159
+t1407744841
+s345
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m
+c0000000053E8FAB900000000000009D4
+t1407777465
+s2516
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/ForgeModule.LinkFileList
+c0000000053E9BE120000000000000279
+t1407827474
+s633
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o
+t1407827475
+s15700
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o
+t1407827475
+s40388
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o
+t1407827475
+s3596
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a
+t1407827475
+s60328
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/ForgeModule.LinkFileList
+c0000000053E9BE12000000000000027F
+t1407827474
+s639
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o
+t1407827475
+s17344
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o
+t1407827475
+s41096
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o
+t1407827475
+s4024
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a
+t1407827475
+s63096
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a
+t2
+s0
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m
+c0000000053E8DC010000000000000855
+t1407769601
+s2133
+
+N/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m
+c0000000053E8843500000000000000E1
+t1407747125
+s225
+
+N/var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch
+t1407827475
+s5942864
+
+N/var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch
+t1407827475
+s5947944
+
+CCheck dependencies
+r0
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection18"Check dependencies18"Check dependenciesf0f8c692f599b941^9fe8d692f599b941^---0#1#1#--18"Check dependencies36"1005A84B-3636-4356-973F-01800C69DBB1-
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.421323
+e429520275.500035
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection124"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m192"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o PhotoLibrary.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compilera0386c93f599b941^1b2a8293f599b941^---0#0#1#-19%DVTDocumentLocation2@123"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m0000000000000000^3586"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o PhotoLibrary.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/i386 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/PhotoLibrary.o36"F901E6B9-40FF-414F-9758-12CE49F67236-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.420744
+e429520275.497756
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection131"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m206"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o flx_photoupload_API.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compilerceff6b93f599b941^1d1e8293f599b941^---0#0#1#-19%DVTDocumentLocation2@130"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m0000000000000000^3628"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o flx_photoupload_API.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/i386 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_API.o36"FC5E7AE4-5D05-44DC-816B-24702ABE8208-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.420941
+e429520275.497554
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection141"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m226"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o flx_photoupload_EventListener.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler83186c93f599b941^ce188293f599b941^---0#0#1#-19%DVTDocumentLocation2@140"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m0000000000000000^3688"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o flx_photoupload_EventListener.m normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/i386 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/flx_photoupload_EventListener.o36"9357A5AD-91A9-4F3D-9D2A-C1D276B14F1A-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.499040
+e429520275.585360
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection124"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m196"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o PhotoLibrary.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compilerfc368093f599b941^71e89593f599b941^---0#0#1#-19%DVTDocumentLocation2@123"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m0000000000000000^3597"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o PhotoLibrary.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/x86_64 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/PhotoLibrary.o36"DD2E0189-5651-4D29-877B-C33D3264F127-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.422421
+e429520275.498389
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/PhotoLibrary.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection131"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m210"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o flx_photoupload_API.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compilerca8b6c93f599b941^8d278293f599b941^---0#0#1#-19%DVTDocumentLocation2@130"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m0000000000000000^3639"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o flx_photoupload_API.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/x86_64 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_API.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_API.o36"0040448F-CF68-42D3-B5A3-48078EB38C73-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520275.498041
+e429520275.585096
+r1
+xCompileC
+xbuild/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection141"Compile /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m230"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o flx_photoupload_EventListener.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler00008093f599b941^b0ca9593f599b941^---0#0#1#-19%DVTDocumentLocation2@140"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m0000000000000000^3699"CompileC build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o flx_photoupload_EventListener.m normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/x86_64 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. -include /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch -MMD -MT dependencies -MF /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.d --serialize-diagnostics /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.dia -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/flx_photoupload_EventListener.m -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/flx_photoupload_EventListener.o36"FCE5BE85-CCB4-457D-BEAF-1254455DAA23-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CCreateUniversalBinary /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a normal i386\ x86_64
+s429520275.718181
+e429520275.802751
+r1
+xCreateUniversalBinary
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a
+xnormal
+xi386 x86_64
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection172"Create universal binary /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a88"CreateUniversalBinary build/Release-iphonesimulator/libForgeModule.a normal i386\ x86_64b727b893f599b941^9d81cd93f599b941^---0#0#1#-19%DVTDocumentLocation2@155"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a003460e1ddffdf42^869"CreateUniversalBinary build/Release-iphonesimulator/libForgeModule.a normal i386\ x86_64    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool -static /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/libForgeModule.a36"818680CB-D96F-4B0F-9DAC-496851F0FA69-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CLibtool /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a normal i386
+s429520275.587452
+e429520275.717120
+r1
+xLibtool
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a
+xnormal
+xi386
+o/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool: -dynamic not specified the following flags are invalid: -ObjC 
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection122"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a normal i386122"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a normal i386eba89693f599b941^1896b793f599b941^-159"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool: -dynamic not specified the following flags are invalid: -ObjC -0#0#1#--1238"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a normal i386    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export IPHONEOS_DEPLOYMENT_TARGET=5.0.1    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool -static -arch_only i386 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -L/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -filelist /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/ForgeModule.LinkFileList -ObjC -framework SystemConfiguration -framework AssetsLibrary -framework CoreGraphics -framework UIKit -framework Foundation -framework ForgeCore -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/i386/libForgeModule.a36"20DC6233-18AC-4A94-85A7-ECB715395AE5-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CLibtool /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a normal x86_64
+s429520275.587863
+e429520275.644067
+r1
+xLibtool
+x/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a
+xnormal
+xx86_64
+o/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool: -dynamic not specified the following flags are invalid: -ObjC 
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection126"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a normal x86_64126"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a normal x86_6411c79693f599b941^82e5a493f599b941^-159"/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool: -dynamic not specified the following flags are invalid: -ObjC -0#0#1#--1248"Libtool build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a normal x86_64    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export IPHONEOS_DEPLOYMENT_TARGET=5.0.1    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/libtool -static -arch_only x86_64 -syslibroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -L/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -filelist /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/ForgeModule.LinkFileList -ObjC -framework SystemConfiguration -framework AssetsLibrary -framework CoreGraphics -framework UIKit -framework Foundation -framework ForgeCore -o /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/Objects-normal/x86_64/libForgeModule.a36"2B4268E8-F9B3-4395-8D7F-774666E4E52C-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520274.842633
+e429520275.355061
+r1
+xProcessPCH
+x/var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch
+xForgeModule-Prefix.pch
+xnormal
+xi386
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeCore.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeTask.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeLog.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeAppDelegate.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeApp.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/JSONKit.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeViewController.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeEventListener.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeFile.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeUtil.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/BorderControl.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ALAsset+Data.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/UIImage+ResizeImage.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSData+Base64.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSFileManager+DirectoryLocations.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSURL+QueryString.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/Reachability.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/UIViewController+dismissViewControllerHelper.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSFileManager+DoNotBackup.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection33"Precompile ForgeModule-Prefix.pch313"ProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compilera81bd892f599b941^43e65a93f599b941^---0#0#1#-19%DVTDocumentLocation2@131"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch0000000000000000^3528"ProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal i386 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c-header -arch i386 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wno-shorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/i386 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. --serialize-diagnostics /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.dia -MMD -MT dependencies -MF /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.d -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch -o /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-anddwrlxqpeyprgvnvcvgtlbvklp/ForgeModule-Prefix.pch.pch36"8052527E-C762-40CD-AA5D-6030814FBED1-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+
+CProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler
+s429520274.843010
+e429520275.419644
+r1
+xProcessPCH
+x/var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch
+xForgeModule-Prefix.pch
+xnormal
+xx86_64
+xobjective-c
+xcom.apple.compilers.llvm.clang.1_0.compiler
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeCore.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeTask.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeLog.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeAppDelegate.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeApp.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/JSONKit.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeViewController.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeEventListener.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeFile.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ForgeUtil.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/BorderControl.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/ALAsset+Data.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/UIImage+ResizeImage.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSData+Base64.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSFileManager+DirectoryLocations.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSURL+QueryString.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/Reachability.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/UIViewController+dismissViewControllerHelper.h
+d/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeCore.framework/Headers/NSFileManager+DoNotBackup.h
+lSLF06#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection33"Precompile ForgeModule-Prefix.pch315"ProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler971fd892f599b941^836e6b93f599b941^---0#0#1#-19%DVTDocumentLocation2@131"file:///Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch0000000000000000^3531"ProcessPCH /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch ForgeModule-Prefix.pch normal x86_64 objective-c com.apple.compilers.llvm.clang.1_0.compiler    cd /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule    export LANG=en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -x objective-c-header -arch x86_64 -fmessage-length=0 -fdiagnostics-show-note-include-stack -fmacro-backtrace-limit=0 -std=gnu99 -fobjc-arc -Wno-trigraphs -fpascal-strings -Os -Wno-missing-field-initializers -Wno-missing-prototypes -Wno-implicit-atomic-properties -Wno-receiver-is-weak -Wno-arc-repeated-use-of-weak -Wduplicate-method-match -Wno-missing-braces -Wparentheses -Wswitch -Wunused-function -Wno-unused-label -Wno-unused-parameter -Wunused-variable -Wunused-value -Wempty-body -Wuninitialized -Wno-unknown-pragmas -Wno-shadow -Wno-four-char-constants -Wno-conversion -Wconstant-conversion -Wint-conversion -Wbool-conversion -Wenum-conversion -Wshorten-64-to-32 -Wpointer-sign -Wno-newline-eof -Wno-selector -Wno-strict-selector-match -Wundeclared-selector -Wno-deprecated-implementations -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator7.1.sdk -fexceptions -fasm-blocks -fstrict-aliasing -Wprotocol -Wdeprecated-declarations -g -Wno-sign-conversion -fobjc-abi-version=2 -fobjc-legacy-dispatch -mios-simulator-version-min=5.0.1 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/ForgeModule.hmap -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator/include -I. -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources/x86_64 -I/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/ForgeModule.build/Release-iphonesimulator/ForgeModule.build/DerivedSources -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/build/Release-iphonesimulator -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule -F/Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/.. --serialize-diagnostics /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.dia -MMD -MT dependencies -MF /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.d -c /Users/julien/Fluxtream/fluxtream-capture/modules/flx_photoupload/inspector/ios-inspector/ForgeModule/ForgeModule-Prefix.pch -o /var/folders/tm/kgy72mz91vbgy73jn5447nfh0000gn/C/com.apple.DeveloperTools/5.1.1-5B1008/Xcode/5.1.1-5B1008/Xcode/SharedPrecompiledHeaders/ForgeModule-Prefix-frcbeblomemfjgboqfdzlukhmytb/ForgeModule-Prefix.pch.pch36"70C35BBF-C08D-4349-9341-B4BBD07E3AC8-
+b444BE599-82C4-45E6-82BC-B8D3970E612F
+

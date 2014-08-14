@@ -48,6 +48,19 @@ define([
           uri: rawPhotoData.uri,
           date_taken: rawPhotoData.date_taken
         };
+        
+        // On iOS, need to convert uri using forge.file module
+//        if (forge.is.ios() && !rawPhotoData.thumb_uri) {
+//          var file = {
+//            type: "image",
+//            uri: photoObject.src
+//          };
+//          url = forge.file.URL(file, function(url) {
+//            photoObject.src = url;
+//            $scope.$$phase || $scope.$apply();
+//          });
+//        }
+        
         // Add it to the photo list
         $scope.photos.push(photoObject);
         // Get photo upload status from user prefs
@@ -67,7 +80,7 @@ define([
       $scope.getPhoto = function(photoId) {
         var photoFound = null;
         $scope.photos.forEach(function(photo) {
-          if (photo.id === photoId) photoFound = photo
+          if (photo.id === photoId) photoFound = photo;
         });
         return photoFound;
       };
@@ -141,7 +154,7 @@ define([
         photoSync.uploadPhoto(photo.id,
           // Success
           function() {
-            forge.logging.info("Upload photo call returned success")
+            forge.logging.info("Upload photo call returned success");
           },
           // Error
           function(error) {
