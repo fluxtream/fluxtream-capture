@@ -6,7 +6,7 @@ define([
   'services/login-service'
 ], function(appModules, storage) {
 
-  appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", function($http,  loginService) {
+  appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", '$rootScope', function($http,  loginService, $rootScope) {
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
@@ -89,7 +89,7 @@ define([
         if (!err) {
           console.log('Successfully saved a Topic on client side!');
         } else {
-          console.log(err);
+          console.log("Error while saving Topic on the client side: " + err);
         }
       });
 
@@ -98,6 +98,7 @@ define([
       dbTopics.replicate.to(remoteCouchTopics)
         .on('complete', function () {
           // Successfully synced
+          $rootScope.$broadcast('event:topics-synced');
           console.log("Successfully saved Topic on the server side");
         }).on('error', function (err) {
           // Handle error
@@ -271,6 +272,48 @@ define([
     }
 
     /**
+     * (Public) Get Topics synchronously
+     */
+    function readTopicsSyncDB(){
+      // TODO should be fetching gradually
+      aoCachedTopics = [];
+
+      // Get Topics from the server and save locally
+      dbTopics.replicate.from(remoteCouchTopics)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully read Topics on the server side");
+        }).on('error',  function (err) {
+          // Handle error
+          console.log("Error while reading Topics on the server side: " + err);
+        });
+
+      // Read all docs into memory
+
+      dbTopics.allDocs({include_docs: true}, function(err, response) {
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          var oNextTopic = new Topic(
+            row.doc._id,
+            row.doc.creationTime,
+            row.doc.updateTime,
+            row.doc.name,
+            row.doc.type,
+            row.doc.defaultValue,
+            row.doc.rangeStart,
+            row.doc.rangeEnd,
+            row.doc.step
+          );
+
+          aoCachedTopics.push(oNextTopic);
+        });
+        // Put pre-processing of data
+        return(aoCachedTopics);
+      });
+    }
+
+    /**
      * (Public) Get Observations asynchronously
      */
     function readObservationsAsyncDB(fCallback){
@@ -432,6 +475,7 @@ define([
       readTopicsAsyncDB: readTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
       readObservationsAsyncDB: readObservationsAsyncDB,
+      readTopicsSyncDB: readTopicsSyncDB,
       readTopicAsync: readTopicAsync,
 
       Topic : Topic,

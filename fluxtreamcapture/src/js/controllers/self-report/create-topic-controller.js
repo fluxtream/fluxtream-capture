@@ -41,6 +41,7 @@ define([
         //TODO what if the result would not be returned?
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
+          $scope.$$phase || $scope.$apply();
         });
 
         // Called when the form is submitted
@@ -69,10 +70,8 @@ define([
             document.getElementById('topic.step').value
           );
 
-
           selfReportStorage.createTopic($scope.oNewTopic);
           $state.go("editTopics");
-
         };
       }
     ]

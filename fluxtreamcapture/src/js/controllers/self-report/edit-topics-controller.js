@@ -8,8 +8,8 @@ define([
    *
    * Edit or reorder Topics
    */
-  appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService',
-    function ($scope, selfReportStorage) {
+  appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService', '$rootScope',
+    function ($scope, selfReportStorage, $rootScope) {
       //TODO bug in reordering (if reorder long enough)
       //TODO save order to the DB
 
@@ -23,6 +23,13 @@ define([
       selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
         $scope.$$phase || $scope.$apply();
+      });
+
+      $scope.$on('event:topics-synced', function() {
+        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          $scope.aoTopics = aoTopics;
+          $scope.$$phase || $scope.$apply();
+        });
       });
     }
   ]);
