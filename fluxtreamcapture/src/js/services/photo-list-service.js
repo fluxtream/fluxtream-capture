@@ -23,7 +23,7 @@ define([
      */
     function loadPhotos() {
       // Call native module to get the photo list
-      forge.fc_gallery.getPictureList(
+      forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
           photoList = JSON.parse(jsonArray);
@@ -32,14 +32,29 @@ define([
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
+          functionsToExecute = [];
         },
         // Error
         function(error) {
-          forge.logging.error("Error while calling getPictureList:");
+          forge.logging.error("Error while calling getPhotoList:");
           forge.logging.error(error);
         }
       );
     };
+    
+    /**
+     * Re-runs the photo loading process to update the photo list
+     */
+    function reloadPhotos() {
+      // Don't reload if loading is already in progress
+      if (!initialized) return;
+      // Reset initialization status
+      initialized = false;
+      functionsToExecute = [];
+      photoList = null;
+      // Reload photos
+      loadPhotos();
+    }
     
     /**
      * (Public) Executes a function once the photo list has been initialized
@@ -63,6 +78,7 @@ define([
     return {
       isInitialized: function() { return initialized; },
       getPhotoList: function() { return photoList; },
+      reloadPhotos: reloadPhotos,
       onReady: onReady
     };
     

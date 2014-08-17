@@ -8,13 +8,13 @@ fluxtreamcapture/.template
 fluxtreamcapture/.lib
 fluxtreamcapture/src/test/
 
-modules/fc_gallery/.trigger
-modules/fc_gallery/inspector/an-inspector.*
-modules/fc_gallery/inspector/an-inspector/ForgeModule/bin
-modules/fc_gallery/inspector/an-inspector/ForgeModule/gen
-modules/fc_gallery/inspector/an-inspector/ForgeModule/trigger-gen
-modules/fc_gallery/inspector/an-inspector/ForgeInspector/bin
-modules/fc_gallery/inspector/an-inspector/ForgeInspector/gen
+modules/*/.trigger
+modules/*/inspector/an-inspector.*
+modules/*/inspector/an-inspector/ForgeModule/bin
+modules/*/inspector/an-inspector/ForgeModule/gen
+modules/*/inspector/an-inspector/ForgeModule/trigger-gen
+modules/*/inspector/an-inspector/ForgeInspector/bin
+modules/*/inspector/an-inspector/ForgeInspector/gen
 
 # Numerous always-ignore extensions
 *.diff

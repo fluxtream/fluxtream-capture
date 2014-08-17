@@ -46,6 +46,8 @@ define([
         options.xhrFields.withCredentials = true;
         $.ajax(options);
       } else {
+        if (!username) username = userPrefs.get('settings.username');
+        if (!password) password = userPrefs.get('settings.password');
         if (typeof options.headers === 'undefined') options.headers = {};
         options.headers.Authorization = 'Basic ' + btoa(username + ":" + password);
         forge.request.ajax(options);
@@ -98,8 +100,14 @@ define([
         // Get username and password from user prefs
         var username = userPrefs.get('settings.username');
         var password = userPrefs.get('settings.password');
-        if (!username && env['test.username']) username = env['test.username'];
-        if (!password && env['test.password']) password = env['test.password'];
+        if (!username && env['test.username']) {
+          username = env['test.username'];
+          userPrefs.set('settings.username', username);
+        }
+        if (!password && env['test.password']) {
+          password = env['test.password'];
+          userPrefs.set('settings.password', password);
+        }
         if (username && password) {
           // Username and password retrieved, try logging in with them
           forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");
@@ -173,11 +181,19 @@ define([
       return guestData.username;
     }
     
+    /**
+     * (Public) Returns the user's id
+     */
+    function getUserId(){
+      return guestData.id;
+    }
+    
     return {
       checkAuth: checkAuth,
       isAuthenticated: guestIsAuthenticated,
       ajax: ajax,
-      getUserName: getUserName
+      getUserName: getUserName,
+      getUserId: getUserId
     };
     
   }]);

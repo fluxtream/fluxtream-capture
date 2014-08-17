@@ -2,14 +2,23 @@
  * Angular controller for the photo upload screen
  */
 define([
+  'config/env',
   'app-modules',
   'services/photo-list-service',
-  'services/user-prefs-service'
-], function(appModules) {
+  'services/user-prefs-service',,
+  'services/photo-synchronization-service'
+], function(env, appModules) {
   
   // Photo upload controller
-  appModules.controllers.controller('PhotoUploadController', ["$scope", "PhotoListService", 'UserPrefsService',
-    function($scope, photoListService, userPrefs) {
+  appModules.controllers.controller('PhotoUploadController', [
+    "$scope",
+    "PhotoListService",
+    'UserPrefsService',
+    "PhotoSynchronizationService",
+    function($scope, photoListService, userPrefs, photoSync) {
+      
+      // No photos on web
+      if (forge.is.web()) return;
       
       // List of available photos, photos are object of type {
       //   src:           the html src of the photo for display (can be a thumb)
@@ -21,7 +30,7 @@ define([
       $scope.photos = [];
       
       // List of photos as come out of the photo list service
-      $scope.rawPhotoList;
+      $scope.rawPhotoList = [];
       
       // True once the local photos have been loaded
       $scope.loaded = false;
@@ -51,35 +60,168 @@ define([
           $scope.$$phase || $scope.$apply();
         }
       };
-    
-    /**
-     * (Public) Loads all photos from the device image gallery
-     */
-    $scope.addAllPhotosFromGallery = function() {
-      photoListService.onReady(function() {
-        // Get raw photo list
-        $scope.rawPhotoList = photoListService.getPhotoList();
-        // Create photo list
-        $scope.rawPhotoList.forEach(function(rawPhotoData) {
-          $scope.addPhoto(rawPhotoData);
+      
+      /**
+       * Finds the photo with the given id in the photo list
+       */
+      $scope.getPhoto = function(photoId) {
+        var photoFound = null;
+        $scope.photos.forEach(function(photo) {
+          if (photo.id === photoId) photoFound = photo
         });
-        // Set loaded status
-        $scope.loaded = true;
-        // Update UI
-        $scope.$$phase || $scope.$apply();
+        return photoFound;
+      };
+      
+      /**
+       * Loads all photos from the device image gallery
+       */
+      $scope.addAllPhotosFromGallery = function() {
+        photoListService.onReady(function() {
+          // Empty photo list
+          $scope.photos = [];
+          // Get raw photo list
+          $scope.rawPhotoList = photoListService.getPhotoList();
+          // Create photo list
+          $scope.rawPhotoList.forEach(function(rawPhotoData) {
+            $scope.addPhoto(rawPhotoData);
+          });
+          $scope.loadPhotoStatuses();
+        });
+      };
+      
+      /**
+       * Get the photos' upload status from the native module 
+       */
+      $scope.loadPhotoStatuses = function() {
+        var photos = [];
+        $scope.photos.forEach(function(photo) {
+          photos.push(photo.id);
+        });
+        forge.flx_photoupload.arePhotosUploaded(photos,
+          // Success
+          function(photoStatuses) {
+            // Set statuses
+            for (var i = 0; i < photoStatuses.length; i++) {
+              if (photoStatuses[i]) $scope.photos[i].upload_status = 'uploaded';
+            }
+            // Set loaded status
+            $scope.loaded = true;
+            // Update UI
+            $scope.$$phase || $scope.$apply();
+          },
+          // Error
+          function(error) {
+            forge.logging.info("Error while getting photo statuses");
+            forge.logging.info(error);
+          }
+        );
+      };
+      
+      // Initially load photos
+      photoSync.onReady(function() {
+        forge.logging.info("Call to setUploadParameters successful");
+        // Initially load photos
+        userPrefs.onReady(function() {
+          if (!forge.is.web()) {
+            $scope.addAllPhotosFromGallery();
+          } else {
+            // Web app, no photo library
+            $scope.loaded = true;
+          }
+        });
       });
-    };
-    
-    // Initially load photos
-    userPrefs.onReady(function() {
-      if (!forge.is.web()) {
-        $scope.addAllPhotosFromGallery();
-      } else {
-        // Web app, no photo library
-        $scope.loaded = true;
-      }
-    });
-    
-  }]);
-  
+      
+      /**
+       * Marks a photo for upload and adds a photo to the upload queue
+       */
+      $scope.uploadPhoto = function(photo) {
+        forge.logging.info("Uploading photo: " + photo.id);
+        photo.upload_status = 'pending';
+        $scope.$$phase || $scope.$apply();
+        photoSync.uploadPhoto(photo.id,
+          // Success
+          function() {
+            forge.logging.info("Upload photo call returned success")
+          },
+          // Error
+          function(error) {
+            forge.logging.info("Upload photo call returned error");
+            forge.logging.info(error);
+          }
+        );
+      };
+      
+      // Reload photos on resume
+      // TODO A new listener is being created each time this page is reloaded. This does no harm, but should be fixed.
+      forge.event.appResumed.addListener(
+        // Callback
+        function() {
+          if (!forge.is.web()) {
+            userPrefs.onReady(function() {
+              forge.logging.info("Reloading photo list");
+              photoListService.reloadPhotos();
+              $scope.addAllPhotosFromGallery();
+            });
+          }
+        },
+        // Error
+        function(content) {
+          forge.logging.info("Error on forge.event.appResumed.appListener");
+          forge.logging(content);
+        }
+      );
+      
+      // Add event listeners
+      
+      // Photo upload started
+      forge.internal.addEventListener("photoupload.started", function(data) {
+        forge.logging.info("Received event: photo " + data.photoId + " upload started");
+        var photo = $scope.getPhoto(data.photoId);
+        if (photo) {
+          photo.upload_status = 'uploading';
+          $scope.$$phase || $scope.$apply();
+        } else {
+          forge.logging.info("Unknown photo " + data.photoId);
+        }
+      });
+      
+      // Photo successfully uploaded
+      forge.internal.addEventListener("photoupload.uploaded", function(data) {
+        forge.logging.info("Received event: photo " + data.photoId + " upload successful");
+        var photo = $scope.getPhoto(data.photoId);
+        if (photo) {
+          photo.upload_status = 'uploaded';
+          $scope.$$phase || $scope.$apply();
+        } else {
+          forge.logging.info("Unknown photo " + data.photoId);
+        }
+      });
+      
+      // Photo upload canceled
+      forge.internal.addEventListener("photoupload.canceled", function(data) {
+        forge.logging.info("Received event: photo " + data.photoId + " upload canceled");
+        var photo = $scope.getPhoto(data.photoId);
+        if (photo) {
+          photo.upload_status = 'none';
+          $scope.$$phase || $scope.$apply();
+        } else {
+          forge.logging.info("Unknown photo " + data.photoId);
+        }
+      });
+      
+      // Photo upload failed
+      forge.internal.addEventListener("photoupload.failed", function(data) {
+        forge.logging.info("Received event: photo " + data.photoId + " upload failed");
+        forge.logging.info(data.error);
+        var photo = $scope.getPhoto(data.photoId);
+        if (photo) {
+          photo.upload_status = 'failed';
+          $scope.$$phase || $scope.$apply();
+        } else {
+          forge.logging.info("Unknown photo " + data.photoId);
+        }
+      });
+      
+    }
+  ]);
 });

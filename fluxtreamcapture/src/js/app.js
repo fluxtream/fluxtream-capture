@@ -2,12 +2,21 @@
  * Require.js entry point to load the Fluxtream Capture application
  */
 $(document).ready(function() {
+  // Configure
+  require.config({
+    paths: {
+      moment: 'libs/moment/moment-2.7.0',
+      "momentTz": 'libs/moment/moment-timezone-with-data-0.1.0'
+    }
+  });
+  // Start app
   require([
     "app-modules",
     "config/env",
     "routes",
     "services/login-service",
     "services/photo-list-service",
+    "services/photo-synchronization-service",
     'filters/self-report-filters'
   ], function(appModules, env, routes, flxCom) {
     
@@ -16,7 +25,12 @@ $(document).ready(function() {
     if (!initialRoute || initialRoute === "#/init") initialRoute = "#/listTopics";
     
     // Initialization controller
-    appModules.controllers.controller('InitController', ['LoginService', '$ionicViewService', '$state', 'PhotoListService' /* preloading photos */,
+    appModules.controllers.controller('InitController', [
+      'LoginService',
+      '$ionicViewService',
+      '$state',
+      'PhotoListService', // Preloading photos
+      'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
       function(loginService, $ionicViewService, $state) {
         loginService.checkAuth(function() {
           // Load page

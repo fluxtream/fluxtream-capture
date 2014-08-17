@@ -81,4 +81,51 @@ textarea.noResize { resize:none; }
  *******************************************/
 
 .photo-wrapper {
+  margin-left: 10px;
+  border: 1px black solid;
+  text-align: center;
+}
+
+.photo-image {
   padding: 10px;
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+}
+
+.photo-wrapper img {
+  height: 100%;
+}
+
+.photo-status-uploading, .photo-status-pending {
+  color: lightgray;
+}
+
+.photo-status-uploaded {
+  color: green;
+}
+
+.photo-status-failed {
+  color: red;
+}
+
+/*******************************************
+ * Photo preview screen
+ *******************************************/
+
+.photo-preview {
+  width: 100%;
+}
+
+.photo-preview img {
+  width: 100%;
+}
+
+/*******************************************
+ * Photo metadata screen
+ *******************************************/
+
+.photo-metadata-remove {
+  padding: 10px 0px 10px 10px;
+}
+
