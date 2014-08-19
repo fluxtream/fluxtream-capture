@@ -77,6 +77,9 @@ define([
             sObservationValue = document.getElementById('observation.value').value;
           }
 
+          var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
+            + document.getElementById('observation.observationTime').value).format();
+
           $scope.oNewObservation = new selfReportStorage.Observation(
               Date.parse($scope.tObservationTime) + "_" + $stateParams.topicId,
             $stateParams.topicId,
@@ -84,7 +87,7 @@ define([
             tCreationDate,
             tCreationDate,
             document.getElementById('observation.observationDate').value,
-            new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
+            tObservationTime,
             tCreationDate,
             document.getElementById('observation.timezone').value,
             document.getElementById('observation.comment').value

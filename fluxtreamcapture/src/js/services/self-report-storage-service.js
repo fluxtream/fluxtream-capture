@@ -408,7 +408,7 @@ define([
         creationDate: oObservation.creationDate.toISOString(),
         creationTime: oObservation.creationTime.toISOString(),
         observationDate: oObservation.observationDate,
-        observationTime: oObservation.observationTime.toISOString(),
+        observationTime: oObservation.observationTime,
         updateTime: oObservation.updateTime.toISOString(),
         timezone: oObservation.timezone,
         comment: oObservation.comment},
