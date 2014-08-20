@@ -18,8 +18,6 @@ define([
 
           $scope.topicId = $stateParams.topicId;
 
-          document.title = "Edit Topic";
-
           //TODO when the type is changed it should affect only future created entries
           // Toggle range boundaries and step based on topic type none/numeric/range
           $scope.changeType = function () {
@@ -46,6 +44,7 @@ define([
 
           //TODO should be done async
           $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+          document.title = $scope.oTopic.name;
 
           // Fill the data initially
           document.getElementById('topic.name').value = $scope.oTopic.name;

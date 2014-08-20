@@ -137,7 +137,7 @@ define([
 
 
           selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
-          $state.go("listTopics");
+          $state.go("history");
 
         };
       }

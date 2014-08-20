@@ -38,6 +38,8 @@ define([
           }
         };
 
+        document.title = "New Topic";
+
         //TODO what if the result would not be returned?
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
