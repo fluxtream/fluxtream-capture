@@ -21,9 +21,6 @@ define([
     var aoCachedTopics;
     var aoCachedObservations;
 
-    // True once this has been initialized
-    var initialized = false;
-
     var dbTopics;
     var dbObservations;
     var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
@@ -32,10 +29,8 @@ define([
     var remoteCouchObservations = 'http://yury:secret@127.0.0.1:5984/' + dbNameObservations;
 
     function initialize(){
-      initialized = true;
       aoCachedTopics = [];
       aoCachedObservations = [];
-
 
       dbTopics = new PouchDB(dbNameTopics);
       dbObservations = new PouchDB(dbNameObservations);
@@ -141,18 +136,55 @@ define([
     }
 
     /**
+     * (Public) Read Topics from the database
+     */
+    function readTopicsDB(){
+      if(aoCachedTopics.length === 0){
+        aoCachedTopics = [];
+
+        dbTopics.allDocs({include_docs: true}, function(err, response) {
+          response.rows.forEach( function (row)
+          {
+            //console.log(row.doc.name);
+            var oNextTopic = new Topic(
+              row.doc._id,
+              row.doc.creationTime,
+              row.doc.updateTime,
+              row.doc.name,
+              row.doc.type,
+              row.doc.defaultValue,
+              row.doc.rangeStart,
+              row.doc.rangeEnd,
+              row.doc.step
+            );
+
+            aoCachedTopics.push(oNextTopic);
+          });
+
+          $rootScope.$broadcast('event:topics-read-finished');
+        });
+
+        if(aoCachedTopics.length === 0) {
+          console.log("Accessing wrong link");
+        }
+      } else {
+        $rootScope.$broadcast('event:topics-read-finished');
+      }
+    }
+
+    /**
      * (Public) Read Topic from the database
      */
     function readTopicDB(sTopicId){
-      if(!aoCachedTopics){
-        // TODO Load topics here
+      if(aoCachedTopics.length === 0){
+        // TODO
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
         return oEntry.id == sTopicId;
       })[0];
 
-      return(oTopic);
+      return oTopic;
     }
 
     /**
@@ -168,6 +200,17 @@ define([
           break;
         }
       }
+    }
+
+    /**
+     * (Public) Return Topic from aoCachedTopics
+     */
+    function getTopic(sTopicId){
+      var oTopic = aoCachedTopics.filter(function(oEntry){
+        return oEntry.id == sTopicId;
+      })[0];
+
+      return oTopic;
     }
 
     /**
@@ -391,8 +434,6 @@ define([
      * (Public) Save Observation
      */
     function createObservation(oObservation) {
-      if (!initialized) throw "Storage not initialized yet.";
-
       if (aoCachedObservations == null) {
         aoCachedObservations = [];
       }
@@ -437,8 +478,6 @@ define([
      * (Public) Read Observation by Id
      */
     function readObservation(sObservationId) {
-      if (!initialized) throw "Storage not initialized yet.";
-
       var oCachedObservation = aoCachedObservations.filter(function(entry){
         return entry.id == sObservationId;
       })[0];
@@ -450,8 +489,6 @@ define([
      * (Public) Update Observation
      */
     function updateObservation(sObservationId, oObservation){
-      if (!initialized) throw "Storage not initialized yet.";
-
       var nNumberOfObservations = aoCachedObservations.length;
       var sNextId;
       for(var i=0; i<nNumberOfObservations; i++) {
@@ -482,7 +519,9 @@ define([
       createTopic: createTopic,
       readTopic: readTopic,
       readTopicDB: readTopicDB,
+      readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
+      getTopic: getTopic,
 
       Observation : Observation,
       createObservation: createObservation,

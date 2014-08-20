@@ -18,7 +18,6 @@ define([
 
         //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
-        $scope.oTopic = selfReportStorage.readTopicDB($stateParams.topicId);
         $scope.tObservationDate = new Date();
         $scope.tObservationTime = $scope.tObservationDate;
 
@@ -63,7 +62,15 @@ define([
           }
         };
 
-        $scope.readType();
+        $scope.$on('event:topics-read-finished', function() {
+          $scope.oTopic = selfReportStorage.getTopic($stateParams.topicId);
+
+          $scope.$$phase || $scope.$apply();
+
+          $scope.readType();
+        });
+
+        selfReportStorage.readTopicsDB();
 
         // Called when the form is submitted
         $scope.createObservation = function() {
