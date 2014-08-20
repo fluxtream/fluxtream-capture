@@ -21,6 +21,8 @@ define([
         }, 1000);
       };
 
+      document.title = "Self Report";
+
       selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
         $scope.$$phase || $scope.$apply();

@@ -63,7 +63,9 @@ define([
         };
 
         $scope.$on('event:topics-read-finished', function() {
-          $scope.oTopic = selfReportStorage.getTopic($stateParams.topicId);
+          $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
+
+          document.title = $scope.oTopic.name;
 
           $scope.$$phase || $scope.$apply();
 

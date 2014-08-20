@@ -18,6 +18,8 @@ define([
         $scope.$$phase || $scope.$apply();
       });
 
+      document.title = "History";
+
       selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
         $scope.aoObservations = aoObservations;
 

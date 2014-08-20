@@ -20,6 +20,8 @@ define([
         $scope.aoTopics.splice(toIndex, 0, oTopic);
       };
 
+      document.title = "Edit Topics";
+
       selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
         $scope.aoTopics = aoTopics;
         $scope.$$phase || $scope.$apply();

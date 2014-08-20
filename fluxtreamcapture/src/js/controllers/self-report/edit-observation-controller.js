@@ -49,9 +49,6 @@ define([
 
         $scope.topicId = $stateParams.observationId.split("_")[1];
 
-        $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
-        $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
-
         //Arrange DOM
         //TODO test range and others with malicious input
         $scope.readType = function(){
@@ -91,16 +88,27 @@ define([
           }
         };
 
-        $scope.readType();
+        $scope.$on('event:state-read-finished', function() {
+          $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+          $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
 
-        if ($scope.oTopic.type != "None") {
-          document.getElementById('observation.value').value = $scope.oObservation.value;
-        }
+          document.title = $scope.oTopic.name;
 
-        document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
-        document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
-        document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
-        document.getElementById('observation.comment').value = $scope.oObservation.comment;
+          $scope.readType();
+
+          if ($scope.oTopic.type != "None") {
+            document.getElementById('observation.value').value = $scope.oObservation.value;
+          }
+
+          document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
+          document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
+          document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
+          document.getElementById('observation.comment').value = $scope.oObservation.comment;
+
+          $scope.$$phase || $scope.$apply();
+        });
+
+        selfReportStorage.readDBState();
 
         // Called when the form is submitted
         $scope.editObservation = function() {

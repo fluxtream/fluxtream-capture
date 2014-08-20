@@ -106,26 +106,7 @@ define([
      */
     function readTopic(sTopicId){
       if(!aoCachedTopics){
-        $http.get('../../html/testing_data/topics.json').success(function(aoData){
-          var nTopicsArrayLength = aoData.length;
-          aoCachedTopics = [];
-
-          for (var i = 0; i < nTopicsArrayLength; i++) {
-            var oNextTopic = new Topic(
-              aoData[i].id,
-              aoData[i].creationTime,
-              aoData[i].updateTime,
-              aoData[i].name,
-              aoData[i].type,
-              aoData[i].defaultValue,
-              aoData[i].rangeStart,
-              aoData[i].rangeEnd,
-              aoData[i].step
-            );
-            aoCachedTopics.push(oNextTopic);
-          }
-          aoCachedTopics = aoData;
-        });
+        console.log("Reading from empty list of Topics");
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
@@ -161,14 +142,77 @@ define([
             aoCachedTopics.push(oNextTopic);
           });
 
+          if(aoCachedTopics.length === 0) {
+            console.log("Accessing wrong link");
+          }
+
           $rootScope.$broadcast('event:topics-read-finished');
         });
-
-        if(aoCachedTopics.length === 0) {
-          console.log("Accessing wrong link");
-        }
       } else {
         $rootScope.$broadcast('event:topics-read-finished');
+      }
+    }
+
+    /**
+     * (Public) Read Topics and Observations from the database
+     */
+    function readDBState(){
+      // Check if the page was reloaded - aoCachedTopics.length === 0
+      if(aoCachedTopics.length === 0){
+        aoCachedTopics = [];
+        aoCachedObservations = [];
+
+        // Read all topics into memory
+        dbTopics.allDocs({include_docs: true}, function(err, response) {
+          response.rows.forEach( function (row)
+          {
+            //console.log(row.doc.name);
+            var oNextTopic = new Topic(
+              row.doc._id,
+              row.doc.creationTime,
+              row.doc.updateTime,
+              row.doc.name,
+              row.doc.type,
+              row.doc.defaultValue,
+              row.doc.rangeStart,
+              row.doc.rangeEnd,
+              row.doc.step
+            );
+
+            aoCachedTopics.push(oNextTopic);
+          });
+
+          // Read all observations into memory
+          dbObservations.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextObservation = new Observation(
+                row.doc._id,
+                row.doc.topicId,
+                row.doc.value,
+                row.doc.creationDate,
+                row.doc.creationTime,
+                row.doc.observationDate,
+                row.doc.observationTime,
+                row.doc.updateTime,
+                row.doc.timezone,
+                row.doc.comment
+              );
+
+              aoCachedObservations.push(oNextObservation);
+            });
+
+            $rootScope.$broadcast('event:state-read-finished');
+          });
+
+          if((aoCachedTopics.length === 0) || (aoCachedObservations.length === 0)){
+            console.log("Accessing wrong link");
+          }
+        });
+
+      } else {
+        $rootScope.$broadcast('event:state-read-finished');
       }
     }
 
@@ -478,6 +522,10 @@ define([
      * (Public) Read Observation by Id
      */
     function readObservation(sObservationId) {
+      if(!aoCachedObservations){
+        console.log("Reading from empty list of Observations");
+      }
+
       var oCachedObservation = aoCachedObservations.filter(function(entry){
         return entry.id == sObservationId;
       })[0];
@@ -521,14 +569,14 @@ define([
       readTopicDB: readTopicDB,
       readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
-      getTopic: getTopic,
 
       Observation : Observation,
       createObservation: createObservation,
       readObservation: readObservation,
       updateObservation: updateObservation,
 
-      findUniqueDates: findUniqueDates
+      findUniqueDates: findUniqueDates,
+      readDBState: readDBState
     };
 
   }]);
