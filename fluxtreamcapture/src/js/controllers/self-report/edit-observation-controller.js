@@ -88,6 +88,8 @@ define([
           }
         };
 
+        // Listen for the event - Topics and Observations arrays are loaded into memory
+        // required in case the page was reloaded
         $scope.$on('event:state-read-finished', function() {
           $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
           $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
@@ -134,7 +136,6 @@ define([
             document.getElementById('observation.timezone').value,
             document.getElementById('observation.comment').value
           );
-
 
           selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
           $state.go("history");

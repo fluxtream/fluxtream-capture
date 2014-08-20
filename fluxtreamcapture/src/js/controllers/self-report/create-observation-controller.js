@@ -62,6 +62,8 @@ define([
           }
         };
 
+        // Listen for the event - Topics array is loaded into memory
+        // required in case the page was reloaded
         $scope.$on('event:topics-read-finished', function() {
           $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
 
