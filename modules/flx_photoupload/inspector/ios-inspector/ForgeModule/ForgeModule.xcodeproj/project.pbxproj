@@ -16,27 +16,8 @@
 		B3FC51FF15C1523D003574D9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC51FE15C1523D003574D9 /* CoreGraphics.framework */; };
 		B3FC524215C177EA003574D9 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC524115C177EA003574D9 /* AssetsLibrary.framework */; };
 		B3FC524815C17B2C003574D9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC524715C17B2C003574D9 /* SystemConfiguration.framework */; };
-		F90CE9CE19A23B7300FEC70F /* BTAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9B319A23B7300FEC70F /* BTAppDelegate.mm */; };
-		F90CE9D119A23B7300FEC70F /* BTPhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9B919A23B7300FEC70F /* BTPhotoAsset.m */; };
-		F90CE9D419A23B7300FEC70F /* BTPhotoImageUploadRequest.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9C019A23B7300FEC70F /* BTPhotoImageUploadRequest.mm */; };
-		F90CE9D719A23B7300FEC70F /* BTPhotosViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9C619A23B7300FEC70F /* BTPhotosViewController.m */; };
-		F90CE9D919A23B7300FEC70F /* BTPhotoUploader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9CA19A23B7300FEC70F /* BTPhotoUploader.mm */; };
-		F90CE9DA19A23B7300FEC70F /* BTSettingsViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9CC19A23B7300FEC70F /* BTSettingsViewController.mm */; };
-		F90CEA1519A23BC300FEC70F /* FluxtreamUploaderCpp.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9DD19A23BC300FEC70F /* FluxtreamUploaderCpp.mm */; };
-		F90CEA1619A23BC300FEC70F /* BTPhoneTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9E019A23BC300FEC70F /* BTPhoneTracker.mm */; };
-		F90CEA1719A23BC300FEC70F /* BTPulseTracker.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9E219A23BC300FEC70F /* BTPulseTracker.mm */; };
-		F90CEA1819A23BC300FEC70F /* ChannelList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9E319A23BC300FEC70F /* ChannelList.cpp */; };
-		F90CEA1919A23BC300FEC70F /* FluxtreamUploader.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9E619A23BC300FEC70F /* FluxtreamUploader.mm */; };
-		F90CEA1A19A23BC300FEC70F /* FluxtreamUploaderObjc.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9E819A23BC300FEC70F /* FluxtreamUploaderObjc.mm */; };
-		F90CEA1B19A23BC300FEC70F /* Logger.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9EC19A23BC300FEC70F /* Logger.mm */; };
-		F90CEA1C19A23BC300FEC70F /* Nickname.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9EE19A23BC300FEC70F /* Nickname.cpp */; };
-		F90CEA1D19A23BC300FEC70F /* NSUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9F119A23BC300FEC70F /* NSUtils.mm */; };
-		F90CEA1E19A23BC300FEC70F /* RawZeoReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9F219A23BC300FEC70F /* RawZeoReader.cpp */; };
-		F90CEA1F19A23BC300FEC70F /* RawZeoRelay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9F419A23BC300FEC70F /* RawZeoRelay.cpp */; };
-		F90CEA2019A23BC300FEC70F /* Samples.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9F619A23BC300FEC70F /* Samples.cpp */; };
-		F90CEA2119A23BC300FEC70F /* TextViewLogger.mm in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9F919A23BC300FEC70F /* TextViewLogger.mm */; };
-		F90CEA2219A23BC300FEC70F /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9FA19A23BC300FEC70F /* Utils.cpp */; };
-		F90CEA2319A23BC300FEC70F /* UUID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F90CE9FC19A23BC300FEC70F /* UUID.cpp */; };
+		F90B97B119A5F26F00076B52 /* PhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F90B97B019A5F26F00076B52 /* PhotoAsset.m */; };
+		F90B97B619A6323D00076B52 /* PhotoUploadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */; };
 		F91FDE9F19A4CFC600B3C936 /* PhotoUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */; };
 		F9ACABC71998BCF300D80CF6 /* PhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */; };
 /* End PBXBuildFile section */
@@ -55,52 +36,11 @@
 		B3FC51FE15C1523D003574D9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		B3FC524115C177EA003574D9 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		B3FC524715C17B2C003574D9 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
-		F90CE9B219A23B7300FEC70F /* BTAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTAppDelegate.h; sourceTree = "<group>"; };
-		F90CE9B319A23B7300FEC70F /* BTAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTAppDelegate.mm; sourceTree = "<group>"; };
-		F90CE9B819A23B7300FEC70F /* BTPhotoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPhotoAsset.h; sourceTree = "<group>"; };
-		F90CE9B919A23B7300FEC70F /* BTPhotoAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTPhotoAsset.m; sourceTree = "<group>"; };
-		F90CE9BF19A23B7300FEC70F /* BTPhotoImageUploadRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPhotoImageUploadRequest.h; sourceTree = "<group>"; };
-		F90CE9C019A23B7300FEC70F /* BTPhotoImageUploadRequest.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTPhotoImageUploadRequest.mm; sourceTree = "<group>"; };
-		F90CE9C519A23B7300FEC70F /* BTPhotosViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPhotosViewController.h; sourceTree = "<group>"; };
-		F90CE9C619A23B7300FEC70F /* BTPhotosViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BTPhotosViewController.m; sourceTree = "<group>"; };
-		F90CE9C919A23B7300FEC70F /* BTPhotoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPhotoUploader.h; sourceTree = "<group>"; };
-		F90CE9CA19A23B7300FEC70F /* BTPhotoUploader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTPhotoUploader.mm; sourceTree = "<group>"; };
-		F90CE9CB19A23B7300FEC70F /* BTSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTSettingsViewController.h; sourceTree = "<group>"; };
-		F90CE9CC19A23B7300FEC70F /* BTSettingsViewController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTSettingsViewController.mm; sourceTree = "<group>"; };
+		F90B97AF19A5F26F00076B52 /* PhotoAsset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoAsset.h; sourceTree = "<group>"; };
+		F90B97B019A5F26F00076B52 /* PhotoAsset.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoAsset.m; sourceTree = "<group>"; };
+		F90B97B419A6323D00076B52 /* PhotoUploadRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoUploadRequest.h; sourceTree = "<group>"; };
+		F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoUploadRequest.m; sourceTree = "<group>"; };
 		F90CE9CD19A23B7300FEC70F /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		F90CE9DC19A23BC300FEC70F /* FluxtreamUploaderCpp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxtreamUploaderCpp.h; sourceTree = "<group>"; };
-		F90CE9DD19A23BC300FEC70F /* FluxtreamUploaderCpp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FluxtreamUploaderCpp.mm; sourceTree = "<group>"; };
-		F90CE9DF19A23BC300FEC70F /* BTPhoneTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPhoneTracker.h; sourceTree = "<group>"; };
-		F90CE9E019A23BC300FEC70F /* BTPhoneTracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTPhoneTracker.mm; sourceTree = "<group>"; };
-		F90CE9E119A23BC300FEC70F /* BTPulseTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BTPulseTracker.h; sourceTree = "<group>"; };
-		F90CE9E219A23BC300FEC70F /* BTPulseTracker.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = BTPulseTracker.mm; sourceTree = "<group>"; };
-		F90CE9E319A23BC300FEC70F /* ChannelList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChannelList.cpp; sourceTree = "<group>"; };
-		F90CE9E419A23BC300FEC70F /* ChannelList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChannelList.h; sourceTree = "<group>"; };
-		F90CE9E519A23BC300FEC70F /* FluxtreamUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxtreamUploader.h; sourceTree = "<group>"; };
-		F90CE9E619A23BC300FEC70F /* FluxtreamUploader.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FluxtreamUploader.mm; sourceTree = "<group>"; };
-		F90CE9E719A23BC300FEC70F /* FluxtreamUploaderObjc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FluxtreamUploaderObjc.h; sourceTree = "<group>"; };
-		F90CE9E819A23BC300FEC70F /* FluxtreamUploaderObjc.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FluxtreamUploaderObjc.mm; sourceTree = "<group>"; };
-		F90CE9E919A23BC300FEC70F /* heartbeat_s1.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = heartbeat_s1.aiff; sourceTree = "<group>"; };
-		F90CE9EA19A23BC300FEC70F /* heartbeat_s2.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; path = heartbeat_s2.aiff; sourceTree = "<group>"; };
-		F90CE9EB19A23BC300FEC70F /* Logger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Logger.h; sourceTree = "<group>"; };
-		F90CE9EC19A23BC300FEC70F /* Logger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Logger.mm; sourceTree = "<group>"; };
-		F90CE9ED19A23BC300FEC70F /* Mutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mutex.h; sourceTree = "<group>"; };
-		F90CE9EE19A23BC300FEC70F /* Nickname.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Nickname.cpp; sourceTree = "<group>"; };
-		F90CE9EF19A23BC300FEC70F /* Nickname.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Nickname.h; sourceTree = "<group>"; };
-		F90CE9F019A23BC300FEC70F /* NSUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSUtils.h; sourceTree = "<group>"; };
-		F90CE9F119A23BC300FEC70F /* NSUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NSUtils.mm; sourceTree = "<group>"; };
-		F90CE9F219A23BC300FEC70F /* RawZeoReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RawZeoReader.cpp; sourceTree = "<group>"; };
-		F90CE9F319A23BC300FEC70F /* RawZeoReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawZeoReader.h; sourceTree = "<group>"; };
-		F90CE9F419A23BC300FEC70F /* RawZeoRelay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RawZeoRelay.cpp; sourceTree = "<group>"; };
-		F90CE9F519A23BC300FEC70F /* RawZeoRelay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawZeoRelay.h; sourceTree = "<group>"; };
-		F90CE9F619A23BC300FEC70F /* Samples.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Samples.cpp; sourceTree = "<group>"; };
-		F90CE9F719A23BC300FEC70F /* Samples.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Samples.h; sourceTree = "<group>"; };
-		F90CE9F819A23BC300FEC70F /* TextViewLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextViewLogger.h; sourceTree = "<group>"; };
-		F90CE9F919A23BC300FEC70F /* TextViewLogger.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TextViewLogger.mm; sourceTree = "<group>"; };
-		F90CE9FA19A23BC300FEC70F /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
-		F90CE9FB19A23BC300FEC70F /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
-		F90CE9FC19A23BC300FEC70F /* UUID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UUID.cpp; sourceTree = "<group>"; };
-		F90CE9FD19A23BC300FEC70F /* UUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UUID.h; sourceTree = "<group>"; };
 		F91FDE9D19A4CFC600B3C936 /* PhotoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoUploader.h; sourceTree = "<group>"; };
 		F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoUploader.m; sourceTree = "<group>"; };
 		F9ACABC51998BCF300D80CF6 /* PhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoLibrary.h; sourceTree = "<group>"; };
@@ -138,12 +78,17 @@
 				F90CE9B119A239A000FEC70F /* BT */,
 				F9ACABC51998BCF300D80CF6 /* PhotoLibrary.h */,
 				F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */,
+				F90B97AF19A5F26F00076B52 /* PhotoAsset.h */,
+				F90B97B019A5F26F00076B52 /* PhotoAsset.m */,
 				F91FDE9D19A4CFC600B3C936 /* PhotoUploader.h */,
 				F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */,
 				B3CC61EF1716ECB500A1A8EF /* flx_photoupload_API.h */,
 				B3CC61F01716ECB500A1A8EF /* flx_photoupload_API.m */,
 				B3CC61F11716ECB500A1A8EF /* flx_photoupload_EventListener.h */,
 				B3CC61F31716ECBB00A1A8EF /* flx_photoupload_EventListener.m */,
+				F90B97B419A6323D00076B52 /* PhotoUploadRequest.h */,
+				F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */,
+				F90CE9CD19A23B7300FEC70F /* Constants.h */,
 				B31B6D5015C13D5200854074 /* Frameworks */,
 				B31B6D4F15C13D5200854074 /* Products */,
 			);
@@ -175,9 +120,6 @@
 		F90CE9B119A239A000FEC70F /* BT */ = {
 			isa = PBXGroup;
 			children = (
-				F90CE9DC19A23BC300FEC70F /* FluxtreamUploaderCpp.h */,
-				F90CE9DD19A23BC300FEC70F /* FluxtreamUploaderCpp.mm */,
-				F90CE9DE19A23BC300FEC70F /* Shared */,
 				F90CE9DB19A23B9500FEC70F /* FluxtreamCapture */,
 			);
 			name = BT;
@@ -186,59 +128,8 @@
 		F90CE9DB19A23B9500FEC70F /* FluxtreamCapture */ = {
 			isa = PBXGroup;
 			children = (
-				F90CE9B219A23B7300FEC70F /* BTAppDelegate.h */,
-				F90CE9B319A23B7300FEC70F /* BTAppDelegate.mm */,
-				F90CE9B819A23B7300FEC70F /* BTPhotoAsset.h */,
-				F90CE9B919A23B7300FEC70F /* BTPhotoAsset.m */,
-				F90CE9BF19A23B7300FEC70F /* BTPhotoImageUploadRequest.h */,
-				F90CE9C019A23B7300FEC70F /* BTPhotoImageUploadRequest.mm */,
-				F90CE9C519A23B7300FEC70F /* BTPhotosViewController.h */,
-				F90CE9C619A23B7300FEC70F /* BTPhotosViewController.m */,
-				F90CE9C919A23B7300FEC70F /* BTPhotoUploader.h */,
-				F90CE9CA19A23B7300FEC70F /* BTPhotoUploader.mm */,
-				F90CE9CB19A23B7300FEC70F /* BTSettingsViewController.h */,
-				F90CE9CC19A23B7300FEC70F /* BTSettingsViewController.mm */,
-				F90CE9CD19A23B7300FEC70F /* Constants.h */,
 			);
 			name = FluxtreamCapture;
-			sourceTree = "<group>";
-		};
-		F90CE9DE19A23BC300FEC70F /* Shared */ = {
-			isa = PBXGroup;
-			children = (
-				F90CE9DF19A23BC300FEC70F /* BTPhoneTracker.h */,
-				F90CE9E019A23BC300FEC70F /* BTPhoneTracker.mm */,
-				F90CE9E119A23BC300FEC70F /* BTPulseTracker.h */,
-				F90CE9E219A23BC300FEC70F /* BTPulseTracker.mm */,
-				F90CE9E319A23BC300FEC70F /* ChannelList.cpp */,
-				F90CE9E419A23BC300FEC70F /* ChannelList.h */,
-				F90CE9E519A23BC300FEC70F /* FluxtreamUploader.h */,
-				F90CE9E619A23BC300FEC70F /* FluxtreamUploader.mm */,
-				F90CE9E719A23BC300FEC70F /* FluxtreamUploaderObjc.h */,
-				F90CE9E819A23BC300FEC70F /* FluxtreamUploaderObjc.mm */,
-				F90CE9E919A23BC300FEC70F /* heartbeat_s1.aiff */,
-				F90CE9EA19A23BC300FEC70F /* heartbeat_s2.aiff */,
-				F90CE9EB19A23BC300FEC70F /* Logger.h */,
-				F90CE9EC19A23BC300FEC70F /* Logger.mm */,
-				F90CE9ED19A23BC300FEC70F /* Mutex.h */,
-				F90CE9EE19A23BC300FEC70F /* Nickname.cpp */,
-				F90CE9EF19A23BC300FEC70F /* Nickname.h */,
-				F90CE9F019A23BC300FEC70F /* NSUtils.h */,
-				F90CE9F119A23BC300FEC70F /* NSUtils.mm */,
-				F90CE9F219A23BC300FEC70F /* RawZeoReader.cpp */,
-				F90CE9F319A23BC300FEC70F /* RawZeoReader.h */,
-				F90CE9F419A23BC300FEC70F /* RawZeoRelay.cpp */,
-				F90CE9F519A23BC300FEC70F /* RawZeoRelay.h */,
-				F90CE9F619A23BC300FEC70F /* Samples.cpp */,
-				F90CE9F719A23BC300FEC70F /* Samples.h */,
-				F90CE9F819A23BC300FEC70F /* TextViewLogger.h */,
-				F90CE9F919A23BC300FEC70F /* TextViewLogger.mm */,
-				F90CE9FA19A23BC300FEC70F /* Utils.cpp */,
-				F90CE9FB19A23BC300FEC70F /* Utils.h */,
-				F90CE9FC19A23BC300FEC70F /* UUID.cpp */,
-				F90CE9FD19A23BC300FEC70F /* UUID.h */,
-			);
-			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -319,30 +210,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F90B97B619A6323D00076B52 /* PhotoUploadRequest.m in Sources */,
 				B3CC61F21716ECB500A1A8EF /* flx_photoupload_API.m in Sources */,
-				F90CEA1819A23BC300FEC70F /* ChannelList.cpp in Sources */,
 				B3CC61F41716ECBB00A1A8EF /* flx_photoupload_EventListener.m in Sources */,
-				F90CEA2319A23BC300FEC70F /* UUID.cpp in Sources */,
-				F90CEA1619A23BC300FEC70F /* BTPhoneTracker.mm in Sources */,
-				F90CEA2019A23BC300FEC70F /* Samples.cpp in Sources */,
-				F90CE9CE19A23B7300FEC70F /* BTAppDelegate.mm in Sources */,
-				F90CE9D119A23B7300FEC70F /* BTPhotoAsset.m in Sources */,
-				F90CEA1919A23BC300FEC70F /* FluxtreamUploader.mm in Sources */,
-				F90CE9D919A23B7300FEC70F /* BTPhotoUploader.mm in Sources */,
-				F90CEA1E19A23BC300FEC70F /* RawZeoReader.cpp in Sources */,
-				F90CEA1B19A23BC300FEC70F /* Logger.mm in Sources */,
-				F90CEA2219A23BC300FEC70F /* Utils.cpp in Sources */,
-				F90CEA1C19A23BC300FEC70F /* Nickname.cpp in Sources */,
-				F90CEA1519A23BC300FEC70F /* FluxtreamUploaderCpp.mm in Sources */,
-				F90CE9DA19A23B7300FEC70F /* BTSettingsViewController.mm in Sources */,
 				F9ACABC71998BCF300D80CF6 /* PhotoLibrary.m in Sources */,
-				F90CEA1A19A23BC300FEC70F /* FluxtreamUploaderObjc.mm in Sources */,
-				F90CE9D419A23B7300FEC70F /* BTPhotoImageUploadRequest.mm in Sources */,
-				F90CEA1D19A23BC300FEC70F /* NSUtils.mm in Sources */,
-				F90CEA1719A23BC300FEC70F /* BTPulseTracker.mm in Sources */,
-				F90CEA1F19A23BC300FEC70F /* RawZeoRelay.cpp in Sources */,
-				F90CEA2119A23BC300FEC70F /* TextViewLogger.mm in Sources */,
-				F90CE9D719A23B7300FEC70F /* BTPhotosViewController.m in Sources */,
+				F90B97B119A5F26F00076B52 /* PhotoAsset.m in Sources */,
 				F91FDE9F19A4CFC600B3C936 /* PhotoUploader.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

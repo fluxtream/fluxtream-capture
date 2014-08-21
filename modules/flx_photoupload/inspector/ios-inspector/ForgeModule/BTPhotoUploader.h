@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "BTPhotoAsset.h"
 
 @interface BTPhotoUploader : NSObject
 
@@ -25,10 +24,8 @@
 
 - (void)unuploadedPhotosWithOrientation:(ALAssetOrientation)requestedOrientation;
 - (void)markPhotosForUpload:(NSArray *)photos;
-- (void)updateAnnotationsForAsset:(BTPhotoAsset *)annotatedAsset;
 
 - (void)uploadNow;
 - (BOOL)savePhotosArray;
 
 @end
-        

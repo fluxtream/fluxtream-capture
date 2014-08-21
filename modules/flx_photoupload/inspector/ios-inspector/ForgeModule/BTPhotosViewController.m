@@ -1,8 +1,8 @@
 #import "BTPhotosViewController.h"
-#import "BTPhotoDetailViewController.h"
+//#import "BTPhotoDetailViewController.h"
 #import "BTPhotoUploader.h"
-#import "BTPhotoAsset.h"
-#import "BTCommentBadge.h"
+//#import "BTPhotoAsset.h"
+//#import "BTCommentBadge.h"
 #import "Constants.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
@@ -40,3 +40,4 @@
 //    [[BTPhotoUploader sharedPhotoUploader] uploadNow];
 //}
 
+@end

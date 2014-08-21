@@ -1,5 +1,6 @@
 #import "flx_photoupload_API.h"
 #import "PhotoLibrary.h"
+#import "PhotoUploader.h"
 
 @implementation flx_photoupload_API
 
@@ -26,7 +27,7 @@
 
 + (void)getPhotoList:(ForgeTask *)task {
     NSLog(@"API: getPhotoList()");
-    [PhotoLibrary getPhotoListWithCallback:task];
+    [[PhotoLibrary singleton] getPhotoListWithCallback:task];
 }
 
 + (void)startAutouploadService:(ForgeTask *)task {
@@ -37,8 +38,8 @@
 
 + (void)setUploadParameters:(ForgeTask *)task uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication {
     NSLog(@"API: setUploadParameters(%@, %@)", uploadURL, authentication);
+    [[PhotoUploader singleton] setUploadURL:uploadURL authentication:authentication];
     [task success:nil];
-    // TODO
 }
 
 + (void)setAutouploadOptions:(ForgeTask *)task params:(NSDictionary *)params {
@@ -57,8 +58,12 @@
 }
 
 + (void)uploadPhoto:(ForgeTask *)task photoId:(NSNumber *)photoId {
+    if ([photoId isKindOfClass:[NSString class]]) {
+        photoId = [NSNumber numberWithInt:[(NSString *)photoId intValue]];
+    }
     NSLog(@"API: uploadPhoto(%d)", [photoId intValue]);
-    [task errorString:@"Not implemented yet"];
+    [[PhotoUploader singleton] uploadPhoto:photoId];
+    [task success:nil];
 }
 
 + (void)arePhotosUploaded:(ForgeTask *)task photoIds:(NSArray *)photoIds {

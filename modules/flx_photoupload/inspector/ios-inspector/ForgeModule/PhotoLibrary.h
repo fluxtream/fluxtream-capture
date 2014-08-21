@@ -10,6 +10,8 @@
 
 @interface PhotoLibrary : NSObject
 
-+ (void)getPhotoListWithCallback:(ForgeTask *)task;
++ (PhotoLibrary *)singleton;
+
+- (void)getPhotoListWithCallback:(ForgeTask *)task;
 
 @end

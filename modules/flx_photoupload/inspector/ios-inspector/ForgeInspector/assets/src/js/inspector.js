@@ -44,23 +44,29 @@ $(function () {
 			}
 		})
 		$('#_method').change();
-		$('#_run').click(function () {
-			var module = $('#_module').val();
-			var method = $('#_method').val();
-			var params = {};
-			
-			$('.api_input input').each(function (i, x) {
-				params[$(x).attr('id')] = $(x).val();
-			});
-			
-			$('#_output').prepend('<pre class="alert alert-info">Called "'+module+'.'+method+'" with "'+JSON.stringify(params, null, '')+'"</pre>');
-			forge.internal.call(module+'.'+method, params, function () {
-				$('#_output').prepend('<pre class="alert alert-success">Success for "'+module+'.'+method+'" with "'+JSON.stringify(arguments[0], null, '')+'"</pre>');
-			}, function () {
-				$('#_output').prepend('<pre class="alert alert-error">Error for "'+module+'.'+method+'" with "'+JSON.stringify(arguments[0], null, '')+'"</pre>');
-			})
-		});
-	}, function () {
+                        $('#_run').click(function () {
+                                         var module = $('#_module').val();
+                                         var method = $('#_method').val();
+                                         var paramTypes = modules[module][method];
+                                         var params = {};
+                                         
+                                         $('.api_input input').each(function (i, x) {
+                                                                    switch (paramTypes[$(x).attr('id')].type) {
+                                                                    case 'int': params[$(x).attr('id')] = parseInt($(x).val()); break;
+                                                                    case 'long': params[$(x).attr('id')] = parseInt($(x).val()); break;
+                                                                    case 'double': params[$(x).attr('id')] = parseFloat($(x).val()); break;
+                                                                    default: params[$(x).attr('id')] = $(x).val();
+                                                                    }
+                                                                    });
+                                         
+                                         $('#_output').prepend('<pre class="alert alert-info">Called "'+module+'.'+method+'" with "'+JSON.stringify(params, null, '')+'"</pre>');
+                                         forge.internal.call(module+'.'+method, params, function () {
+                                                             $('#_output').prepend('<pre class="alert alert-success">Success for "'+module+'.'+method+'" with "'+JSON.stringify(arguments[0], null, '')+'"</pre>');
+                                                             }, function () {
+                                                             $('#_output').prepend('<pre class="alert alert-error">Error for "'+module+'.'+method+'" with "'+JSON.stringify(arguments[0], null, '')+'"</pre>');
+                                                             })
+                                         });
+    }, function () {
 		alert("Error");
 	});
 	forge.internal.addEventListener('*', function (event, e) {

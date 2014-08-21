@@ -8,22 +8,23 @@
 
 #import "PhotoUploader.h"
 #import "Constants.h"
-#import "BTPhotoImageUploadRequest.h"
+#import "PhotoUploadRequest.h"
+#import "PhotoAsset.h"
 
 @interface PhotoUploader()
 
 // Upload URL and authentication string
-@property (assign) NSString *uploadURL;
-@property (assign) NSString *authentication;
+@property (nonatomic, strong) NSString *uploadURL;
+@property (nonatomic, strong) NSString *authentication;
 
 // True if the upload thread is running
-@property (assign) BOOL isUploading;
+@property (nonatomic) BOOL isUploading;
 
 // True when we want to cancel the current upload
-@property (assign) BOOL cancelCurrentUpload;
+@property (nonatomic) BOOL cancelCurrentUpload;
 
 // Id of the photo currently being uploaded
-@property (assign) NSNumber *currentPhoto;
+@property (nonatomic, strong) NSNumber *currentPhoto;
 
 // The queue of ids of photos waiting for upload (enqueued at the end, dequeued at the front)
 @property (nonatomic, strong) NSMutableArray *pendingPhotos;
@@ -33,12 +34,6 @@
 
 // A mutex to avoid accessing these arrays concurrently
 @property (nonatomic, strong) NSObject *mutex;
-
-// A map converting an asset URL to the corresponding integer photo id
-@property (nonatomic, strong) NSMutableDictionary *urlToPhotoIdMap;
-
-// A map converting a photo id to an asset object
-@property (nonatomic, strong) NSMutableDictionary *photoIdToAssetMap;
 
 // The asset library
 @property (nonatomic, strong) ALAssetsLibrary *library;
@@ -59,8 +54,6 @@
         self.pendingPhotos = [NSMutableArray new];
         self.uploadedPhotos = [NSMutableArray new];
         self.mutex = [NSObject new];
-        self.urlToPhotoIdMap = [NSMutableDictionary new];
-        self.photoIdToAssetMap = [NSMutableDictionary new];
         self.library = [ALAssetsLibrary new];
     }
     return self;
@@ -71,8 +64,8 @@
     self.authentication = authentication;
 }
 
-- (BOOL)isPhotoUploaded:(int)photoId {
-    // TODO
+- (BOOL)isPhotoUploaded:(NSNumber *)photoId {
+    return [[PhotoAsset photoWithId:photoId].uploadStatus isEqual:@"uploaded"];
 }
 
 - (void)uploadPhoto:(NSNumber *)photoId {
@@ -118,7 +111,7 @@
 }
 
 - (NSString *)getFacetId:(NSNumber *)photoId {
-    // TODO
+    return [PhotoAsset photoWithId:photoId].facetId;
 }
 
 
@@ -139,7 +132,7 @@
 }
 
 - (void)setPhotoUploaded:(NSNumber *)photoId withFacetId:(NSString *)facetId {
-    // TODO
+    [PhotoAsset photoWithId:photoId].facetId = facetId;
 }
 
 - (void)runUploadThread {
@@ -183,7 +176,7 @@
                     [self.pendingPhotos addObject:photoId];
                 }
                 // Wait 1 minute before continuing
-                [NSThread sleepForTimeInterval:60];
+                [NSThread sleepForTimeInterval:6]; // TODO 60
             }
         }
     }
@@ -194,26 +187,33 @@
     [[ForgeApp sharedApp] event:@"photoupload.started" withParam:[self eventDataForId:photoId]];
     
     // Get asset for photoId
-    ALAsset *asset = [self.photoIdToAssetMap objectForKey:photoId];
+    PhotoAsset *photoAsset = [PhotoAsset photoWithId:photoId];
+    ALAsset *asset = photoAsset.actualAsset;
+    
+    NSLog(@"Asset = %@", asset);
     
     // Create request
-    NSURLRequest *request = [BTPhotoImageUploadRequest uploadRequestForAsset:asset];
+    NSURLRequest *request = [PhotoUploadRequest uploadRequestForAsset:asset
+                                                            uploadURL:self.uploadURL
+                                                       authentication:self.authentication];
     
     // Run request
     NSURLResponse *response = nil;
     NSError *error = nil;
     NSData *data = [NSURLConnection sendSynchronousRequest:request
-                          returningResponse:&response
-                                      error:&error];
+                                         returningResponse:&response
+                                                     error:&error];
     if (error) {
         NSLog(@"photo upload error code: %ld", (long)[error code]);
+        NSLog(@"%@", error);
+        @throw [NSException exceptionWithName:@"An error has occurred" reason:@"Received wrong response code" userInfo:nil];
         @throw @"An error has occured";
     } else {
         int statusCode = (int)[(NSHTTPURLResponse *) response statusCode];
         NSLog(@"photo uploader got %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         NSLog(@"photo upload success: status %d", statusCode);
         
-        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:nil error:&error];
+        NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
         
         // TODO check if response is 'ok' and get facetId
         NSString *facetId = [[json objectForKey:@"payload"] objectForKey:@"id"];
@@ -226,36 +226,36 @@
     return [NSMutableDictionary dictionaryWithDictionary:@{@"photoId": photoId}];
 }
 
-- (void)saveOptions:(NSDictionary *)options {
-    
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    
-    for (NSString* key in options) {
-        if ([key isEqualToString:@"upload_portrait"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
-        } else if ([key isEqualToString:@"upload_upside_down"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN];
-        } else if ([key isEqualToString:@"upload_landscape_left"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT];
-        } else if ([key isEqualToString:@"upload_landscape_right"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT];
-        } else if ([key isEqualToString:@"portrait_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP];
-        } else if ([key isEqualToString:@"upside_down_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP];
-        } else if ([key isEqualToString:@"landscape_left_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP];
-        } else if ([key isEqualToString:@"landscape_right_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP];
-        } else if ([key isEqualToString:@"upload_url"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_UPLOAD_URL];
-        } else if ([key isEqualToString:@"authentication"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_AUTHENTICATION];
-        } else {
-            NSLog(@"Unknown option: %@", key);
-        }
-    }
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
+//- (void)saveOptions:(NSDictionary *)options {
+//    
+//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+//    
+//    for (NSString* key in options) {
+//        if ([key isEqualToString:@"upload_portrait"]) {
+//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
+//        } else if ([key isEqualToString:@"upload_upside_down"]) {
+//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN];
+//        } else if ([key isEqualToString:@"upload_landscape_left"]) {
+//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT];
+//        } else if ([key isEqualToString:@"upload_landscape_right"]) {
+//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT];
+//        } else if ([key isEqualToString:@"portrait_minimum_timestamp"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP];
+//        } else if ([key isEqualToString:@"upside_down_minimum_timestamp"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP];
+//        } else if ([key isEqualToString:@"landscape_left_minimum_timestamp"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP];
+//        } else if ([key isEqualToString:@"landscape_right_minimum_timestamp"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP];
+//        } else if ([key isEqualToString:@"upload_url"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_UPLOAD_URL];
+//        } else if ([key isEqualToString:@"authentication"]) {
+//            [defaults setObject:options[key] forKey:DEFAULTS_AUTHENTICATION];
+//        } else {
+//            NSLog(@"Unknown option: %@", key);
+//        }
+//    }
+//    [[NSUserDefaults standardUserDefaults] synchronize];
+//}
 
 @end

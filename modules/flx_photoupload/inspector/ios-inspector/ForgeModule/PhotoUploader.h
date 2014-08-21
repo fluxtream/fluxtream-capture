@@ -13,7 +13,7 @@
 + (PhotoUploader *)singleton;
 
 - (void)setUploadURL:(NSString *)uploadURL authentication:(NSString *)authentication;
-- (BOOL)isPhotoUploaded:(int)photoId;
+- (BOOL)isPhotoUploaded:(NSNumber *)photoId;
 - (void)uploadPhoto:(NSNumber *)photoId;
 - (void)cancelUpload:(NSNumber *)photoId;
 - (NSString *)getFacetId:(NSNumber *)photoId;

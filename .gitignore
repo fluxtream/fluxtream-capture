@@ -56,3 +56,5 @@ tasks.xml
 .svn
 .CVS
 
+# iOS build files
+*.build

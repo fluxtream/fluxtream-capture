@@ -2,7 +2,6 @@
 #import <UIKit/UIKit.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "BTPhotoUploader.h"
-#import "BTPhotoAsset.h"
 
 @interface BTPhotosViewController : UIViewController <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 

@@ -9,36 +9,50 @@
 #import "PhotoLibrary.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
+#import "PhotoAsset.h"
 
 @interface PhotoLibrary()
+
+// The full list of available photos
+@property (nonatomic, strong) NSArray *photos; // Contains PhotoAsset instances
+
 @end
 
 @implementation PhotoLibrary
 
-+ (void)getPhotoListWithCallback:(ForgeTask *)task {
++ (PhotoLibrary *)singleton {
+    static PhotoLibrary* singleton = NULL;
+    if (!singleton) singleton = [PhotoLibrary new];
+    return singleton;
+}
+
+- (void)getPhotoListWithCallback:(ForgeTask *)task {
     
-    // List of assets, will be constructed through this algorithm
-    NSMutableArray * assets = [NSMutableArray new];
+    // List of assets to be sent through the callback
+    NSMutableArray *assets = [NSMutableArray new];
     
     // Block: enumerator for the assets within a group
     void (^assetEnumerator)(ALAsset *, NSUInteger, BOOL *) = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
         if (result != NULL) {
+            // Find or create photo
+            PhotoAsset *photo = [PhotoAsset photoWithAsset:result];
             // Create data dictionary
             NSMutableDictionary *data = [NSMutableDictionary new];
             // Add id
-            [data setValue:result.defaultRepresentation.filename forKeyPath:@"id"];
+            [data setValue:photo.identifier forKeyPath:@"id"];
             // Add date
             NSDate *dateTaken = [result valueForProperty:ALAssetPropertyDate];
             [data setValue:[NSNumber numberWithLong:dateTaken.timeIntervalSince1970] forKey:@"dateTaken"];
             // Add orientation
             [data setValue:[result valueForProperty:ALAssetPropertyOrientation] forKey:@"orientation"];
             // Add uri
-            [data setValue:[[result valueForProperty:ALAssetPropertyAssetURL] description] forKey:@"uri"];
+            [data setValue:photo.assetURL forKey:@"uri"];
             // Add thumbnail uri
             UIImage *thumbnailImage = [UIImage imageWithCGImage:[result thumbnail]];
             NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
             NSString *encodedString = [imageData base64Encoding];
             NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
+            dataUrl = @"THUMB"; // TODO remove
             [data setValue:dataUrl forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
@@ -56,7 +70,7 @@
             [group enumerateAssetsUsingBlock:assetEnumerator];
         } else {
             // All groups have been visited
-            NSLog(@"Assets: %@", [assets description]);
+//            NSLog(@"Assets: %@", [assets description]);
             [task success:assets];
         }
     };
