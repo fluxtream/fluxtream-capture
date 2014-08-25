@@ -1,5 +1,6 @@
 define([
   'app-modules',
+  'moment',
   'services/self-report-storage-service'
 ], function(appModules) {
   //TODO reload of the page doesn't work
@@ -124,6 +125,9 @@ define([
             sObservationValue = document.getElementById('observation.value').value;
           }
 
+          var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
+            + document.getElementById('observation.observationTime').value).format();
+
           $scope.oNewObservation = new selfReportStorage.Observation(
             $scope.oObservation.id,
             $scope.topicId,
@@ -131,13 +135,14 @@ define([
             $scope.oObservation.creationDate,
             $scope.oObservation.creationTime,
             document.getElementById('observation.observationDate').value,
-            new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
+            tObservationTime,
             tCreationDate,
             document.getElementById('observation.timezone').value,
             document.getElementById('observation.comment').value
           );
 
           selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
+          $scope.$$phase || $scope.$apply();
           $state.go("history");
 
         };

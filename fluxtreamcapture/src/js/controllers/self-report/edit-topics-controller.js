@@ -20,12 +20,19 @@ define([
         $scope.aoTopics.splice(toIndex, 0, oTopic);
       };
 
+      // Read memory values
+      $scope.aoTopics = selfReportStorage.readTopics();
       document.title = "Edit Topics";
+      $scope.$$phase || $scope.$apply();
 
-      selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
-        $scope.aoTopics = aoTopics;
-        $scope.$$phase || $scope.$apply();
-      });
+      // Read data from DB if it is epmty
+      // TODO should be done periodically not only if reload was done
+      if($scope.aoTopics.length === 0) {
+        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          $scope.aoTopics = aoTopics;
+          $scope.$$phase || $scope.$apply();
+        });
+      }
 
       $scope.$on('event:topics-synced', function() {
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
@@ -35,5 +42,4 @@ define([
       });
     }
   ]);
-
 });

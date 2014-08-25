@@ -1,5 +1,6 @@
 define([
   'app-modules',
+  'moment',
   'services/self-report-storage-service'
 ], function(appModules) {
 

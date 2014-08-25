@@ -27,6 +27,9 @@ define([
         $scope.aoTopics = aoTopics;
         $scope.$$phase || $scope.$apply();
       });
+
+      selfReportStorage.readObservationsAsyncDB(function () {
+      });
     }
   ]);
 

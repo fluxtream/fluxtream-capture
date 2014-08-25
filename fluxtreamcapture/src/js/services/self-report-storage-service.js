@@ -83,6 +83,7 @@ define([
         function callback(err, result) {
         if (!err) {
           console.log('Successfully saved a Topic on client side!');
+          $rootScope.$broadcast('event:topics-synced');
         } else {
           console.log("Error while saving Topic on the client side: " + err);
         }
@@ -93,7 +94,6 @@ define([
       dbTopics.replicate.to(remoteCouchTopics)
         .on('complete', function () {
           // Successfully synced
-          $rootScope.$broadcast('event:topics-synced');
           console.log("Successfully saved Topic on the server side");
         }).on('error', function (err) {
           // Handle error
@@ -232,6 +232,17 @@ define([
     }
 
     /**
+     * (Public) Read Topics from memory
+     */
+    function readTopics(){
+      if(aoCachedTopics.length === 0){
+        console.log("No topics in memory");
+      }
+
+      return aoCachedTopics;
+    }
+
+    /**
      * (Public) Update Topic in storage
      */
     function updateTopic(oTopic) {
@@ -241,6 +252,42 @@ define([
       for (var i = 0; i < nTopicsArrayLength; i++) {
         if (aoCachedTopics[i].id == oTopic.id) {
           aoCachedTopics[i] = oTopic;
+
+          // Save topic to client database
+          console.log("Updating Topic on the client side.");
+          // TODO what kind of changes could happen???
+
+          dbTopics.get(oTopic.id).then(function(oTopicDB) {
+            return dbTopics.put({
+              _id: oTopicDB._id,
+              _rev: oTopicDB._rev,
+              creationTime: oTopicDB.creationTime,
+              updateTime: oTopic.updateTime.toISOString(),
+              name: oTopic.name,
+              type: oTopic.type,
+              defaultValue: oTopic.defaultValue,
+              rangeStart: oTopic.rangeStart,
+              rangeEnd: oTopic.rangeEnd,
+              step: oTopic.step
+            });
+          }, function(err, response) {
+            if (!err) {
+              console.log('Successfully updated Topic on client side!');
+            } else {
+              console.log('Error while updating Topic on client side: ' + err);
+            }
+          });
+
+          console.log("Updating Topic on the server side.");
+          //Push Observation to the server
+          dbTopics.replicate.to(remoteCouchTopics)
+            .on('complete', function () {
+              // Successfully synced
+              console.log("Successfully updated Topic on the server side");
+            }).on('error', function (err) {
+              // Handle error
+              console.log("Error while updating Topic on the server side: " + err);
+            });
           break;
         }
       }
@@ -534,6 +581,17 @@ define([
     }
 
     /**
+     * (Public) Read Observations from memory
+     */
+    function readObservations(){
+      if(aoCachedObservations.length === 0){
+        console.log("No observations in memory");
+      }
+
+      return aoCachedObservations;
+    }
+
+    /**
      * (Public) Update Observation
      */
     function updateObservation(sObservationId, oObservation){
@@ -544,6 +602,42 @@ define([
 
         if (sNextId == sObservationId) {
           aoCachedObservations[i] = oObservation;
+
+          // Save observation to client database
+          console.log("Updating Observation on the client side.");
+
+          dbObservations.get(oObservation.id).then(function(oObservationDB) {
+            return dbObservations.put({
+              _id: oObservationDB._id,
+              _rev: oObservationDB._rev,
+              topicId: oObservation.topicId,
+              value: oObservation.value,
+              creationDate: oObservation.creationDate,
+              creationTime: oObservation.creationTime,
+              observationDate: oObservation.observationDate,
+              observationTime: oObservation.observationTime,
+              updateTime: oObservation.updateTime.toISOString(),
+              timezone: oObservation.timezone,
+              comment: oObservation.comment
+            });
+          }, function(err, response) {
+            if (!err) {
+              console.log('Successfully updated Observation on client side!');
+            } else {
+              console.log('Error while updating Observation on client side: ' + err);
+            }
+          });
+
+          console.log("Updating Observation on the server side.");
+          //Push Observation to the server
+          dbObservations.replicate.to(remoteCouchObservations)
+            .on('complete', function () {
+              // Successfully synced
+              console.log("Successfully updated Observation on the server side");
+            }).on('error', function (err) {
+              // Handle error
+              console.log("Error while updating Observation on the server side: " + err);
+            });
           break;
         }
       }
@@ -567,12 +661,14 @@ define([
       createTopic: createTopic,
       readTopic: readTopic,
       readTopicDB: readTopicDB,
+      readTopics: readTopics,
       readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
 
       Observation : Observation,
       createObservation: createObservation,
       readObservation: readObservation,
+      readObservations: readObservations,
       updateObservation: updateObservation,
 
       findUniqueDates: findUniqueDates,
