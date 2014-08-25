@@ -20,13 +20,20 @@
 
 @implementation PhotoLibrary
 
++ (ALAssetsLibrary *)getAssetsLibrary {
+    static ALAssetsLibrary *library;
+    if (!library) library = [ALAssetsLibrary new];
+    return library;
+}
+
 + (PhotoLibrary *)singleton {
     static PhotoLibrary* singleton = NULL;
     if (!singleton) singleton = [PhotoLibrary new];
     return singleton;
 }
 
-- (void)getPhotoListWithCallback:(ForgeTask *)task {
+- (void)getPhotoListWithSuccess:(void (^)(NSDictionary *))successBlock
+                          error:(void (^)(NSError *))errorBlock {
     
     // List of assets to be sent through the callback
     NSMutableArray *assets = [NSMutableArray new];
@@ -56,8 +63,6 @@
             [data setValue:dataUrl forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
-        } else {
-            NSLog(@"Result is null!");
         }
     };
     
@@ -71,16 +76,17 @@
         } else {
             // All groups have been visited
 //            NSLog(@"Assets: %@", [assets description]);
-            [task success:assets];
+            successBlock(assets);
         }
     };
     
     // Enumerate all asset groups
-    ALAssetsLibrary * library = [ALAssetsLibrary new];
+    ALAssetsLibrary * library = [self.class getAssetsLibrary];
     [library enumerateGroupsWithTypes:ALAssetsGroupAll
                            usingBlock:assetGroupEnumerator
                          failureBlock:^(NSError *error) {
-                             NSLog(@"Failure");
+                             NSLog(@"Error while loading photo library: %@", error);
+                             errorBlock(error);
                          }];
 }
 

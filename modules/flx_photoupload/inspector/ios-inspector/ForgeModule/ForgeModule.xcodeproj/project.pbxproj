@@ -19,6 +19,7 @@
 		F90B97B119A5F26F00076B52 /* PhotoAsset.m in Sources */ = {isa = PBXBuildFile; fileRef = F90B97B019A5F26F00076B52 /* PhotoAsset.m */; };
 		F90B97B619A6323D00076B52 /* PhotoUploadRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */; };
 		F91FDE9F19A4CFC600B3C936 /* PhotoUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */; };
+		F924C32719AB3FFD005881EB /* AutouploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = F924C32619AB3FFD005881EB /* AutouploadService.m */; };
 		F9ACABC71998BCF300D80CF6 /* PhotoLibrary.m in Sources */ = {isa = PBXBuildFile; fileRef = F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,8 @@
 		F90CE9CD19A23B7300FEC70F /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		F91FDE9D19A4CFC600B3C936 /* PhotoUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoUploader.h; sourceTree = "<group>"; };
 		F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoUploader.m; sourceTree = "<group>"; };
+		F924C32519AB3FFD005881EB /* AutouploadService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutouploadService.h; sourceTree = "<group>"; };
+		F924C32619AB3FFD005881EB /* AutouploadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutouploadService.m; sourceTree = "<group>"; };
 		F9ACABC51998BCF300D80CF6 /* PhotoLibrary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PhotoLibrary.h; sourceTree = "<group>"; };
 		F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PhotoLibrary.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -75,21 +78,22 @@
 		B31B6D4315C13D5200854074 = {
 			isa = PBXGroup;
 			children = (
-				F90CE9B119A239A000FEC70F /* BT */,
-				F9ACABC51998BCF300D80CF6 /* PhotoLibrary.h */,
-				F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */,
-				F90B97AF19A5F26F00076B52 /* PhotoAsset.h */,
-				F90B97B019A5F26F00076B52 /* PhotoAsset.m */,
-				F91FDE9D19A4CFC600B3C936 /* PhotoUploader.h */,
-				F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */,
+				B31B6D5015C13D5200854074 /* Frameworks */,
+				F924C32519AB3FFD005881EB /* AutouploadService.h */,
+				F924C32619AB3FFD005881EB /* AutouploadService.m */,
 				B3CC61EF1716ECB500A1A8EF /* flx_photoupload_API.h */,
 				B3CC61F01716ECB500A1A8EF /* flx_photoupload_API.m */,
 				B3CC61F11716ECB500A1A8EF /* flx_photoupload_EventListener.h */,
 				B3CC61F31716ECBB00A1A8EF /* flx_photoupload_EventListener.m */,
+				F90B97AF19A5F26F00076B52 /* PhotoAsset.h */,
+				F90B97B019A5F26F00076B52 /* PhotoAsset.m */,
+				F9ACABC51998BCF300D80CF6 /* PhotoLibrary.h */,
+				F9ACABC61998BCF300D80CF6 /* PhotoLibrary.m */,
+				F91FDE9D19A4CFC600B3C936 /* PhotoUploader.h */,
+				F91FDE9E19A4CFC600B3C936 /* PhotoUploader.m */,
 				F90B97B419A6323D00076B52 /* PhotoUploadRequest.h */,
 				F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */,
 				F90CE9CD19A23B7300FEC70F /* Constants.h */,
-				B31B6D5015C13D5200854074 /* Frameworks */,
 				B31B6D4F15C13D5200854074 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -115,21 +119,6 @@
 				B31B6D6E15C1467100854074 /* CoreFoundation.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F90CE9B119A239A000FEC70F /* BT */ = {
-			isa = PBXGroup;
-			children = (
-				F90CE9DB19A23B9500FEC70F /* FluxtreamCapture */,
-			);
-			name = BT;
-			sourceTree = "<group>";
-		};
-		F90CE9DB19A23B9500FEC70F /* FluxtreamCapture */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = FluxtreamCapture;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,6 +199,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F924C32719AB3FFD005881EB /* AutouploadService.m in Sources */,
 				F90B97B619A6323D00076B52 /* PhotoUploadRequest.m in Sources */,
 				B3CC61F21716ECB500A1A8EF /* flx_photoupload_API.m in Sources */,
 				B3CC61F41716ECBB00A1A8EF /* flx_photoupload_EventListener.m in Sources */,

@@ -29,6 +29,8 @@
 // A reference to the asset
 @property (nonatomic, strong) ALAsset *actualAsset;
 
++ (NSArray *)photos;
+
 + (PhotoAsset *)photoWithAsset:(ALAsset *)asset;
 
 + (PhotoAsset *)photoWithId:(NSNumber *)photoId;

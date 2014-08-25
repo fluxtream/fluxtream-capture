@@ -69,6 +69,7 @@
 }
 
 - (void)uploadPhoto:(NSNumber *)photoId {
+    NSLog(@"Received request to upload photo %@", photoId);
     @synchronized(self.mutex) {
         // Check if photo is currently being uploaded
         if (self.currentPhoto == photoId) {
@@ -114,16 +115,23 @@
     return [PhotoAsset photoWithId:photoId].facetId;
 }
 
+- (BOOL)isCurrentlyUploading {
+    return self.isUploading;
+}
+
 
 // Private methods
 
 - (void)startUploading {
+    NSLog(@"Starting upload thread");
     @synchronized(self.mutex) {
         // Check if upload thread already exists
         if (self.isUploading) {
             // TODO interrupt thread
             return;
         }
+        // Mark as uploading
+        self.isUploading = true;
         // Create and start upload thread
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, (unsigned long)NULL), ^(void) {
             [self runUploadThread];
@@ -132,15 +140,19 @@
 }
 
 - (void)setPhotoUploaded:(NSNumber *)photoId withFacetId:(NSString *)facetId {
-    [PhotoAsset photoWithId:photoId].facetId = facetId;
+    PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
+    photo.facetId = facetId;
+    photo.uploadStatus = @"uploaded";
 }
 
 - (void)runUploadThread {
+    NSLog(@"Upload thread started");
     while (true) {
         // Get photo id
         NSNumber *photoId;
         @synchronized(self.mutex) {
             if (self.pendingPhotos.count == 0) {
+                NSLog(@"No more photos to upload, closing upload thread");
                 // No more photo to upload, close thread
                 self.isUploading = false;
                 return;
@@ -155,7 +167,11 @@
             NSString *facetId = [self uploadPhotoNow:photoId];
             // Mark photo as uploaded
             @synchronized(self.mutex) {
-                [self setPhotoUploaded:photoId withFacetId:facetId];
+                if (facetId) {
+                    [self setPhotoUploaded:photoId withFacetId:facetId];
+                } else {
+                    // The photo does not exist anymore
+                }
                 self.currentPhoto = NULL;
             }
         } @catch (NSException *exception) {
@@ -188,11 +204,11 @@
     
     // Get asset for photoId
     PhotoAsset *photoAsset = [PhotoAsset photoWithId:photoId];
+    if (!photoAsset) return nil;
     ALAsset *asset = photoAsset.actualAsset;
     
-    NSLog(@"Asset = %@", asset);
-    
     // Create request
+    NSLog(@"Starting request to %@", self.uploadURL);
     NSURLRequest *request = [PhotoUploadRequest uploadRequestForAsset:asset
                                                             uploadURL:self.uploadURL
                                                        authentication:self.authentication];
@@ -207,7 +223,6 @@
         NSLog(@"photo upload error code: %ld", (long)[error code]);
         NSLog(@"%@", error);
         @throw [NSException exceptionWithName:@"An error has occurred" reason:@"Received wrong response code" userInfo:nil];
-        @throw @"An error has occured";
     } else {
         int statusCode = (int)[(NSHTTPURLResponse *) response statusCode];
         NSLog(@"photo uploader got %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -215,47 +230,23 @@
         
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
         
-        // TODO check if response is 'ok' and get facetId
+        // Make sure that the result we receive is "OK"
+        NSString *resultField = [json objectForKey:@"result"];
+        if (![resultField isEqualToString:@"OK"]) {
+            @throw [NSException exceptionWithName:@"An error occurred while uploading the photo"
+                                           reason:[NSString stringWithFormat:@"Result is %@", resultField]
+                                         userInfo:nil];
+        }
+        
+        // Get facetId
         NSString *facetId = [[json objectForKey:@"payload"] objectForKey:@"id"];
         return facetId;
     }
-
+    
 }
 
 - (NSMutableDictionary *)eventDataForId:(NSNumber *)photoId {
     return [NSMutableDictionary dictionaryWithDictionary:@{@"photoId": photoId}];
 }
-
-//- (void)saveOptions:(NSDictionary *)options {
-//    
-//    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-//    
-//    for (NSString* key in options) {
-//        if ([key isEqualToString:@"upload_portrait"]) {
-//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
-//        } else if ([key isEqualToString:@"upload_upside_down"]) {
-//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN];
-//        } else if ([key isEqualToString:@"upload_landscape_left"]) {
-//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT];
-//        } else if ([key isEqualToString:@"upload_landscape_right"]) {
-//            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT];
-//        } else if ([key isEqualToString:@"portrait_minimum_timestamp"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP];
-//        } else if ([key isEqualToString:@"upside_down_minimum_timestamp"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP];
-//        } else if ([key isEqualToString:@"landscape_left_minimum_timestamp"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP];
-//        } else if ([key isEqualToString:@"landscape_right_minimum_timestamp"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP];
-//        } else if ([key isEqualToString:@"upload_url"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_UPLOAD_URL];
-//        } else if ([key isEqualToString:@"authentication"]) {
-//            [defaults setObject:options[key] forKey:DEFAULTS_AUTHENTICATION];
-//        } else {
-//            NSLog(@"Unknown option: %@", key);
-//        }
-//    }
-//    [[NSUserDefaults standardUserDefaults] synchronize];
-//}
 
 @end

@@ -36,7 +36,7 @@
 }
 
 + (void)persistPhotoArray {
-    NSLog(@"Peristing the photo list");
+    NSLog(@"Persisting the photo list");
     [NSKeyedArchiver archiveRootObject:[self getPersistedPhotoArray] toFile:[self archivePath]];
 }
 
@@ -69,6 +69,10 @@
 
 #pragma mark - Public static methods
 
++ (NSArray *)photos {
+    return [self getPersistedPhotoArray];
+}
+
 + (PhotoAsset *)photoWithAsset:(ALAsset *)asset {
     // Make sure list of photos is initialized
     NSMutableArray *photos = [PhotoAsset getPersistedPhotoArray];
@@ -96,13 +100,10 @@
 }
 
 + (PhotoAsset *)photoWithId:(NSNumber *)photoId {
-    NSLog(@"Persisted photo array: %@", [PhotoAsset getPersistedPhotoArray]);
     // Make sure list of photos is initialized
     [PhotoAsset getPersistedPhotoArray];
-    NSLog(@"Id to photo map: %@", [self idToPhotoMap]);
     // Return photo corresponding to id
     PhotoAsset *result = [[self idToPhotoMap] objectForKey:photoId];
-    NSLog(@"Result: %@", result);
     return result;
 }
 

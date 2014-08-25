@@ -17,5 +17,6 @@
 - (void)uploadPhoto:(NSNumber *)photoId;
 - (void)cancelUpload:(NSNumber *)photoId;
 - (NSString *)getFacetId:(NSNumber *)photoId;
+- (BOOL)isCurrentlyUploading;
 
 @end

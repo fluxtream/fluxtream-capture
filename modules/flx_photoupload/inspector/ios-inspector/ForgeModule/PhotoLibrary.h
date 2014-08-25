@@ -12,6 +12,7 @@
 
 + (PhotoLibrary *)singleton;
 
-- (void)getPhotoListWithCallback:(ForgeTask *)task;
+- (void)getPhotoListWithSuccess:(void(^)(NSDictionary *))successBlock
+                          error:(void(^)(NSError *))errorBlock;
 
 @end
