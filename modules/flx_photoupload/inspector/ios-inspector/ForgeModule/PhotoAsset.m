@@ -12,6 +12,8 @@
 
 # pragma mark - Private static methods
 
+// Returns a mutable array containing the list of photos. On the first time,
+// this list is fetched from local storage.
 + (NSMutableArray *)getPersistedPhotoArray {
     static NSMutableArray *photoArray;
     if (!photoArray) {
@@ -28,6 +30,7 @@
     return photoArray;
 }
 
+// Returns the path on the local storage to the file containing the archived list of photos
 + (NSString *)archivePath {
     NSArray *documentDirectories = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documentDirectory = [documentDirectories objectAtIndex:0];
@@ -35,21 +38,26 @@
     return path;
 }
 
+// Saves the photo list to local storage
 + (void)persistPhotoArray {
     NSLog(@"Persisting the photo list");
     [NSKeyedArchiver archiveRootObject:[self getPersistedPhotoArray] toFile:[self archivePath]];
 }
 
+// Returns a new unique integer photo identifier
 + (NSNumber *)newIdentifier {
+    // Read next id from user defaults
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSNumber *nextId = [defaults objectForKey:@"photos.nextId"];
     if (!nextId) nextId = [NSNumber numberWithInt:1];
-    NSLog(@"Generating a new identifier: %@", nextId);
+    // Increase next id in user defaults
     [defaults setObject:[NSNumber numberWithInt:nextId.intValue + 1] forKey:@"photos.nextId"];
     [[NSUserDefaults standardUserDefaults] synchronize];
+    // Return the unique id
     return nextId;
 }
 
+// Returns the static dictionary that maps urls to PhotoAssets
 + (NSMutableDictionary *)urlToPhotoMap {
     static NSMutableDictionary *urlToPhotoMap;
     if (!urlToPhotoMap) {
@@ -58,6 +66,7 @@
     return urlToPhotoMap;
 }
 
+// Returns the static dictonary that maps photo identifiers to PhotoAssets
 + (NSMutableDictionary *)idToPhotoMap {
     static NSMutableDictionary *idToPhotoMap;
     if (!idToPhotoMap) {
@@ -117,16 +126,13 @@
 
 #pragma mark - Instance methods
 
+// Sets the upload status and persists the new data to disk
 - (void)setUploadStatus:(NSString *)uploadStatus {
     _uploadStatus = uploadStatus;
     [PhotoAsset persistPhotoArray];
 }
 
-- (void)setFacetId:(NSString *)facetId {
-    _facetId = facetId;
-    [PhotoAsset persistPhotoArray];
-}
-
+// Returns a string representation of this photo (for debugging purposes)
 - (NSString *)description {
     return [NSString stringWithFormat:@"[Photo Asset: %@, %@, (%@), %@, %@]", self.identifier, self.assetURL, self.actualAsset, self.uploadStatus, self.facetId];
 }

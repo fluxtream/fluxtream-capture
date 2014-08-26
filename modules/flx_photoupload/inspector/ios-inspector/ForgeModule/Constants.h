@@ -15,10 +15,3 @@
 // String: authentication data and upload url
 #define DEFAULTS_AUTHENTICATION @"bodytrack_photo_upload_authentication"
 #define DEFAULTS_UPLOAD_URL @"bodytrack_photo_upload_url"
-
-// Events
-#define BT_NOTIFICATION_PHOTO_UPLOAD_AUTH_FAILED @"bt_photo_upload_auth_failed"
-#define BT_NOTIFICATION_PHOTO_UPLOAD_NETWORK_ERROR @"bt_photo_upload_network_error"
-#define BT_NOTIFICATION_PHOTO_UPLOAD_SUCCEEDED @"bt_photo_upload_succeeded"
-#define BT_NOTIFICATION_APP_FOREGROUNDED @"bt_app_foregrounded"
-#define BT_NOTIFICATION_PHOTOS_TO_BE_UPLOADED @"bt_photos_to_be_uploaded"

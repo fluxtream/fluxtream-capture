@@ -51,9 +51,13 @@
 - (id)init {
     if (self = [super init]) {
         NSLog(@"Initiation AutouploadService singleton");
+        // Subscribe to the library change event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryChanged:) name:ALAssetsLibraryChangedNotification object:nil];
+        // Create interrupt condition for the thread
         self.unpauseCondition = [NSCondition new];
+        // Load parameters from user defaults
         [self readAutouploadParameters];
+        // Create and start the thread that will check for pictures
         NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(runAutouploadThread) object:nil];
         [thread start];
     }
@@ -66,6 +70,7 @@
 }
 
 - (void)stopAutouploadService {
+    // Set all autoupload options to false
     [self saveOptions:@{@"upload_portrait": @NO,
                         @"upload_upside_down": @NO,
                         @"upload_landscape_left": @NO,
@@ -84,12 +89,13 @@
     self.upsideDownMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP] intValue];
     self.landscapeLeftMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP] intValue];
     self.landscapeRightMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP] intValue];
+    // Apply upload url and authentication parameters to PhotoUploader
     [[PhotoUploader singleton] setUploadURL:[defaults objectForKey:DEFAULTS_UPLOAD_URL] authentication:[defaults objectForKey:DEFAULTS_AUTHENTICATION]];
 }
 
 - (void)saveOptions:(NSDictionary *)options {
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    // Apply parameters
+    // Copy parameters to defaults
     for (NSString* key in options) {
         if ([key isEqualToString:@"upload_portrait"]) {
             [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
@@ -125,17 +131,20 @@
     [self.unpauseCondition unlock];
 }
 
+// Runs the autoupload thread. The autoupload thread never ends.
 - (void)runAutouploadThread {
     NSLog(@"Starting autoupload thread");
     while (true) {
-        // Look for a new picture to upload
+        // Look for a new picture to upload, and get the time interval to wait
         double waitTime = [self checkForNewPhotos];
+        // Sleep for the given time
         [self.unpauseCondition lock];
         [self.unpauseCondition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:waitTime]];
         [self.unpauseCondition unlock];
     }
 }
 
+// Browse the photo list to find a photo to upload next
 - (double)checkForNewPhotos {
     @synchronized (self) {
         if ([[PhotoUploader singleton] isCurrentlyUploading]) {
@@ -143,6 +152,7 @@
             NSLog(@"A photo upload is already in progress, wait");
             return WAIT_ON_ACTIVE;
         }
+        // Look for photos only if autoupload is active
         if (self.uploadPortrait || self.uploadUpsiteDown || self.uploadLandscapeLeft || self.uploadLandscapeRight) {
             NSLog(@"Checking for new photos");
             NSCondition *photoListLoadedCondition = [NSCondition new];
@@ -174,10 +184,14 @@
                     NSLog(@"Photo already uploaded: %@", photo);
                     continue;
                 }
+                // This will be set to false if the photo must not be uploaded
                 BOOL mustBeUploaded = YES;
+                // Get photo orientation
                 ALAssetOrientation orientation = (ALAssetOrientation)[[photo.actualAsset valueForProperty:ALAssetPropertyOrientation] intValue];
+                // Get photo date
                 NSDate *date = [photo.actualAsset valueForProperty:ALAssetPropertyDate];
                 int dateTaken = [NSNumber numberWithLong:date.timeIntervalSince1970].intValue;
+                // Check if photo should be uploaded
                 switch (orientation) {
                     case ALAssetOrientationUp:
                     case ALAssetOrientationUpMirrored:
@@ -209,15 +223,18 @@
                         break;
                 }
                 if (mustBeUploaded) {
+                    // Send photo for upload
                     NSLog(@"Found a photo to upload");
                     [[PhotoUploader singleton] uploadPhoto:photo.identifier];
+                    // Stop looking for another photo, only one photo is being uploaded at a time
                     return WAIT_ON_UPLOAD;
                 }
-                NSLog(@"Photo need not be uploaded: %@", photo);
             }
+            // No photo needs to be uploaded
             NSLog(@"No photo to upload");
             return WAIT_ON_NO_PHOTO;
         }
+        // Autoupload is currently disabled
         NSLog(@"Service is disabled");
         return WAIT_ON_DISABLED;
     }
@@ -225,7 +242,9 @@
 
 #pragma mark - Assets Library Notifications
 
+// This is called when the photo library is uploaded
 - (void)assetsLibraryChanged:(NSNotification *)notification {
+    // Interrupt the thread to look again for a photo to upload
     [self.unpauseCondition lock];
     [self.unpauseCondition signal];
     [self.unpauseCondition unlock];

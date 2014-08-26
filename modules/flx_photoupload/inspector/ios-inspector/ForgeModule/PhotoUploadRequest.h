@@ -10,6 +10,8 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
 
+// Contains a static method that generates an upload http request
+// for the given asset
 @interface PhotoUploadRequest : NSObject
 
 + (NSURLRequest *)uploadRequestForAsset:(ALAsset *)asset

@@ -20,9 +20,6 @@
 // True if the upload thread is running
 @property (nonatomic) BOOL isUploading;
 
-// True when we want to cancel the current upload
-@property (nonatomic) BOOL cancelCurrentUpload;
-
 // Id of the photo currently being uploaded
 @property (nonatomic, strong) NSNumber *currentPhoto;
 
@@ -34,9 +31,6 @@
 
 // A mutex to avoid accessing these arrays concurrently
 @property (nonatomic, strong) NSObject *mutex;
-
-// The asset library
-@property (nonatomic, strong) ALAssetsLibrary *library;
 
 @end
 
@@ -54,7 +48,6 @@
         self.pendingPhotos = [NSMutableArray new];
         self.uploadedPhotos = [NSMutableArray new];
         self.mutex = [NSObject new];
-        self.library = [ALAssetsLibrary new];
     }
     return self;
 }
@@ -102,12 +95,6 @@
     @synchronized(self.mutex) {
         // Remove from pending upload queue
         [self.pendingPhotos removeObject:photoId];
-        // Check if the photo is being uploaded
-        if ([self.currentPhoto isEqual:photoId]) {
-            // This photo is currently being uploaded, interrupt upload
-            self.cancelCurrentUpload = true;
-            // TODO interrupt upload thread
-        }
     }
 }
 
@@ -122,6 +109,7 @@
 
 // Private methods
 
+// Starts the upload thread if it is not running yet
 - (void)startUploading {
     NSLog(@"Starting upload thread");
     @synchronized(self.mutex) {
@@ -139,12 +127,14 @@
     }
 }
 
+// Mark a photo as uploaded
 - (void)setPhotoUploaded:(NSNumber *)photoId withFacetId:(NSString *)facetId {
     PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
     photo.facetId = facetId;
-    photo.uploadStatus = @"uploaded";
+    photo.uploadStatus = @"uploaded"; // This will persist the data to the local storage
 }
 
+// Runs a loop to upload all the pending photos
 - (void)runUploadThread {
     NSLog(@"Upload thread started");
     while (true) {
@@ -175,29 +165,24 @@
                 self.currentPhoto = NULL;
             }
         } @catch (NSException *exception) {
-            // TODO manage photo does not exist anymore
-            
             // An error occurred
-            if (self.cancelCurrentUpload) {
-                // TODO (not yet supported anyway)
-            } else {
-                NSLog(@"Error while uploading photo: %@", exception);
-                // Generate 'failed' event
-                NSMutableDictionary *eventData = [self eventDataForId:photoId];
-                [eventData setObject:exception.description forKey:@"error"];
-                [[ForgeApp sharedApp] event:@"photoupload.failed" withParam:eventData];
-                // Re-enqueue photo
-                @synchronized (self.mutex) {
-                    self.currentPhoto = NULL;
-                    [self.pendingPhotos addObject:photoId];
-                }
-                // Wait 1 minute before continuing
-                [NSThread sleepForTimeInterval:6]; // TODO 60
+            NSLog(@"Error while uploading photo: %@", exception);
+            // Generate 'failed' event
+            NSMutableDictionary *eventData = [self eventDataForId:photoId];
+            [eventData setObject:exception.description forKey:@"error"];
+            [[ForgeApp sharedApp] event:@"photoupload.failed" withParam:eventData];
+            // Re-enqueue photo
+            @synchronized (self.mutex) {
+                self.currentPhoto = NULL;
+                [self.pendingPhotos addObject:photoId];
             }
+            // Wait 1 minute before continuing
+            [NSThread sleepForTimeInterval:60];
         }
     }
 }
 
+// Uploads the given photo (this method is blocking, and should only be called from the upload thread)
 - (NSString *)uploadPhotoNow:(NSNumber *)photoId {
     // Generate 'started' event
     [[ForgeApp sharedApp] event:@"photoupload.started" withParam:[self eventDataForId:photoId]];
@@ -256,6 +241,7 @@
     
 }
 
+// Returns a pre-filled dictionary with the photoId for Forge events
 - (NSMutableDictionary *)eventDataForId:(NSNumber *)photoId {
     return [NSMutableDictionary dictionaryWithDictionary:@{@"photoId": photoId}];
 }

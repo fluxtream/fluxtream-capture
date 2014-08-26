@@ -20,7 +20,10 @@
 
 @implementation PhotoLibrary
 
+// Returns an instance of ALAssetsLibrary
 + (ALAssetsLibrary *)getAssetsLibrary {
+    // Keep it in a static variable to make sure we keep a reference to it
+    // and ALAssets stay readable
     static ALAssetsLibrary *library;
     if (!library) library = [ALAssetsLibrary new];
     return library;
@@ -31,6 +34,7 @@
     if (!singleton) singleton = [PhotoLibrary new];
     return singleton;
 }
+
 
 - (void)getPhotoListWithSuccess:(void (^)(NSArray *))successBlock
                           error:(void (^)(NSError *))errorBlock {
@@ -81,11 +85,11 @@
             // Add uri
             [data setValue:photo.assetURL forKey:@"uri"];
             // Add thumbnail uri
+            // TODO Instead of creating a base64 image url, we should provide an API call to get the thumbnail content
             UIImage *thumbnailImage = [UIImage imageWithCGImage:[result thumbnail]];
             NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
             NSString *encodedString = [imageData base64Encoding];
             NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
-//            dataUrl = @"THUMB"; // TODO remove
             [data setValue:dataUrl forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
@@ -101,7 +105,6 @@
             [group enumerateAssetsUsingBlock:assetEnumerator];
         } else {
             // All groups have been visited
-//            NSLog(@"Assets: %@", [assets description]);
             successBlock(assets);
         }
     };

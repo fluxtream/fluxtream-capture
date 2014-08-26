@@ -185,7 +185,7 @@ public class API {
 	}
 	
 	/**
-	 * Adds a photo to the pending upload list, and starts the upload process if it was idleoId
+	 * Adds a photo to the pending upload list, and starts the upload process if it was idle
 	 */
 	public static void uploadPhoto(final ForgeTask task, @ForgeParam("photoId") final int photoId) {
 		Log.i("flx_photoupload", "API: uploadPhoto(" + photoId + ")");
