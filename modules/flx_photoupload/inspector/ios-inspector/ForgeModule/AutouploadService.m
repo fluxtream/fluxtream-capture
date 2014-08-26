@@ -147,7 +147,7 @@
             NSLog(@"Checking for new photos");
             NSCondition *photoListLoadedCondition = [NSCondition new];
             [photoListLoadedCondition lock];
-            [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSDictionary *assets) {
+            [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
                 NSLog(@"Photo library reloaded");
                 [photoListLoadedCondition lock];
                 [photoListLoadedCondition signal];

@@ -12,7 +12,7 @@
 
 + (PhotoLibrary *)singleton;
 
-- (void)getPhotoListWithSuccess:(void(^)(NSDictionary *))successBlock
+- (void)getPhotoListWithSuccess:(void(^)(NSArray *))successBlock
                           error:(void(^)(NSError *))errorBlock;
 
 @end

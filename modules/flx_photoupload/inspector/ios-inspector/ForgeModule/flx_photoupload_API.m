@@ -12,7 +12,7 @@
 
 + (void)getPhotoList:(ForgeTask *)task {
     NSLog(@"API: getPhotoList()");
-    [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSDictionary *assets) {
+    [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
         [task success:assets];
     } error:^(NSError *error) {
         [task errorString:error.description];

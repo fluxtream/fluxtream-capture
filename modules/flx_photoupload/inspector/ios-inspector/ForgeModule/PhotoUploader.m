@@ -206,6 +206,11 @@
     PhotoAsset *photoAsset = [PhotoAsset photoWithId:photoId];
     if (!photoAsset) return nil;
     ALAsset *asset = photoAsset.actualAsset;
+    if (!asset) {
+        @throw [NSException exceptionWithName:@"An error has occurred"
+                                       reason:@"Photo asset not found"
+                                     userInfo:nil];
+    }
     
     // Create request
     NSLog(@"Starting request to %@", self.uploadURL);
@@ -222,7 +227,9 @@
     if (error) {
         NSLog(@"photo upload error code: %ld", (long)[error code]);
         NSLog(@"%@", error);
-        @throw [NSException exceptionWithName:@"An error has occurred" reason:@"Received wrong response code" userInfo:nil];
+        @throw [NSException exceptionWithName:@"An error has occurred"
+                                       reason:[NSString stringWithFormat:@"Received wrong response code: %d, %@", error.code, error.description]
+                                     userInfo:nil];
     } else {
         int statusCode = (int)[(NSHTTPURLResponse *) response statusCode];
         NSLog(@"photo uploader got %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -240,6 +247,10 @@
         
         // Get facetId
         NSString *facetId = [[json objectForKey:@"payload"] objectForKey:@"id"];
+        
+        // Generate 'uploaded' event
+        [[ForgeApp sharedApp] event:@"photoupload.uploaded" withParam:[self eventDataForId:photoId]];
+        
         return facetId;
     }
     

@@ -32,7 +32,7 @@
     return singleton;
 }
 
-- (void)getPhotoListWithSuccess:(void (^)(NSDictionary *))successBlock
+- (void)getPhotoListWithSuccess:(void (^)(NSArray *))successBlock
                           error:(void (^)(NSError *))errorBlock {
     
     // List of assets to be sent through the callback
@@ -51,7 +51,33 @@
             NSDate *dateTaken = [result valueForProperty:ALAssetPropertyDate];
             [data setValue:[NSNumber numberWithLong:dateTaken.timeIntervalSince1970] forKey:@"dateTaken"];
             // Add orientation
-            [data setValue:[result valueForProperty:ALAssetPropertyOrientation] forKey:@"orientation"];
+            NSString *orientation = @"";
+            switch ([[result valueForProperty:ALAssetPropertyOrientation] intValue]) {
+                case ALAssetOrientationUp:
+                case ALAssetOrientationUpMirrored:
+                    // Landscape left
+                    orientation = @"landscape_left";
+                    break;
+                case ALAssetOrientationDown:
+                case ALAssetOrientationDownMirrored:
+                    // Landscape right
+                    orientation = @"landscape_right";
+                    break;
+                case ALAssetOrientationLeft:
+                case ALAssetOrientationLeftMirrored:
+                    // Upsite down
+                    orientation = @"upside_down";
+                    break;
+                case ALAssetOrientationRight:
+                case ALAssetOrientationRightMirrored:
+                    // Portrait
+                    orientation = @"portrait";
+                    break;
+                default:
+                    NSLog(@"Unknown photo orientation");
+                    break;
+            }
+            [data setValue:orientation forKey:@"orientation"];
             // Add uri
             [data setValue:photo.assetURL forKey:@"uri"];
             // Add thumbnail uri
@@ -59,7 +85,7 @@
             NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
             NSString *encodedString = [imageData base64Encoding];
             NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
-            dataUrl = @"THUMB"; // TODO remove
+//            dataUrl = @"THUMB"; // TODO remove
             [data setValue:dataUrl forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
