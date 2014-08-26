@@ -53,7 +53,7 @@
             [data setValue:photo.identifier forKeyPath:@"id"];
             // Add date
             NSDate *dateTaken = [result valueForProperty:ALAssetPropertyDate];
-            [data setValue:[NSNumber numberWithLong:dateTaken.timeIntervalSince1970] forKey:@"dateTaken"];
+            [data setValue:[NSNumber numberWithLong:dateTaken.timeIntervalSince1970] forKey:@"date_taken"];
             // Add orientation
             NSString *orientation = @"";
             switch ([[result valueForProperty:ALAssetPropertyOrientation] intValue]) {

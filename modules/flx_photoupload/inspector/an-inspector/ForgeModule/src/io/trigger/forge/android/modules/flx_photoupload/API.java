@@ -35,6 +35,7 @@ public class API {
 	 * - id: the identifier of the photo
 	 * - uri: the local URI of the photo
 	 * - orientation: the orientation of the photo ("landscape" or "portrait")
+   * - date_taken: the timestamp (UTC in seconds) of the photo
 	 * - thumb_id: the identifier of the photo's thumbnail (if any)
 	 * - thumb_uri: the local URI of the photo's thumbnail (if any)
 	 */
