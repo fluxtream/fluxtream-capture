@@ -26,9 +26,6 @@
 // The queue of ids of photos waiting for upload (enqueued at the end, dequeued at the front)
 @property (nonatomic, strong) NSMutableArray *pendingPhotos;
 
-// The list of ids of photos that have been successfully uploaded
-@property (nonatomic, strong) NSMutableArray *uploadedPhotos;
-
 // A mutex to avoid accessing these arrays concurrently
 @property (nonatomic, strong) NSObject *mutex;
 
@@ -46,7 +43,6 @@
 - (id)init {
     if (self = [super init]) {
         self.pendingPhotos = [NSMutableArray new];
-        self.uploadedPhotos = [NSMutableArray new];
         self.mutex = [NSObject new];
     }
     return self;
@@ -75,8 +71,15 @@
             NSLog(@"Photo %@ already in upload queue", photoId);
             return;
         }
+        // Find photo
+        PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
+        // Check if photo exists
+        if (!photo) {
+            NSLog(@"Photo %@ does not exist", photoId);
+            return;
+        }
         // Check if photo is already uploaded
-        if ([self.uploadedPhotos containsObject:photoId]) {
+        if ([photo.uploadStatus isEqualToString:@"uploaded"]) {
             NSLog(@"Photo %@ is already uploaded", photoId);
             [[ForgeApp sharedApp] event:@"photoupload.uploaded" withParam:photoId];
             return;
@@ -84,6 +87,9 @@
         
         // Add the photo to the upload queue
         [self.pendingPhotos addObject:photoId];
+        
+        // Mark the photo as pending
+        photo.uploadStatus = @"pending";
         
         // Start upload if it is not started yet
         [self startUploading];
@@ -95,6 +101,10 @@
     @synchronized(self.mutex) {
         // Remove from pending upload queue
         [self.pendingPhotos removeObject:photoId];
+        // Find photo
+        PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
+        // Reset photo status
+        photo.uploadStatus = @"none";
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 #import "PhotoAsset.h"
+#import "PhotoUploader.h"
 
 @implementation PhotoAsset
 
@@ -25,6 +26,12 @@
         for (PhotoAsset *photo in photoArray) {
             [[self urlToPhotoMap] setObject:photo forKey:photo.assetURL];
             [[self idToPhotoMap] setObject:photo forKey:photo.identifier];
+        }
+        // Look for unuploaded photos
+        for (PhotoAsset *photo in photoArray) {
+            if ([photo.uploadStatus isEqualToString:@"pending"]) {
+                [[PhotoUploader singleton] uploadPhoto:photo.identifier];
+            }
         }
     }
     return photoArray;
