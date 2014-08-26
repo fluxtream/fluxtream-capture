@@ -8,7 +8,7 @@
   </ion-nav-bar>
   
   <ion-content>
-    <ul class="list">
+    <ul class="list" ng-if="isAndroid">
       <li class="item item-checkbox">
         <label class="checkbox">
           <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
@@ -20,6 +20,32 @@
           <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save('landscape')">
         </label>
         Upload landscape photos automatically
+      </li>
+    </ul>
+    <ul class="list" ng-if="!isAndroid">
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
+        </label>
+        Upload portrait photos automatically
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_upside_down" ng-change="save('upside_down')">
+        </label>
+        Upload upside-down photos automatically
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_landscape_left" ng-change="save('landscape_left')">
+        </label>
+        Upload landscape left photos automatically
+      </li>
+      <li class="item item-checkbox">
+        <label class="checkbox">
+          <input type="checkbox" ng-model="settings.upload_landscape_right" ng-change="save('landscape_right')">
+        </label>
+        Upload landscape_right photos automatically
       </li>
     </ul>
   </ion-content>

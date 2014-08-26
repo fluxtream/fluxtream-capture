@@ -21,6 +21,25 @@ define([
       // Functions to execute once the photo list has been initialized
       var functionsToExecute = [];
       
+      // Start autoupload service at initialization if needed
+      functionsToExecute.push(function() {
+        if (userPrefs.get('photos.autoupload_enabled', false)) {
+          forge.logging.info("Starting autoupload service");
+          forge.flx_photoupload.startAutouploadService(
+            // Success
+            function() {
+              forge.logging.info("Autoupload service started successfully");
+            },
+            // Error
+            function(error) {
+              forge.logging.info("Error starting the autoupload service: " + error);
+            }
+          );
+        } else {
+          forge.logging.info("Not starting autoupload service");
+        }
+      });
+      
       /**
        * (Public) Executes a function once the photo-upload module has been initialized
        */
