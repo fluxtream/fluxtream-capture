@@ -77,7 +77,20 @@
 				"background-color": "#FFFFFF",
 				"android": "img/launch/launch-f-1536x2008.png",
 				"android-landscape": "img/launch/launch-f-2048x1496.png",
-				"hide-manually": true
+				"hide-manually": true,
+				"ios": {
+					"1536x2048": "img/launch/launch-f-1536x2008.png",
+					"320x480": "img/launch/launch-f-320x480.png",
+					"640x1136": "img/launch/launch-f-640x1136.png",
+					"2048x1536": "img/launch/launch-f-2048x1496.png",
+					"1536x2008": "img/launch/launch-f-1536x2008.png",
+					"1024x768": "img/launch/launch-f-1024x748.png",
+					"2048x1496": "img/launch/launch-f-2048x1496.png",
+					"1024x748": "img/launch/launch-f-1024x748.png",
+					"640x960": "img/launch/launch-f-640x960.png",
+					"768x1004": "img/launch/launch-f-768x1004.png",
+					"768x1024": "img/launch/launch-f-768x1004.png"
+				}
 			}
 		},
 		"flx_photoupload": {
