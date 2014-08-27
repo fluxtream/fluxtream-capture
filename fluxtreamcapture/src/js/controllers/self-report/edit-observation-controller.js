@@ -1,5 +1,6 @@
 define([
   'app-modules',
+  'moment',
   'services/self-report-storage-service'
 ], function(appModules) {
   //TODO reload of the page doesn't work
@@ -49,9 +50,6 @@ define([
 
         $scope.topicId = $stateParams.observationId.split("_")[1];
 
-        $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
-        $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
-
         //Arrange DOM
         //TODO test range and others with malicious input
         $scope.readType = function(){
@@ -91,16 +89,29 @@ define([
           }
         };
 
-        $scope.readType();
+        // Listen for the event - Topics and Observations arrays are loaded into memory
+        // required in case the page was reloaded
+        $scope.$on('event:state-read-finished', function() {
+          $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+          $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
 
-        if ($scope.oTopic.type != "None") {
-          document.getElementById('observation.value').value = $scope.oObservation.value;
-        }
+          document.title = $scope.oTopic.name;
 
-        document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
-        document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
-        document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
-        document.getElementById('observation.comment').value = $scope.oObservation.comment;
+          $scope.readType();
+
+          if ($scope.oTopic.type != "None") {
+            document.getElementById('observation.value').value = $scope.oObservation.value;
+          }
+
+          document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
+          document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
+          document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
+          document.getElementById('observation.comment').value = $scope.oObservation.comment;
+
+          $scope.$$phase || $scope.$apply();
+        });
+
+        selfReportStorage.readDBState();
 
         // Called when the form is submitted
         $scope.editObservation = function() {
@@ -114,6 +125,9 @@ define([
             sObservationValue = document.getElementById('observation.value').value;
           }
 
+          var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
+            + document.getElementById('observation.observationTime').value).format();
+
           $scope.oNewObservation = new selfReportStorage.Observation(
             $scope.oObservation.id,
             $scope.topicId,
@@ -121,15 +135,15 @@ define([
             $scope.oObservation.creationDate,
             $scope.oObservation.creationTime,
             document.getElementById('observation.observationDate').value,
-            new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
+            tObservationTime,
             tCreationDate,
             document.getElementById('observation.timezone').value,
             document.getElementById('observation.comment').value
           );
 
-
           selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
-          $state.go("listTopics");
+          $scope.$$phase || $scope.$apply();
+          $state.go("history");
 
         };
       }

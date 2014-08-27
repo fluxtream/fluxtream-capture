@@ -42,20 +42,27 @@ define([
             }
           };
 
-          //TODO should be done async
-          $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+          // Listen for the event - Topics array is loaded into memory
+          // required in case the page was reloaded
+          $scope.$on('event:topics-read-finished', function() {
+            //TODO should be done async
+            $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+            document.title = $scope.oTopic.name;
 
-          // Fill the data initially
-          document.getElementById('topic.name').value = $scope.oTopic.name;
-          document.getElementById('topic.type').value = $scope.oTopic.type;
-          document.getElementById('topic.defaultValue').value = $scope.oTopic.defaultValue;
-          document.getElementById('topic.rangeStart').value = $scope.oTopic.rangeStart;
-          document.getElementById('topic.rangeEnd').value = $scope.oTopic.rangeEnd;
-          document.getElementById('topic.step').value = $scope.oTopic.step;
+            // Fill the data initially
+            document.getElementById('topic.name').value = $scope.oTopic.name;
+            document.getElementById('topic.type').value = $scope.oTopic.type;
+            document.getElementById('topic.defaultValue').value = $scope.oTopic.defaultValue;
+            document.getElementById('topic.rangeStart').value = $scope.oTopic.rangeStart;
+            document.getElementById('topic.rangeEnd').value = $scope.oTopic.rangeEnd;
+            document.getElementById('topic.step').value = $scope.oTopic.step;
 
-          // Hide/show rangeStart/Stop fields and Steps
-          $scope.changeType();
-          $scope.showThis = true;
+            // Hide/show rangeStart/Stop fields and Steps
+            $scope.changeType();
+            $scope.showThis = true;
+          });
+
+          selfReportStorage.readTopicsDB();
 
           // Called when the form is submitted
           $scope.editTopic = function () {

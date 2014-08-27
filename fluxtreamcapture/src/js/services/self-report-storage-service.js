@@ -6,7 +6,7 @@ define([
   'services/login-service'
 ], function(appModules, storage) {
 
-  appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", function($http,  loginService) {
+  appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", '$rootScope', function($http,  loginService, $rootScope) {
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
@@ -21,9 +21,6 @@ define([
     var aoCachedTopics;
     var aoCachedObservations;
 
-    // True once this has been initialized
-    var initialized = false;
-
     var dbTopics;
     var dbObservations;
     var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
@@ -32,10 +29,8 @@ define([
     var remoteCouchObservations = 'http://yury:secret@127.0.0.1:5984/' + dbNameObservations;
 
     function initialize(){
-      initialized = true;
       aoCachedTopics = [];
       aoCachedObservations = [];
-
 
       dbTopics = new PouchDB(dbNameTopics);
       dbObservations = new PouchDB(dbNameObservations);
@@ -88,8 +83,9 @@ define([
         function callback(err, result) {
         if (!err) {
           console.log('Successfully saved a Topic on client side!');
+          $rootScope.$broadcast('event:topics-synced');
         } else {
-          console.log(err);
+          console.log("Error while saving Topic on the client side: " + err);
         }
       });
 
@@ -110,26 +106,7 @@ define([
      */
     function readTopic(sTopicId){
       if(!aoCachedTopics){
-        $http.get('../../html/testing_data/topics.json').success(function(aoData){
-          var nTopicsArrayLength = aoData.length;
-          aoCachedTopics = [];
-
-          for (var i = 0; i < nTopicsArrayLength; i++) {
-            var oNextTopic = new Topic(
-              aoData[i].id,
-              aoData[i].creationTime,
-              aoData[i].updateTime,
-              aoData[i].name,
-              aoData[i].type,
-              aoData[i].defaultValue,
-              aoData[i].rangeStart,
-              aoData[i].rangeEnd,
-              aoData[i].step
-            );
-            aoCachedTopics.push(oNextTopic);
-          }
-          aoCachedTopics = aoData;
-        });
+        console.log("Reading from empty list of Topics");
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
@@ -140,18 +117,129 @@ define([
     }
 
     /**
+     * (Public) Read Topics from the database
+     */
+    function readTopicsDB(){
+      if(aoCachedTopics.length === 0){
+        aoCachedTopics = [];
+
+        dbTopics.allDocs({include_docs: true}, function(err, response) {
+          response.rows.forEach( function (row)
+          {
+            //console.log(row.doc.name);
+            var oNextTopic = new Topic(
+              row.doc._id,
+              row.doc.creationTime,
+              row.doc.updateTime,
+              row.doc.name,
+              row.doc.type,
+              row.doc.defaultValue,
+              row.doc.rangeStart,
+              row.doc.rangeEnd,
+              row.doc.step
+            );
+
+            aoCachedTopics.push(oNextTopic);
+          });
+
+          if(aoCachedTopics.length === 0) {
+            console.log("Accessing wrong link");
+          }
+
+          $rootScope.$broadcast('event:topics-read-finished');
+        });
+      } else {
+        $rootScope.$broadcast('event:topics-read-finished');
+      }
+    }
+
+    /**
+     * (Public) Read Topics and Observations from the database
+     */
+    function readDBState(){
+      // Check if the page was reloaded - aoCachedTopics.length === 0
+      if(aoCachedTopics.length === 0){
+        aoCachedTopics = [];
+        aoCachedObservations = [];
+
+        // Read all topics into memory
+        dbTopics.allDocs({include_docs: true}, function(err, response) {
+          response.rows.forEach( function (row)
+          {
+            //console.log(row.doc.name);
+            var oNextTopic = new Topic(
+              row.doc._id,
+              row.doc.creationTime,
+              row.doc.updateTime,
+              row.doc.name,
+              row.doc.type,
+              row.doc.defaultValue,
+              row.doc.rangeStart,
+              row.doc.rangeEnd,
+              row.doc.step
+            );
+
+            aoCachedTopics.push(oNextTopic);
+          });
+
+          // Read all observations into memory
+          dbObservations.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextObservation = new Observation(
+                row.doc._id,
+                row.doc.topicId,
+                row.doc.value,
+                row.doc.creationDate,
+                row.doc.creationTime,
+                row.doc.observationDate,
+                row.doc.observationTime,
+                row.doc.updateTime,
+                row.doc.timezone,
+                row.doc.comment
+              );
+
+              aoCachedObservations.push(oNextObservation);
+            });
+
+            $rootScope.$broadcast('event:state-read-finished');
+          });
+
+          if((aoCachedTopics.length === 0) || (aoCachedObservations.length === 0)){
+            console.log("Accessing wrong link");
+          }
+        });
+
+      } else {
+        $rootScope.$broadcast('event:state-read-finished');
+      }
+    }
+
+    /**
      * (Public) Read Topic from the database
      */
     function readTopicDB(sTopicId){
-      if(!aoCachedTopics){
-        // TODO Load topics here
+      if(aoCachedTopics.length === 0){
+        // TODO
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
         return oEntry.id == sTopicId;
       })[0];
 
-      return(oTopic);
+      return oTopic;
+    }
+
+    /**
+     * (Public) Read Topics from memory
+     */
+    function readTopics(){
+      if(aoCachedTopics.length === 0){
+        console.log("No topics in memory");
+      }
+
+      return aoCachedTopics;
     }
 
     /**
@@ -164,9 +252,56 @@ define([
       for (var i = 0; i < nTopicsArrayLength; i++) {
         if (aoCachedTopics[i].id == oTopic.id) {
           aoCachedTopics[i] = oTopic;
+
+          // Save topic to client database
+          console.log("Updating Topic on the client side.");
+          // TODO what kind of changes could happen???
+
+          dbTopics.get(oTopic.id).then(function(oTopicDB) {
+            return dbTopics.put({
+              _id: oTopicDB._id,
+              _rev: oTopicDB._rev,
+              creationTime: oTopicDB.creationTime,
+              updateTime: oTopic.updateTime.toISOString(),
+              name: oTopic.name,
+              type: oTopic.type,
+              defaultValue: oTopic.defaultValue,
+              rangeStart: oTopic.rangeStart,
+              rangeEnd: oTopic.rangeEnd,
+              step: oTopic.step
+            });
+          }, function(err, response) {
+            if (!err) {
+              console.log('Successfully updated Topic on client side!');
+            } else {
+              console.log('Error while updating Topic on client side: ' + err);
+            }
+          });
+
+          console.log("Updating Topic on the server side.");
+          //Push Observation to the server
+          dbTopics.replicate.to(remoteCouchTopics)
+            .on('complete', function () {
+              // Successfully synced
+              console.log("Successfully updated Topic on the server side");
+            }).on('error', function (err) {
+              // Handle error
+              console.log("Error while updating Topic on the server side: " + err);
+            });
           break;
         }
       }
+    }
+
+    /**
+     * (Public) Return Topic from aoCachedTopics
+     */
+    function getTopic(sTopicId){
+      var oTopic = aoCachedTopics.filter(function(oEntry){
+        return oEntry.id == sTopicId;
+      })[0];
+
+      return oTopic;
     }
 
     /**
@@ -271,6 +406,48 @@ define([
     }
 
     /**
+     * (Public) Get Topics synchronously
+     */
+    function readTopicsSyncDB(){
+      // TODO should be fetching gradually
+      aoCachedTopics = [];
+
+      // Get Topics from the server and save locally
+      dbTopics.replicate.from(remoteCouchTopics)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully read Topics on the server side");
+        }).on('error',  function (err) {
+          // Handle error
+          console.log("Error while reading Topics on the server side: " + err);
+        });
+
+      // Read all docs into memory
+
+      dbTopics.allDocs({include_docs: true}, function(err, response) {
+        response.rows.forEach( function (row)
+        {
+          //console.log(row.doc.name);
+          var oNextTopic = new Topic(
+            row.doc._id,
+            row.doc.creationTime,
+            row.doc.updateTime,
+            row.doc.name,
+            row.doc.type,
+            row.doc.defaultValue,
+            row.doc.rangeStart,
+            row.doc.rangeEnd,
+            row.doc.step
+          );
+
+          aoCachedTopics.push(oNextTopic);
+        });
+        // Put pre-processing of data
+        return(aoCachedTopics);
+      });
+    }
+
+    /**
      * (Public) Get Observations asynchronously
      */
     function readObservationsAsyncDB(fCallback){
@@ -348,8 +525,6 @@ define([
      * (Public) Save Observation
      */
     function createObservation(oObservation) {
-      if (!initialized) throw "Storage not initialized yet.";
-
       if (aoCachedObservations == null) {
         aoCachedObservations = [];
       }
@@ -365,7 +540,7 @@ define([
         creationDate: oObservation.creationDate.toISOString(),
         creationTime: oObservation.creationTime.toISOString(),
         observationDate: oObservation.observationDate,
-        observationTime: oObservation.observationTime.toISOString(),
+        observationTime: oObservation.observationTime,
         updateTime: oObservation.updateTime.toISOString(),
         timezone: oObservation.timezone,
         comment: oObservation.comment},
@@ -394,7 +569,9 @@ define([
      * (Public) Read Observation by Id
      */
     function readObservation(sObservationId) {
-      if (!initialized) throw "Storage not initialized yet.";
+      if(!aoCachedObservations){
+        console.log("Reading from empty list of Observations");
+      }
 
       var oCachedObservation = aoCachedObservations.filter(function(entry){
         return entry.id == sObservationId;
@@ -404,11 +581,20 @@ define([
     }
 
     /**
+     * (Public) Read Observations from memory
+     */
+    function readObservations(){
+      if(aoCachedObservations.length === 0){
+        console.log("No observations in memory");
+      }
+
+      return aoCachedObservations;
+    }
+
+    /**
      * (Public) Update Observation
      */
     function updateObservation(sObservationId, oObservation){
-      if (!initialized) throw "Storage not initialized yet.";
-
       var nNumberOfObservations = aoCachedObservations.length;
       var sNextId;
       for(var i=0; i<nNumberOfObservations; i++) {
@@ -416,6 +602,42 @@ define([
 
         if (sNextId == sObservationId) {
           aoCachedObservations[i] = oObservation;
+
+          // Save observation to client database
+          console.log("Updating Observation on the client side.");
+
+          dbObservations.get(oObservation.id).then(function(oObservationDB) {
+            return dbObservations.put({
+              _id: oObservationDB._id,
+              _rev: oObservationDB._rev,
+              topicId: oObservation.topicId,
+              value: oObservation.value,
+              creationDate: oObservation.creationDate,
+              creationTime: oObservation.creationTime,
+              observationDate: oObservation.observationDate,
+              observationTime: oObservation.observationTime,
+              updateTime: oObservation.updateTime.toISOString(),
+              timezone: oObservation.timezone,
+              comment: oObservation.comment
+            });
+          }, function(err, response) {
+            if (!err) {
+              console.log('Successfully updated Observation on client side!');
+            } else {
+              console.log('Error while updating Observation on client side: ' + err);
+            }
+          });
+
+          console.log("Updating Observation on the server side.");
+          //Push Observation to the server
+          dbObservations.replicate.to(remoteCouchObservations)
+            .on('complete', function () {
+              // Successfully synced
+              console.log("Successfully updated Observation on the server side");
+            }).on('error', function (err) {
+              // Handle error
+              console.log("Error while updating Observation on the server side: " + err);
+            });
           break;
         }
       }
@@ -432,20 +654,25 @@ define([
       readTopicsAsyncDB: readTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
       readObservationsAsyncDB: readObservationsAsyncDB,
+      readTopicsSyncDB: readTopicsSyncDB,
       readTopicAsync: readTopicAsync,
 
       Topic : Topic,
       createTopic: createTopic,
       readTopic: readTopic,
       readTopicDB: readTopicDB,
+      readTopics: readTopics,
+      readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
 
       Observation : Observation,
       createObservation: createObservation,
       readObservation: readObservation,
+      readObservations: readObservations,
       updateObservation: updateObservation,
 
-      findUniqueDates: findUniqueDates
+      findUniqueDates: findUniqueDates,
+      readDBState: readDBState
     };
 
   }]);

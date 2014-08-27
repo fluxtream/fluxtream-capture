@@ -54,7 +54,7 @@ public class UploadService extends Service {
 	private AutoUploadThread mAutoUploadThread;
 	
 	// Waiting delay in milliseconds when the photo uploader is active
-	private final long WAIT_ON_ACTIVE = 2000; // 1 second
+	private final long WAIT_ON_ACTIVE = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when no photo was found for upload
 	private final long WAIT_ON_NO_PHOTO = 600000; // 10 minutes

@@ -1,5 +1,6 @@
 define([
   'app-modules',
+  'moment',
   'services/self-report-storage-service'
 ], function(appModules) {
 
@@ -18,7 +19,6 @@ define([
 
         //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
-        $scope.oTopic = selfReportStorage.readTopicDB($stateParams.topicId);
         $scope.tObservationDate = new Date();
         $scope.tObservationTime = $scope.tObservationDate;
 
@@ -63,7 +63,19 @@ define([
           }
         };
 
-        $scope.readType();
+        // Listen for the event - Topics array is loaded into memory
+        // required in case the page was reloaded
+        $scope.$on('event:topics-read-finished', function() {
+          $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
+
+          document.title = $scope.oTopic.name;
+
+          $scope.$$phase || $scope.$apply();
+
+          $scope.readType();
+        });
+
+        selfReportStorage.readTopicsDB();
 
         // Called when the form is submitted
         $scope.createObservation = function() {
@@ -77,6 +89,9 @@ define([
             sObservationValue = document.getElementById('observation.value').value;
           }
 
+          var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
+            + document.getElementById('observation.observationTime').value).format();
+
           $scope.oNewObservation = new selfReportStorage.Observation(
               Date.parse($scope.tObservationTime) + "_" + $stateParams.topicId,
             $stateParams.topicId,
@@ -84,7 +99,7 @@ define([
             tCreationDate,
             tCreationDate,
             document.getElementById('observation.observationDate').value,
-            new Date(document.getElementById('observation.observationDate').value + " " + document.getElementById('observation.observationTime').value),
+            tObservationTime,
             tCreationDate,
             document.getElementById('observation.timezone').value,
             document.getElementById('observation.comment').value

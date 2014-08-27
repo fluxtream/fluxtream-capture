@@ -8,8 +8,8 @@ define([
    *
    * Edit or reorder Topics
    */
-  appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService',
-    function ($scope, selfReportStorage) {
+  appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService', '$rootScope',
+    function ($scope, selfReportStorage, $rootScope) {
       //TODO bug in reordering (if reorder long enough)
       //TODO save order to the DB
 
@@ -20,11 +20,26 @@ define([
         $scope.aoTopics.splice(toIndex, 0, oTopic);
       };
 
-      selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
-        $scope.aoTopics = aoTopics;
-        $scope.$$phase || $scope.$apply();
+      // Read memory values
+      $scope.aoTopics = selfReportStorage.readTopics();
+      document.title = "Edit Topics";
+      $scope.$$phase || $scope.$apply();
+
+      // Read data from DB if it is epmty
+      // TODO should be done periodically not only if reload was done
+      if($scope.aoTopics.length === 0) {
+        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          $scope.aoTopics = aoTopics;
+          $scope.$$phase || $scope.$apply();
+        });
+      }
+
+      $scope.$on('event:topics-synced', function() {
+        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          $scope.aoTopics = aoTopics;
+          $scope.$$phase || $scope.$apply();
+        });
       });
     }
   ]);
-
 });

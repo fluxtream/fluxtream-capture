@@ -123,7 +123,7 @@ public class PhotoUploader {
 			// Add the photo to the upload queue
 			pendingPhotos.add(photoId);
 			
-			// Start upload if it not started yet
+			// Start upload if it is not started yet
 			startUploading();
 		}
 	}
