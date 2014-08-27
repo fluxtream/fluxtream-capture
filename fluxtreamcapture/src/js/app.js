@@ -53,6 +53,11 @@ $(document).ready(function() {
       $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content|data|assets-library):/);
     }]);
     
+    // Disable back button on Android
+    if (forge.is.android()) {
+      forge.event.backPressed.preventDefault();
+    }
+    
     // Load initialization page
     window.location = "#/init";
     
