@@ -15,7 +15,8 @@ define([
     "PhotoListService",
     'UserPrefsService',
     "PhotoSynchronizationService",
-    function($scope, photoListService, userPrefs, photoSync) {
+    "$ionicScrollDelegate",
+    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -34,6 +35,26 @@ define([
       
       // True once the local photos have been loaded
       $scope.loaded = false;
+      
+      // Saved scroll position
+      $scope.lastScrollPosition = userPrefs.get('photos.scrollPosition', 500);
+      
+      // True once the initial scroll position has been applied and the new scroll positions can be saved
+      $scope.initialScrollDone = false;
+      
+      // Saves the current scroll position to be re-established on the next visit
+      $scope.onScroll = function() {
+        if (!$scope.initialScrollDone) return;
+        $scope.lastScrollPosition = $ionicScrollDelegate.getScrollPosition().top;
+        forge.logging.info("Saving scroll position: " + $scope.lastScrollPosition);
+        userPrefs.set('photos.scrollPosition', $scope.lastScrollPosition);
+      };
+      
+      // Applies the scroll position from the last visit
+      $scope.scrollToInitialPosition = function() {
+        $ionicScrollDelegate.scrollTo(0, $scope.lastScrollPosition, false);
+        $scope.initialScrollDone = true;
+      };
       
       /**
        * (Private) Adds a photo from to raw list to the photo list
@@ -121,6 +142,8 @@ define([
             $scope.loaded = true;
             // Update UI
             $scope.$$phase || $scope.$apply();
+            // Reset scroll position
+            $scope.scrollToInitialPosition();
           },
           // Error
           function(error) {

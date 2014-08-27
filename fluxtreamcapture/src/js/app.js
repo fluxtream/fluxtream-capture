@@ -46,6 +46,16 @@ $(document).ready(function() {
       }
     ]);
     
+    // Add scroll directive
+    appModules.app.directive("flxScroll", function () {
+      return function(scope, element, attrs) {
+        angular.element(element).bind("scroll", function() {
+          // Execute flx-scroll attribute content on scope
+          eval("scope." + attrs.flxScroll);
+        });
+      };
+    });
+    
     // Configuration
     appModules.app.config(['$compileProvider', function($compileProvider) {
       // Allow image sources starting with "content://"
