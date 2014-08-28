@@ -46,7 +46,6 @@ define([
       $scope.onScroll = function() {
         if (!$scope.initialScrollDone) return;
         $scope.lastScrollPosition = $ionicScrollDelegate.getScrollPosition().top;
-        forge.logging.info("Saving scroll position: " + $scope.lastScrollPosition);
         userPrefs.set('photos.scrollPosition', $scope.lastScrollPosition);
       };
       
@@ -210,7 +209,7 @@ define([
       // Add event listeners
       
       // Photo upload started
-      forge.internal.addEventListener("photoupload.started", function(data) {
+      $scope.$on("photoupload.started", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload started");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -222,7 +221,7 @@ define([
       });
       
       // Photo successfully uploaded
-      forge.internal.addEventListener("photoupload.uploaded", function(data) {
+      $scope.$on("photoupload.uploaded", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload successful");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -234,7 +233,7 @@ define([
       });
       
       // Photo upload canceled
-      forge.internal.addEventListener("photoupload.canceled", function(data) {
+      $scope.$on("photoupload.canceled", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload canceled");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -246,7 +245,7 @@ define([
       });
       
       // Photo upload failed
-      forge.internal.addEventListener("photoupload.failed", function(data) {
+      $scope.$on("photoupload.failed", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload failed");
         forge.logging.info(data.error);
         var photo = $scope.getPhoto(data.photoId);

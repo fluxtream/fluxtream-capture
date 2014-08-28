@@ -7,7 +7,7 @@ define([
   'app-modules'
 ], function(appModules) {
   
-  appModules.services.factory("PhotoListService", function() {
+  appModules.services.factory("PhotoListService", function($rootScope) {
     
     // Whether the photo list has been initialized
     var initialized = false;
@@ -81,6 +81,14 @@ define([
     if (!forge.is.web()) {
       loadPhotos();
     }
+    
+    // Convert internal events to angular events
+    
+    ["photoupload.started", "photoupload.uploaded", "photoupload.canceled", "photoupload.failed"].forEach(function(eventName) {
+      forge.internal.addEventListener(eventName, function(data) {
+        $rootScope.$broadcast(eventName, data);
+      });
+    });
     
     // Public API
     return {
