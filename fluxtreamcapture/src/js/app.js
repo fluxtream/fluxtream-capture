@@ -17,7 +17,8 @@ $(document).ready(function() {
     "services/login-service",
     "services/photo-list-service",
     "services/photo-synchronization-service",
-    'filters/self-report-filters'
+    'filters/self-report-filters',
+    'services/user-prefs-service'
   ], function(appModules, env, routes, flxCom) {
     
     // Get current page or set main page
@@ -29,18 +30,29 @@ $(document).ready(function() {
       'LoginService',
       '$ionicViewService',
       '$state',
+      'UserPrefsService',
       'PhotoListService', // Preloading photos
       'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
-      function(loginService, $ionicViewService, $state) {
-        loginService.checkAuth(function() {
-          // Load page
-          $state.go("listTopics");
-          window.location = initialRoute;
-          // Clear navigation history to prevent going back to the initialization page
-          $ionicViewService.clearHistory();
-          // Hide launch screen
-          if (!forge.is.web()) {
-            forge.launchimage.hide();
+      function(loginService, $ionicViewService, $state, userPrefs) {
+        userPrefs.onReady(function() {
+          // Check if the user is alreday logged in
+          if (loginService.isAuthenticated()) {
+            // User is logged in, load main page
+            $state.go("listTopics");
+            window.location = initialRoute;
+            // Clear navigation history to prevent going back to the initialization page
+            $ionicViewService.clearHistory();
+            // Hide launch screen
+            if (!forge.is.web()) {
+              forge.launchimage.hide();
+            }
+          } else {
+            // User is not authenticated, go to login page
+            $state.go("login");
+            // Hide launch screen
+            if (!forge.is.web()) {
+              forge.launchimage.hide();
+            }
           }
         });
       }

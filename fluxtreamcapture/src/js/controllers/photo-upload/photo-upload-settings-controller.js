@@ -98,7 +98,7 @@ define([
         forge.logging.info($scope.settings);
         var options = {
           upload_url: env['fluxtream.home.url'] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-          authentication: btoa(userPrefs.get("settings.username") + ":" + userPrefs.get("settings.password"))
+          authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
         };
         $scope.orientations.forEach(function(orientation) {
           options['upload_' + orientation] = $scope.settings['upload_' + orientation];

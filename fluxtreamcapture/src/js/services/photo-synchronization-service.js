@@ -59,7 +59,7 @@ define([
           // Upload URL
           env["fluxtream.home.url"] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
           // Authentication
-          btoa(userPrefs.get('settings.username') + ":" + userPrefs.get('settings.password')),
+          btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
           // Success
           function() {
             photoUploadModuleInitialized = true;

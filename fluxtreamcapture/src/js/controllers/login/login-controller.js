@@ -21,7 +21,7 @@ define([
       $scope.valuesToLoad = Object.keys($scope.settings).length;
       userPrefs.onReady(function() {
         for (var settingName in $scope.settings) {
-          $scope.settings[settingName] = userPrefs.get("settings." + settingName);
+          $scope.settings[settingName] = userPrefs.get("login." + settingName);
         }
         $scope.$$phase || $scope.$apply();
       });
@@ -29,7 +29,7 @@ define([
       // Save settings on change
       $scope.save = function(settingName) {
         userPrefs.onReady(function() {
-          userPrefs.set('settings.' + settingName, $scope.settings[settingName]);
+          userPrefs.set('login.' + settingName, $scope.settings[settingName]);
         });
       };
       
