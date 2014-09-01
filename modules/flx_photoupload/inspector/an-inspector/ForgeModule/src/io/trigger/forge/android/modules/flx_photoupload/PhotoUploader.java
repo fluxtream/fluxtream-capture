@@ -33,9 +33,9 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 
 /**
- * This class uploads photos to the Fluxtream server.
- * It emits "photoupload.started", "photoupload.uploaded", "photoupload.failed" and "photoupload.canceled" events
- * for the Forge app.
+ * This class uploads photos to the Fluxtream server. It emits
+ * "photoupload.started", "photoupload.uploaded", "photoupload.failed" and
+ * "photoupload.canceled" events for the Forge app.
  * 
  * @author Julien Dupuis
  */
@@ -44,18 +44,19 @@ public class PhotoUploader {
 	// Mutex to prevent concurrency issues
 	private static Object mutex = new Object();
 	
-	
 	/* Parameters */
 	
 	// The shared preferences where the upload status of each photo is stored
 	private static SharedPreferences prefs;
 	
-	// Fluxtream server's URL at which the photos must be uploaded 
+	// Id of the currently connected user
+	private static String userId;
+	
+	// Fluxtream server's URL at which the photos must be uploaded
 	private static String uploadURL;
 	
 	// Authentication string used to add authentication to the http requests
 	private static String authentication;
-	
 	
 	/* Photo upload */
 	
@@ -65,64 +66,98 @@ public class PhotoUploader {
 	// Photo id of the photo that is currently being uploaded
 	private static int currentPhoto = -1;
 	
-	// Thread used to upload the photos (reset to null when there are no more photos to upload)
+	// Thread used to upload the photos (reset to null when there are no more
+	// photos to upload)
 	private static Thread uploadThread = null;
 	
 	// Whether the current upload should be canceled
 	private static boolean cancelCurrentUpload = false;
 	
-	
 	/* Public methods */
 	
 	/**
-	 * Sets the parameters for uploading. These need to be set before uploadPhoto() is called.
+	 * Sets the parameters for uploading. These need to be set before
+	 * uploadPhoto() is called.
 	 * 
-	 * @param prefs The shared preferences where the photo upload status is stored
-	 * @param uploadURL The URL to which to photos will be uploaded
-	 * @param authentication The authentication string for basic authentication
+	 * @param prefs
+	 *            The shared preferences where the photo upload status is stored
+	 * @param uploadURL
+	 *            The URL to which to photos will be uploaded
+	 * @param authentication
+	 *            The authentication string for basic authentication
 	 */
-	public static void initialize(SharedPreferences prefs, String uploadURL, String authentication) {
+	public static void initialize(SharedPreferences prefs, String userId,
+			String uploadURL, String authentication) {
 		Log.i("flx_photoupload", "Initializing PhotoUploader");
 		PhotoUploader.prefs = prefs;
+		PhotoUploader.userId = userId;
 		PhotoUploader.uploadURL = uploadURL;
 		PhotoUploader.authentication = authentication;
+	}
+	
+	/**
+	 * Logs out the current user and stops all uploads
+	 */
+	public static void logoutUser() {
+		Log.i("flx_photoupload", "Call to logoutUser()");
+		synchronized (mutex) {
+			Log.i("flx_photoupload", "Logging out user");
+			PhotoUploader.userId = null;
+			PhotoUploader.uploadURL = null;
+			PhotoUploader.authentication = null;
+			currentPhoto = -1;
+			cancelCurrentUpload = true;
+			pendingPhotos.clear();
+			uploadThread.interrupt();
+			Log.i("flx_photoupload", "User was logged out");
+		}
 	}
 	
 	/**
 	 * Returns whether a given photo has already been successfully uploaded
 	 */
 	public static boolean isPhotoUploaded(int photoId) {
-		return prefs.getBoolean("photo_" + photoId + "_uploaded", false);
+		return prefs.getBoolean("user." + userId + ".photo." + photoId
+				+ ".uploaded", false);
 	}
 	
 	/**
-	 * Adds a photo to the upload queue, and starts the uploading thread if it is not started
+	 * Adds a photo to the upload queue, and starts the uploading thread if it
+	 * is not started
+	 * 
 	 * @param photoId
 	 */
 	public static void uploadPhoto(int photoId) {
-		Log.i("flx_photoupload", "Call to PhotoUploader.uploadPhoto(" + photoId + ")");
+		Log.i("flx_photoupload", "Call to PhotoUploader.uploadPhoto(" + photoId
+				+ ")");
 		synchronized (mutex) {
 			// Check if the photo is currently being uploaded
 			if (currentPhoto == photoId) {
-				Log.i("flx_photoupload", "Upload of photo " + photoId + " already in progress");
-				ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
+				Log.i("flx_photoupload", "Upload of photo " + photoId
+						+ " already in progress");
+				ForgeApp.event("photoupload.started",
+						eventDataForPhotoId(photoId));
 				return;
 			}
 			// Check if the photo is already in the queue
 			if (pendingPhotos.contains(photoId)) {
-				Log.i("flx_photoupload", "Photo " + photoId + " already in upload queue");
+				Log.i("flx_photoupload", "Photo " + photoId
+						+ " already in upload queue");
 				return;
 			}
 			// Check if the photo is already uploaded
 			if (isPhotoUploaded(photoId)) {
-				Log.i("flx_photoupload", "Photo " + photoId + " is already uploaded");
-				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
+				Log.i("flx_photoupload", "Photo " + photoId
+						+ " is already uploaded");
+				ForgeApp.event("photoupload.uploaded",
+						eventDataForPhotoId(photoId));
 				return;
 			}
-			
+
 			// Add the photo to the upload queue
+			Log.i("flx_photoupload", "Adding photo " + photoId + " to pending photo list");
 			pendingPhotos.add(photoId);
-			
+
 			// Start upload if it is not started yet
 			startUploading();
 		}
@@ -131,11 +166,13 @@ public class PhotoUploader {
 	/**
 	 * Cancels the upload of the photoId (if not too late).
 	 * 
-	 * Warning: if the photo has already been uploaded, but the server's response has not yet arrived, the
-	 * photo might be marked as not uploaded though it has been uploaded.
+	 * Warning: if the photo has already been uploaded, but the server's
+	 * response has not yet arrived, the photo might be marked as not uploaded
+	 * though it has been uploaded.
 	 */
 	public static void cancelUpload(int photoId) {
-		Log.i("flx_photoupload", "Call to PhotoUploader.cancelUpload(" + photoId + ")");
+		Log.i("flx_photoupload", "Call to PhotoUploader.cancelUpload("
+				+ photoId + ")");
 		synchronized (mutex) {
 			// Remove from pending upload queue
 			pendingPhotos.remove(photoId);
@@ -143,7 +180,8 @@ public class PhotoUploader {
 			if (currentPhoto == photoId) {
 				// This photo is currently being uploaded, interrupt upload
 				cancelCurrentUpload = true;
-				if (uploadThread != null) uploadThread.interrupt();
+				if (uploadThread != null)
+					uploadThread.interrupt();
 			}
 		}
 	}
@@ -159,7 +197,8 @@ public class PhotoUploader {
 	 * Returns the facet id of a given uploaded photo
 	 */
 	public static String getFacetId(int photoId) {
-		return prefs.getString("photo_" + photoId + "_facetId", null);
+		return prefs.getString("user." + userId + ".photo." + photoId
+				+ ".facetId", null);
 	}
 	
 	/* Private methods */
@@ -171,9 +210,11 @@ public class PhotoUploader {
 		synchronized (mutex) {
 			// Check if upload thread already exists
 			if (uploadThread != null) {
+				Log.i("flx_photoupload", "Photo upload thread already running, interrupt it");
 				uploadThread.interrupt();
 				return;
 			}
+			Log.i("flx_photoupload", "Starting a new photo upload thread");
 			// Create upload thread
 			uploadThread = new UploadThread();
 			// Start upload thread
@@ -187,8 +228,10 @@ public class PhotoUploader {
 	private static void setPhotoUploaded(int photoId, String facetId) {
 		Log.i("flx_photoupload", "Marking photo " + photoId + " as uploaded");
 		Editor editor = prefs.edit();
-		editor.putBoolean("photo_" + photoId + "_uploaded", true);
-		editor.putString("photo_" + photoId + "_facetId", facetId);
+		editor.putBoolean("user." + userId + ".photo." + photoId + ".uploaded",
+				true);
+		editor.putString("user." + userId + ".photo." + photoId + ".facetId",
+				facetId);
 		editor.apply();
 	}
 	
@@ -202,64 +245,72 @@ public class PhotoUploader {
 	}
 	
 	/**
-	 * Uploads the given photo the the Fluxtream server. Returns the facet id of the photo.
+	 * Uploads the given photo the the Fluxtream server. Returns the facet id of
+	 * the photo.
 	 */
 	private static String uploadPhotoNow(int photoId) throws Exception {
 		// Generate 'started' event
 		ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
-		
+
 		// Get photo data
 		Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
 		Map<String, String> photoData = getPhotoData(uri);
-		
+
 		// Create file body
 		FileBody fileBody = new FileBody(new File(photoData.get("path")));
-		
+
 		// Create multipart body builder
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		builder.addPart("photo", fileBody);
-		builder.addPart("metadata", new StringBody("{capture_time_secs_utc:" + photoData.get("timestamp") + "}", ContentType.TEXT_PLAIN));
-		
+		builder.addPart("metadata", new StringBody("{capture_time_secs_utc:"
+				+ photoData.get("timestamp") + "}", ContentType.TEXT_PLAIN));
+
 		// Create post request
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost httpPost = new HttpPost(uploadURL);
 		httpPost.setHeader("Authorization", "Basic " + authentication);
 		httpPost.setEntity(builder.build());
-		
+
 		// Send request
 		HttpResponse response = httpClient.execute(httpPost);
-		
+
 		// Read response
-		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				response.getEntity().getContent()));
 		String line = null;
 		String responseBody = "";
 		while ((line = reader.readLine()) != null) {
 			responseBody = responseBody + line;
 		}
 		Log.i("flx_photoupload", "Upload response: " + responseBody);
-		
+
 		// Parse response
 		JSONObject json = new JSONObject(responseBody);
-		String result = (String)json.get("result");
+		String result = (String) json.get("result");
 		// Make sure the photo was uploaded
 		if (!result.equals("OK")) {
-			throw new Exception("An error has occured: result=" + result + ", message=" + json.get("message"));
+			throw new Exception("An error has occured: result=" + result
+					+ ", message=" + json.get("message"));
 		}
-		
+
 		// Get facet id
-		String facetId = ((JSONObject)json.get("payload")).get("id").toString();
-		
+		String facetId = ((JSONObject) json.get("payload")).get("id")
+				.toString();
+
 		// Generate 'uploaded' event
-		ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
-		
+		synchronized (mutex) {
+			if (userId != null) {
+				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
+			}
+		}
+
 		return facetId;
 	}
 	
 	/**
-	 * Returns the data associated with a given photo:
-	 *   "path": the filesystem path of the photo
-	 *   "timestamp": the utc timestamp in seconds of the photo
+	 * Returns the data associated with a given photo: "path": the filesystem
+	 * path of the photo "timestamp": the utc timestamp in seconds of the photo
 	 */
 	private static Map<String, String> getPhotoData(Uri contentUri) {
 		// Query file
@@ -271,31 +322,43 @@ public class PhotoUploader {
 			// Current context is the background service
 			contentResolver = UploadService.getServiceContentResolver();
 		}
-		Cursor cursor = contentResolver.query(
-				contentUri,
-				new String[] { MediaStore.Images.Media.DATA, MediaStore.Images.Media.DATE_TAKEN },
-				null, null, null);
+		Cursor cursor = contentResolver.query(contentUri, new String[] {
+				MediaStore.Images.Media.DATA,
+				MediaStore.Images.Media.DATE_TAKEN }, null, null, null);
 		cursor.moveToFirst();
 		// Create result
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-		map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
+		map.put("path", cursor.getString(cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
+		map.put("timestamp",
+				cursor.getLong(cursor
+						.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN))
+						/ 1000 + "");
 		// Return result map
 		return map;
 	}
 	
-	
 	/* Private classes */
 	
 	/**
-	 * This Thread loops through the pending upload queue and tries to upload the
-	 * photos one by one. If an error occurs, the photo is sent back to the end of
-	 * the list and the upload pauses for one minute.
+	 * This Thread loops through the pending upload queue and tries to upload
+	 * the photos one by one. If an error occurs, the photo is sent back to the
+	 * end of the list and the upload pauses for one minute.
 	 */
 	private static class UploadThread extends Thread {
 		@Override
 		public void run() {
+			Log.i("flx_photoupload", "Starting upload thread");
 			while (true) {
+				// Check that there is a user connected
+				if (userId == null) {
+					Log.i("flx_photoupload",
+							"User disconnected, stopping upload thread");
+					synchronized (mutex) {
+						uploadThread = null;
+					}
+					return;
+				}
 				// Get photo id
 				int photoId;
 				synchronized (mutex) {
@@ -303,7 +366,7 @@ public class PhotoUploader {
 						// No more photo to upload, close thread
 						uploadThread = null;
 						return;
-					};
+					}
 					photoId = pendingPhotos.poll();
 					currentPhoto = photoId;
 				}
@@ -313,28 +376,48 @@ public class PhotoUploader {
 					String facetId = uploadPhotoNow(photoId);
 					// Mark photo as uploaded
 					synchronized (mutex) {
+						Log.i("flx_photoupload", "Photo upload done");
+						if (userId == null) {
+							Log.i("flx_photoupload",
+									"User disconnected, stopping upload thread");
+							uploadThread = null;
+							return;
+						}
 						setPhotoUploaded(photoId, facetId);
 						currentPhoto = -1;
 					}
 				} catch (CursorIndexOutOfBoundsException e) {
 					// The photo does not exist anymore
-					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
+					ForgeApp.event("photoupload.canceled",
+							eventDataForPhotoId(photoId));
 					synchronized (mutex) {
 						currentPhoto = -1;
 						cancelCurrentUpload = false;
 					}
 				} catch (Throwable e) {
+					// Check if the thread should end
+					if (userId == null) {
+						Log.i("flx_photoupload",
+								"User disconnected, stopping upload thread");
+						synchronized (mutex) {
+							uploadThread = null;
+						}
+						return;
+					}
 					// An error occurred
 					if (cancelCurrentUpload) {
-						Log.i("flx_photoupload", "Upload of photo " + photoId + " canceled");
+						Log.i("flx_photoupload", "Upload of photo " + photoId
+								+ " canceled");
 						// Generate 'canceled' event
-						ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
+						ForgeApp.event("photoupload.canceled",
+								eventDataForPhotoId(photoId));
 						synchronized (mutex) {
 							currentPhoto = -1;
 							cancelCurrentUpload = false;
 						}
 					} else {
-						Log.e("flx_photoupload", "Error while uploading photo", e);
+						Log.e("flx_photoupload", "Error while uploading photo",
+								e);
 						// Generate 'failed' event
 						JsonObject data = eventDataForPhotoId(photoId);
 						data.addProperty("error", e.getMessage());
@@ -349,6 +432,7 @@ public class PhotoUploader {
 							try {
 								wait(10000); // TODO 60000
 							} catch (InterruptedException ex) {
+								Log.i("flx_photoupload", "Photo upload thread interrupted");
 							}
 						}
 					}

@@ -31,9 +31,10 @@ $(document).ready(function() {
       '$ionicViewService',
       '$state',
       'UserPrefsService',
+      '$rootScope',
       'PhotoListService', // Preloading photos
       'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
-      function(loginService, $ionicViewService, $state, userPrefs) {
+      function(loginService, $ionicViewService, $state, userPrefs, $rootScope) {
         userPrefs.onReady(function() {
           // Check if the user is alreday logged in
           if (loginService.isAuthenticated()) {
@@ -46,6 +47,8 @@ $(document).ready(function() {
             if (!forge.is.web()) {
               forge.launchimage.hide();
             }
+            // Emit login event
+            $rootScope.$broadcast('user-logged-in');
           } else {
             // User is not authenticated, go to login page
             $state.go("login");

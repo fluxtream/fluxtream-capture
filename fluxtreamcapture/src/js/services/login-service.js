@@ -7,7 +7,7 @@ define([
   'services/user-prefs-service'
 ], function(appModules, env) {
   
-  appModules.services.factory('LoginService', ['UserPrefsService', "$state", function(userPrefs, $state) {
+  appModules.services.factory('LoginService', ['UserPrefsService', "$state", "$rootScope", function(userPrefs, $state, $rootScope) {
     
     /**
      * The callback function after a successful authentication
@@ -126,7 +126,7 @@ define([
       forge.logging.info("Logging in successful");
       forge.logging.info(guestModel);
       userPrefs.set('login.username', guestModel.username);
-      userPrefs.set('login.userId', guestModel.id);
+      userPrefs.set('login.userId', guestModel.id + "");
       userPrefs.set('login.isAuthenticated', true);
       if (typeof (guestModel.username) !== "undefined") {
         if (typeof onSuccessFunction === 'function') onSuccessFunction();
@@ -134,6 +134,7 @@ define([
         forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus);
         $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus + "</h1>");
       }
+      $rootScope.$broadcast('user-logged-in');
     }
     
     /**
@@ -171,6 +172,8 @@ define([
     function logout() {
       userPrefs.set('login.isAuthenticated', false);
       userPrefs.set('login.password', "");
+      userPrefs.set('login.userId', null);
+      $rootScope.$broadcast('user-logged-out');
       $state.go('login');
     }
     

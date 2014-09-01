@@ -8,8 +8,13 @@ define([
 ], function(env, appModules) {
   
   // Photo upload controller
-  appModules.controllers.controller('PhotoUploadSettingsController', ["$scope", 'UserPrefsService', "PhotoListService", "$ionicActionSheet",
-    function($scope, userPrefs, photoListService, $ionicActionSheet) {
+  appModules.controllers.controller('PhotoUploadSettingsController', [
+    "$scope",
+    'UserPrefsService',
+    "PhotoListService",
+    "$ionicActionSheet",
+    "LoginService",
+    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -28,8 +33,8 @@ define([
       $scope.settings = {};
       $scope.unuploadedCount = {};
       $scope.orientations.forEach(function(orientation) {
-        $scope.settings['upload_' + orientation] = userPrefs.get('photos.autoupload_' + orientation, false);
-        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('photos.' + orientation + "_minimum_timestamp", 0);
+        $scope.settings['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
+        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
         $scope.unuploadedCount[orientation] = 0;
       });
       
@@ -97,6 +102,7 @@ define([
         forge.logging.info("Starting photo upload with parameters:");
         forge.logging.info($scope.settings);
         var options = {
+          userId: loginService.getUserId(),
           upload_url: env['fluxtream.home.url'] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
           authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
         };
@@ -182,17 +188,17 @@ define([
         // Save preferences
         var start = false;
         $scope.orientations.forEach(function(orientation) {
-          userPrefs.set('photos.autoupload_' + orientation, $scope.settings['upload_' + orientation]);
-          userPrefs.set('photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, $scope.settings['upload_' + orientation]);
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
           if ($scope.settings['upload_' + orientation]) start = true;
         });
         // Start or stop service
         
         if (start) {
-          userPrefs.set('photos.autoupload_enabled', true);
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', true);
           $scope.startPhotoUploadService();
         } else {
-          userPrefs.set('photos.autoupload_enabled', false);
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', false);
           $scope.stopPhotoUploadService();
         }
       };
