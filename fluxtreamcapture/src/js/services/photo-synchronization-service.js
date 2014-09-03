@@ -34,14 +34,49 @@ define([
         }
       }
       
+      // Initialize the autoupload service with the autoupload parameters from user prefs
+      function startAutoupload() {
+        if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
+          forge.logging.info("Starting autoupload service");
+          var options = {
+            userId: loginService.getUserId(),
+            upload_url: env['fluxtream.home.url'] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
+          };
+          var orientation = [];
+          if (forge.is.android()) {
+            orientations = ['portrait', 'landscape'];
+          } else {
+            orientations = ['portrait', 'upside_down', 'landscape_left', 'landscape_right'];
+          }
+          orientations.forEach(function(orientation) {
+            options['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
+            options[orientation + '_minimum_timestamp'] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
+          });
+          forge.flx_photoupload.setAutouploadOptions(options,
+            // Success
+            function() {
+              forge.logging.info("Autoupload service started successfully");
+            },
+            // Error
+            function(error) {
+              forge.logging.info("Error starting the autoupload service: " + error);
+            }
+          );
+        } else {
+          forge.logging.info("Not starting autoupload service");
+        }
+      }
+      
       // Initialize native photo upload module
       $rootScope.$on("user-logged-in", function() {
         userPrefs.onReady(function() {
+          forge.logging.info("Calling setUploadParameters with userId = " + loginService.getUserId());
           forge.flx_photoupload.setUploadParameters(
             // User id
             loginService.getUserId(),
             // Upload URL
-            env["fluxtream.home.url"] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            env["fluxtream.home.url"] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
             // Authentication
             btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
             // Success
@@ -54,21 +89,7 @@ define([
                 forge.flx_photoupload.uploadPhoto(photoId);
               });
               // Start autoupload service at initialization if needed
-              if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
-                forge.logging.info("Starting autoupload service");
-                forge.flx_photoupload.startAutouploadService(
-                  // Success
-                  function() {
-                    forge.logging.info("Autoupload service started successfully");
-                  },
-                  // Error
-                  function(error) {
-                    forge.logging.info("Error starting the autoupload service: " + error);
-                  }
-                );
-              } else {
-                forge.logging.info("Not starting autoupload service");
-              }
+              startAutoupload();
               // Execute onReady functions
               functionsToExecute.forEach(function(functionToExecute) {
                 functionToExecute();
@@ -95,7 +116,6 @@ define([
           }
         );
       });
-      
       
       /* Setting synchronization status for photos and metadatas */
       
@@ -229,7 +249,8 @@ define([
       return {
         synchronizeMetadata: synchronizeMetadata,
         uploadPhoto: uploadPhoto,
-        onReady: onReady
+        onReady: onReady,
+        startAutoupload: startAutoupload
       };
       
     }

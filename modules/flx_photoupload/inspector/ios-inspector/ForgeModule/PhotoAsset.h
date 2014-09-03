@@ -30,17 +30,4 @@
 // A reference to the asset
 @property (nonatomic, strong) ALAsset *actualAsset;
 
-
-// Returns the complete list of photos (contains PhotoAsset instances)
-+ (NSArray *)photos;
-
-// Returns (gets from memory or creates) the photo corresponding to the given asset
-+ (PhotoAsset *)photoWithAsset:(ALAsset *)asset;
-
-// Returns the photo corresponding to the given identifier
-+ (PhotoAsset *)photoWithId:(NSNumber *)photoId;
-
-// Returns the photo corresponding to the given url
-+ (PhotoAsset *)photoWithURL:(NSString *)url;
-
 @end

@@ -5,6 +5,7 @@
 #import "PhotoAsset.h"
 
 
+
 // This is the list of methods that will be callable from the javascript application
 @implementation flx_photoupload_API
 
@@ -41,9 +42,9 @@
  * uploadURL: The URL at which the photos will be sent
  * authentication: The basic authentication string (base64 of "{username}:{password}")
  */
-+ (void)setUploadParameters:(ForgeTask *)task uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication {
-    NSLog(@"API: setUploadParameters(%@, %@)", uploadURL, authentication);
-    [[PhotoUploader singleton] setUploadURL:uploadURL authentication:authentication];
++ (void)setUploadParameters:(ForgeTask *)task userId:(NSString *)userId uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication {
+    NSLog(@"API: setUploadParameters(%@, %@, %@)", userId, uploadURL, authentication);
+    [[PhotoUploader singleton] setUserId:userId uploadURL:uploadURL authentication:authentication];
     [task success:nil];
 }
 
@@ -70,6 +71,15 @@
 }
 
 /**
+ * Logs out the current user and stops all uploads
+ */
++ (void)logoutUser:(ForgeTask *)task {
+    NSLog(@"API: logoutUser");
+    [[AutouploadService singleton] stopAutouploadService];
+    [[PhotoUploader singleton] logoutUser];
+}
+
+/**
  * Adds a photo to the pending upload list, and starts the upload process if it was idle
  */
 + (void)uploadPhoto:(ForgeTask *)task photoId:(NSNumber *)photoId {
@@ -90,7 +100,7 @@
     int count = (int)photoIds.count;
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
     for (NSNumber *photoId in photoIds) {
-        PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
+        PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
         [array addObject:[NSNumber numberWithBool:[@"uploaded" isEqualToString:photo.uploadStatus]]];
     }
     [task success:array];
@@ -110,7 +120,7 @@
  */
 + (void)getFacetId:(ForgeTask *)task photoId:(NSNumber *)photoId {
     NSLog(@"API: getFacetId(%d)", [photoId intValue]);
-    PhotoAsset *photo = [PhotoAsset photoWithId:photoId];
+    PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
     NSString *facetId = photo.facetId;
     if (facetId) {
         [task success:facetId];

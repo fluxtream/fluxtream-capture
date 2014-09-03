@@ -13,5 +13,6 @@
 #define DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP @"bodytrack_photo_upload_landscape_right_min_timestamp"
 
 // String: authentication data and upload url
+#define DEFAULTS_USER_ID @"bodytrack_photo_upload_user_id"
 #define DEFAULTS_AUTHENTICATION @"bodytrack_photo_upload_authentication"
 #define DEFAULTS_UPLOAD_URL @"bodytrack_photo_upload_url"

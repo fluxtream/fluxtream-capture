@@ -12,11 +12,17 @@
 // This singleton class uploads photos to the Fluxtream server
 @interface PhotoUploader : NSObject
 
-// Get the unique instance of PhotoUploader
+// Id of the currently connected user
+@property (nonatomic, strong) NSString *userId;
+
+// Gets the unique instance of PhotoUploader
 + (PhotoUploader *)singleton;
 
-// Set the upload parameters
-- (void)setUploadURL:(NSString *)uploadURL authentication:(NSString *)authentication;
+// Sets the upload parameters
+- (void)setUserId:(NSString *)userId uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication;
+
+// Logs out the current user and empty the upload queue
+- (void)logoutUser;
 
 // Returns whether the given photo has already been uploaded
 - (BOOL)isPhotoUploaded:(NSNumber *)photoId;

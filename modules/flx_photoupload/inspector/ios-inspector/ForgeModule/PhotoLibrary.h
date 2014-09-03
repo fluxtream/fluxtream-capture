@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PhotoAsset.h"
 
 
 // This singleton class provides a method to fetch the list
@@ -19,5 +20,26 @@
 // Fetches the list of photos
 - (void)getPhotoListWithSuccess:(void(^)(NSArray *))successBlock
                           error:(void(^)(NSError *))errorBlock;
+
+// Returns the complete list of photos (contains PhotoAsset instances)
+- (NSArray *)photos;
+
+// Returns (gets from memory or creates) the photo corresponding to the given asset
+- (PhotoAsset *)photoWithAsset:(ALAsset *)asset;
+
+// Returns the photo corresponding to the given identifier
+- (PhotoAsset *)photoWithId:(NSNumber *)photoId;
+
+// Returns the photo corresponding to the given url
+- (PhotoAsset *)photoWithURL:(NSString *)url;
+
+// Saves the photo array to disk
+- (void)persistPhotoArray;
+
+// Clears the photo list (used when there is a change of user)
+- (void)clearPhotoList;
+
+// Returns whether the library is ready
+- (BOOL)isInitialized;
 
 @end

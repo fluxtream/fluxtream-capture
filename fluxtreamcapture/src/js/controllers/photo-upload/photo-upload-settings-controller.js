@@ -4,7 +4,9 @@
 define([
   'config/env',
   'app-modules',
-  'services/user-prefs-service'
+  'services/user-prefs-service',
+  'services/photo-list-service',
+  'services/photo-synchronization-service'
 ], function(env, appModules) {
   
   // Photo upload controller
@@ -14,7 +16,8 @@ define([
     "PhotoListService",
     "$ionicActionSheet",
     "LoginService",
-    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService) {
+    "PhotoSynchronizationService",
+    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService, photoSync) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -99,27 +102,7 @@ define([
        * Start photo upload service
        */
       $scope.startPhotoUploadService = function() {
-        forge.logging.info("Starting photo upload with parameters:");
-        forge.logging.info($scope.settings);
-        var options = {
-          userId: loginService.getUserId(),
-          upload_url: env['fluxtream.home.url'] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-          authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
-        };
-        $scope.orientations.forEach(function(orientation) {
-          options['upload_' + orientation] = $scope.settings['upload_' + orientation];
-          options[orientation + '_minimum_timestamp'] = $scope.settings[orientation + '_minimum_timestamp'];
-        });
-        forge.flx_photoupload.setAutouploadOptions(options,
-          // Success
-          function() {
-            forge.logging.info("Autoupload service successfully started");
-          },
-          // Error
-          function() {
-            forge.logging.info("Error while launching the autoupload service");
-          }
-        );
+        photoSync.startAutoupload();
       };
       
       /**

@@ -35,7 +35,7 @@ define([
       
       // Try logging in to fluxtream
       $scope.login = function() {
-        forge.logging.debug("Logging in...");
+        forge.logging.info("Logging in...");
         loginService.checkAuth(function() {
           $state.go('listTopics');
         });

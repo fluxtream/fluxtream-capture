@@ -21,6 +21,9 @@
 
 @interface AutouploadService()
 
+// The userId of the currently connected user
+@property (nonatomic, strong) NSString *userId;
+
 // Whether photos in these orientations are being automatically uploaded
 @property (nonatomic) BOOL uploadPortrait;
 @property (nonatomic) BOOL uploadUpsiteDown;
@@ -80,43 +83,54 @@
 
 // Retrieves the autoupload parameters from the user defaults
 - (void)readAutouploadParameters {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    self.uploadPortrait = [defaults boolForKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
-    self.uploadUpsiteDown = [defaults boolForKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN];
-    self.uploadLandscapeLeft = [defaults boolForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT];
-    self.uploadLandscapeRight = [defaults boolForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT];
-    self.portraitMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP] intValue];
-    self.upsideDownMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP] intValue];
-    self.landscapeLeftMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP] intValue];
-    self.landscapeRightMinimumTimestamp = [[defaults objectForKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP] intValue];
-    // Apply upload url and authentication parameters to PhotoUploader
-    [[PhotoUploader singleton] setUploadURL:[defaults objectForKey:DEFAULTS_UPLOAD_URL] authentication:[defaults objectForKey:DEFAULTS_AUTHENTICATION]];
+    @synchronized (self) {
+        NSLog(@"Apply autoupload parameters");
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        self.uploadPortrait = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT]];
+        NSLog(@"Upload portrait = %d", self.uploadPortrait);
+        self.uploadUpsiteDown = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN]];
+        self.uploadLandscapeLeft = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT]];
+        self.uploadLandscapeRight = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT]];
+        self.portraitMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP]] intValue];
+        self.upsideDownMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP] ] intValue];
+        self.landscapeLeftMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP]] intValue];
+        self.landscapeRightMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP]] intValue];
+        // Apply upload url and authentication parameters to PhotoUploader
+        [[PhotoUploader singleton] setUserId:self.userId
+                                   uploadURL:[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]]
+                              authentication:[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_AUTHENTICATION]]];
+    }
 }
 
 - (void)saveOptions:(NSDictionary *)options {
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    // Save userId
+    self.userId = options[@"userId"];
     // Copy parameters to defaults
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     for (NSString* key in options) {
         if ([key isEqualToString:@"upload_portrait"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT];
+            [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT]];
+            NSLog(@"Setting %@ to %d", [NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT], [options[key] boolValue]);
         } else if ([key isEqualToString:@"upload_upside_down"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN];
+            [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN]];
         } else if ([key isEqualToString:@"upload_landscape_left"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT];
+            [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT]];
         } else if ([key isEqualToString:@"upload_landscape_right"]) {
-            [defaults setBool:[options[key] boolValue] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT];
+            [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT]];
         } else if ([key isEqualToString:@"portrait_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT_MIN_TIMESTAMP]];
         } else if ([key isEqualToString:@"upside_down_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP]];
         } else if ([key isEqualToString:@"landscape_left_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP]];
         } else if ([key isEqualToString:@"landscape_right_minimum_timestamp"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP]];
         } else if ([key isEqualToString:@"upload_url"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_UPLOAD_URL];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]];
         } else if ([key isEqualToString:@"authentication"]) {
-            [defaults setObject:options[key] forKey:DEFAULTS_AUTHENTICATION];
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_AUTHENTICATION]];
+        } else if ([key isEqualToString:@"userId"]) {
+            // Don't record user id, just keep it in memory
         } else {
             NSLog(@"Unknown option: %@", key);
         }
@@ -147,6 +161,12 @@
 // Browse the photo list to find a photo to upload next
 - (double)checkForNewPhotos {
     @synchronized (self) {
+        NSLog(@"Check for new photos");
+        if (!self.userId) {
+            // No user connected, wait
+            NSLog(@"Autoupload thread: no user connected");
+            return 0.5;
+        }
         if ([[PhotoUploader singleton] isCurrentlyUploading]) {
             // Don't make simultaneous requests to the photo uploader
             NSLog(@"A photo upload is already in progress, wait");
@@ -173,7 +193,7 @@
             NSLog(@"End waiting for photo list reload");
             [photoListLoadedCondition unlock];
             // Look through photos
-            NSArray *photos = [PhotoAsset photos];
+            NSArray *photos = [[PhotoLibrary singleton] photos];
             for (PhotoAsset *photo in photos) {
                 if (!photo.actualAsset) {
                     // The photo has been deleted from the device
@@ -235,7 +255,7 @@
             return WAIT_ON_NO_PHOTO;
         }
         // Autoupload is currently disabled
-        NSLog(@"Service is disabled");
+        NSLog(@"Service is disabled: %d %d %d %d", self.uploadPortrait, self.uploadLandscapeLeft, self.uploadLandscapeRight, self.uploadUpsiteDown);
         return WAIT_ON_DISABLED;
     }
 }
@@ -244,6 +264,7 @@
 
 // This is called when the photo library is uploaded
 - (void)assetsLibraryChanged:(NSNotification *)notification {
+    NSLog(@"The photo library has changed");
     // Interrupt the thread to look again for a photo to upload
     [self.unpauseCondition lock];
     [self.unpauseCondition signal];
