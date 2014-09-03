@@ -137,7 +137,7 @@ public class UploadService extends Service {
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
 		String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
 		// Send parameters to PhotoUploader
-		PhotoUploader.initialize(prefs, uploadURL, authentication, userId);
+		PhotoUploader.initialize(prefs, userId, uploadURL, authentication);
 	}
 	
 	/**

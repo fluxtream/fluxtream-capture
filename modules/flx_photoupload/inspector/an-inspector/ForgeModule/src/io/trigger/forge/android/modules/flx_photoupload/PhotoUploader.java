@@ -251,60 +251,58 @@ public class PhotoUploader {
 	private static String uploadPhotoNow(int photoId) throws Exception {
 		// Generate 'started' event
 		ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
-
+		
 		// Get photo data
 		Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
 		Map<String, String> photoData = getPhotoData(uri);
-
+		
 		// Create file body
 		FileBody fileBody = new FileBody(new File(photoData.get("path")));
-
+		
 		// Create multipart body builder
 		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
 		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
 		builder.addPart("photo", fileBody);
 		builder.addPart("metadata", new StringBody("{capture_time_secs_utc:"
 				+ photoData.get("timestamp") + "}", ContentType.TEXT_PLAIN));
-
+		
 		// Create post request
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpPost httpPost = new HttpPost(uploadURL);
 		httpPost.setHeader("Authorization", "Basic " + authentication);
 		httpPost.setEntity(builder.build());
-
+		
 		// Send request
 		HttpResponse response = httpClient.execute(httpPost);
-
+		
+		// Check response status code
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode != 200) {
+			throw new Exception("Wrong http response received: " + statusCode);
+		}
+		
 		// Read response
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				response.getEntity().getContent()));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 		String line = null;
 		String responseBody = "";
 		while ((line = reader.readLine()) != null) {
 			responseBody = responseBody + line;
 		}
 		Log.i("flx_photoupload", "Upload response: " + responseBody);
-
+		
 		// Parse response
 		JSONObject json = new JSONObject(responseBody);
-		String result = (String) json.get("result");
-		// Make sure the photo was uploaded
-		if (!result.equals("OK")) {
-			throw new Exception("An error has occured: result=" + result
-					+ ", message=" + json.get("message"));
-		}
-
+		
 		// Get facet id
-		String facetId = ((JSONObject) json.get("payload")).get("id")
-				.toString();
-
+		String facetId = json.get("id").toString();
+		
 		// Generate 'uploaded' event
 		synchronized (mutex) {
 			if (userId != null) {
 				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
 			}
 		}
-
+		
 		return facetId;
 	}
 	
