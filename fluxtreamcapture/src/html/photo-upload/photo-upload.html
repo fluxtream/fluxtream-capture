@@ -8,15 +8,15 @@
   <ion-content flx-scroll="onScroll()">
     <div ng-if="loaded">
       <!-- Photo list -->
-      <div class="list" style="margin-top: 10px;">
+      <div class="list padding">
         <div class="photo-wrapper"
              collection-repeat="photo in photos"
-             collection-item-width="'33%'"
-             collection-item-height="150"
-             ng-style="{height: 150}">
-          <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})">
-            <img data-ng-src="{{ photo.src }}" />
-          </div>
+             collection-item-width="'33.3333%'"
+             collection-item-height="165"
+             ng-style="{height: 165}">
+          <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})"
+                 style='background-image:url("{{ photo.src }}");'>
+            </div>
           <div class="photo-info">
             <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">
               <span class="ion-checkmark-round"></span>
@@ -31,7 +31,7 @@
               <span class="ion-loading-d"></span>
             </p>
             <p ng-if="photo.upload_status == 'none'">
-              <button class="button button-stable button-small" ng-click="uploadPhoto(photo)">
+              <button class="button button-stable button-fair button-small" ng-click="uploadPhoto(photo)">
                 Upload
               </button>
             </p>
