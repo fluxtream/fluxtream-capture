@@ -17,7 +17,8 @@ $(document).ready(function() {
     "services/login-service",
     "services/photo-list-service",
     "services/photo-synchronization-service",
-    'filters/self-report-filters'
+    'filters/self-report-filters',
+    'services/user-prefs-service'
   ], function(appModules, env, routes, flxCom) {
     
     // Get current page or set main page
@@ -29,29 +30,58 @@ $(document).ready(function() {
       'LoginService',
       '$ionicViewService',
       '$state',
+      'UserPrefsService',
+      '$rootScope',
       'PhotoListService', // Preloading photos
       'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
-      function(loginService, $ionicViewService, $state) {
-        loginService.checkAuth(function() {
-          // Load page
-          $state.go("listTopics");
-          window.location = initialRoute;
-          // Clear navigation history to prevent going back to the initialization page
-          $ionicViewService.clearHistory();
-          // Hide launch screen
-          if (!forge.is.web()) {
-            forge.launchimage.hide();
+      function(loginService, $ionicViewService, $state, userPrefs, $rootScope) {
+        userPrefs.onReady(function() {
+          // Check if the user is alreday logged in
+          if (loginService.isAuthenticated()) {
+            // User is logged in, load main page
+            $state.go("listTopics");
+            window.location = initialRoute;
+            // Clear navigation history to prevent going back to the initialization page
+            $ionicViewService.clearHistory();
+            // Hide launch screen
+            if (!forge.is.web()) {
+              forge.launchimage.hide();
+            }
+            // Emit login event
+            $rootScope.$broadcast('user-logged-in');
+          } else {
+            // User is not authenticated, go to login page
+            $state.go("login");
+            // Hide launch screen
+            if (!forge.is.web()) {
+              forge.launchimage.hide();
+            }
           }
         });
       }
     ]);
     
+    // Add scroll directive
+    appModules.app.directive("flxScroll", function () {
+      return function(scope, element, attrs) {
+        angular.element(element).bind("scroll", function() {
+          // Execute flx-scroll attribute content on scope
+          eval("scope." + attrs.flxScroll);
+        });
+      };
+    });
+    
     // Configuration
     appModules.app.config(['$compileProvider', function($compileProvider) {
       // Allow image sources starting with "content://"
-      $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
-      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content):/);
+      $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content|data|assets-library):/);
+      $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|file|mailto|content|data|assets-library):/);
     }]);
+    
+    // Disable back button on Android
+    if (forge.is.android()) {
+      forge.event.backPressed.preventDefault();
+    }
     
     // Load initialization page
     window.location = "#/init";

@@ -4,10 +4,11 @@
  * This works only in the mobile app.
  */
 define([
-  'app-modules'
+  'app-modules',
+  'services/login-service'
 ], function(appModules) {
   
-  appModules.services.factory("PhotoListService", function() {
+  appModules.services.factory("PhotoListService", ['$rootScope', 'LoginService', function($rootScope, loginService) {
     
     // Whether the photo list has been initialized
     var initialized = false;
@@ -26,7 +27,15 @@ define([
       forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
-          photoList = JSON.parse(jsonArray);
+          forge.logging.info("Loaded photo list");
+          // Data can either be json-encoded string or an actual array
+          if (typeof jsonArray === 'string') {
+            // Json string, convert to array
+            photoList = JSON.parse(jsonArray);
+          } else {
+            // Acual array
+            photoList = jsonArray;
+          }
           initialized = true;
           forge.logging.info("Photo list has been initialized");
           functionsToExecute.forEach(function(functionToExecute) {
@@ -71,8 +80,25 @@ define([
     
     // Initially load photos
     if (!forge.is.web()) {
-      loadPhotos();
+      $rootScope.$on("user-logged-in", function() {
+        loadPhotos();
+      });
+      $rootScope.$on("user-logged-out", function() {
+        // Reset everything
+        initialized = false;
+        photoList = null;
+        functionsToExecute = [];
+      });
     }
+    
+    // Convert internal events to angular events
+    
+    ["photoupload.started", "photoupload.uploaded", "photoupload.canceled", "photoupload.failed"].forEach(function(eventName) {
+      forge.internal.addEventListener(eventName, function(data) {
+        forge.logging.info("Native event received: " + eventName + " -> " + JSON.stringify(data));
+        $rootScope.$broadcast(eventName, data);
+      });
+    });
     
     // Public API
     return {
@@ -82,6 +108,6 @@ define([
       onReady: onReady
     };
     
-  });
+  }]);
   
 });

@@ -15,7 +15,8 @@ define([
     "PhotoListService",
     'UserPrefsService',
     "PhotoSynchronizationService",
-    function($scope, photoListService, userPrefs, photoSync) {
+    "$ionicScrollDelegate",
+    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -35,6 +36,25 @@ define([
       // True once the local photos have been loaded
       $scope.loaded = false;
       
+      // Saved scroll position
+      $scope.lastScrollPosition = userPrefs.get('photos.scrollPosition', 500);
+      
+      // True once the initial scroll position has been applied and the new scroll positions can be saved
+      $scope.initialScrollDone = false;
+      
+      // Saves the current scroll position to be re-established on the next visit
+      $scope.onScroll = function() {
+        if (!$scope.initialScrollDone) return;
+        $scope.lastScrollPosition = $ionicScrollDelegate.getScrollPosition().top;
+        userPrefs.set('photos.scrollPosition', $scope.lastScrollPosition);
+      };
+      
+      // Applies the scroll position from the last visit
+      $scope.scrollToInitialPosition = function() {
+        $ionicScrollDelegate.scrollTo(0, $scope.lastScrollPosition, false);
+        $scope.initialScrollDone = true;
+      };
+      
       /**
        * (Private) Adds a photo from to raw list to the photo list
        */
@@ -48,6 +68,19 @@ define([
           uri: rawPhotoData.uri,
           date_taken: rawPhotoData.date_taken
         };
+        
+        // On iOS, need to convert uri using forge.file module
+//        if (forge.is.ios() && !rawPhotoData.thumb_uri) {
+//          var file = {
+//            type: "image",
+//            uri: photoObject.src
+//          };
+//          url = forge.file.URL(file, function(url) {
+//            photoObject.src = url;
+//            $scope.$$phase || $scope.$apply();
+//          });
+//        }
+        
         // Add it to the photo list
         $scope.photos.push(photoObject);
         // Get photo upload status from user prefs
@@ -67,7 +100,7 @@ define([
       $scope.getPhoto = function(photoId) {
         var photoFound = null;
         $scope.photos.forEach(function(photo) {
-          if (photo.id === photoId) photoFound = photo
+          if (photo.id === photoId) photoFound = photo;
         });
         return photoFound;
       };
@@ -108,6 +141,8 @@ define([
             $scope.loaded = true;
             // Update UI
             $scope.$$phase || $scope.$apply();
+            // Reset scroll position
+            $scope.scrollToInitialPosition();
           },
           // Error
           function(error) {
@@ -141,7 +176,7 @@ define([
         photoSync.uploadPhoto(photo.id,
           // Success
           function() {
-            forge.logging.info("Upload photo call returned success")
+            forge.logging.info("Upload photo call returned success");
           },
           // Error
           function(error) {
@@ -174,7 +209,7 @@ define([
       // Add event listeners
       
       // Photo upload started
-      forge.internal.addEventListener("photoupload.started", function(data) {
+      $scope.$on("photoupload.started", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload started");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -186,7 +221,7 @@ define([
       });
       
       // Photo successfully uploaded
-      forge.internal.addEventListener("photoupload.uploaded", function(data) {
+      $scope.$on("photoupload.uploaded", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload successful");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -198,7 +233,7 @@ define([
       });
       
       // Photo upload canceled
-      forge.internal.addEventListener("photoupload.canceled", function(data) {
+      $scope.$on("photoupload.canceled", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload canceled");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
@@ -210,7 +245,7 @@ define([
       });
       
       // Photo upload failed
-      forge.internal.addEventListener("photoupload.failed", function(data) {
+      $scope.$on("photoupload.failed", function(event, data) {
         forge.logging.info("Received event: photo " + data.photoId + " upload failed");
         forge.logging.info(data.error);
         var photo = $scope.getPhoto(data.photoId);

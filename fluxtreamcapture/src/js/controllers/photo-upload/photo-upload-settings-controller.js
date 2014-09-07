@@ -4,26 +4,42 @@
 define([
   'config/env',
   'app-modules',
-  'services/user-prefs-service'
+  'services/user-prefs-service',
+  'services/photo-list-service',
+  'services/photo-synchronization-service'
 ], function(env, appModules) {
   
   // Photo upload controller
-  appModules.controllers.controller('PhotoUploadSettingsController', ["$scope", 'UserPrefsService', "PhotoListService", "$ionicActionSheet",
-    function($scope, userPrefs, photoListService, $ionicActionSheet) {
+  appModules.controllers.controller('PhotoUploadSettingsController', [
+    "$scope",
+    'UserPrefsService',
+    "PhotoListService",
+    "$ionicActionSheet",
+    "LoginService",
+    "PhotoSynchronizationService",
+    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService, photoSync) {
       
       // No photos on web
       if (forge.is.web()) return;
       
-      // Options for the user
-      $scope.settings = {
-        upload_portrait: userPrefs.get('photos.autoupload_portrait', false),
-        upload_landscape: userPrefs.get('photos.autoupload_landscape', false),
-        landscape_minimum_timestamp: userPrefs.get('photos.landscape_minimum_timestamp', 0),
-        portrait_minimum_timestamp: userPrefs.get('photos.portrait_minimum_timestamp', 0)
-      };
+      // List of orientations
+      if (forge.is.android()) {
+        $scope.orientations = ['portrait', 'landscape'];
+      } else {
+        $scope.orientations = ['portrait', 'upside_down', 'landscape_left', 'landscape_right'];
+      }
       
-      $scope.unuploadedLandscapeCount = 0;
-      $scope.unuploadedPortraitCount = 0;
+      // Device
+      $scope.isAndroid = forge.is.android();
+      
+      // Options for the user
+      $scope.settings = {};
+      $scope.unuploadedCount = {};
+      $scope.orientations.forEach(function(orientation) {
+        $scope.settings['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
+        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
+        $scope.unuploadedCount[orientation] = 0;
+      });
       
       /**
        * Updates the unuploaded photo count for each orientation
@@ -33,47 +49,33 @@ define([
         photoListService.onReady(function() {
           // Get raw photo list
           $scope.rawPhotoList = photoListService.getPhotoList();
-          var landscapePhotoIds = [];
-          var portraitPhotoIds = [];
+          var photoIdsPerOrientation = {};
+          $scope.orientations.forEach(function(orientation) {
+            photoIdsPerOrientation[orientation] = [];
+          });
           // Create photo list
           $scope.rawPhotoList.forEach(function(rawPhotoData) {
-            if (rawPhotoData.orientation === "landscape") landscapePhotoIds.push(rawPhotoData.id);
-            if (rawPhotoData.orientation === "portrait") portraitPhotoIds.push(rawPhotoData.id);
+            photoIdsPerOrientation[rawPhotoData.orientation].push(rawPhotoData.id);
           });
-          // Count unuploaded landscape photos
-          forge.flx_photoupload.arePhotosUploaded(landscapePhotoIds,
-            // Success
-            function(photoStatuses) {
-              // Count
-              $scope.unuploadedLandscapeCount = 0;
-              for (var i = 0; i < photoStatuses.length; i++) {
-                if (!photoStatuses[i]) $scope.unuploadedLandscapeCount++;
+          // Count unuploaded photos for each orientation
+          $scope.orientations.forEach(function(orientation) {
+            forge.flx_photoupload.arePhotosUploaded(photoIdsPerOrientation[orientation],
+              // Success
+              function(photoStatuses) {
+                // Count
+                $scope.unuploadedCount[orientation] = 0;
+                for (var i = 0; i < photoStatuses.length; i++) {
+                  if (!photoStatuses[i]) $scope.unuploadedCount[orientation]++;
+                }
+                forge.logging.info("There are " + $scope.unuploadedCount[orientation] + " unuploaded " + orientation + " photos");
+              },
+              // Error
+              function(error) {
+                forge.logging.info("Error while getting photo statuses for orientation " + orientation);
+                forge.logging.info(error);
               }
-              forge.logging.info("There are " + $scope.unuploadedLandscapeCount + " unuploaded landscape photos");
-            },
-            // Error
-            function(error) {
-              forge.logging.info("Error while getting photo statuses");
-              forge.logging.info(error);
-            }
-          );
-          // Count unuploaded portrait photos
-          forge.flx_photoupload.arePhotosUploaded(portraitPhotoIds,
-            // Success
-            function(photoStatuses) {
-              // Count
-              $scope.unuploadedPortraitCount = 0;
-              for (var i = 0; i < photoStatuses.length; i++) {
-                if (!photoStatuses[i]) $scope.unuploadedPortraitCount++;
-              }
-              forge.logging.info("There are " + $scope.unuploadedPortraitCount + " unuploaded portrait photos");
-            },
-            // Error
-            function(error) {
-              forge.logging.info("Error while getting photo statuses");
-              forge.logging.info(error);
-            }
-          );
+            );
+          });
         });
       };
       
@@ -100,26 +102,7 @@ define([
        * Start photo upload service
        */
       $scope.startPhotoUploadService = function() {
-        forge.logging.info("Starting photo upload with parameters:");
-        forge.logging.info($scope.settings);
-        forge.flx_photoupload.setAutouploadOptions(
-          {
-            upload_landscape: $scope.settings.upload_landscape,
-            upload_portrait: $scope.settings.upload_portrait,
-            landscape_minimum_timestamp: $scope.settings.landscape_minimum_timestamp,
-            portrait_minimum_timestamp: $scope.settings.portrait_minimum_timestamp,
-            upload_url: env['fluxtream.home.url'] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-            authentication: btoa(userPrefs.get("settings.username") + ":" + userPrefs.get("settings.password"))
-          },
-          // Success
-          function() {
-            forge.logging.info("Autoupload service successfully started");
-          },
-          // Error
-          function() {
-            forge.logging.info("Error while launching the autoupload service");
-          }
-        );
+        photoSync.startAutoupload();
       };
       
       /**
@@ -139,7 +122,11 @@ define([
       };
       
       // Start photo upload service at start
-      if ($scope.settings.autoupload_enabled) {
+      var startAutoupload = false;
+      $scope.orientations.forEach(function(orientation) {
+        if ($scope.settings['upload_' + orientation]) startAutoupload = true;
+      });
+      if (startAutoupload) {
         $scope.startPhotoUploadService();
       }
       
@@ -147,8 +134,8 @@ define([
        * Saves and applies the user's choices
        */
       $scope.save = function(orientation) {
-        var unuploadedCount = (orientation === "landscape" ? $scope.unuploadedLandscapeCount : $scope.unuploadedPortraitCount);
-        var enablingAutoupload = (orientation === "landscape" ? $scope.settings.upload_landscape : $scope.settings.upload_portrait);
+        var unuploadedCount = $scope.unuploadedCount[orientation];
+        var enablingAutoupload = $scope.settings['upload_' + orientation];
         forge.logging.info("User choice: " + orientation + " := " + enablingAutoupload + " (count: " + unuploadedCount + ")");
         if (enablingAutoupload && unuploadedCount !== 0) {
           forge.logging.info("Asking user if they want to upload the unuploaded photos for orientation " + orientation);
@@ -158,11 +145,7 @@ define([
             cancelText: 'Cancel',
             cancel: function() {
               // Undo choice
-              if (orientation === "landscape") {
-                $scope.settings.upload_landscape = false;
-              } else {
-                $scope.settings.upload_portrait = false;
-              }
+              $scope.settings['upload_' + orientation] = false;
               // Refresh UI
               $scope.$$phase || $scope.$apply();
             },
@@ -170,11 +153,7 @@ define([
               // Get timestamp (index is 0 => No => Now ; index is 1 => Yes, upload => Beginning of time)
               var timestamp = (index === 0 ? Math.floor(new Date().getTime() / 1000) : 0);
               // Set timestamp parameter
-              if (orientation === "landscape") {
-                $scope.settings.landscape_minimum_timestamp = timestamp;
-              } else {
-                $scope.settings.portrait_minimum_timestamp = timestamp;
-              }
+              $scope.settings[orientation + '_minimum_timestamp'] = timestamp;
               // Apply parameters
               $scope.saveAndApplyPrefs();
               return true;
@@ -190,14 +169,19 @@ define([
        */
       $scope.saveAndApplyPrefs = function() {
         // Save preferences
-        userPrefs.set('photos.autoupload_portrait', $scope.settings.upload_portrait);
-        userPrefs.set('photos.autoupload_landscape', $scope.settings.upload_landscape);
-        userPrefs.set('photos.landscape_minimum_timestamp', $scope.settings.landscape_minimum_timestamp);
-        userPrefs.set('photos.portrait_minimum_timestamp', $scope.settings.portrait_minimum_timestamp);
+        var start = false;
+        $scope.orientations.forEach(function(orientation) {
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, $scope.settings['upload_' + orientation]);
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
+          if ($scope.settings['upload_' + orientation]) start = true;
+        });
         // Start or stop service
-        if ($scope.settings.upload_landscape || $scope.settings.upload_portrait) {
+        
+        if (start) {
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', true);
           $scope.startPhotoUploadService();
         } else {
+          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', false);
           $scope.stopPhotoUploadService();
         }
       };

@@ -7,8 +7,8 @@ define([
   'services/login-service'
 ], function(env, appModules) {
   
-  appModules.services.factory("PhotoSynchronizationService", ["LoginService", "UserPrefsService",
-    function(loginService, userPrefs) {
+  appModules.services.factory("PhotoSynchronizationService", ["LoginService", "UserPrefsService", "$rootScope",
+    function(loginService, userPrefs, $rootScope) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -34,29 +34,88 @@ define([
         }
       }
       
+      // Initialize the autoupload service with the autoupload parameters from user prefs
+      function startAutoupload() {
+        if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
+          forge.logging.info("Starting autoupload service");
+          var options = {
+            userId: loginService.getUserId(),
+            upload_url: env['fluxtream.home.url'] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
+          };
+          var orientation = [];
+          if (forge.is.android()) {
+            orientations = ['portrait', 'landscape'];
+          } else {
+            orientations = ['portrait', 'upside_down', 'landscape_left', 'landscape_right'];
+          }
+          orientations.forEach(function(orientation) {
+            options['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
+            options[orientation + '_minimum_timestamp'] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
+          });
+          forge.flx_photoupload.setAutouploadOptions(options,
+            // Success
+            function() {
+              forge.logging.info("Autoupload service started successfully");
+            },
+            // Error
+            function(error) {
+              forge.logging.info("Error starting the autoupload service: " + error);
+            }
+          );
+        } else {
+          forge.logging.info("Not starting autoupload service");
+        }
+      }
+      
       // Initialize native photo upload module
-      userPrefs.onReady(function() {
-        forge.flx_photoupload.setUploadParameters(
-          // Upload URL
-          env["fluxtream.home.url"] + "api/bodytrack/photoUpload?connector_name=fluxtream_capture",
-          // Authentication
-          btoa(userPrefs.get('settings.username') + ":" + userPrefs.get('settings.password')),
+      $rootScope.$on("user-logged-in", function() {
+        userPrefs.onReady(function() {
+          forge.logging.info("Calling setUploadParameters with userId = " + loginService.getUserId());
+          forge.flx_photoupload.setUploadParameters(
+            // User id
+            loginService.getUserId(),
+            // Upload URL
+            env["fluxtream.home.url"] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            // Authentication
+            btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
+            // Success
+            function() {
+              photoUploadModuleInitialized = true;
+              // Upload all pending photos
+              var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
+              forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
+              unuploadedPhotos.forEach(function(photoId) {
+                forge.flx_photoupload.uploadPhoto(photoId);
+              });
+              // Start autoupload service at initialization if needed
+              startAutoupload();
+              // Execute onReady functions
+              functionsToExecute.forEach(function(functionToExecute) {
+                functionToExecute();
+              });
+              functionsToExecute = [];
+            },
+            // Error
+            function(error) {
+              forge.logging.info("Call to setUploadParameters failed");
+              forge.logging.info(error);
+            }
+          );
+        });
+      });
+      $rootScope.$on("user-logged-out", function() {
+        forge.flx_photoupload.logoutUser(
           // Success
           function() {
-            photoUploadModuleInitialized = true;
-            functionsToExecute.forEach(function(functionToExecute) {
-              functionToExecute();
-            });
-            functionsToExecute = [];
+            forge.logging.info("Autoupload service successfully stopped");
           },
           // Error
-          function(error) {
-            logging.info("Call to setUploadParameters failed");
-            logging.info(error);
+          function() {
+            forge.logging.info("Error while stopping the autoupload service");
           }
         );
       });
-      
       
       /* Setting synchronization status for photos and metadatas */
       
@@ -67,7 +126,7 @@ define([
        * @param {string} "metadata" or "photo"
        */
       function addToUnsynchronized(photoId, type) {
-        var pref = (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
+        var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
         var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
         if (unsynchronized.indexOf(photoId) === -1) {
           forge.logging.info("Add photo " + photoId + " to " + type + " sync list");
@@ -83,7 +142,7 @@ define([
        * @param {string} "metadata" or "photo"
        */
       function removeFromUnsynchronized(photoId, type) {
-        var pref = (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
+        var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
         var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
         if (unsynchronized.indexOf(photoId) !== -1) {
           forge.logging.info("Remove photo " + photoId + " from " + type + " sync list");
@@ -108,7 +167,7 @@ define([
        */
       function synchronizeMetadataOfPhoto(photoId) {
         // Get metadata
-        var metadata = userPrefs.get("photo.metadata." + photoId);
+        var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + photoId);
         if (!metadata) {
           removeFromUnsynchronized(photoId, "metadata");
           return;
@@ -155,7 +214,7 @@ define([
           // Schedule next execution
           timeout = setTimeout(synchronizeNow, 300000); // Next try in 5 minutes
           // Synchronize all unsynchronized metadata
-          var unsynchronized = JSON.parse(userPrefs.get("photo.metadata.unsynchronized", "[]"));
+          var unsynchronized = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.metadata.unsynchronized", "[]"));
           unsynchronized.forEach(function(photoId) {
             synchronizeMetadataOfPhoto(photoId);
           });
@@ -182,16 +241,7 @@ define([
       function uploadPhoto(photoId, success, error) {
         addToUnsynchronized(photoId, "photo");
         forge.flx_photoupload.uploadPhoto(photoId, success, error);
-      }
-      
-      // Upload all pending photos on initialization
-      onReady(function() {
-        var unuploadedPhotos = JSON.parse(userPrefs.get("photo.unuploaded", "[]"));
-        forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
-        unuploadedPhotos.forEach(function(photoId) {
-          forge.flx_photoupload.uploadPhoto(photoId);
-        });
-      });
+      }      
       
       
       /* Public API */
@@ -199,7 +249,8 @@ define([
       return {
         synchronizeMetadata: synchronizeMetadata,
         uploadPhoto: uploadPhoto,
-        onReady: onReady
+        onReady: onReady,
+        startAutoupload: startAutoupload
       };
       
     }

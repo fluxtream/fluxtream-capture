@@ -29,10 +29,22 @@ define([
         // Find photo
         photoList.forEach(function(rawPhotoData) {
           if (rawPhotoData.id == $scope.photoId) {
-            // Set photo image source
-            $scope.photoSrc = rawPhotoData.uri;
             // Set page title
             $scope.pageTitle = moment(rawPhotoData.date_taken * 1000).format("YYYY-MM-DD h:mm A");
+            // Set photo image source
+            if (forge.is.ios()) {
+              // On iOS, need to convert uri using forge.file module
+              var file = {
+                type: "image",
+                uri: rawPhotoData.uri
+              };
+              forge.file.URL(file, function(url) {
+                $scope.photoSrc = url;
+                $scope.$$phase || $scope.$apply();
+              });
+            } else {
+              $scope.photoSrc = rawPhotoData.uri;
+            }
           }
         });
       });

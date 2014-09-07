@@ -34,6 +34,9 @@ public class UploadService extends Service {
 	
 	private static ContentResolver contentResolver;
 	
+	// The userId of the currently connected user
+	private String userId;
+	
 	// Whether landscape photos are being uploaded automatically
 	private boolean uploadLandscape = false;
 	
@@ -54,7 +57,7 @@ public class UploadService extends Service {
 	private AutoUploadThread mAutoUploadThread;
 	
 	// Waiting delay in milliseconds when the photo uploader is active
-	private final long WAIT_ON_ACTIVE = 2000; // 1 second
+	private final long WAIT_ON_ACTIVE = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when no photo was found for upload
 	private final long WAIT_ON_NO_PHOTO = 600000; // 10 minutes
@@ -127,14 +130,14 @@ public class UploadService extends Service {
 	 */
 	public void readAutouploadParameters() {
 		// Read parameters from preferences
-		this.uploadLandscape = prefs.getBoolean("upload_landscape", false);
-		this.uploadPortrait = prefs.getBoolean("upload_portrait", false);
-		this.landscapeMinimumTimestamp = prefs.getInt("landscape_minimum_timestamp", 0);
-		this.portraitMinimumTimestamp = prefs.getInt("portrait_minimum_timestamp", 0);
-		this.uploadURL = prefs.getString("upload_url", "");
-		String authentication = prefs.getString("authentication", "");
+		this.uploadLandscape = prefs.getBoolean("user." + userId + ".autoupload." + "upload_landscape", false);
+		this.uploadPortrait = prefs.getBoolean("user." + userId + ".autoupload." + "upload_portrait", false);
+		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "landscape_minimum_timestamp", 0);
+		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
+		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
+		String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
 		// Send parameters to PhotoUploader
-		PhotoUploader.initialize(prefs, uploadURL, authentication);
+		PhotoUploader.initialize(prefs, userId, uploadURL, authentication);
 	}
 	
 	/**
@@ -151,31 +154,39 @@ public class UploadService extends Service {
 		// Get preferences editor
 		Editor prefEditor = prefs.edit();
 		
-		// Save boolean parameters
-		for (String paramName : new String[]{"upload_landscape", "upload_portrait"}) {
-			Object paramValue = intent.getExtras().get(paramName);
-			if (paramValue != null) {
-				prefEditor.putBoolean(paramName, (Boolean)paramValue);
+		// Get user id from parameters
+		String userId = intent.getExtras().getString("userId");
+		
+		if (userId != null && userId.length() != 0) {
+			
+			this.userId = userId;
+		
+			// Save boolean parameters
+			for (String paramName : new String[]{"upload_landscape", "upload_portrait"}) {
+				Object paramValue = intent.getExtras().get(paramName);
+				if (paramValue != null) {
+					prefEditor.putBoolean("user." + userId + ".autoupload." + paramName, (Boolean)paramValue);
+				}
 			}
+			
+			// Save integer parameters
+			for (String paramName : new String[]{"landscape_minimum_timestamp", "portrait_minimum_timestamp"}) {
+				Object paramValue = intent.getExtras().get(paramName);
+				if (paramValue != null) prefEditor.putInt("user." + userId + ".autoupload." + paramName, (Integer)paramValue);
+			}
+			
+			// Save string parameters
+			for (String paramName : new String[]{"upload_url", "authentication"}) {
+				Object paramValue = intent.getExtras().get(paramName);
+				if (paramValue != null) prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
+			}
+			
+			// Save preferences
+			prefEditor.apply();
+			
+			// Apply parameters
+			readAutouploadParameters();
 		}
-		
-		// Save integer parameters
-		for (String paramName : new String[]{"landscape_minimum_timestamp", "portrait_minimum_timestamp"}) {
-			Object paramValue = intent.getExtras().get(paramName);
-			if (paramValue != null) prefEditor.putInt(paramName, (Integer)paramValue);
-		}
-		
-		// Save string parameters
-		for (String paramName : new String[]{"upload_url", "authentication"}) {
-			Object paramValue = intent.getExtras().get(paramName);
-			if (paramValue != null) prefEditor.putString(paramName, (String)paramValue);
-		}
-		
-		// Save preferences
-		prefEditor.apply();
-		
-		// Apply parameters
-		readAutouploadParameters();
 	}
 	
 	/**

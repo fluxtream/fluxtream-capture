@@ -35,6 +35,7 @@ public class API {
 	 * - id: the identifier of the photo
 	 * - uri: the local URI of the photo
 	 * - orientation: the orientation of the photo ("landscape" or "portrait")
+	 * - date_taken: the timestamp (UTC in seconds) of the photo
 	 * - thumb_id: the identifier of the photo's thumbnail (if any)
 	 * - thumb_uri: the local URI of the photo's thumbnail (if any)
 	 */
@@ -126,13 +127,14 @@ public class API {
 	 * @param uploadURL The URL at which the photos will be sent
 	 * @param authentication The basic authentication string (base64 of "{username}:{password}")
 	 */
-	public static void setUploadParameters(final ForgeTask task, @ForgeParam("uploadURL") final String uploadURL, @ForgeParam("authentication") final String authentication) {
-		Log.i("flx_photoupload", "API: setUploadParameters(" + uploadURL + ", " + authentication + ")");
+	public static void setUploadParameters(final ForgeTask task, @ForgeParam("userId") final String userId,
+			@ForgeParam("uploadURL") final String uploadURL, @ForgeParam("authentication") final String authentication) {
+		Log.i("flx_photoupload", "API: setUploadParameters(" + userId + ", " + uploadURL + ", " + authentication + ")");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
 				SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
-				PhotoUploader.initialize(prefs, uploadURL, authentication);
+				PhotoUploader.initialize(prefs, userId, uploadURL, authentication);
 				task.success();
 			}
 		});
@@ -185,7 +187,21 @@ public class API {
 	}
 	
 	/**
-	 * Adds a photo to the pending upload list, and starts the upload process if it was idleoId
+	 * Logs out the current user and stops all uploads
+	 */
+	public static void logoutUser(final ForgeTask task) {
+		Log.i("flx_photoupload", "API: logoutUser");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				stopAutouploadService(task);
+				PhotoUploader.logoutUser();
+			}
+		});
+	}
+	
+	/**
+	 * Adds a photo to the pending upload list, and starts the upload process if it was idle
 	 */
 	public static void uploadPhoto(final ForgeTask task, @ForgeParam("photoId") final int photoId) {
 		Log.i("flx_photoupload", "API: uploadPhoto(" + photoId + ")");
