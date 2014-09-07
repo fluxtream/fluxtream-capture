@@ -20,6 +20,7 @@ define([
     //Stores Topics information
     var aoCachedTopics;
     var aoCachedObservations;
+    var aoObservationsToSync;
 
     var dbTopics;
     var dbObservations;
@@ -31,6 +32,7 @@ define([
     function initialize(){
       aoCachedTopics = [];
       aoCachedObservations = [];
+      aoObservationsToSync = [];
 
       dbTopics = new PouchDB(dbNameTopics);
       dbObservations = new PouchDB(dbNameObservations);
@@ -142,6 +144,9 @@ define([
             aoCachedTopics.push(oNextTopic);
           });
 
+          // TODO in case cache was flushed and page was reloaded we need to
+          // get data from the server
+
           if(aoCachedTopics.length === 0) {
             console.log("Accessing wrong link");
           }
@@ -240,6 +245,13 @@ define([
       }
 
       return aoCachedTopics;
+    }
+
+    /**
+     * (Public) Read Observations that were not synced to DB from memory
+     */
+    function readObservationsToSync(){
+      return aoObservationsToSync;
     }
 
     /**
@@ -530,38 +542,62 @@ define([
       }
 
       aoCachedObservations.push(oObservation);
+      aoObservationsToSync.push(oObservation);
+    }
 
-      // Save observation to client database
-      console.log("Saving Observation on the client side.");
-      dbObservations.put({
-        _id: oObservation.id,
-        topicId: oObservation.topicId,
-        value: oObservation.value,
-        creationDate: oObservation.creationDate.toISOString(),
-        creationTime: oObservation.creationTime.toISOString(),
-        observationDate: oObservation.observationDate,
-        observationTime: oObservation.observationTime,
-        updateTime: oObservation.updateTime.toISOString(),
-        timezone: oObservation.timezone,
-        comment: oObservation.comment},
+    /**
+     * (Public) Save Observation to client-side DB
+     */
+    function syncObservationsDB(){
 
-        function callback(err, result) {
-          if (!err) {
-            console.log('Successfully saved Observation on client side!');
-          } else {
-            console.log(err);
-          }
-        });
+      // Iterate over temp observations and save them into database
+      var len = aoObservationsToSync.length;
+      for (var i=0; i<len; i++) {
+        var oObservation = aoObservationsToSync[i];
+        // Save observation to client database
+        console.log("Saving Observation on the client side.");
+        dbObservations.put({
+            _id: oObservation.id,
+            topicId: oObservation.topicId,
+            value: oObservation.value,
+            creationDate: oObservation.creationDate.toISOString(),
+            creationTime: oObservation.creationTime.toISOString(),
+            observationDate: oObservation.observationDate,
+            observationTime: oObservation.observationTime,
+            updateTime: oObservation.updateTime.toISOString(),
+            timezone: oObservation.timezone,
+            comment: oObservation.comment},
 
+          function callback(err, result) {
+            if (!err) {
+              console.log("Successfully saved Observation on client side!");
+              $rootScope.$broadcast('event:observations-synced-with-db');
+            } else {
+              console.log("Error while saving Observation on client side!" + err);
+              $rootScope.$broadcast('event:observations-sync-db-problem');
+            }
+          });
+      }
+
+      // Flush temp observations
+      aoObservationsToSync = [];
+    }
+
+    /**
+     * (Public) Save Observation on server-side
+     */
+    function syncObservationsServer() {
       console.log("Saving Observation on the server side.");
       //Push Observation to the server
       dbObservations.replicate.to(remoteCouchObservations)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully saved Observation on the server side");
+          $rootScope.$broadcast('event:observations-synced-with-server');
         }).on('error', function (err) {
           // Handle error
           console.log("Error while saving Observation on the server side: " + err);
+          $rootScope.$broadcast('event:observations-sync-server-problem');
         });
     }
 
@@ -669,6 +705,9 @@ define([
       createObservation: createObservation,
       readObservation: readObservation,
       readObservations: readObservations,
+      readObservationsToSync: readObservationsToSync,
+      syncObservationsDB: syncObservationsDB,
+      syncObservationsServer: syncObservationsServer,
       updateObservation: updateObservation,
 
       findUniqueDates: findUniqueDates,

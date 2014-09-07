@@ -13,6 +13,47 @@ define([
     function ($scope, $timeout, selfReportStorage) {
       //TODO test continuous scrolling
 
+      // Show spinning wheel
+      if(selfReportStorage.readObservationsToSync().length != 0){
+        $("#footer-center-icon").attr('class', 'icon ion-loading-c self-report-footer-icon');
+        $scope.$$phase || $scope.$apply();
+      }
+
+      // Error handling while sync of client-side DB
+      $scope.$on('event:observations-sync-db-problem', function() {
+        console.log("Can not save observation on client side");
+        // TODO retry strategy
+        $("#footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+        $scope.$$phase || $scope.$apply();
+      });
+
+      // Error handling while sync with a server
+      $scope.$on('event:observations-sync-server-problem', function() {
+        console.log("Can not save observation to a server");
+        // TODO retry strategy
+        $("#footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+        $scope.$$phase || $scope.$apply();
+      });
+
+      // Waiting when client side DB would be synced
+      $scope.$on('event:observations-synced-with-db', function() {
+        // Start sync with server DB
+        selfReportStorage.syncObservationsServer();
+        // Show sync status
+        console.log("Sync with db finished");
+      });
+
+      // Waiting when DB would be synced with server
+      $scope.$on('event:observations-synced-with-server', function() {
+        // Show sync status
+        console.log("Sync with server finished");
+        $( "#footer-center-icon" ).attr('class', '');
+      });
+
+      // Start sync with client-side DB
+      selfReportStorage.syncObservationsDB();
+
+
       //Infinite scroll function
       $scope.loadMoreObservations = function () {
         $timeout(function () {
@@ -30,6 +71,7 @@ define([
 
       selfReportStorage.readObservationsAsyncDB(function () {
       });
+
     }
   ]);
 

@@ -129,3 +129,11 @@ textarea.noResize { resize:none; }
   padding: 10px 0px 10px 10px;
 }
 
+/*******************************************
+ * Self report styles
+ *******************************************/
+
+.self-report-footer-icon {
+  font-size: 32px;
+  top: 5px;
+}
