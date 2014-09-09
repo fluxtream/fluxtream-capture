@@ -61,7 +61,7 @@ define([
       $scope.addPhoto = function(rawPhotoData, refreshUI) {
         // Create photo object
         var photoObject = {
-          src: rawPhotoData.thumb_uri ? rawPhotoData.thumb_uri : rawPhotoData.uri,
+          src: rawPhotoData.thumb_uri,
           orientation: rawPhotoData.orientation,
           id: rawPhotoData.id,
           upload_status: 'unknown',
@@ -119,6 +119,7 @@ define([
             $scope.addPhoto(rawPhotoData);
           });
           $scope.loadPhotoStatuses();
+          $scope.loadPhotoThumbnails();
         });
       };
       
@@ -150,6 +151,30 @@ define([
             forge.logging.info(error);
           }
         );
+      };
+      
+      // Load photo thumbnails one by one
+      $scope.loadPhotoThumbnails = function() {
+        var photos = [];
+        $scope.photos.forEach(function(photo) {
+          if (!photo.src) photos.push(photo);
+        });
+        function loadNext() {
+          if (photos.length) {
+            var photo = photos.pop();
+            forge.flx_photoupload.getThumbnail(photo.id,
+              function(thumb) {
+                photo.src = thumb;
+                $scope.$$phase || $scope.$apply();
+                setTimeout(loadNext, 1);
+              },
+              function() {
+                forge.logging.info("Error while getting thumbnail");
+              }
+            );
+          }
+        }
+        loadNext();
       };
       
       // Initially load photos

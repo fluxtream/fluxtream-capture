@@ -101,11 +101,12 @@
             [data setValue:photo.assetURL forKey:@"uri"];
             // Add thumbnail uri
             // TODO Instead of creating a base64 image url, we should provide an API call to get the thumbnail content
-            UIImage *thumbnailImage = [UIImage imageWithCGImage:[result thumbnail]];
-            NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
-            NSString *encodedString = [imageData base64Encoding];
-            NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
-            [data setValue:dataUrl forKey:@"thumb_uri"];
+//            UIImage *thumbnailImage = [UIImage imageWithCGImage:[result thumbnail]];
+//            NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
+//            NSString *encodedString = [imageData base64Encoding];
+//            NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
+//            [data setValue:dataUrl forKey:@"thumb_uri"];
+            [data setValue:@"" forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
         }
@@ -114,11 +115,15 @@
     // Block: enumerator for asset groups
     void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup * group, BOOL *stop) {
         if (group != nil) {
-            NSLog(@"Visiting photo group");
-            // Filter only photos
-            [group setAssetsFilter:[ALAssetsFilter allPhotos]];
-            // Enumerate assets in the group
-            [group enumerateAssetsUsingBlock:assetEnumerator];
+            if ([[group valueForProperty:@"ALAssetsGroupPropertyType"] intValue] == ALAssetsGroupSavedPhotos) {
+                NSLog(@"Visiting camera photo group");
+                // Filter only photos
+                [group setAssetsFilter:[ALAssetsFilter allPhotos]];
+                // Enumerate assets in the group
+                [group enumerateAssetsUsingBlock:assetEnumerator];
+            } else {
+                NSLog(@"Visiting non-camera photo group, skipping");
+            }
         } else {
             // All groups have been visited
             // Save raw asset list
@@ -135,7 +140,7 @@
     ALAssetsLibrary * library = [self.class getAssetsLibrary];
     NSLog(@"Loading raw photo list");
     self.initializing = true;
-    [library enumerateGroupsWithTypes:ALAssetsGroupAll
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                            usingBlock:assetGroupEnumerator
                          failureBlock:^(NSError *error) {
                              NSLog(@"Error while loading photo library: %@", error);

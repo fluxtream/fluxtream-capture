@@ -30,4 +30,6 @@
 // A reference to the asset
 @property (nonatomic, strong) ALAsset *actualAsset;
 
+- (NSString *)thumbnailURI;
+
 @end

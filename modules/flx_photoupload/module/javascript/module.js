@@ -3,6 +3,9 @@ forge.flx_photoupload = {
   getPhotoList: function(success, error) {
     forge.internal.call('flx_photoupload.getPhotoList', {}, success, error);
   },
+  getThumbnail: function(photoId, success, error) {
+    forge.internal.call('flx_photoupload.getThumbnail', {photoId: photoId}, success, error);
+  },
   startAutouploadService: function(success, error) {
     forge.internal.call('flx_photoupload.startAutouploadService', {}, success, error);
   },
