@@ -22,6 +22,18 @@
     return [NSString stringWithFormat:@"[Photo Asset: %@, %@, (%@), %@, %@]", self.identifier, self.assetURL, self.actualAsset, self.uploadStatus, self.facetId];
 }
 
+- (NSString *)thumbnailURI {
+    if (self.actualAsset) {
+        UIImage *thumbnailImage = [UIImage imageWithCGImage:[self.actualAsset thumbnail]];
+        NSData *imageData = UIImageJPEGRepresentation(thumbnailImage, 1.0);
+        NSString *encodedString = [imageData base64Encoding];
+        NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
+        return dataUrl;
+    } else {
+        return nil;
+    }
+}
+
 #pragma mark - NSCoding
 
 - (void)encodeWithCoder:(NSCoder *)coder {

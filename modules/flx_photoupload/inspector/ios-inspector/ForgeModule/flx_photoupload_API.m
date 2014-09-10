@@ -27,6 +27,19 @@
 }
 
 /**
+ * Returns the thumnail URI for the given photo
+ */
++ (void)getThumbnail:(ForgeTask *)task photoId:(NSNumber *)photoId {
+    NSLog(@"API: getPhotoThumbnail(%@)", photoId);
+    NSString *thumbnailURI = [[[PhotoLibrary singleton] photoWithId:photoId] thumbnailURI];
+    if (thumbnailURI && [thumbnailURI length]) {
+        [task success:thumbnailURI];
+    } else {
+        [task errorString:@"Image not found"];
+    }
+}
+
+/**
  * Starts the service that will automatically upload photos to the Fluxtream server
  */
 + (void)startAutouploadService:(ForgeTask *)task {
