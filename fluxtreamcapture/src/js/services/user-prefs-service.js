@@ -29,15 +29,12 @@ define([
           initializationDone();
         } else {
           keysArray.forEach(function(key) {
-            if (key === 'setItem' || key === 'removeItem' || key === 'clear') {
-              itemCount--;
-              if (itemCount === 0) initializationDone();
-            } else {
+            if (key.indexOf("flx.") === 0) {
               forge.prefs.get(key,
                 // Success
                 function(value) {
                   values[key] = value;
-                  forge.logging.info("Storage: " + key + " = " + value);
+                  forge.logging.info("Storage: " + key + " = " + (key.indexOf(".password") === -1 ? value : "****** (not showing password in logs)"));
                   itemCount--;
                   if (itemCount === 0) initializationDone();
                 },
@@ -46,6 +43,9 @@ define([
                   forge.logging.error("Error while fetching user prefs (" + key + "): " + content);
                 }
               );
+            } else {
+              itemCount--;
+              if (itemCount === 0) initializationDone();
             }
           });
         }
@@ -73,7 +73,7 @@ define([
      */
     function getValue(key, defaultValue) {
       if (!initialized) throw "Storage not initialized yet.";
-      var value = values[key];
+      var value = values["flx." + key];
       if (typeof value === 'undefined') {
         if (typeof defaultValue === 'undefined') return null;
         return defaultValue;
@@ -86,8 +86,8 @@ define([
      */
     function setValue(key, value) {
       if (!initialized) throw "Storage not initialized yet.";
-      values[key] = value;
-      forge.prefs.set(key, value);
+      values["flx." + key] = value;
+      forge.prefs.set("flx." + key, value);
     }
 
     /**
