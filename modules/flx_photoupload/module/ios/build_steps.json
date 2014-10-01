@@ -1,0 +1,21 @@
+[
+  {
+    "do": {
+      "add_ios_system_framework": {
+        "framework": "CFNetwork.framework"
+      }
+    }
+  }, {
+    "do": {
+      "add_ios_system_framework": {
+        "framework": "libxml2.dylib"
+      }
+    }
+  }, {
+    "do": {
+      "add_ios_system_framework": {
+        "framework": "Security.framework"
+      }
+    }
+  }
+]

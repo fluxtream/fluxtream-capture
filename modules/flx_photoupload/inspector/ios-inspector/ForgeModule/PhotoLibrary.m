@@ -11,6 +11,8 @@
 #import <QuartzCore/QuartzCore.h>
 #import "PhotoAsset.h"
 #import "PhotoUploader.h"
+#import "HTTPServer.h"
+#import "ThumbnailServerHttpConnection.h"
 
 @interface PhotoLibrary()
 
@@ -25,6 +27,8 @@
 
 @property (nonatomic) BOOL libraryReady;
 @property (nonatomic) BOOL initializing;
+
+@property (nonatomic, strong) HTTPServer *httpServer;
 
 @end
 
@@ -45,6 +49,22 @@
     return singleton;
 }
 
+- (id)init {
+    if (self = [super init]) {
+        // Create and start small local http server to deliver photo thumbnails
+        self.httpServer = [HTTPServer new];
+        [self.httpServer setType:@"_http."];
+        [self.httpServer setPort:9157];
+        [self.httpServer setConnectionClass:[ThumbnailServerHttpConnection class]];
+        NSError *error;
+        if (![self.httpServer start:&error]) {
+            NSLog(@"Error starting http server: %@", error);
+        } else {
+            NSLog(@"Thumbnail mini-server started");
+        }
+    }
+    return self;
+}
 
 - (void)getPhotoListWithSuccess:(void (^)(NSArray *))successBlock
                           error:(void (^)(NSError *))errorBlock {
@@ -106,7 +126,7 @@
 //            NSString *encodedString = [imageData base64Encoding];
 //            NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
 //            [data setValue:dataUrl forKey:@"thumb_uri"];
-            [data setValue:@"" forKey:@"thumb_uri"];
+            [data setValue:[@"http://127.0.0.1:9157/thumbnail/" stringByAppendingString:[photo.identifier description]] forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
         }

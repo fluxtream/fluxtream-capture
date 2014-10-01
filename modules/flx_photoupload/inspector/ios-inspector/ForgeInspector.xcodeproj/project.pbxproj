@@ -49,6 +49,9 @@
 		B3FC518815C14B2A003574D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3FC518715C14B2A003574D9 /* main.m */; };
 		B3FC519315C14B35003574D9 /* ForgeCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC519215C14B35003574D9 /* ForgeCore.framework */; };
 		B3FC519515C14B3C003574D9 /* ForgeCore.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B3FC519415C14B3C003574D9 /* ForgeCore.bundle */; };
+		F966650D19DC51D500DC9A28 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F966650C19DC51D500DC9A28 /* libxml2.dylib */; };
+		F98A0FBB19D55C00004EBF8C /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FE6EBC19D41AF30053534A /* CFNetwork.framework */; };
+		F9FE6EBF19D41AF80053534A /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FE6EBE19D41AF80053534A /* Security.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +117,9 @@
 		B3FC518915C14B2A003574D9 /* ForgeInspector-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ForgeInspector-Prefix.pch"; sourceTree = "<group>"; };
 		B3FC519215C14B35003574D9 /* ForgeCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ForgeCore.framework; sourceTree = "<group>"; };
 		B3FC519415C14B3C003574D9 /* ForgeCore.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ForgeCore.bundle; sourceTree = "<group>"; };
+		F966650C19DC51D500DC9A28 /* libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libxml2.dylib; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		F9FE6EBC19D41AF30053534A /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		F9FE6EBE19D41AF80053534A /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +127,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F966650D19DC51D500DC9A28 /* libxml2.dylib in Frameworks */,
+				F98A0FBB19D55C00004EBF8C /* CFNetwork.framework in Frameworks */,
+				F9FE6EBF19D41AF80053534A /* Security.framework in Frameworks */,
 				B3F0CB92163AD60B005E099F /* libForgeModule.a in Frameworks */,
 				B307826C15C2A44F006798D7 /* SystemConfiguration.framework in Frameworks */,
 				B307826415C2A393006798D7 /* AssetsLibrary.framework in Frameworks */,
@@ -138,7 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				B3E58384162714AD00BD59DD /* libForgeModule.a */,
-				B3E58386162714AD00BD59DD /* templatemodule.bundle */,
+				B3E58386162714AD00BD59DD /* flx_photoupload.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,6 +173,9 @@
 		B3FC517A15C14B2A003574D9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F966650C19DC51D500DC9A28 /* libxml2.dylib */,
+				F9FE6EBE19D41AF80053534A /* Security.framework */,
+				F9FE6EBC19D41AF30053534A /* CFNetwork.framework */,
 				B307826B15C2A44F006798D7 /* SystemConfiguration.framework */,
 				B307826315C2A393006798D7 /* AssetsLibrary.framework */,
 				B3FC519415C14B3C003574D9 /* ForgeCore.bundle */,
@@ -275,10 +287,10 @@
 			remoteRef = B3E58383162714AD00BD59DD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		B3E58386162714AD00BD59DD /* templatemodule.bundle */ = {
+		B3E58386162714AD00BD59DD /* flx_photoupload.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = templatemodule.bundle;
+			path = flx_photoupload.bundle;
 			remoteRef = B3E58385162714AD00BD59DD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
