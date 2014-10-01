@@ -9,7 +9,13 @@ define([
   
   appModules.controllers.controller('LoginController', ['$scope', 'LoginService', 'UserPrefsService', '$state',
     function($scope, loginService, userPrefs, $state) {
-      
+
+      if (forge.is.web()) {
+        loginService.checkAuth(function() {
+          $state.go('listTopics');
+        });
+      }
+
       // Current setting values
       $scope.settings = {
         username: "",
