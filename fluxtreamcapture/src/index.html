@@ -31,7 +31,7 @@
     <ion-side-menu side="right" ng-controller="NavController">
       <ion-list>
         <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('listTopics')">Self Report</button></ion-item>
-        <ion-item><button class="button icon-left ion-camera button-clear button-dark" ng-click="navigateTo('photoUpload')">Photo Upload</button></ion-item>
+        <ion-item ng-if="!isWeb"><button class="button icon-left ion-camera button-clear button-dark" ng-click="navigateTo('photoUpload')">Photo Upload</button></ion-item>
         <ion-item><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('settings')">Settings</button></ion-item>
         <ion-item><button class="button icon-left ion-log-out button-clear button-dark" ng-click="logout()">Log out</button></ion-item>
       </ion-list>

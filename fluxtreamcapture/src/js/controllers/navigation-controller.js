@@ -23,6 +23,8 @@ define([
         $ionicSideMenuDelegate.toggleRight();
       };
       
+      $scope.isWeb = forge.is.web();
+      
       // Enable back button navigation on Android
       if (forge.is.android()) {
         // Add listener to go back when the back button is pressed
