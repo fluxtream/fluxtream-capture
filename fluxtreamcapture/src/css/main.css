@@ -162,3 +162,21 @@ textarea.noResize { resize:none; }
   font-size: 32px;
   top: 5px;
 }
+
+/*******************************************
+ * Login screen
+ *******************************************/
+
+.login-screen {
+  margin-top: 30px;
+}
+
+.login-screen .txt-align-center {
+  text-align: center;
+  display: block;
+}
+
+.login-screen .item-divider {   
+  background-color: #ffffff;
+  border: none;
+}

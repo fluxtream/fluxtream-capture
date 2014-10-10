@@ -1,16 +1,21 @@
 <ion-view title="Login">
-  <ion-content class="padding">
-    <p>
-      Username: <input type="text" ng-model="settings.username" ng-change="save('username')">
-    </p>
-    <p>
-      Password: <input type="password" ng-model="settings.password" ng-change="save('password')">
-    </p>
-    <p>
-      Target: <input type="text" ng-model="settings.target" ng-change="save('target')" placeholder="fluxtream.org">
-    </p>
-    <p>
-      <button ng-click="login()">Log in</button>
-    </p>
-  </ion-content>
+  <div class="list login-screen">
+    <div class="item item-divider txt-align-center">
+      Sign in
+      <div class="list padding">
+        <label class="item item-input">
+          <input autocapitalize="none" type="text" placeholder="Username" ng-model="settings.username" ng-change="save('username')">
+        </label>
+        <label class="item item-input">
+          <input type="password" placeholder="Password" ng-model="settings.password" ng-change="save('password')">
+        </label>
+        <label class="item item-input">
+          <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="settings.target" ng-change="save('target')">
+        </label>
+        <button class="button button-block button-positive" ng-click="login()">
+          Log in
+        </button>
+      </div>        
+    </div>
+  </div>
 </ion-view>
