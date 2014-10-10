@@ -3,12 +3,13 @@
 	"ios": {
 		"profiles": {
 			"DEFAULT": {
-				"provisioning_profile": "/Users/Yury/projects/fluxtream-capture/fluxtreamcapture/local_config.json",
-				"developer_certificate": "Candide Kemmler"
+        "provisioning_profile": "IOS_certificates/development/Fluxtream_Capture.mobileprovision"
 			}
 		},
 		"simulatorsdk": "7.1",
-		"simulatorfamily": "iphone"
+		"simulatorfamily": "iphone",
+		"simulatorvariant": "default",
+		"device": "device"
 	},
 	"android": {
 		"profiles": {
