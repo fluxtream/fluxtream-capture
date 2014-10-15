@@ -40,7 +40,7 @@ define([
           forge.logging.info("Starting autoupload service");
           var options = {
             userId: loginService.getUserId(),
-            upload_url: env['fluxtream.home.url'] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
             authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
           };
           var orientation = [];
@@ -76,7 +76,7 @@ define([
             // User id
             loginService.getUserId(),
             // Upload URL
-            env["fluxtream.home.url"] + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+            loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
             // Authentication
             btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
             // Success
@@ -177,9 +177,9 @@ define([
         forge.flx_photoupload.getFacetId(parseInt(photoId),
           // Success
           function(facetId) {
-            forge.logging.info(env['fluxtream.home.url'] + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set");
+            forge.logging.info(loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set");
             loginService.ajax({
-              url: env['fluxtream.home.url'] + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set",
+              url: loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set",
               type: "POST",
               data: JSON.parse(metadata),
               success: function(response) {

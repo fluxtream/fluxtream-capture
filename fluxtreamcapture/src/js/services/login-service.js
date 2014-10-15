@@ -60,7 +60,7 @@ define([
      */
     function ajaxCheckAuth(options, username, password) {
       options.type = "GET";
-      options.url = env["fluxtream.home.url"] + "api/v1/guest";
+      options.url = getTargetServer() + "api/v1/guest";
       options.headers = {
         'Content-Type': 'application/json'
       };
@@ -76,15 +76,15 @@ define([
           forge.logging.debug("status: " + jqXHR.status);
           forge.logging.debug("status: " + stackTrace);
           if (jqXHR.status === 401) {
-            forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest (status.result is not \"OK\"): " + textStatus);
+            forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest (status.result is not \"OK\"): " + textStatus);
             if (forge.is.web()) {
-              window.location = env["fluxtream.home.url"] + "mobile/signIn?r=" + env["loggedIn.redirect_uri"];
+              window.location = getTargetServer() + "mobile/signIn?r=" + env["loggedIn.redirect_uri"];
             } else {
-              window.location = env["fluxtream.home.url"] + "mobile/signIn?r=fluxtream://mainmenu";
+              window.location = getTargetServer() + "mobile/signIn?r=fluxtream://mainmenu";
             }
           } else {
-            forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus);
-            $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus + "</h1>");
+            forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
+            alert("Error accessing " + getTargetServer() + "\nError code: " + textStatus);
           }
         }
       });
@@ -107,7 +107,7 @@ define([
         }
         if (username && password) {
           // Username and password retrieved, try logging in with them
-          forge.logging.info("Running ajax request to check credentials: " + env["fluxtream.home.url"] + "api/v1/guest");
+          forge.logging.info("Running ajax request to check credentials: " + getTargetServer() + "api/v1/guest");
           ajaxCheckAuth({
             success: handleAuthSuccessResponse,
             error: function(response, content, type) {
@@ -131,8 +131,8 @@ define([
       if (typeof (guestModel.username) !== "undefined") {
         if (typeof onSuccessFunction === 'function') onSuccessFunction();
       } else {
-        forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus);
-        $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + textStatus + "</h1>");
+        forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
+        alert("Error accessing " + getTargetServer() + "\nError code: " + textStatus);
       }
       $rootScope.$broadcast('user-logged-in');
     }
@@ -149,12 +149,12 @@ define([
         if (statusCode === 401 || statusCode === "401") {
           // Credentials are incorrect
           forge.logging.info("The user credentials are incorrect, showing login page");
-          if (typeof onSuccessFunction === 'function') onSuccessFunction();
+          alert("Wrong username or password for " + getTargetServer() + "\nPlease check.");
           $state.go("login");
         } else {
           // Another error happened
-          forge.logging.info("Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + statusCode);
-          $("body").empty().append("<h1>Error accessing " + env["fluxtream.home.url"] + "api/v1/guest: " + statusCode + "</h1>");
+          forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + statusCode);
+          alert("Error accessing " + getTargetServer() + "\nError code: " + statusCode);
         }
       } else {
         // Credentials are not set yet
@@ -192,6 +192,21 @@ define([
     }
     
     /**
+     * (Public) Returns the target server
+     */
+    function getTargetServer() {
+      // Read target from settings
+      var target = userPrefs.get('login.target');
+      // If not in settings or web mode, use default target
+      if (!target || forge.is.web()) target = env['fluxtream.home.url'];
+      // Make sure the target has a protocol and a trailing slash
+      if (target.indexOf("://") == -1) target = "http://" + target;
+      if (target.charAt(target.length - 1) != "/") target = target + "/";
+      // Return target
+      return target;
+    }
+    
+    /**
      * (Public) Returns the user's id
      */
     function getUserId() {
@@ -204,6 +219,7 @@ define([
       ajax: ajax,
       getUserName: getUserName,
       getUserId: getUserId,
+      getTargetServer: getTargetServer,
       logout: logout
     };
     
