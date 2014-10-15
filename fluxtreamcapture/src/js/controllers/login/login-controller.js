@@ -44,8 +44,23 @@ define([
       $scope.login = function() {
         forge.logging.info("Logging in...");
         if (($scope.settings.username || env['test.username']) && ($scope.settings.password || env['test.password'])) {
-          loginService.checkAuth(function() {
-            $state.go('listTopics');
+          // Clear cookies
+          forge.request.ajax({
+            type: "GET",
+            url: loginService.getTargetServer() + "logout",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            dataType: "json",
+            success: function() {
+              // Login
+              loginService.checkAuth(function() {
+                $state.go('listTopics');
+              })
+            },
+            error: function() {
+              alert("An error has occurred");
+            }
           });
         } else {
           alert("Please type in your username and password");

@@ -175,6 +175,17 @@ define([
       userPrefs.set('login.userId', null);
       $rootScope.$broadcast('user-logged-out');
       $state.go('login');
+      
+      // Clear cookies
+      forge.request.ajax({
+        type: "GET",
+        url: getTargetServer() + "logout",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        dataType: "json"
+      });
+      
     }
     
     /**
