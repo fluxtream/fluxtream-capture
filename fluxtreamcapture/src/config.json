@@ -17,7 +17,7 @@
 			]
 		},
 		"ios": {
-			"minimum_version": "4.3",
+			"minimum_version": "6.0",
 			"device_family": "any",
 			"package_name": "org.fluxtream.capture.*",
 			"webview": "UIWebView"
