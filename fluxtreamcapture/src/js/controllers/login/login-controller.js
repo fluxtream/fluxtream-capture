@@ -2,10 +2,11 @@
  * Offers the functionalies for the user to log in to the fluxtream server (mobile only)
  */
 define([
+  'config/env',
   'app-modules',
   'services/user-prefs-service',
   'services/login-service'
-], function(appModules) {
+], function(env, appModules) {
   
   appModules.controllers.controller('LoginController', ['$scope', 'LoginService', 'UserPrefsService', '$state',
     function($scope, loginService, userPrefs, $state) {
@@ -42,9 +43,13 @@ define([
       // Try logging in to fluxtream
       $scope.login = function() {
         forge.logging.info("Logging in...");
-        loginService.checkAuth(function() {
-          $state.go('listTopics');
-        });
+        if (($scope.settings.username || env['test.username']) && ($scope.settings.password || env['test.password'])) {
+          loginService.checkAuth(function() {
+            $state.go('listTopics');
+          });
+        } else {
+          alert("Please type in your username and password");
+        }
       };
       
     }
