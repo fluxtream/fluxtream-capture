@@ -5,6 +5,7 @@ define([
   'app-modules',
   'controllers/navigation-controller',
   'controllers/login/login-controller',
+  'controllers/settings/settings-controller',
   'controllers/self-report/list-topics-controller',
   'controllers/self-report/history-controller',
   'controllers/self-report/edit-topics-controller',
@@ -71,7 +72,7 @@ define([
         controller: "PhotoUploadController"
       })
       .state('photoUploadSettings', {
-        url: "/photo-upload-settings",
+        url: "/photo-upload-settings/:from",
         templateUrl: "html/photo-upload/photo-upload-settings.html",
         controller: "PhotoUploadSettingsController"
       })
@@ -87,7 +88,8 @@ define([
       })
       .state('settings', {
         url: "/settings",
-        templateUrl: "html/settings/settings.html"
+        templateUrl: "html/settings/settings.html",
+        controller: "SettingsController"
       });
     // Default route
     $urlRouterProvider.otherwise("/init");

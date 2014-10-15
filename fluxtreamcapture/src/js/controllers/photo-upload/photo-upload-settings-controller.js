@@ -17,10 +17,13 @@ define([
     "$ionicActionSheet",
     "LoginService",
     "PhotoSynchronizationService",
-    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService, photoSync) {
+    "$stateParams",
+    function($scope, userPrefs, photoListService, $ionicActionSheet, loginService, photoSync, $stateParams) {
       
       // No photos on web
       if (forge.is.web()) return;
+      
+      $scope.backLink = $stateParams.from === 'from-settings' ? "settings" : "photoUpload";
       
       // List of orientations
       if (forge.is.android()) {

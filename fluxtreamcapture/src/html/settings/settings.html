@@ -6,8 +6,10 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <div>
-      Coming soon
-    </div>
+    <ul class="list">
+      <li class="item" ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb">
+        Photo Upload Settings
+      </li>
+    </ul>
   </ion-content>
 </div>

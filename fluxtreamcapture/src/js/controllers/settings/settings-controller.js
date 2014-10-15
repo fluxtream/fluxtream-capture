@@ -1,64 +1,16 @@
 /**
- * Angular controller for the configuration page
+ * Angular controller for the settings page
  */
 define([
-  'FluxtreamCapture'
-], function(FluxtreamCapture) {
-  // Config controller
-  FluxtreamCapture.app.controller('SettingsController', function($scope) {
+  'app-modules',
+], function(appModules) {
+  
+  // Settings controller
+  appModules.controllers.controller('SettingsController', function($scope, $state) {
     
-    // Current settings values
-    $scope.settings = {
-      username: "",
-      password: "",
-      target: "fluxtream.org",
-      pictures_portrait: false, // 90°
-      pictures_upside_down: false, // 270°
-      pictures_landscape_left: false, // 180°
-      pictures_landscape_right: false // 0°
-    };
+    // Whether the app is in web mode or mobile mode
+    $scope.isWeb = forge.is.web();
     
-    // Becomes true if an error occurs while loading the settings and the page should not be displayed
-    $scope.error = false;
-    
-    // Load initial settings
-    $scope.valuesToLoad = Object.keys($scope.settings).length;
-    $scope.loadSettingsValue = function(settingName) {
-      forge.prefs.get('settings.' + settingName,
-        // Success
-        function(value) {
-          if (value) {
-            $scope.settings[settingName] = value;
-          }
-          $scope.valuesToLoad--;
-          $scope.$$phase || $scope.$apply();
-        },
-        // Error
-        function(content) {
-          forge.logging.error("An error occurred while loading a setting: " + content);
-          $scope.error = true;
-          $scope.$$phase || $scope.$apply();
-        }
-      );
-    };
-    for (var settingName in $scope.settings) {
-      $scope.loadSettingsValue(settingName);
-    }
-    
-    // Save settings on change
-    $scope.save = function(settingName) {
-      forge.prefs.set('settings.' + settingName, $scope.settings[settingName],
-        // Success
-        function() {
-          // Setting saved to user prefs
-        },
-        // Error
-        function(content) {
-          forge.logging.error("Error while persisting settings." + settingName + ": " + content);
-          $scope.error = true;
-          $scope.$apply();
-        }
-      );
-    };
   });
+  
 });
