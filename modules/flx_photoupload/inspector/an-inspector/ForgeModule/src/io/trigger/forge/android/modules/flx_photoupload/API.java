@@ -4,6 +4,8 @@ import io.trigger.forge.android.core.ForgeApp;
 import io.trigger.forge.android.core.ForgeParam;
 import io.trigger.forge.android.core.ForgeTask;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import android.app.Activity;
@@ -127,14 +129,28 @@ public class API {
 	 * @param uploadURL The URL at which the photos will be sent
 	 * @param authentication The basic authentication string (base64 of "{username}:{password}")
 	 */
-	public static void setUploadParameters(final ForgeTask task, @ForgeParam("userId") final String userId,
-			@ForgeParam("uploadURL") final String uploadURL, @ForgeParam("authentication") final String authentication) {
-		Log.i("flx_photoupload", "API: setUploadParameters(" + userId + ", " + uploadURL + ", " + authentication + ")");
+	public static void setUploadParameters(final ForgeTask task, @ForgeParam("params") final JsonObject params) {
+		Log.i("flx_photoupload", "API: setUploadParameters");
 		task.performAsync(new Runnable() {
 			@Override
 			public void run() {
 				SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
-				PhotoUploader.initialize(prefs, userId, uploadURL, authentication);
+				// Convert params to map
+				Map<String, Object> map = new HashMap<String, Object>(){{
+					for (Entry<String, JsonElement> param : params.entrySet()) {
+						if (param.getValue().isJsonPrimitive()) {
+							if (param.getValue().getAsJsonPrimitive().isString()) {
+								put(param.getKey(), param.getValue().getAsString());
+								Log.i("flx_photoupload", "Set string " + param.getKey() + " = " + param.getValue());
+							} else if (param.getValue().getAsJsonPrimitive().isNumber()) {
+								put(param.getKey(), param.getValue().getAsLong());
+								Log.i("flx_photoupload", "Set long " + param.getKey() + " = " + param.getValue());
+							} 
+						}
+					}
+				}};
+				// Initialize photo uploader with parameters
+				PhotoUploader.initialize(prefs, map);
 				task.success();
 			}
 		});

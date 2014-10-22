@@ -12,6 +12,7 @@ import java.util.Queue;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -56,7 +57,16 @@ public class PhotoUploader {
 	private static String uploadURL;
 	
 	// Authentication string used to add authentication to the http requests
-	private static String authentication;
+	private static String authentication = null;
+	
+	// The (optional) access token to access the server instead of using authentication
+	private static String accessToken = null;
+	
+	// The expiration date (UTC timestamp) of the access token (optional)
+	private static long accessTokenExpiration = 0;
+	
+	// URL at which a new access token can be fetched
+	private static String accessTokenUpdateURL;
 	
 	/* Photo upload */
 	
@@ -81,18 +91,43 @@ public class PhotoUploader {
 	 * 
 	 * @param prefs
 	 *            The shared preferences where the photo upload status is stored
-	 * @param uploadURL
-	 *            The URL to which to photos will be uploaded
-	 * @param authentication
-	 *            The authentication string for basic authentication
+	 * @param params
+	 *            The list of parameters (upload_url, authentication, userId, access_token, access_token_expiration)
 	 */
-	public static void initialize(SharedPreferences prefs, String userId,
-			String uploadURL, String authentication) {
+	public static void initialize(SharedPreferences prefs, Map<String, Object> params) {
 		Log.i("flx_photoupload", "Initializing PhotoUploader");
-		PhotoUploader.prefs = prefs;
-		PhotoUploader.userId = userId;
-		PhotoUploader.uploadURL = uploadURL;
-		PhotoUploader.authentication = authentication;
+		synchronized (mutex) {
+			PhotoUploader.prefs = prefs;
+			// User id
+			Object userId = params.get("userId");
+			if (userId != null && userId instanceof String)
+				PhotoUploader.userId = (String)userId;
+			// Upload URL
+			Object uploadURL = params.get("upload_url");
+			if (uploadURL != null && uploadURL instanceof String) {
+				Log.i("flx_photoupload", "Setting photo url: " + uploadURL);
+				PhotoUploader.uploadURL = (String)uploadURL;
+			} else
+				Log.i("flx_photoupload", "Upload url is not a string: " + uploadURL);
+			// Authentication
+			Object authentication = params.get("authentication");
+			if (authentication != null && authentication instanceof String)
+				PhotoUploader.authentication = (String)authentication;
+			// Access token
+			Object accessToken = params.get("access_token");
+			PhotoUploader.accessToken = null;
+			if (accessToken != null && accessToken instanceof String)
+				PhotoUploader.accessToken = (String)accessToken;
+			// Access token expiration date
+			Object accessTokenExpiration = params.get("access_token_expiration");
+			if (accessTokenExpiration != null && accessTokenExpiration instanceof Long)
+				PhotoUploader.accessTokenExpiration = (Long)accessTokenExpiration;
+			// Access token update URL
+			Object accessTokenUpdateURL = params.get("access_token_update_url");
+			PhotoUploader.accessTokenUpdateURL = null;
+			if (accessTokenUpdateURL != null && accessTokenUpdateURL instanceof String)
+				PhotoUploader.accessTokenUpdateURL = (String)accessTokenUpdateURL;
+		}
 	}
 	
 	/**
@@ -252,6 +287,9 @@ public class PhotoUploader {
 		// Generate 'started' event
 		ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
 		
+		// If using an access token, make sure it is up-to-date
+		updateAccessTokenIfNeeded();
+		
 		// Get photo data
 		Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
 		Map<String, String> photoData = getPhotoData(uri);
@@ -268,8 +306,11 @@ public class PhotoUploader {
 		
 		// Create post request
 		HttpClient httpClient = new DefaultHttpClient();
+		String uploadURL = PhotoUploader.uploadURL + (accessToken != null ? "&access_token=" + accessToken : "");
 		HttpPost httpPost = new HttpPost(uploadURL);
-		httpPost.setHeader("Authorization", "Basic " + authentication);
+		if (accessToken == null) {
+			httpPost.setHeader("Authorization", "Basic " + authentication);
+		}
 		httpPost.setEntity(builder.build());
 		
 		// Send request
@@ -278,6 +319,10 @@ public class PhotoUploader {
 		// Check response status code
 		int statusCode = response.getStatusLine().getStatusCode();
 		if (statusCode != 200) {
+			if (statusCode == 401) {
+				// Invalidate access token
+				PhotoUploader.accessTokenExpiration = 0;
+			}
 			throw new Exception("Wrong http response received: " + statusCode);
 		}
 		
@@ -288,7 +333,7 @@ public class PhotoUploader {
 		while ((line = reader.readLine()) != null) {
 			responseBody = responseBody + line;
 		}
-		Log.i("flx_photoupload", "Upload response: " + responseBody);
+		// Log.i("flx_photoupload", "Upload response: " + responseBody);
 		
 		// Parse response
 		JSONObject json = new JSONObject(responseBody);
@@ -304,6 +349,57 @@ public class PhotoUploader {
 		}
 		
 		return facetId;
+	}
+	
+	private static void updateAccessTokenIfNeeded() throws Exception {
+		Log.i("flx_photoupload", "Calling updateAccessTokenIfNeeded()");
+		// If no access token, no need to update it
+		if (authentication != null && authentication.length() != 0) {
+			Log.i("flx_photoupload", "No need for an access token, return");
+			return;
+		}
+		// Check if the access token is recent enough
+		if (accessToken != null && accessTokenExpiration > System.currentTimeMillis() - 60000) {
+			Log.i("flx_photoupload", "Access token still valid");
+			return;
+		}
+		// Check that there is an URL to update the access token
+		if (accessTokenUpdateURL == null || accessTokenUpdateURL.length() == 0) {
+			Log.i("flx_photoupload", "No access token and access token renewal URL is unknown");
+			throw new Exception("Unknown token renewal URL");
+		}
+		Log.i("flx_photoupload", "Sending request to get a new access token");
+		// Request a new access token
+		HttpClient httpClient = new DefaultHttpClient();
+		HttpGet httpGet = new HttpGet(accessTokenUpdateURL);
+		HttpResponse response = httpClient.execute(httpGet);
+		
+		// Check response status code
+		int statusCode = response.getStatusLine().getStatusCode();
+		if (statusCode != 200) {
+			throw new Exception("Wrong http response received when fetching access token: " + statusCode);
+		}
+		// Read response
+		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+		String line = null;
+		String responseBody = "";
+		while ((line = reader.readLine()) != null) {
+			responseBody = responseBody + line;
+		}
+		Log.i("flx_photoupload", "Upload response: " + responseBody);
+		// Parse response
+		JSONObject json = new JSONObject(responseBody);
+		// Get access token
+		String accessToken = json.getJSONObject("oauthInfo").getString("fluxtream_access_token");
+		// Get expiration
+		long accessTokenExpiration = json.getJSONObject("oauthInfo").getLong("fluxtream_access_token_expires");
+		synchronized (mutex) {
+			if (accessToken != null) {
+				PhotoUploader.accessToken = accessToken;
+				PhotoUploader.accessTokenExpiration = accessTokenExpiration;
+				Log.i("flx_photoupload", "New access token: " + accessToken + " with expiration " + accessTokenExpiration);
+			}
+		}
 	}
 	
 	/**

@@ -1,5 +1,7 @@
 package io.trigger.forge.android.modules.flx_photoupload;
 
+import java.util.HashMap;
+
 import android.app.Activity;
 import android.app.Service;
 import android.content.ContentResolver;
@@ -135,9 +137,15 @@ public class UploadService extends Service {
 		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "landscape_minimum_timestamp", 0);
 		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
-		String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
+		final String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
+		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
 		// Send parameters to PhotoUploader
-		PhotoUploader.initialize(prefs, userId, uploadURL, authentication);
+		PhotoUploader.initialize(prefs, new HashMap<String, Object>(){{
+			put("userId", userId);
+			put("upload_url", uploadURL);
+			put("authentication", authentication);
+			put("access_token_update_url", accessTokenUpdateURL);
+		}});
 	}
 	
 	/**
@@ -176,7 +184,7 @@ public class UploadService extends Service {
 			}
 			
 			// Save string parameters
-			for (String paramName : new String[]{"upload_url", "authentication"}) {
+			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url"}) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null) prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
 			}
