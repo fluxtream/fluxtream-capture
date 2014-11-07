@@ -3,10 +3,11 @@
  */
 define([
   'app-modules',
-  'services/login-service'
+  'services/login-service',
+  'services/base64'
 ], function(appModules, storage) {
 
-  appModules.services.factory('SelfReportStorageService', ["$http", "LoginService", '$rootScope', function($http,  loginService, $rootScope) {
+  appModules.services.factory('SelfReportStorageService', ["Base64", "$http", "LoginService", '$rootScope', function(Base64, $http,  loginService, $rootScope) {
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
@@ -18,24 +19,45 @@ define([
     //TODO couchdb communication should be changed to https
 
     //Stores Topics information
-    var aoCachedTopics;
-    var aoCachedObservations;
-    var aoObservationsToSync;
-
     var dbTopics;
     var dbObservations;
     var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
     var dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
-    var remoteCouchTopics = 'http://yury:secret@127.0.0.1:5984/' + dbNameTopics;
-    var remoteCouchObservations = 'http://yury:secret@127.0.0.1:5984/' + dbNameObservations;
+    var remoteCouchTopics = '@127.0.0.1:5984/' + dbNameTopics;
+    var remoteCouchObservations = '@127.0.0.1:5984/' + dbNameObservations;
+    var backendLink = "http://localhost:8080/";
+    var userLogin = '';
+    var userCouchDBToken = '';
 
     function initialize(){
       aoCachedTopics = [];
       aoCachedObservations = [];
       aoObservationsToSync = [];
 
-      dbTopics = new PouchDB(dbNameTopics);
-      dbObservations = new PouchDB(dbNameObservations);
+      $.ajax({
+        url: backendLink + 'api/v1/couch/',
+        type: 'PUT',
+        xhrFields: {
+          withCredentials: true
+        },
+        success: function(result) {
+          console.log("Successfully created CouchDB");
+          // Get token and user name
+          userLogin = result.user_login;
+          userCouchDBToken = result.user_token;
+        },
+        error: function(result) {
+          console.log("Error while creating CouchDB: ");
+          console.dir(result);
+        }
+      });
+
+      // Connect to Couch DB and get data
+      if((userLogin != '') && (userCouchDBToken != '')){
+        remoteCouchTopics = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopics;
+        remoteCouchObservations = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservations;
+        $rootScope.$broadcast('event:initialized');
+      }
     }
 
     function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
