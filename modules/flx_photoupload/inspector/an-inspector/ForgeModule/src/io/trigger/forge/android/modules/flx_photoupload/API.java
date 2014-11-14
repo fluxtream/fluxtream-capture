@@ -51,7 +51,8 @@ public class API {
 								MediaStore.Images.Media._ID,
 								MediaStore.Images.Media.WIDTH,
 								MediaStore.Images.Media.HEIGHT,
-								MediaStore.Images.Media.DATE_TAKEN
+								MediaStore.Images.Media.DATE_TAKEN,
+								MediaStore.Images.Media.ORIENTATION
 								},
 						null, null, null);
 				// JSON result container
@@ -63,11 +64,19 @@ public class API {
 					int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
 					int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
 					long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+					int orientationTag = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION));
+					// Swap width and height if orientationTag is set to 90 or 270
+					if (orientationTag == 90 || orientationTag == 270) {
+						int tmp = width;
+						width = height;
+						height = tmp;
+					}
 					// Construct json object
 					JsonObject photoObject = new JsonObject();
 					photoObject.addProperty("id", photoId);
 					photoObject.addProperty("uri", "content://media/external/images/media/" + photoId);
 					photoObject.addProperty("orientation", width > height ? "landscape" : "portrait");
+					photoObject.addProperty("orientation_tag", orientationTag);
 					photoObject.addProperty("date_taken", dateTaken);
 					// Get thumbnail if any
 					Cursor thumbCursor = ForgeApp.getActivity().getContentResolver().query(
