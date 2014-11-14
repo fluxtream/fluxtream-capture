@@ -66,7 +66,8 @@ define([
           id: rawPhotoData.id,
           upload_status: 'unknown',
           uri: rawPhotoData.uri,
-          date_taken: rawPhotoData.date_taken
+          date_taken: rawPhotoData.date_taken,
+          orientation_tag: rawPhotoData.orientation_tag
         };
         
         // On iOS, need to convert uri using forge.file module

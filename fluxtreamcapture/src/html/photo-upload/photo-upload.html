@@ -15,8 +15,8 @@
              collection-item-height="165"
              ng-style="{height: 165}">
           <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})"
-                 style='background-image:url("{{ photo.src }}");'>
-            </div>
+            style='background-image:url("{{ photo.src }}"); -webkit-transform: rotate({{ photo.orientation_tag }}deg)'>
+          </div>
           <div class="photo-info">
             <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">
               <span class="ion-checkmark-round"></span>
