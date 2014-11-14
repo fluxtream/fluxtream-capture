@@ -82,7 +82,7 @@ define([
 //        }
         
         // Add it to the photo list
-        $scope.photos.push(photoObject);
+        $scope.photos.unshift(photoObject);
         // Get photo upload status from user prefs
         var status = userPrefs.get('photo-' + photoObject.id + '-status');
         if (!status) status = 'none';
