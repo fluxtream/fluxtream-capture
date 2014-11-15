@@ -14,6 +14,10 @@ define([
       $scope.$on('event:initialized', function() {
         //TODO test continuous scrolling
 
+        console.log("Create Local Pouch DB");
+        // Create Local Pouch DB
+        selfReportStorage.CreateLocalPouchDB();
+
         // Show spinning wheel
         if (selfReportStorage.readObservationsToSync().length != 0) {
           $("#footer-center-icon").attr('class', 'icon ion-loading-c self-report-footer-icon');
@@ -73,6 +77,13 @@ define([
         selfReportStorage.readObservationsAsyncDB(function () {
         });
       });
+
+      $scope.$on('event:initFailed', function() {
+        //TODO test continuous scrolling
+      });
+
+      // Get token from backend and initialize local variables
+      selfReportStorage.initialize();
     }
   ]);
 
