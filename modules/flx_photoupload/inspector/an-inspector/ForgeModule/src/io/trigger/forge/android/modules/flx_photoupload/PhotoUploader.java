@@ -127,6 +127,10 @@ public class PhotoUploader {
 			PhotoUploader.accessTokenUpdateURL = null;
 			if (accessTokenUpdateURL != null && accessTokenUpdateURL instanceof String)
 				PhotoUploader.accessTokenUpdateURL = (String)accessTokenUpdateURL;
+			// Device id
+			Object deviceId = params.get("device_id");
+			if (deviceId != null && deviceId instanceof String)
+				ParseLog.setDeviceId((String)deviceId);
 		}
 	}
 	
@@ -137,6 +141,7 @@ public class PhotoUploader {
 		Log.i("flx_photoupload", "Call to logoutUser()");
 		synchronized (mutex) {
 			Log.i("flx_photoupload", "Logging out user");
+			ParseLog.logEvent("Logging out user");
 			PhotoUploader.userId = null;
 			PhotoUploader.uploadURL = null;
 			PhotoUploader.authentication = null;
@@ -163,34 +168,33 @@ public class PhotoUploader {
 	 * @param photoId
 	 */
 	public static void uploadPhoto(int photoId) {
-		Log.i("flx_photoupload", "Call to PhotoUploader.uploadPhoto(" + photoId
-				+ ")");
+		Log.i("flx_photoupload", "Call to PhotoUploader.uploadPhoto(" + photoId + ")");
+		ParseLog.logEvent("Calling uploadPhoto", "photo " + photoId);
 		synchronized (mutex) {
 			// Check if the photo is currently being uploaded
 			if (currentPhoto == photoId) {
-				Log.i("flx_photoupload", "Upload of photo " + photoId
-						+ " already in progress");
-				ForgeApp.event("photoupload.started",
-						eventDataForPhotoId(photoId));
+				Log.i("flx_photoupload", "Upload of photo " + photoId + " already in progress");
+				ParseLog.logEvent("Upload already in progress", "photo " + photoId);
+				ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
 				return;
 			}
 			// Check if the photo is already in the queue
 			if (pendingPhotos.contains(photoId)) {
-				Log.i("flx_photoupload", "Photo " + photoId
-						+ " already in upload queue");
+				Log.i("flx_photoupload", "Photo " + photoId + " already in upload queue");
+				ParseLog.logEvent("Photo already in queue", "photo " + photoId);
 				return;
 			}
 			// Check if the photo is already uploaded
 			if (isPhotoUploaded(photoId)) {
-				Log.i("flx_photoupload", "Photo " + photoId
-						+ " is already uploaded");
-				ForgeApp.event("photoupload.uploaded",
-						eventDataForPhotoId(photoId));
+				Log.i("flx_photoupload", "Photo " + photoId + " is already uploaded");
+				ParseLog.logEvent("Photo already uploaded", "photo " + photoId);
+				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
 				return;
 			}
 
 			// Add the photo to the upload queue
 			Log.i("flx_photoupload", "Adding photo " + photoId + " to pending photo list");
+			ParseLog.logEvent("Adding photo to upload queue", "photo " + photoId);
 			pendingPhotos.add(photoId);
 
 			// Start upload if it is not started yet
@@ -206,8 +210,7 @@ public class PhotoUploader {
 	 * though it has been uploaded.
 	 */
 	public static void cancelUpload(int photoId) {
-		Log.i("flx_photoupload", "Call to PhotoUploader.cancelUpload("
-				+ photoId + ")");
+		Log.i("flx_photoupload", "Call to PhotoUploader.cancelUpload(" + photoId + ")");
 		synchronized (mutex) {
 			// Remove from pending upload queue
 			pendingPhotos.remove(photoId);
@@ -250,6 +253,7 @@ public class PhotoUploader {
 				return;
 			}
 			Log.i("flx_photoupload", "Starting a new photo upload thread");
+			ParseLog.logEvent("Starting photo upload thread");
 			// Create upload thread
 			uploadThread = new UploadThread();
 			// Start upload thread
@@ -262,6 +266,7 @@ public class PhotoUploader {
 	 */
 	private static void setPhotoUploaded(int photoId, String facetId) {
 		Log.i("flx_photoupload", "Marking photo " + photoId + " as uploaded");
+		ParseLog.logEvent("Mark photo as uploaded", "photo " + photoId);
 		Editor editor = prefs.edit();
 		editor.putBoolean("user." + userId + ".photo." + photoId + ".uploaded",
 				true);
@@ -314,10 +319,12 @@ public class PhotoUploader {
 		httpPost.setEntity(builder.build());
 		
 		// Send request
+		ParseLog.logEvent("Uploading photo", "photo " + photoId);
 		HttpResponse response = httpClient.execute(httpPost);
 		
 		// Check response status code
 		int statusCode = response.getStatusLine().getStatusCode();
+		ParseLog.logEvent("Photo upload done", "photo " + photoId + ", status " + statusCode);
 		if (statusCode != 200) {
 			if (statusCode == 401) {
 				// Invalidate access token
@@ -353,14 +360,17 @@ public class PhotoUploader {
 	
 	private static void updateAccessTokenIfNeeded() throws Exception {
 		Log.i("flx_photoupload", "Calling updateAccessTokenIfNeeded()");
+		ParseLog.logEvent("Call updateAccessTokenIfNedded()");
 		// If no access token, no need to update it
 		if (authentication != null && authentication.length() != 0) {
 			Log.i("flx_photoupload", "No need for an access token, return");
+			ParseLog.logEvent("No need for an access token");
 			return;
 		}
 		// Check if the access token is recent enough
 		if (accessToken != null && accessTokenExpiration > System.currentTimeMillis() - 60000) {
 			Log.i("flx_photoupload", "Access token still valid");
+			ParseLog.logEvent("Access token still valid");
 			return;
 		}
 		// Check that there is an URL to update the access token
@@ -369,6 +379,7 @@ public class PhotoUploader {
 			throw new Exception("Unknown token renewal URL");
 		}
 		Log.i("flx_photoupload", "Sending request to get a new access token");
+		ParseLog.logEvent("Requesting new access token");
 		// Request a new access token
 		HttpClient httpClient = new DefaultHttpClient();
 		HttpGet httpGet = new HttpGet(accessTokenUpdateURL);
@@ -376,7 +387,7 @@ public class PhotoUploader {
 		
 		// Check response status code
 		int statusCode = response.getStatusLine().getStatusCode();
-		if (statusCode != 200) {
+		if (statusCode / 100 != 2) {
 			throw new Exception("Wrong http response received when fetching access token: " + statusCode);
 		}
 		// Read response
@@ -398,6 +409,7 @@ public class PhotoUploader {
 				PhotoUploader.accessToken = accessToken;
 				PhotoUploader.accessTokenExpiration = accessTokenExpiration;
 				Log.i("flx_photoupload", "New access token: " + accessToken + " with expiration " + accessTokenExpiration);
+				ParseLog.logEvent("New access token received");
 			}
 		}
 	}
@@ -428,6 +440,7 @@ public class PhotoUploader {
 				cursor.getLong(cursor
 						.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN))
 						/ 1000 + "");
+		cursor.close();
 		// Return result map
 		return map;
 	}
@@ -446,8 +459,8 @@ public class PhotoUploader {
 			while (true) {
 				// Check that there is a user connected
 				if (userId == null) {
-					Log.i("flx_photoupload",
-							"User disconnected, stopping upload thread");
+					Log.i("flx_photoupload", "User disconnected, stopping upload thread");
+					ParseLog.logEvent("User is disconnected, stopping upload thread (1)");
 					synchronized (mutex) {
 						uploadThread = null;
 					}
@@ -467,13 +480,14 @@ public class PhotoUploader {
 				// Upload photo
 				try {
 					Log.i("flx_photoupload", "Uploading photo " + photoId);
+					ParseLog.logEvent("Uploading photo", "photo " + photoId);
 					String facetId = uploadPhotoNow(photoId);
 					// Mark photo as uploaded
 					synchronized (mutex) {
 						Log.i("flx_photoupload", "Photo upload done");
 						if (userId == null) {
-							Log.i("flx_photoupload",
-									"User disconnected, stopping upload thread");
+							Log.i("flx_photoupload", "User disconnected, stopping upload thread");
+							ParseLog.logEvent("User disconnected, stopping upload thread (2)");
 							uploadThread = null;
 							return;
 						}
@@ -482,8 +496,7 @@ public class PhotoUploader {
 					}
 				} catch (CursorIndexOutOfBoundsException e) {
 					// The photo does not exist anymore
-					ForgeApp.event("photoupload.canceled",
-							eventDataForPhotoId(photoId));
+					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
 					synchronized (mutex) {
 						currentPhoto = -1;
 						cancelCurrentUpload = false;
@@ -491,8 +504,8 @@ public class PhotoUploader {
 				} catch (Throwable e) {
 					// Check if the thread should end
 					if (userId == null) {
-						Log.i("flx_photoupload",
-								"User disconnected, stopping upload thread");
+						Log.i("flx_photoupload", "User disconnected, stopping upload thread");
+						ParseLog.logEvent("User disconnected, stopping upload thread (3)");
 						synchronized (mutex) {
 							uploadThread = null;
 						}
@@ -500,8 +513,7 @@ public class PhotoUploader {
 					}
 					// An error occurred
 					if (cancelCurrentUpload) {
-						Log.i("flx_photoupload", "Upload of photo " + photoId
-								+ " canceled");
+						Log.i("flx_photoupload", "Upload of photo " + photoId + " canceled");
 						// Generate 'canceled' event
 						ForgeApp.event("photoupload.canceled",
 								eventDataForPhotoId(photoId));
@@ -510,8 +522,8 @@ public class PhotoUploader {
 							cancelCurrentUpload = false;
 						}
 					} else {
-						Log.e("flx_photoupload", "Error while uploading photo",
-								e);
+						Log.e("flx_photoupload", "Error while uploading photo", e);
+						ParseLog.logEvent("Error while uploading photo", e.getMessage());
 						// Generate 'failed' event
 						JsonObject data = eventDataForPhotoId(photoId);
 						data.addProperty("error", e.getMessage());
@@ -524,7 +536,7 @@ public class PhotoUploader {
 						// Wait 1 minute before continuing
 						synchronized (this) {
 							try {
-								wait(10000); // TODO 60000
+								wait(60000);
 							} catch (InterruptedException ex) {
 								Log.i("flx_photoupload", "Photo upload thread interrupted");
 							}

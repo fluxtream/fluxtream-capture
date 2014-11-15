@@ -7,7 +7,10 @@ define([
   'services/login-service'
 ], function(env, appModules) {
   
-  appModules.services.factory("PhotoSynchronizationService", ["LoginService", "UserPrefsService", "$rootScope",
+  appModules.services.factory("PhotoSynchronizationService", [
+    "LoginService",
+    "UserPrefsService",
+    "$rootScope",
     function(loginService, userPrefs, $rootScope) {
       
       // No photos on web
@@ -72,36 +75,70 @@ define([
       $rootScope.$on("user-logged-in", function() {
         userPrefs.onReady(function() {
           forge.logging.info("Calling setUploadParameters with userId = " + loginService.getUserId());
-          forge.flx_photoupload.setUploadParameters(
-            // User id
-            loginService.getUserId(),
-            // Upload URL
-            loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
-            // Authentication
-            btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
-            // Success
-            function() {
-              photoUploadModuleInitialized = true;
-              // Upload all pending photos
-              var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
-              forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
-              unuploadedPhotos.forEach(function(photoId) {
-                forge.flx_photoupload.uploadPhoto(photoId);
-              });
-              // Start autoupload service at initialization if needed
-              startAutoupload();
-              // Execute onReady functions
-              functionsToExecute.forEach(function(functionToExecute) {
-                functionToExecute();
-              });
-              functionsToExecute = [];
-            },
-            // Error
-            function(error) {
-              forge.logging.info("Call to setUploadParameters failed");
-              forge.logging.info(error);
-            }
-          );
+          if (forge.is.android()) {
+            forge.flx_photoupload.setUploadParameters(
+              // Parameters
+              {
+                userId: loginService.getUserId(),
+                upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+                authentication: btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password'))
+              },
+              // Success
+              function() {
+                photoUploadModuleInitialized = true;
+                // Upload all pending photos
+                var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
+                forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
+                unuploadedPhotos.forEach(function(photoId) {
+                  forge.flx_photoupload.uploadPhoto(photoId);
+                });
+                // Start autoupload service at initialization if needed
+                startAutoupload();
+                // Execute onReady functions
+                functionsToExecute.forEach(function(functionToExecute) {
+                  functionToExecute();
+                });
+                functionsToExecute = [];
+              },
+              // Error
+              function(error) {
+                forge.logging.info("Call to setUploadParameters failed");
+                forge.logging.info(error);
+              }
+            );
+          } else {
+            // TODO Remove this when the new API is implemented on iOS
+            forge.flx_photoupload.setUploadParameters(
+              // User id
+              loginService.getUserId(),
+              // Upload URL
+              loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+              // Authentication
+              btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password')),
+              // Success
+              function() {
+                photoUploadModuleInitialized = true;
+                // Upload all pending photos
+                var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
+                forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
+                unuploadedPhotos.forEach(function(photoId) {
+                  forge.flx_photoupload.uploadPhoto(photoId);
+                });
+                // Start autoupload service at initialization if needed
+                startAutoupload();
+                // Execute onReady functions
+                functionsToExecute.forEach(function(functionToExecute) {
+                  functionToExecute();
+                });
+                functionsToExecute = [];
+              },
+              // Error
+              function(error) {
+                forge.logging.info("Call to setUploadParameters failed");
+                forge.logging.info(error);
+              }
+            );
+          }
         });
       });
       $rootScope.$on("user-logged-out", function() {

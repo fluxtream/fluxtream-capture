@@ -56,9 +56,11 @@ define([
               // Login
               loginService.checkAuth(function() {
                 $state.go('listTopics');
-              })
+              });
             },
-            error: function() {
+            error: function(error) {
+              forge.logging.info("Error while logging in");
+              forge.logging.info(error);
               alert("An error has occurred");
             }
           });

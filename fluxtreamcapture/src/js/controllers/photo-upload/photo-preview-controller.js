@@ -18,6 +18,9 @@ define([
       
       // Uri of the photo image
       $scope.photoSrc = "";
+       
+      // Orientation of the photo
+      $scope.orientationTag = 0;
       
       // Title for the page header
       $scope.pageTitle = "";
@@ -44,6 +47,7 @@ define([
               });
             } else {
               $scope.photoSrc = rawPhotoData.uri;
+              $scope.orientationTag = rawPhotoData.orientation_tag;
             }
           }
         });

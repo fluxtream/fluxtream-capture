@@ -94,9 +94,24 @@ public class UploadService extends Service {
 			@Override
 			public void onChange(boolean selfChange, Uri uri) {
 				Log.i("flx_photoupload", "A new photo was taken");
+				ParseLog.logEvent("A new photo was taken");
 				mAutoUploadThread.interrupt();
 			}
 		});
+		
+//		// DEBUG CODE
+//		new Thread() {
+//			public void run() {
+//				Log.i("flx_test", "STARTING SERVICE -----------------------------------------------------------------");
+//				while (true) {
+//					try {
+//						Thread.sleep(1000);
+//						Log.i("flx_test", "I am still alive at " + System.currentTimeMillis());
+//					} catch (InterruptedException e) {
+//					}
+//				}
+//			};
+//		}.start();
 	}
 	
 	@Override
@@ -125,6 +140,7 @@ public class UploadService extends Service {
 			mAutoUploadThread.interrupt();
 		}
 		Log.i("flx_photoupload", "Autoupload service terminated");
+		ParseLog.logEvent("Photoupload service terminated");
 	}
 	
 	/**
@@ -139,12 +155,14 @@ public class UploadService extends Service {
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
 		final String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
 		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
+		final String deviceId = prefs.getString("user." + userId + ".autoupload." + "device_id", null);
 		// Send parameters to PhotoUploader
 		PhotoUploader.initialize(prefs, new HashMap<String, Object>(){{
 			put("userId", userId);
 			put("upload_url", uploadURL);
 			put("authentication", authentication);
 			put("access_token_update_url", accessTokenUpdateURL);
+			put("device_id", deviceId);
 		}});
 	}
 	
@@ -184,7 +202,7 @@ public class UploadService extends Service {
 			}
 			
 			// Save string parameters
-			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url"}) {
+			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url", "device_id"}) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null) prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
 			}
@@ -215,7 +233,8 @@ public class UploadService extends Service {
 							MediaStore.Images.Media._ID,
 							MediaStore.Images.Media.WIDTH,
 							MediaStore.Images.Media.HEIGHT,
-							MediaStore.Images.Media.DATE_TAKEN
+							MediaStore.Images.Media.DATE_TAKEN,
+							MediaStore.Images.Media.ORIENTATION
 							},
 					null, null, null);
 			// Check for each image if it must be uploaded
@@ -225,6 +244,13 @@ public class UploadService extends Service {
 				int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
 				int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
 				long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+				int orientationTag = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+				// Swap width and height if orientationTag is set to 90 or 270
+				if (orientationTag == 90 || orientationTag == 270) {
+					int tmp = width;
+					width = height;
+					height = tmp;
+				}
 				// Check if photo needs to be uploaded
 				boolean mustBeUploaded = true;
 				if (width > height) {
@@ -240,10 +266,13 @@ public class UploadService extends Service {
 				// Enqueue photo for upload if needed
 				if (mustBeUploaded) {
 					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
+					ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
 					PhotoUploader.uploadPhoto(photoId);
+					cursor.close();
 					return WAIT_ON_UPLOAD;
 				}
 			}
+			cursor.close();
 			return WAIT_ON_NO_PHOTO;
 		}
 		return WAIT_ON_DISABLED;
@@ -269,18 +298,21 @@ public class UploadService extends Service {
 					waitTime = checkForNewPhotos();
 				} catch (Exception e) {
 					Log.e("flx_autoupload", "Error while running autoupload thread", e);
+					ParseLog.logEvent("Error while running autoupload thread", e.getMessage());
 					waitTime = WAIT_ON_ERROR; // 1 minute
 				}
 				// Sleep for 10 minutes
 				synchronized (this) {
 					try {
 						Log.i("flx_photoupload", "Sleeping for " + waitTime/1000.0 + " seconds");
+						ParseLog.logEvent("Autoupload thread sleeping", waitTime/1000.0 + " seconds");
 						wait(waitTime);
 					} catch (InterruptedException e) {
 					}
 				}
 			}
 			Log.i("flx_photoupload", "Autoupload thread terminated");
+			ParseLog.logEvent("Autoupload thread terminated");
 		}
 	}
 	

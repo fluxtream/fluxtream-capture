@@ -66,7 +66,8 @@ define([
           id: rawPhotoData.id,
           upload_status: 'unknown',
           uri: rawPhotoData.uri,
-          date_taken: rawPhotoData.date_taken
+          date_taken: rawPhotoData.date_taken,
+          orientation_tag: rawPhotoData.orientation_tag
         };
         
         // On iOS, need to convert uri using forge.file module
@@ -82,7 +83,7 @@ define([
 //        }
         
         // Add it to the photo list
-        $scope.photos.push(photoObject);
+        $scope.photos.unshift(photoObject);
         // Get photo upload status from user prefs
         var status = userPrefs.get('photo-' + photoObject.id + '-status');
         if (!status) status = 'none';
