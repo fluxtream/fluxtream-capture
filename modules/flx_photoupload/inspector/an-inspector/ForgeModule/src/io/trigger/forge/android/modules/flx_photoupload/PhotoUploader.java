@@ -105,7 +105,7 @@ public class PhotoUploader {
 			// Upload URL
 			Object uploadURL = params.get("upload_url");
 			if (uploadURL != null && uploadURL instanceof String) {
-				Log.i("flx_photoupload", "Setting photo url: " + uploadURL);
+				Log.i("flx_photoupload", "Setting photo url: '" + uploadURL + "'");
 				PhotoUploader.uploadURL = (String)uploadURL;
 			} else
 				Log.i("flx_photoupload", "Upload url is not a string: " + uploadURL);

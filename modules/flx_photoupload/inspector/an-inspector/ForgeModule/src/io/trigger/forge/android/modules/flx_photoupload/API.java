@@ -176,9 +176,11 @@ public class API {
 			public void run() {
 				// Create intent to start service
 				Intent intent = new Intent(ForgeApp.getActivity(), UploadService.class);
+				Log.i("flx_photoupload", "Received autoupload params: " + params.toString());
 				// Add parameters to intent
 				for (Entry<String, JsonElement> param : params.entrySet()) {
 					if (param.getValue().isJsonPrimitive()) {
+						Log.i("flx_photoupload", "Autoupload parameter received: " + param.getKey() + " = " + param.getValue());
 						if (param.getValue().getAsJsonPrimitive().isBoolean()) {
 							intent.putExtra(param.getKey(), param.getValue().getAsBoolean());
 						} else if (param.getValue().getAsJsonPrimitive().isNumber()) {
@@ -221,6 +223,7 @@ public class API {
 			public void run() {
 				stopAutouploadService(task);
 				PhotoUploader.logoutUser();
+				UploadService.forgetCurrentUser();
 			}
 		});
 	}

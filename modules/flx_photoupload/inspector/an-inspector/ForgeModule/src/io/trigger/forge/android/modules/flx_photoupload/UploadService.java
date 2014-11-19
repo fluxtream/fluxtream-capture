@@ -1,5 +1,7 @@
 package io.trigger.forge.android.modules.flx_photoupload;
 
+import io.trigger.forge.android.core.ForgeApp;
+
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -148,8 +150,11 @@ public class UploadService extends Service {
 	 */
 	public void readAutouploadParameters() {
 		// Read parameters from preferences
+		this.userId = prefs.getString("autoupload.current_user_id", null);
+		Log.i("flx_photoupload", "Autoupload user id = " + this.userId);
 		this.uploadLandscape = prefs.getBoolean("user." + userId + ".autoupload." + "upload_landscape", false);
 		this.uploadPortrait = prefs.getBoolean("user." + userId + ".autoupload." + "upload_portrait", false);
+		Log.i("flx_photoupload", "UploadPortrait is now " + this.uploadPortrait);
 		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "landscape_minimum_timestamp", 0);
 		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
@@ -157,9 +162,10 @@ public class UploadService extends Service {
 		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
 		final String deviceId = prefs.getString("user." + userId + ".autoupload." + "device_id", null);
 		// Send parameters to PhotoUploader
+		Log.i("flx_photoupload", "Sending parameters from upload service to photo uploader");
 		PhotoUploader.initialize(prefs, new HashMap<String, Object>(){{
-			put("userId", userId);
-			put("upload_url", uploadURL);
+			put("userId", UploadService.this.userId);
+			put("upload_url", UploadService.this.uploadURL);
 			put("authentication", authentication);
 			put("access_token_update_url", accessTokenUpdateURL);
 			put("device_id", deviceId);
@@ -186,6 +192,7 @@ public class UploadService extends Service {
 		if (userId != null && userId.length() != 0) {
 			
 			this.userId = userId;
+			prefEditor.putString("autoupload.current_user_id", userId);
 		
 			// Save boolean parameters
 			for (String paramName : new String[]{"upload_landscape", "upload_portrait"}) {
@@ -204,7 +211,12 @@ public class UploadService extends Service {
 			// Save string parameters
 			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url", "device_id"}) {
 				Object paramValue = intent.getExtras().get(paramName);
-				if (paramValue != null) prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
+				if (paramValue != null) {
+					prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
+					Log.i("flx_photoupload", "Save to prefs: " + paramName + " = " + paramValue);
+				} else {
+					Log.i("flx_photoupload", "Not saving to prefs because null: " + paramName);
+				}
 			}
 			
 			// Save preferences
@@ -212,7 +224,21 @@ public class UploadService extends Service {
 			
 			// Apply parameters
 			readAutouploadParameters();
+		} else {
+			// No user id
+			prefEditor.putString("autoupload.current_user_id", null);
+			prefEditor.apply();
 		}
+	}
+	
+	/**
+	 * Removes the current user id from prefs
+	 */
+	public static void forgetCurrentUser() {
+		SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
+		Editor prefEditor = prefs.edit();
+		prefEditor.putString("autoupload.current_user_id", null);
+		prefEditor.apply();
 	}
 	
 	/**
@@ -297,7 +323,7 @@ public class UploadService extends Service {
 				try {
 					waitTime = checkForNewPhotos();
 				} catch (Exception e) {
-					Log.e("flx_autoupload", "Error while running autoupload thread", e);
+					Log.e("flx_photoupload", "Error while running autoupload thread", e);
 					ParseLog.logEvent("Error while running autoupload thread", e.getMessage());
 					waitTime = WAIT_ON_ERROR; // 1 minute
 				}
