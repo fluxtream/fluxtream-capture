@@ -21,45 +21,59 @@ define([
     //Stores Topics information
     var dbTopics;
     var dbObservations;
-    var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
-    var dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
-    var remoteCouchTopicsAddress = '@127.0.0.1:5984/' + dbNameTopics;
-    var remoteCouchObservationsAddress = '@127.0.0.1:5984/' + dbNameObservations;
-    var backendLink = "http://localhost:8080/";
-    var userLogin = '';
-    var userCouchDBToken = '';
+    var dbNameTopics;
+    var dbNameObservations;
+    var remoteCouchTopicsAddress;
+    var remoteCouchObservationsAddress;
+    var backendLink;
+    var userLogin;
+    var userCouchDBToken;
+    var isInitialized = 0;
 
     function initialize(){
-      aoCachedTopics = [];
-      aoCachedObservations = [];
-      aoObservationsToSync = [];
+      if(!isInitialized){
+        aoCachedTopics = [];
+        aoCachedObservations = [];
+        aoObservationsToSync = [];
 
-      $.ajax({
-        url: backendLink + 'api/v1/couch/',
-        type: 'PUT',
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function(result) {
-          console.log("Successfully created CouchDB");
-          // Get token and user name
-          userLogin = result.user_login;
-          userCouchDBToken = result.user_token;
-          $rootScope.$broadcast('event:initialized');
-        },
-        error: function(result) {
-          console.log("Error while creating CouchDB: ");
-          console.dir(result);
-          $rootScope.$broadcast('event:initFailed');
-        }
-      });
+        dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
+        dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
+        remoteCouchTopicsAddress = '@127.0.0.1:5984/' + dbNameTopics;
+        remoteCouchObservationsAddress = '@127.0.0.1:5984/' + dbNameObservations;
+        backendLink = "http://localhost:8080/";
+
+        $.ajax({
+          url: backendLink + 'api/v1/couch/',
+          type: 'PUT',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: function(result) {
+            console.log("Successfully created CouchDB");
+            // Get token and user name
+            userLogin = result.user_login;
+            userCouchDBToken = result.user_token;
+
+            // Create Local Pouch DB
+            CreateLocalPouchDB();
+
+            isInitialized = 1;
+            $rootScope.$broadcast('event:initialized');
+          },
+          error: function(result) {
+            console.log("Error while creating CouchDB: ");
+            console.dir(result);
+            $rootScope.$broadcast('event:initFailed');
+          }
+        });
+      } else {
+        $rootScope.$broadcast('event:initialized');
+      }
     }
 
     function CreateLocalPouchDB () {
-      console.log("Create Local Pouch DB 1");
       // Create Local PouchDB
       if ((userLogin != '') && (userCouchDBToken != '')) {
-        console.log("Create Local Pouch DB 2");
         remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
         remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
         dbTopics = new PouchDB(dbNameTopics);
