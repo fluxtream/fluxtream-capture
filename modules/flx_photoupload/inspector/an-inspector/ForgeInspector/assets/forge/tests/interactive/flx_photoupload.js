@@ -11,7 +11,7 @@ asyncTest("Enable autoupload for dev", 1, function() {
         landscape_left_minimum_timestamp: Math.round(new Date().getTime() / 1000),
         landscape_right_minimum_timestamp: Math.round(new Date().getTime() / 1000),
         upside_down_minimum_timestamp: Math.round(new Date().getTime() / 1000),
-        portrait_minimum_timestamp: 1409645385, //Math.round(new Date().getTime() / 1000),
+        portrait_minimum_timestamp: Math.round(new Date().getTime() / 1000),
         userId: "1",
         upload_url: "http://dev.fluxtream.org/api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
         authentication: btoa("dev:foobarfoobar")

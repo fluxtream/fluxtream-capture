@@ -64,16 +64,16 @@ public class UploadService extends Service {
 	private final long WAIT_ON_ACTIVE = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when no photo was found for upload
-	private final long WAIT_ON_NO_PHOTO = 600000; // 10 minutes
+	private final long WAIT_ON_NO_MORE_PHOTO = 600000; // 10 minutes
 	
 	// Waiting delay in milliseconds when a photo is sent for upload
-	private final long WAIT_ON_UPLOAD = 2000; // 2 seconds
+//	private final long WAIT_ON_UPLOAD = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when autoupload is disabled
 	private final long WAIT_ON_DISABLED = 60000; // 1 minute
 	
 	// Waiting delay in milliseconds when an error occurred
-	private final long WAIT_ON_ERROR = 60000; // 1 minute
+	private final long WAIT_ON_ERROR = 30000; // 30 seconds
 	
 	public static ContentResolver getServiceContentResolver() {
 		return contentResolver;
@@ -81,6 +81,7 @@ public class UploadService extends Service {
 	
 	@Override
 	public void onCreate() {
+		Log.i("flx_photoupload", "Creating autoupload service");
 		// Load preferences
 		prefs = getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
 		readAutouploadParameters();
@@ -91,6 +92,7 @@ public class UploadService extends Service {
 		
 		// Subscribe to new photo event
 		contentResolver = getContentResolver();
+		Log.i("flx_photoupload", "contentResolver is created");
 		contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI, true,
 				new ContentObserver(new Handler()) {
 			@Override
@@ -288,18 +290,16 @@ public class UploadService extends Service {
 					if (!this.uploadPortrait) mustBeUploaded = false;
 					if (dateTaken < this.portraitMinimumTimestamp) mustBeUploaded = false;
 				}
-				if (PhotoUploader.isPhotoUploaded(photoId)) mustBeUploaded = false;
+				if (PhotoUploader.getPhotoStatus(photoId).equals("uploaded")) mustBeUploaded = false;
 				// Enqueue photo for upload if needed
 				if (mustBeUploaded) {
 					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
 					ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
 					PhotoUploader.uploadPhoto(photoId);
-					cursor.close();
-					return WAIT_ON_UPLOAD;
 				}
 			}
 			cursor.close();
-			return WAIT_ON_NO_PHOTO;
+			return WAIT_ON_NO_MORE_PHOTO;
 		}
 		return WAIT_ON_DISABLED;
 	}

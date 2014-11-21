@@ -246,6 +246,8 @@ public class API {
 	 * This method takes a list of photo ids and produces a list of booleans, in the same order, telling
 	 * if each photo has already been uploaded or not
 	 * 
+	 * @deprecated Use getPhotoStatuses instead
+	 * 
 	 * @param task
 	 * @param photoIds
 	 */
@@ -258,7 +260,31 @@ public class API {
 				JsonArray isUploadedArray = new JsonArray();
 				for (JsonElement jsonElement : photoIds) {
 					int photoId = jsonElement.getAsInt();
-					boolean isPhotoUploaded = PhotoUploader.isPhotoUploaded(photoId);
+					boolean isPhotoUploaded = PhotoUploader.getPhotoStatus(photoId).equals("uploaded");
+					isUploadedArray.add(new JsonPrimitive(isPhotoUploaded));
+				}
+				task.success(isUploadedArray);
+			}
+		});
+	}
+	
+	/**
+	 * This method takes a list of photo ids and produces a list of strings, in the same order, giving the
+	 * status of each photo ("none", "pending" or "uploaded")
+	 * 
+	 * @param task
+	 * @param photoIds
+	 */
+	public static void getPhotoStatuses(final ForgeTask task, @ForgeParam("photoIds") final JsonArray photoIds) {
+		Log.i("flx_photoupload", "API: arePhotosUploaded");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				// Determine which are already uploaded
+				JsonArray isUploadedArray = new JsonArray();
+				for (JsonElement jsonElement : photoIds) {
+					int photoId = jsonElement.getAsInt();
+					String isPhotoUploaded = PhotoUploader.getPhotoStatus(photoId);
 					isUploadedArray.add(new JsonPrimitive(isPhotoUploaded));
 				}
 				task.success(isUploadedArray);
