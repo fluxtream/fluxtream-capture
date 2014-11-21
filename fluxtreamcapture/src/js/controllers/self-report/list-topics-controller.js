@@ -73,6 +73,13 @@ define([
         selfReportStorage.readObservationsAsyncDB(function () {
         });
       });
+
+      $scope.$on('event:initFailed', function() {
+        //TODO test continuous scrolling
+      });
+
+      // Get token from backend and initialize local variables
+      selfReportStorage.initialize();
     }
   ]);
 

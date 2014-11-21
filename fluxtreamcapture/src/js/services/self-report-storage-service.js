@@ -21,42 +21,63 @@ define([
     //Stores Topics information
     var dbTopics;
     var dbObservations;
-    var dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
-    var dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
-    var remoteCouchTopics = '@127.0.0.1:5984/' + dbNameTopics;
-    var remoteCouchObservations = '@127.0.0.1:5984/' + dbNameObservations;
-    var backendLink = "http://localhost:8080/";
-    var userLogin = '';
-    var userCouchDBToken = '';
+    var dbNameTopics;
+    var dbNameObservations;
+    var remoteCouchTopicsAddress;
+    var remoteCouchObservationsAddress;
+    var backendLink;
+    var userLogin;
+    var userCouchDBToken;
+    var isInitialized = 0;
 
     function initialize(){
-      aoCachedTopics = [];
-      aoCachedObservations = [];
-      aoObservationsToSync = [];
+      if(!isInitialized){
+        aoCachedTopics = [];
+        aoCachedObservations = [];
+        aoObservationsToSync = [];
 
-      $.ajax({
-        url: backendLink + 'api/v1/couch/',
-        type: 'PUT',
-        xhrFields: {
-          withCredentials: true
-        },
-        success: function(result) {
-          console.log("Successfully created CouchDB");
-          // Get token and user name
-          userLogin = result.user_login;
-          userCouchDBToken = result.user_token;
-        },
-        error: function(result) {
-          console.log("Error while creating CouchDB: ");
-          console.dir(result);
-        }
-      });
+        dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
+        dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
+        remoteCouchTopicsAddress = '@127.0.0.1:5984/' + dbNameTopics;
+        remoteCouchObservationsAddress = '@127.0.0.1:5984/' + dbNameObservations;
+        backendLink = "http://localhost:8080/";
 
-      // Connect to Couch DB and get data
-      if((userLogin != '') && (userCouchDBToken != '')){
-        remoteCouchTopics = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopics;
-        remoteCouchObservations = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservations;
+        $.ajax({
+          url: backendLink + 'api/v1/couch/',
+          type: 'PUT',
+          xhrFields: {
+            withCredentials: true
+          },
+          success: function(result) {
+            console.log("Successfully created CouchDB");
+            // Get token and user name
+            userLogin = result.user_login;
+            userCouchDBToken = result.user_token;
+
+            // Create Local Pouch DB
+            CreateLocalPouchDB();
+
+            isInitialized = 1;
+            $rootScope.$broadcast('event:initialized');
+          },
+          error: function(result) {
+            console.log("Error while creating CouchDB: ");
+            console.dir(result);
+            $rootScope.$broadcast('event:initFailed');
+          }
+        });
+      } else {
         $rootScope.$broadcast('event:initialized');
+      }
+    }
+
+    function CreateLocalPouchDB () {
+      // Create Local PouchDB
+      if ((userLogin != '') && (userCouchDBToken != '')) {
+        remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
+        remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
+        dbTopics = new PouchDB(dbNameTopics);
+        dbObservations = new PouchDB(dbNameObservations);
       }
     }
 
@@ -115,7 +136,7 @@ define([
 
       console.log("Saving Topic on the server side.");
       //Push Topic to the server
-      dbTopics.replicate.to(remoteCouchTopics)
+      dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully saved Topic on the server side");
@@ -314,7 +335,7 @@ define([
 
           console.log("Updating Topic on the server side.");
           //Push Observation to the server
-          dbTopics.replicate.to(remoteCouchTopics)
+          dbTopics.replicate.to(remoteCouchTopicsAddress)
             .on('complete', function () {
               // Successfully synced
               console.log("Successfully updated Topic on the server side");
@@ -404,7 +425,7 @@ define([
       aoCachedTopics = [];
 
       // Get Topics from the server and save locally
-      dbTopics.replicate.from(remoteCouchTopics)
+      dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Topics on the server side");
@@ -447,7 +468,7 @@ define([
       aoCachedTopics = [];
 
       // Get Topics from the server and save locally
-      dbTopics.replicate.from(remoteCouchTopics)
+      dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Topics on the server side");
@@ -489,7 +510,7 @@ define([
       aoCachedObservations = [];
 
       // Get Observations from the server and save locally
-      dbObservations.replicate.from(remoteCouchObservations)
+      dbObservations.replicate.from(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Observations on the server side");
@@ -611,7 +632,7 @@ define([
     function syncObservationsServer() {
       console.log("Saving Observation on the server side.");
       //Push Observation to the server
-      dbObservations.replicate.to(remoteCouchObservations)
+      dbObservations.replicate.to(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully saved Observation on the server side");
@@ -688,7 +709,7 @@ define([
 
           console.log("Updating Observation on the server side.");
           //Push Observation to the server
-          dbObservations.replicate.to(remoteCouchObservations)
+          dbObservations.replicate.to(remoteCouchObservationsAddress)
             .on('complete', function () {
               // Successfully synced
               console.log("Successfully updated Observation on the server side");
@@ -700,8 +721,6 @@ define([
         }
       }
     }
-
-    initialize();
 
     /**
      * Public interface
@@ -733,7 +752,10 @@ define([
       updateObservation: updateObservation,
 
       findUniqueDates: findUniqueDates,
-      readDBState: readDBState
+      readDBState: readDBState,
+
+      CreateLocalPouchDB: CreateLocalPouchDB,
+      initialize: initialize
     };
 
   }]);
