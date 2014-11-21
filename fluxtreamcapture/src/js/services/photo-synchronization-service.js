@@ -39,7 +39,7 @@ define([
       
       // Initialize the autoupload service with the autoupload parameters from user prefs
       function startAutoupload() {
-        if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
+//        if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
           forge.logging.info("Starting autoupload service");
           var options = {
             userId: loginService.getUserId(),
@@ -66,10 +66,14 @@ define([
               forge.logging.info("Error starting the autoupload service: " + error);
             }
           );
-        } else {
-          forge.logging.info("Not starting autoupload service");
-        }
+//        } else {
+//          forge.logging.info("Not starting autoupload service");
+//        }
       }
+      
+      userPrefs.onReady(function() {
+        startAutoupload();
+      });
       
       // Initialize native photo upload module
       $rootScope.$on("user-logged-in", function() {

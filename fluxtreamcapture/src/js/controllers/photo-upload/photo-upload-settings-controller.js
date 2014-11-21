@@ -62,13 +62,13 @@ define([
           });
           // Count unuploaded photos for each orientation
           $scope.orientations.forEach(function(orientation) {
-            forge.flx_photoupload.arePhotosUploaded(photoIdsPerOrientation[orientation],
+            forge.flx_photoupload.getPhotoStatuses(photoIdsPerOrientation[orientation],
               // Success
               function(photoStatuses) {
                 // Count
                 $scope.unuploadedCount[orientation] = 0;
                 for (var i = 0; i < photoStatuses.length; i++) {
-                  if (!photoStatuses[i]) $scope.unuploadedCount[orientation]++;
+                  if (photoStatuses[i] == 'none') $scope.unuploadedCount[orientation]++;
                 }
                 forge.logging.info("There are " + $scope.unuploadedCount[orientation] + " unuploaded " + orientation + " photos");
               },
@@ -108,30 +108,30 @@ define([
         photoSync.startAutoupload();
       };
       
-      /**
-       * Stops the background upload service
-       */
-      $scope.stopPhotoUploadService = function() {
-        forge.flx_photoupload.stopAutouploadService(
-          // Success
-          function() {
-            forge.logging.info("Autoupload service successfully stopped");
-          },
-          // Error
-          function() {
-            forge.logging.info("Error while stopping the autoupload service");
-          }
-        );
-      };
+//      /**
+//       * Stops the background upload service
+//       */
+//      $scope.stopPhotoUploadService = function() {
+//        forge.flx_photoupload.stopAutouploadService(
+//          // Success
+//          function() {
+//            forge.logging.info("Autoupload service successfully stopped");
+//          },
+//          // Error
+//          function() {
+//            forge.logging.info("Error while stopping the autoupload service");
+//          }
+//        );
+//      };
       
       // Start photo upload service at start
-      var startAutoupload = false;
-      $scope.orientations.forEach(function(orientation) {
-        if ($scope.settings['upload_' + orientation]) startAutoupload = true;
-      });
-      if (startAutoupload) {
+//      var startAutoupload = false;
+//      $scope.orientations.forEach(function(orientation) {
+//        if ($scope.settings['upload_' + orientation]) startAutoupload = true;
+//      });
+//      if (startAutoupload) {
         $scope.startPhotoUploadService();
-      }
+//      }
       
       /**
        * Saves and applies the user's choices
@@ -180,13 +180,13 @@ define([
         });
         // Start or stop service
         
-        if (start) {
-          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', true);
+//        if (start) {
+//          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', true);
           $scope.startPhotoUploadService();
-        } else {
-          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', false);
-          $scope.stopPhotoUploadService();
-        }
+//        } else {
+//          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', false);
+//          $scope.stopPhotoUploadService();
+//        }
       };
       
     }

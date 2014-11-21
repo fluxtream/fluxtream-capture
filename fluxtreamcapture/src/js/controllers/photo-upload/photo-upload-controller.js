@@ -132,12 +132,12 @@ define([
         $scope.photos.forEach(function(photo) {
           photos.push(photo.id);
         });
-        forge.flx_photoupload.arePhotosUploaded(photos,
+        forge.flx_photoupload.getPhotoStatuses(photos,
           // Success
           function(photoStatuses) {
             // Set statuses
             for (var i = 0; i < photoStatuses.length; i++) {
-              if (photoStatuses[i]) $scope.photos[i].upload_status = 'uploaded';
+              $scope.photos[i].upload_status = photoStatuses[i]; // 'uploaded', 'uploading', 'pending' or 'none'
             }
             // Set loaded status
             $scope.loaded = true;
