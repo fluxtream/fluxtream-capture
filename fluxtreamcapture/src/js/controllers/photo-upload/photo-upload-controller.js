@@ -16,7 +16,8 @@ define([
     'UserPrefsService',
     "PhotoSynchronizationService",
     "$ionicScrollDelegate",
-    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate) {
+    "$ionicActionSheet",
+    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -210,6 +211,50 @@ define([
             forge.logging.info(error);
           }
         );
+      };
+      
+      /**
+       * Called when the delete button is pressed. Removes photo from server and/or from local storage.
+       */
+      $scope.deletePhoto = function(photo) {
+        forge.logging.info("Delete photo " + photo.id + "?");
+        $ionicActionSheet.show({
+          buttons: photo.upload_status == 'uploaded' ? [{text: "No, only delete online photo"}] : [],
+          titleText: 'Delete photo from this device?',
+          cancelText: 'Cancel',
+          destructiveText: photo.upload_status == 'uploaded' ? 'Yes, also delete on this device' : 'Yes, delete photo',
+          cancel: function() {
+            // Do nothing
+          },
+          buttonClicked: function(index) {
+            forge.logging.info("Deleting photo " + photo.id + " from server (index = " + index + ")");
+            var currentStatus = photo.upload_status;
+            photo.upload_status = "deleting";
+            $scope.$$phase || $scope.$apply();
+            photoSync.removePhotoFromServer(photo.id, false,
+              // Success
+              function() {
+                // Set status to 'none'
+                photo.upload_status = 'none';
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function() {
+                // Restore status
+                alert("Photo could not be deleted from server. Please try again later.");
+                photo.upload_status = currentStatus;
+                $scope.$$phase || $scope.$apply();
+              }
+            );
+            return true;
+          },
+          destructiveButtonClicked: function(index) {
+            forge.logging.info("Deleting photo " + photo.id + " from server AND device");
+            $scope.photos.splice($scope.photos.indexOf(photo), 1);
+            $scope.$$phase || $scope.$apply();
+            return true;
+          }
+        });
       };
       
       // Reload photos on resume

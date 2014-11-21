@@ -284,6 +284,45 @@ define([
         forge.flx_photoupload.uploadPhoto(photoId, success, error);
       }      
       
+      /* Photo deletion */
+      
+      /**
+       * (Public) Removes a photo from the server
+       */
+      function removePhotoFromServer(photoId, deletePhotoLocally, success, error) {
+        // Get photo facet id
+        forge.flx_photoupload.getFacetId(parseInt(photoId),
+          // Success
+          function(facetId) {
+            loginService.ajax({
+              url: loginService.getTargetServer() + "api/v1/bodytrack/photo/" + loginService.getUserId() + "/" + facetId,
+              type: "DELETE",
+              success: function(response) {
+                forge.logging.info("Photo successfully deleted from server");
+                forge.logging.info(response);
+                // Mark photo as unuploaded
+                forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+              },
+              error: function(response) {
+                forge.logging.info("Error while deleting photo from server");
+                forge.logging.info(response);
+                if (response.statusCode == 404) {
+                  // Photo does not exist online anymore
+                  // Mark photo as unuploaded
+                  forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+                } else {
+                  error();
+                }
+              }
+            });
+          },
+          // Error
+          function(error) {
+            forge.logging.info("Photo " + photoId + " not uploaded yet");
+            error();
+          }
+        );
+      }
       
       /* Public API */
       
@@ -291,7 +330,8 @@ define([
         synchronizeMetadata: synchronizeMetadata,
         uploadPhoto: uploadPhoto,
         onReady: onReady,
-        startAutoupload: startAutoupload
+        startAutoupload: startAutoupload,
+        removePhotoFromServer: removePhotoFromServer
       };
       
     }

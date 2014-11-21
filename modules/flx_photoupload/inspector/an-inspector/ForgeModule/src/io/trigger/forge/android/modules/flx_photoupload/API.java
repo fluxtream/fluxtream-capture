@@ -243,6 +243,20 @@ public class API {
 	}
 	
 	/**
+	 * Marks an uploaded photo as unuploaded. If 'delete' is non-zero, deletes the photo from local storage.
+	 */
+	public static void markPhotoAsUnuploaded(final ForgeTask task, @ForgeParam("photoId") final int photoId, @ForgeParam("delete") final int delete) {
+		Log.i("flx_photoupload", "API: markPhotoAsUnuploaded(" + photoId + ", " + delete + ")");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				PhotoUploader.markPhotoAsUnuploaded(photoId, delete != 0);
+				task.success();
+			}
+		});
+	}
+	
+	/**
 	 * This method takes a list of photo ids and produces a list of booleans, in the same order, telling
 	 * if each photo has already been uploaded or not
 	 * 

@@ -210,7 +210,7 @@ public class PhotoUploader {
 				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
 				return;
 			}
-
+			
 			// Add the photo to the upload queue
 			Log.i("flx_photoupload", "Adding photo " + photoId + " to pending photo list");
 			ParseLog.logEvent("Adding photo to upload queue", "photo " + photoId);
@@ -220,7 +220,7 @@ public class PhotoUploader {
 			Editor editor = prefs.edit();
 			editor.putString("user." + userId + ".photo." + photoId + ".status", "pending");
 			editor.apply();
-
+			
 			// Start upload if it is not started yet
 			startUploading();
 		}
@@ -294,6 +294,25 @@ public class PhotoUploader {
 		editor.putString("user." + userId + ".photo." + photoId + ".status", "uploaded");
 		editor.putString("user." + userId + ".photo." + photoId + ".facetId", facetId);
 		editor.apply();
+	}
+	
+	/**
+	 * Marks a photo as unuploaded and optionally deletes it from the local storage
+	 */
+	public static void markPhotoAsUnuploaded(int photoId, boolean deletePhotoFromDrive) {
+		Log.i("flx_photoupload", "Marking photo " + photoId + " as unuploaded");
+		ParseLog.logEvent("Mark photo as unuploaded", "photo " + photoId);
+		Editor editor = prefs.edit();
+		editor.putString("user." + userId + ".photo." + photoId + ".status", "none");
+		editor.remove("user." + userId + ".photo." + photoId + ".facetId");
+		editor.apply();
+		// TODO delete from local storage
+		if (deletePhotoFromDrive) {
+			ContentResolver contentResolver = ForgeApp.getActivity().getContentResolver();
+			// Get photo data
+			Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
+			contentResolver.delete(uri, "", null);
+		}
 	}
 	
 	/**

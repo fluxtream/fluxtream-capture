@@ -17,7 +17,7 @@
           <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})"
             style='background-image:url("{{ photo.src }}"); -webkit-transform: rotate({{ photo.orientation_tag }}deg)'>
           </div>
-          <div class="photo-info">
+          <div class="photo-info" style="float: left; width: 50%;">
             <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">
               <span class="ion-checkmark-round"></span>
             </p>
@@ -30,11 +30,19 @@
             <p ng-if="photo.upload_status == 'uploading'" class="photo-status-uploading">
               <span class="ion-loading-d"></span>
             </p>
+            <p ng-if="photo.upload_status == 'deleting'" class="photo-status-pending">
+              <span class="ion-loading-d"></span>
+            </p>
             <p ng-if="photo.upload_status == 'none'">
               <button class="button button-stable button-fair button-small" ng-click="uploadPhoto(photo)">
-                Upload
+                Up
               </button>
             </p>
+          </div>
+          <div style="width: 50%; float: right;">
+            <button class="button button-stable button-fair button-small" ng-click="deletePhoto(photo)">
+              Del
+            </button>
           </div>
         </div>
       </div>

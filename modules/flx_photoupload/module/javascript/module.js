@@ -24,6 +24,9 @@ forge.flx_photoupload = {
   uploadPhoto: function(photoId, success, error) {
     forge.internal.call('flx_photoupload.uploadPhoto', {photoId: photoId}, success, error);
   },
+  markPhotoAsUnuploaded: function(photoId, deletePhoto, success, error) {
+    forge.internal.call('flx_photoupload.markPhotoAsUnuploaded', {photoId: photoId, 'delete': deletePhoto}, success, error);
+  },
   arePhotosUploaded: function(photoIds, success, error) {
     forge.internal.call('flx_photoupload.arePhotosUploaded', {photoIds: photoIds}, success, error);
   },
