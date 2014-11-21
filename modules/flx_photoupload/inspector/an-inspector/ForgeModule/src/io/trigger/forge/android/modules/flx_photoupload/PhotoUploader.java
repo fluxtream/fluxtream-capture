@@ -4,6 +4,7 @@ import io.trigger.forge.android.core.ForgeApp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -496,6 +497,15 @@ public class PhotoUploader {
 					}
 				} catch (CursorIndexOutOfBoundsException e) {
 					// The photo does not exist anymore
+					Log.i("flx_photoupload", "Photo " + photoId + " is no longer on the device (CursorIndexOutOfBounds). Removed from upload queue.");
+					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
+					synchronized (mutex) {
+						currentPhoto = -1;
+						cancelCurrentUpload = false;
+					}
+				} catch (FileNotFoundException e) {
+					// The photo does not exist anymore
+					Log.i("flx_photoupload", "Photo " + photoId + " is no longer on the device (FileNotFound). Removed from upload queue.");
 					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
 					synchronized (mutex) {
 						currentPhoto = -1;
