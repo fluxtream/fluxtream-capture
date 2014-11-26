@@ -141,7 +141,7 @@ textarea.noResize { resize:none; }
 }
 
 .delete-photo-button-wrapper i {
-  color: red;
+  color: #3399CC;
   font-size: 25px;
   vertical-align: middle;
 }
