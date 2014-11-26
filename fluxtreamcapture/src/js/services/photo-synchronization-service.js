@@ -287,41 +287,46 @@ define([
       /* Photo deletion */
       
       /**
-       * (Public) Removes a photo from the server
+       * (Public) Removes a photo from the server and/or from the device
        */
-      function removePhotoFromServer(photoId, deletePhotoLocally, success, error) {
-        // Get photo facet id
-        forge.flx_photoupload.getFacetId(parseInt(photoId),
-          // Success
-          function(facetId) {
-            loginService.ajax({
-              url: loginService.getTargetServer() + "api/v1/bodytrack/photo/" + loginService.getUserId() + "/" + facetId,
-              type: "DELETE",
-              success: function(response) {
-                forge.logging.info("Photo successfully deleted from server");
-                forge.logging.info(response);
-                // Mark photo as unuploaded
-                forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
-              },
-              error: function(response) {
-                forge.logging.info("Error while deleting photo from server");
-                forge.logging.info(response);
-                if (response.statusCode == 404) {
-                  // Photo does not exist online anymore
+      function removePhotoFromServerAndDevice(photoId, deleteFromServer, deletePhotoLocally, success, error) {
+        if (deleteFromServer) {
+          // Get photo facet id
+          forge.flx_photoupload.getFacetId(parseInt(photoId),
+            // Success
+            function(facetId) {
+              loginService.ajax({
+                url: loginService.getTargetServer() + "api/v1/bodytrack/photo/" + loginService.getUserId() + "/" + facetId,
+                type: "DELETE",
+                success: function(response) {
+                  forge.logging.info("Photo successfully deleted from server");
+                  forge.logging.info(response);
                   // Mark photo as unuploaded
                   forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
-                } else {
-                  error();
+                },
+                error: function(response) {
+                  forge.logging.info("Error while deleting photo from server");
+                  forge.logging.info(response);
+                  if (response.statusCode == 404) {
+                    // Photo does not exist online anymore
+                    // Mark photo as unuploaded
+                    forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+                  } else {
+                    error();
+                  }
                 }
-              }
-            });
-          },
-          // Error
-          function(error) {
-            forge.logging.info("Photo " + photoId + " not uploaded yet");
-            error();
-          }
-        );
+              });
+            },
+            // Error
+            function(content) {
+              forge.logging.info("Photo " + photoId + " not uploaded yet");
+              error(content);
+            }
+          );
+        } else {
+          // Photo not uploaded, only delete it locally
+          forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+        }
       }
       
       /* Public API */
@@ -331,7 +336,7 @@ define([
         uploadPhoto: uploadPhoto,
         onReady: onReady,
         startAutoupload: startAutoupload,
-        removePhotoFromServer: removePhotoFromServer
+        removePhotoFromServerAndDevice: removePhotoFromServerAndDevice
       };
       
     }

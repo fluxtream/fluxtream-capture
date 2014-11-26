@@ -111,6 +111,9 @@ define([
        * Loads all photos from the device image gallery
        */
       $scope.addAllPhotosFromGallery = function() {
+        // Make sure the photo list is fresh
+        photoListService.reloadPhotos();
+        // When the photo list has been fetched, load it
         photoListService.onReady(function() {
           // Empty photo list
           $scope.photos = [];
@@ -231,7 +234,7 @@ define([
             var currentStatus = photo.upload_status;
             photo.upload_status = "deleting";
             $scope.$$phase || $scope.$apply();
-            photoSync.removePhotoFromServer(photo.id, false,
+            photoSync.removePhotoFromServerAndDevice(photo.id, true, false,
               // Success
               function() {
                 // Set status to 'none'
@@ -250,8 +253,26 @@ define([
           },
           destructiveButtonClicked: function(index) {
             forge.logging.info("Deleting photo " + photo.id + " from server AND device");
-            $scope.photos.splice($scope.photos.indexOf(photo), 1);
+            var currentStatus = photo.upload_status;
+            photo.upload_status = "deleting";
             $scope.$$phase || $scope.$apply();
+            var removeFromServer = currentStatus == 'uploaded';
+            photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, true,
+              // Success
+              function() {
+                // Set status to 'none'
+                $scope.photos.splice($scope.photos.indexOf(photo), 1);
+                $scope.$$phase || $scope.$apply();
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function() {
+                // Restore status
+                alert("Photo could not be deleted from server. Please try again later.");
+                photo.upload_status = currentStatus;
+                $scope.$$phase || $scope.$apply();
+              }
+            );
             return true;
           }
         });

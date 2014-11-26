@@ -306,12 +306,13 @@ public class PhotoUploader {
 		editor.putString("user." + userId + ".photo." + photoId + ".status", "none");
 		editor.remove("user." + userId + ".photo." + photoId + ".facetId");
 		editor.apply();
-		// TODO delete from local storage
+		// Delete from local storage
 		if (deletePhotoFromDrive) {
 			ContentResolver contentResolver = ForgeApp.getActivity().getContentResolver();
 			// Get photo data
 			Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
 			contentResolver.delete(uri, "", null);
+			Log.i("flx_photoupload", "Photo " + photoId + " has been deleted from local storage");
 		}
 	}
 	
