@@ -109,7 +109,8 @@ textarea.noResize { resize:none; }
 .photo-info {
   position: absolute;
   bottom: 0;
-  width: 100%;
+  float: left;
+  width: 50%;
 }
 .photo-info p {
   text-align: center;
@@ -132,6 +133,22 @@ textarea.noResize { resize:none; }
 }
 .photo-status-failed {
   color: #F00;
+}
+
+.delete-photo-button-wrapper {
+  width: 50%;
+  float: right;
+}
+
+.delete-photo-button-wrapper i {
+  color: red;
+  font-size: 25px;
+  vertical-align: middle;
+}
+
+.upload-photo-button i {
+  font-size: 25px;
+  vertical-align: middle;
 }
 
 /*******************************************
