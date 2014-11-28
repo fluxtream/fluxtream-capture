@@ -4,11 +4,13 @@ import io.trigger.forge.android.core.ForgeApp;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -105,7 +107,7 @@ public class PhotoUploader {
 			// Upload URL
 			Object uploadURL = params.get("upload_url");
 			if (uploadURL != null && uploadURL instanceof String) {
-				Log.i("flx_photoupload", "Setting photo url: " + uploadURL);
+				Log.i("flx_photoupload", "Setting photo url: '" + uploadURL + "'");
 				PhotoUploader.uploadURL = (String)uploadURL;
 			} else
 				Log.i("flx_photoupload", "Upload url is not a string: " + uploadURL);
@@ -131,6 +133,22 @@ public class PhotoUploader {
 			Object deviceId = params.get("device_id");
 			if (deviceId != null && deviceId instanceof String)
 				ParseLog.setDeviceId((String)deviceId);
+			
+			// Initialize with pending photos
+			String prefix = "user." + userId + ".photo.";
+			String suffix = ".status";
+			Log.i("flx_photoupload", "Search for pending photo through " + prefs.getAll().entrySet().size() + " pref entries");
+			for (Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+//				Log.i("flx_photoupload", "Entry: " + entry.getKey() + " = " + entry.getValue());
+				if (entry.getKey().startsWith(prefix) && entry.getKey().endsWith(suffix)) {
+					// Photo status
+					if (entry.getValue().equals("pending")) {
+						String photoId = entry.getKey().substring(prefix.length(), entry.getKey().indexOf(suffix));
+						Log.i("flx_photoupload", "Found pending photo to upload: " + photoId);
+						uploadPhoto(Integer.parseInt(photoId));
+					}
+				}
+			}
 		}
 	}
 	
@@ -156,9 +174,10 @@ public class PhotoUploader {
 	/**
 	 * Returns whether a given photo has already been successfully uploaded
 	 */
-	public static boolean isPhotoUploaded(int photoId) {
-		return prefs.getBoolean("user." + userId + ".photo." + photoId
-				+ ".uploaded", false);
+	public static String getPhotoStatus(int photoId) {
+		String status = prefs.getString("user." + userId + ".photo." + photoId + ".status", "none");
+		if (status.equals("pending") && currentPhoto == photoId) return "uploading";
+		return status;
 	}
 	
 	/**
@@ -185,7 +204,7 @@ public class PhotoUploader {
 				return;
 			}
 			// Check if the photo is already uploaded
-			if (isPhotoUploaded(photoId)) {
+			if (getPhotoStatus(photoId).equals("uploaded")) {
 				Log.i("flx_photoupload", "Photo " + photoId + " is already uploaded");
 				ParseLog.logEvent("Photo already uploaded", "photo " + photoId);
 				ForgeApp.event("photoupload.uploaded", eventDataForPhotoId(photoId));
@@ -196,6 +215,11 @@ public class PhotoUploader {
 			Log.i("flx_photoupload", "Adding photo " + photoId + " to pending photo list");
 			ParseLog.logEvent("Adding photo to upload queue", "photo " + photoId);
 			pendingPhotos.add(photoId);
+			
+			// Persist status
+			Editor editor = prefs.edit();
+			editor.putString("user." + userId + ".photo." + photoId + ".status", "pending");
+			editor.apply();
 
 			// Start upload if it is not started yet
 			startUploading();
@@ -235,8 +259,7 @@ public class PhotoUploader {
 	 * Returns the facet id of a given uploaded photo
 	 */
 	public static String getFacetId(int photoId) {
-		return prefs.getString("user." + userId + ".photo." + photoId
-				+ ".facetId", null);
+		return prefs.getString("user." + userId + ".photo." + photoId + ".facetId", null);
 	}
 	
 	/* Private methods */
@@ -268,10 +291,8 @@ public class PhotoUploader {
 		Log.i("flx_photoupload", "Marking photo " + photoId + " as uploaded");
 		ParseLog.logEvent("Mark photo as uploaded", "photo " + photoId);
 		Editor editor = prefs.edit();
-		editor.putBoolean("user." + userId + ".photo." + photoId + ".uploaded",
-				true);
-		editor.putString("user." + userId + ".photo." + photoId + ".facetId",
-				facetId);
+		editor.putString("user." + userId + ".photo." + photoId + ".status", "uploaded");
+		editor.putString("user." + userId + ".photo." + photoId + ".facetId", facetId);
 		editor.apply();
 	}
 	
@@ -424,9 +445,11 @@ public class PhotoUploader {
 		if (ForgeApp.getActivity() != null) {
 			// Current context is the Forge application
 			contentResolver = ForgeApp.getActivity().getContentResolver();
+			Log.i("flx_photoupload", "contentResolver (1) = " + contentResolver);
 		} else {
 			// Current context is the background service
 			contentResolver = UploadService.getServiceContentResolver();
+			Log.i("flx_photoupload", "contentResolver (2) = " + contentResolver);
 		}
 		Cursor cursor = contentResolver.query(contentUri, new String[] {
 				MediaStore.Images.Media.DATA,
@@ -434,12 +457,8 @@ public class PhotoUploader {
 		cursor.moveToFirst();
 		// Create result
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("path", cursor.getString(cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-		map.put("timestamp",
-				cursor.getLong(cursor
-						.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN))
-						/ 1000 + "");
+		map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
+		map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
 		cursor.close();
 		// Return result map
 		return map;
@@ -496,10 +515,25 @@ public class PhotoUploader {
 					}
 				} catch (CursorIndexOutOfBoundsException e) {
 					// The photo does not exist anymore
+					Log.i("flx_photoupload", "Photo " + photoId + " is no longer on the device (CursorIndexOutOfBounds). Removed from upload queue.");
 					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
 					synchronized (mutex) {
 						currentPhoto = -1;
 						cancelCurrentUpload = false;
+						Editor editor = prefs.edit();
+						editor.remove("user." + userId + ".photo." + photoId + ".status");
+						editor.apply();
+					}
+				} catch (FileNotFoundException e) {
+					// The photo does not exist anymore
+					Log.i("flx_photoupload", "Photo " + photoId + " is no longer on the device (FileNotFound). Removed from upload queue.");
+					ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
+					synchronized (mutex) {
+						currentPhoto = -1;
+						cancelCurrentUpload = false;
+						Editor editor = prefs.edit();
+						editor.remove("user." + userId + ".photo." + photoId + ".status");
+						editor.apply();
 					}
 				} catch (Throwable e) {
 					// Check if the thread should end
@@ -515,8 +549,7 @@ public class PhotoUploader {
 					if (cancelCurrentUpload) {
 						Log.i("flx_photoupload", "Upload of photo " + photoId + " canceled");
 						// Generate 'canceled' event
-						ForgeApp.event("photoupload.canceled",
-								eventDataForPhotoId(photoId));
+						ForgeApp.event("photoupload.canceled", eventDataForPhotoId(photoId));
 						synchronized (mutex) {
 							currentPhoto = -1;
 							cancelCurrentUpload = false;
@@ -536,7 +569,7 @@ public class PhotoUploader {
 						// Wait 1 minute before continuing
 						synchronized (this) {
 							try {
-								wait(60000);
+								wait(30000);
 							} catch (InterruptedException ex) {
 								Log.i("flx_photoupload", "Photo upload thread interrupted");
 							}

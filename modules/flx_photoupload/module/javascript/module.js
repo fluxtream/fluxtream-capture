@@ -27,6 +27,9 @@ forge.flx_photoupload = {
   arePhotosUploaded: function(photoIds, success, error) {
     forge.internal.call('flx_photoupload.arePhotosUploaded', {photoIds: photoIds}, success, error);
   },
+  getPhotoStatuses: function(photoIds, success, error) {
+    forge.internal.call('flx_photoupload.getPhotoStatuses', {photoIds: photoIds}, success, error);
+  },
   cancelUpload: function(photoId, success, error) {
     forge.internal.call('flx_photoupload.cancelUpload', {photoId: photoId}, success, error);
   },

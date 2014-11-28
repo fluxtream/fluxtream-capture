@@ -1,5 +1,7 @@
 package io.trigger.forge.android.modules.flx_photoupload;
 
+import io.trigger.forge.android.core.ForgeApp;
+
 import java.util.HashMap;
 
 import android.app.Activity;
@@ -62,16 +64,16 @@ public class UploadService extends Service {
 	private final long WAIT_ON_ACTIVE = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when no photo was found for upload
-	private final long WAIT_ON_NO_PHOTO = 600000; // 10 minutes
+	private final long WAIT_ON_NO_MORE_PHOTO = 600000; // 10 minutes
 	
 	// Waiting delay in milliseconds when a photo is sent for upload
-	private final long WAIT_ON_UPLOAD = 2000; // 2 seconds
+//	private final long WAIT_ON_UPLOAD = 2000; // 2 seconds
 	
 	// Waiting delay in milliseconds when autoupload is disabled
 	private final long WAIT_ON_DISABLED = 60000; // 1 minute
 	
 	// Waiting delay in milliseconds when an error occurred
-	private final long WAIT_ON_ERROR = 60000; // 1 minute
+	private final long WAIT_ON_ERROR = 30000; // 30 seconds
 	
 	public static ContentResolver getServiceContentResolver() {
 		return contentResolver;
@@ -79,6 +81,7 @@ public class UploadService extends Service {
 	
 	@Override
 	public void onCreate() {
+		Log.i("flx_photoupload", "Creating autoupload service");
 		// Load preferences
 		prefs = getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
 		readAutouploadParameters();
@@ -89,6 +92,7 @@ public class UploadService extends Service {
 		
 		// Subscribe to new photo event
 		contentResolver = getContentResolver();
+		Log.i("flx_photoupload", "contentResolver is created");
 		contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI, true,
 				new ContentObserver(new Handler()) {
 			@Override
@@ -148,8 +152,11 @@ public class UploadService extends Service {
 	 */
 	public void readAutouploadParameters() {
 		// Read parameters from preferences
+		this.userId = prefs.getString("autoupload.current_user_id", null);
+		Log.i("flx_photoupload", "Autoupload user id = " + this.userId);
 		this.uploadLandscape = prefs.getBoolean("user." + userId + ".autoupload." + "upload_landscape", false);
 		this.uploadPortrait = prefs.getBoolean("user." + userId + ".autoupload." + "upload_portrait", false);
+		Log.i("flx_photoupload", "UploadPortrait is now " + this.uploadPortrait);
 		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "landscape_minimum_timestamp", 0);
 		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
@@ -157,9 +164,10 @@ public class UploadService extends Service {
 		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
 		final String deviceId = prefs.getString("user." + userId + ".autoupload." + "device_id", null);
 		// Send parameters to PhotoUploader
+		Log.i("flx_photoupload", "Sending parameters from upload service to photo uploader");
 		PhotoUploader.initialize(prefs, new HashMap<String, Object>(){{
-			put("userId", userId);
-			put("upload_url", uploadURL);
+			put("userId", UploadService.this.userId);
+			put("upload_url", UploadService.this.uploadURL);
 			put("authentication", authentication);
 			put("access_token_update_url", accessTokenUpdateURL);
 			put("device_id", deviceId);
@@ -186,6 +194,7 @@ public class UploadService extends Service {
 		if (userId != null && userId.length() != 0) {
 			
 			this.userId = userId;
+			prefEditor.putString("autoupload.current_user_id", userId);
 		
 			// Save boolean parameters
 			for (String paramName : new String[]{"upload_landscape", "upload_portrait"}) {
@@ -204,7 +213,12 @@ public class UploadService extends Service {
 			// Save string parameters
 			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url", "device_id"}) {
 				Object paramValue = intent.getExtras().get(paramName);
-				if (paramValue != null) prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
+				if (paramValue != null) {
+					prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);
+					Log.i("flx_photoupload", "Save to prefs: " + paramName + " = " + paramValue);
+				} else {
+					Log.i("flx_photoupload", "Not saving to prefs because null: " + paramName);
+				}
 			}
 			
 			// Save preferences
@@ -212,7 +226,21 @@ public class UploadService extends Service {
 			
 			// Apply parameters
 			readAutouploadParameters();
+		} else {
+			// No user id
+			prefEditor.putString("autoupload.current_user_id", null);
+			prefEditor.apply();
 		}
+	}
+	
+	/**
+	 * Removes the current user id from prefs
+	 */
+	public static void forgetCurrentUser() {
+		SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
+		Editor prefEditor = prefs.edit();
+		prefEditor.putString("autoupload.current_user_id", null);
+		prefEditor.apply();
 	}
 	
 	/**
@@ -262,18 +290,16 @@ public class UploadService extends Service {
 					if (!this.uploadPortrait) mustBeUploaded = false;
 					if (dateTaken < this.portraitMinimumTimestamp) mustBeUploaded = false;
 				}
-				if (PhotoUploader.isPhotoUploaded(photoId)) mustBeUploaded = false;
+				if (PhotoUploader.getPhotoStatus(photoId).equals("uploaded")) mustBeUploaded = false;
 				// Enqueue photo for upload if needed
 				if (mustBeUploaded) {
 					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
 					ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
 					PhotoUploader.uploadPhoto(photoId);
-					cursor.close();
-					return WAIT_ON_UPLOAD;
 				}
 			}
 			cursor.close();
-			return WAIT_ON_NO_PHOTO;
+			return WAIT_ON_NO_MORE_PHOTO;
 		}
 		return WAIT_ON_DISABLED;
 	}
@@ -297,7 +323,7 @@ public class UploadService extends Service {
 				try {
 					waitTime = checkForNewPhotos();
 				} catch (Exception e) {
-					Log.e("flx_autoupload", "Error while running autoupload thread", e);
+					Log.e("flx_photoupload", "Error while running autoupload thread", e);
 					ParseLog.logEvent("Error while running autoupload thread", e.getMessage());
 					waitTime = WAIT_ON_ERROR; // 1 minute
 				}
