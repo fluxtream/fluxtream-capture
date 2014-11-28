@@ -83,7 +83,7 @@ define([
           comment: $scope.comment.value
         };
         // Save to user prefs
-        userPrefs.set('photo.metadata.' + $scope.photoId, JSON.stringify(metadata));
+        userPrefs.set("user." + loginService.getUserId() + ".photo.metadata." + $scope.photoId, JSON.stringify(metadata));
         forge.logging.info("Metadata saved locally for photo " + $scope.photoId + ": " + JSON.stringify(metadata));
         // Upload photo if not uploaded yet
         photoSync.uploadPhoto(parseInt($scope.photoId), function() {}, function() {});
