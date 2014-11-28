@@ -14,7 +14,15 @@
         </activity>
         
         <provider android:authorities="io.trigger.forge.android.inspector" android:exported="true" android:name="io.trigger.forge.android.core.ForgeContentProvider" tools:ignore="ExportedContentProvider" />
-    <service android:name="io.trigger.forge.android.modules.flx_photoupload.UploadService" /></application>
+    	<service android:name="io.trigger.forge.android.modules.flx_photoupload.UploadService" />
+    	<!-- Declaring broadcast receiver for BOOT_COMPLETED event -->
+		<receiver android:name="io.trigger.forge.android.modules.flx_photoupload.SystemBootBroadcastReceiver" android:enabled="true" android:exported="false">
+			<intent-filter>
+				<action android:name="android.intent.action.BOOT_COMPLETED"/>
+			</intent-filter>
+		</receiver>
+    </application>
 	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 </manifest>

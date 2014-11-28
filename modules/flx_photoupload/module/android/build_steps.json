@@ -7,12 +7,40 @@
     }
   }, {
     "do": {
+      "android_add_permission": {
+        "permission": "android.permission.RECEIVE_BOOT_COMPLETED"
+      }
+    }
+  }, {
+    "do": {
       "android_add_to_application_manifest": {
         "element": {
           "tag": "service",
           "attributes": {
             "android:name": "io.trigger.forge.android.modules.flx_photoupload.UploadService"
           }
+        }
+      }
+    }
+  }, {
+    "do": {
+      "android_add_to_application_manifest": {
+        "element": {
+          "tag": "receiver",
+          "attributes": {
+            "android:name": "io.trigger.forge.android.modules.flx_photoupload.SystemBootBroadcastReceiver",
+            "android:enabled": "true",
+            "android:exported": "false"
+          },
+          "children": [{
+            "tag": "intent-filter",
+            "children": [{
+              "tag": "action",
+              "attributes": {
+                "android:name": "android.intent.action.BOOT_COMPLETED"
+              }
+            }]
+          }]
         }
       }
     }
