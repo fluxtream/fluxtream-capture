@@ -15,6 +15,8 @@ define(function() {
   return {
     // URL of the fluxtream server
     "fluxtream.home.url" : "http://fluxtream.dev/",
+    // URL of the fluxtream couchDB server
+    "fluxtream.couch.login.url" : "@fluxtream.dev:5984/",
     // URL of the web app (for redirection after authentication)
     "loggedIn.redirect_uri" : "http://fluxtream.dev:3000/",
     // Username and password for automatic authentication (mobile app only)

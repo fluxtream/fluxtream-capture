@@ -3,9 +3,10 @@
  */
 define([
   'app-modules',
+  'config/env',
   'services/login-service',
   'services/base64'
-], function(appModules, storage) {
+], function(appModules, env, storage) {
 
   appModules.services.factory('SelfReportStorageService', ["Base64", "$http", "LoginService", '$rootScope', function(Base64, $http,  loginService, $rootScope) {
     //TODO Save values to forge.prefs.set(key, value);
@@ -38,9 +39,9 @@ define([
 
         dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
         dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
-        remoteCouchTopicsAddress = '@127.0.0.1:5984/' + dbNameTopics;
-        remoteCouchObservationsAddress = '@127.0.0.1:5984/' + dbNameObservations;
-        backendLink = "http://localhost:8080/";
+        remoteCouchTopicsAddress = env['fluxtream.couch.login.url'] + dbNameTopics;
+        remoteCouchObservationsAddress = env['fluxtream.couch.login.url'] + dbNameObservations;
+        backendLink = env['fluxtream.home.url'];
 
         $.ajax({
           url: backendLink + 'api/v1/couch/',
@@ -580,7 +581,7 @@ define([
      * (Public) Save Observation
      */
     function createObservation(oObservation) {
-      if (aoCachedObservations == null) {
+      if (aoCachedObservations.length === 0) {
         aoCachedObservations = [];
       }
 
@@ -595,6 +596,12 @@ define([
 
       // Iterate over temp observations and save them into database
       var len = aoObservationsToSync.length;
+
+      if (len === 0) {
+        console.log("No local observations to sync!");
+        $rootScope.$broadcast('event:observations-synced-with-db');
+      }
+
       for (var i=0; i<len; i++) {
         var oObservation = aoObservationsToSync[i];
         // Save observation to client database
@@ -665,6 +672,7 @@ define([
     function readObservations(){
       if(aoCachedObservations.length === 0){
         console.log("No observations in memory");
+        aoCachedObservations = [];
       }
 
       return aoCachedObservations;

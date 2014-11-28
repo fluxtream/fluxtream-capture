@@ -36,6 +36,13 @@ define([
           $scope.$$phase || $scope.$apply();
         });
 
+        // Waiting when DB would be synced with server
+        $scope.$on('event:observations-synced-with-server', function () {
+          // Show sync status
+          console.log("Sync with server finished");
+          $("#footer-center-icon").attr('class', '');
+        });
+
         // Waiting when client side DB would be synced
         $scope.$on('event:observations-synced-with-db', function () {
           // Start sync with server DB
@@ -44,16 +51,8 @@ define([
           console.log("Sync with db finished");
         });
 
-        // Waiting when DB would be synced with server
-        $scope.$on('event:observations-synced-with-server', function () {
-          // Show sync status
-          console.log("Sync with server finished");
-          $("#footer-center-icon").attr('class', '');
-        });
-
         // Start sync with client-side DB
         selfReportStorage.syncObservationsDB();
-
 
         //Infinite scroll function
         $scope.loadMoreObservations = function () {
