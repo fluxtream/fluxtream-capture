@@ -1,0 +1,17 @@
+<ion-view title="Photo Upload">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  <ion-content>
+    <p>Heart rate : {{ heartRate }}</p>
+    <p>RR : {{ rr }}</p>
+  </ion-content>
+</ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-dark">
+  <a id="footer-right" ui-sref="heartRateSettings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
+</ion-footer-bar>

@@ -16,7 +16,8 @@ define([
   'controllers/photo-upload/photo-upload-controller',
   'controllers/photo-upload/photo-upload-settings-controller',
   'controllers/photo-upload/photo-preview-controller',
-  'controllers/photo-upload/photo-metadata-controller'
+  'controllers/photo-upload/photo-metadata-controller',
+  'controllers/heart-rate/heart-rate-controller'
 ], function(appModules) {
   appModules.app.config(function($stateProvider, $urlRouterProvider) {
     // Routing
@@ -85,6 +86,11 @@ define([
         url: "/photo-metadata/:photoId",
         templateUrl: "html/photo-upload/photo-metadata.html",
         controller: "PhotoMetadataController"
+      })
+      .state('heartRate', {
+        url: "/heart-rate",
+        templateUrl: "html/heart-rate/heart-rate.html",
+        controller: "HeartRateController"
       })
       .state('settings', {
         url: "/settings",

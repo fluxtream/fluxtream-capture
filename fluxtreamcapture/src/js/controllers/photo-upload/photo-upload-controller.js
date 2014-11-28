@@ -5,7 +5,7 @@ define([
   'config/env',
   'app-modules',
   'services/photo-list-service',
-  'services/user-prefs-service',,
+  'services/user-prefs-service',
   'services/photo-synchronization-service'
 ], function(env, appModules) {
   
