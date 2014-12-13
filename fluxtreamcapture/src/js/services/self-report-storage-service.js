@@ -30,6 +30,10 @@ define([
     var userLogin;
     var userCouchDBToken;
     var isInitialized = 0;
+    // Client memory values
+    var aoCachedTopics;
+    var aoCachedObservations;
+    var aoObservationsToSync;
 
     function initialize(){
       if(!isInitialized){
@@ -50,7 +54,7 @@ define([
             withCredentials: true
           },
           success: function(result) {
-            console.log("Successfully created CouchDB");
+            console.log("Successfully created CouchDB (initialize)");
             // Get token and user name
             userLogin = result.user_login;
             userCouchDBToken = result.user_token;
@@ -62,14 +66,20 @@ define([
             $rootScope.$broadcast('event:initialized');
           },
           error: function(result) {
-            console.log("Error while creating CouchDB: ");
+            console.log("Error while creating CouchDB (initialize): ");
             console.dir(result);
             $rootScope.$broadcast('event:initFailed');
           }
         });
       } else {
         $rootScope.$broadcast('event:initialized');
+        console.log("Already initialized (initialize)");
       }
+    }
+
+    // If the initialization passed
+    function isInitializedFunc(){
+      return isInitialized;
     }
 
     function CreateLocalPouchDB () {
@@ -114,7 +124,7 @@ define([
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
-      console.log("Saving Topic on the client side.");
+      console.log("Saving Topic on the client side (createTopic)");
       dbTopics.put({
           _id: oTopic.id,
           creationTime: oTopic.creationTime.toISOString(),
@@ -128,22 +138,21 @@ define([
 
         function callback(err, result) {
         if (!err) {
-          console.log('Successfully saved a Topic on client side!');
-          $rootScope.$broadcast('event:topics-synced');
+          console.log('Successfully saved a Topic on client side (createTopic)');
         } else {
-          console.log("Error while saving Topic on the client side: " + err);
+          console.log("Error while saving Topic on the client side (createTopic): " + err);
         }
       });
 
-      console.log("Saving Topic on the server side.");
+      console.log("Saving Topic on the server side (createTopic)");
       //Push Topic to the server
       dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Topic on the server side");
+          console.log("Successfully saved Topic on the server side (createTopic)");
         }).on('error', function (err) {
           // Handle error
-          console.log("Error while saving Topic on the server side: " + err);
+          console.log("Error while saving Topic on the server side (createTopic): " + err);
         });
     }
 
@@ -152,7 +161,7 @@ define([
      */
     function readTopic(sTopicId){
       if(!aoCachedTopics){
-        console.log("Reading from empty list of Topics");
+        console.log("Reading from empty list of Topics (readTopic)");
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
@@ -192,7 +201,7 @@ define([
           // get data from the server
 
           if(aoCachedTopics.length === 0) {
-            console.log("Accessing wrong link");
+            console.log("Accessing wrong link (readTopicsDB)");
           }
 
           $rootScope.$broadcast('event:topics-read-finished');
@@ -256,7 +265,7 @@ define([
           });
 
           if((aoCachedTopics.length === 0) || (aoCachedObservations.length === 0)){
-            console.log("Accessing wrong link");
+            console.log("Accessing wrong link (readDBState)");
           }
         });
 
@@ -284,8 +293,11 @@ define([
      * (Public) Read Topics from memory
      */
     function readTopics(){
-      if(aoCachedTopics.length === 0){
-        console.log("No topics in memory");
+      if(!aoCachedTopics){
+        console.log("No topics in memory (readTopics)");
+      } else {
+        console.log("There are some topics in memory (readTopics)");
+        console.log(aoCachedTopics);
       }
 
       return aoCachedTopics;
@@ -310,7 +322,7 @@ define([
           aoCachedTopics[i] = oTopic;
 
           // Save topic to client database
-          console.log("Updating Topic on the client side.");
+          console.log("Updating Topic on the client side (readObservationsToSync)");
           // TODO what kind of changes could happen???
 
           dbTopics.get(oTopic.id).then(function(oTopicDB) {
@@ -328,21 +340,21 @@ define([
             });
           }, function(err, response) {
             if (!err) {
-              console.log('Successfully updated Topic on client side!');
+              console.log('Successfully updated Topic on client side (readObservationsToSync)');
             } else {
-              console.log('Error while updating Topic on client side: ' + err);
+              console.log('Error while updating Topic on client side (readObservationsToSync): ' + err);
             }
           });
 
-          console.log("Updating Topic on the server side.");
+          console.log("Updating Topic on the server side (readObservationsToSync)");
           //Push Observation to the server
           dbTopics.replicate.to(remoteCouchTopicsAddress)
             .on('complete', function () {
               // Successfully synced
-              console.log("Successfully updated Topic on the server side");
+              console.log("Successfully updated Topic on the server side (readObservationsToSync)");
             }).on('error', function (err) {
               // Handle error
-              console.log("Error while updating Topic on the server side: " + err);
+              console.log("Error while updating Topic on the server side (readObservationsToSync): " + err);
             });
           break;
         }
@@ -407,14 +419,14 @@ define([
      * Actions on reading complete from server database
      */
     function onGetComplete(info) {
-      console.log("Successfully read Topics from the server");
+      console.log("Successfully read Topics from the server (onGetComplete)");
     }
 
     /**
      * Actions if failed to read Topics from server database
      */
     function onGetError(){
-      console.log("Error while reading Topics from the server");
+      console.log("Error while reading Topics from the server (onGetError)");
       console.log(err);
     }
 
@@ -429,10 +441,10 @@ define([
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Topics on the server side");
+          console.log("Successfully read Topics from the server side (readTopicsAsyncDB)");
         }).on('error',  function (err) {
           // Handle error
-          console.log("Error while reading Topics on the server side: " + err);
+          console.log("Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
         });
 
       // Read all docs into memory
@@ -472,10 +484,10 @@ define([
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Topics on the server side");
+          console.log("Successfully read Topics from the server side (readTopicsSyncDB)");
         }).on('error',  function (err) {
           // Handle error
-          console.log("Error while reading Topics on the server side: " + err);
+          console.log("Error while reading Topics on the server side (readTopicsSyncDB): " + err);
         });
 
       // Read all docs into memory
@@ -514,10 +526,10 @@ define([
       dbObservations.replicate.from(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Observations on the server side");
+          console.log("Successfully read Observations on the server side (readObservationsAsyncDB)");
         }).on('error',  function (err) {
           // Handle error
-          console.log("Error while reading Observations on the server side: " + err);
+          console.log("Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
         });
 
       // Read all docs into memory
@@ -581,12 +593,41 @@ define([
      * (Public) Save Observation
      */
     function createObservation(oObservation) {
-      if (aoCachedObservations.length === 0) {
-        aoCachedObservations = [];
-      }
-
       aoCachedObservations.push(oObservation);
-      aoObservationsToSync.push(oObservation);
+
+      // Save observation to client database
+      console.log("Saving Observation on the client side (createObservation)");
+      dbObservations.put({
+          _id: oObservation.id,
+          topicId: oObservation.topicId,
+          value: oObservation.value,
+          creationDate: oObservation.creationDate.toISOString(),
+          creationTime: oObservation.creationTime.toISOString(),
+          observationDate: oObservation.observationDate,
+          observationTime: oObservation.observationTime,
+          updateTime: oObservation.updateTime.toISOString(),
+          timezone: oObservation.timezone,
+          comment: oObservation.comment},
+
+        function callback(err, result) {
+          if (!err) {
+            console.log("Successfully saved Observation on client side (createObservation)");
+          } else {
+            console.log("Error while saving Observation on client side (createObservation)" + err);
+          }
+        });
+
+        // Save observation to server side
+        console.log("Saving Observation on the server side (createObservation)");
+        //Push Observation to the server
+        dbObservations.replicate.to(remoteCouchObservationsAddress)
+          .on('complete', function () {
+            // Successfully synced
+            console.log("Successfully saved Observation on the server side (createObservation)");
+          }).on('error', function (err) {
+            // Handle error
+            console.log("Error while saving Observation on the server side (createObservation): " + err);
+          });
     }
 
     /**
@@ -598,14 +639,14 @@ define([
       var len = aoObservationsToSync.length;
 
       if (len === 0) {
-        console.log("No local observations to sync!");
+        console.log("No local observations to sync (syncObservationsDB)");
         $rootScope.$broadcast('event:observations-synced-with-db');
       }
 
       for (var i=0; i<len; i++) {
         var oObservation = aoObservationsToSync[i];
         // Save observation to client database
-        console.log("Saving Observation on the client side.");
+        console.log("Saving Observation on the client side (syncObservationsDB)");
         dbObservations.put({
             _id: oObservation.id,
             topicId: oObservation.topicId,
@@ -620,10 +661,10 @@ define([
 
           function callback(err, result) {
             if (!err) {
-              console.log("Successfully saved Observation on client side!");
+              console.log("Successfully saved Observation on client side (syncObservationsDB)");
               $rootScope.$broadcast('event:observations-synced-with-db');
             } else {
-              console.log("Error while saving Observation on client side!" + err);
+              console.log("Error while saving Observation on client side (syncObservationsDB)" + err);
               $rootScope.$broadcast('event:observations-sync-db-problem');
             }
           });
@@ -637,16 +678,16 @@ define([
      * (Public) Save Observation on server-side
      */
     function syncObservationsServer() {
-      console.log("Saving Observation on the server side.");
+      console.log("Saving Observation on the server side (syncObservationsServer)");
       //Push Observation to the server
       dbObservations.replicate.to(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Observation on the server side");
+          console.log("Successfully saved Observation on the server side (syncObservationsServer)");
           $rootScope.$broadcast('event:observations-synced-with-server');
         }).on('error', function (err) {
           // Handle error
-          console.log("Error while saving Observation on the server side: " + err);
+          console.log("Error while saving Observation on the server side (syncObservationsServer): " + err);
           $rootScope.$broadcast('event:observations-sync-server-problem');
         });
     }
@@ -656,7 +697,7 @@ define([
      */
     function readObservation(sObservationId) {
       if(!aoCachedObservations){
-        console.log("Reading from empty list of Observations");
+        console.log("Reading from empty list of Observations (readObservation)");
       }
 
       var oCachedObservation = aoCachedObservations.filter(function(entry){
@@ -670,9 +711,12 @@ define([
      * (Public) Read Observations from memory
      */
     function readObservations(){
-      if(aoCachedObservations.length === 0){
-        console.log("No observations in memory");
+      if(!aoCachedObservations){
+        console.log("No observations in memory (readObservations)");
         aoCachedObservations = [];
+      } else {
+        console.log("There are some observations in memory (readObservations)");
+        console.log(aoCachedObservations);
       }
 
       return aoCachedObservations;
@@ -691,7 +735,7 @@ define([
           aoCachedObservations[i] = oObservation;
 
           // Save observation to client database
-          console.log("Updating Observation on the client side.");
+          console.log("Updating Observation on the client side (updateObservation)");
 
           dbObservations.get(oObservation.id).then(function(oObservationDB) {
             return dbObservations.put({
@@ -709,21 +753,21 @@ define([
             });
           }, function(err, response) {
             if (!err) {
-              console.log('Successfully updated Observation on client side!');
+              console.log('Successfully updated Observation on client side (updateObservation)');
             } else {
-              console.log('Error while updating Observation on client side: ' + err);
+              console.log('Error while updating Observation on client side (updateObservation): ' + err);
             }
           });
 
-          console.log("Updating Observation on the server side.");
+          console.log("Updating Observation on the server side (updateObservation)");
           //Push Observation to the server
           dbObservations.replicate.to(remoteCouchObservationsAddress)
             .on('complete', function () {
               // Successfully synced
-              console.log("Successfully updated Observation on the server side");
+              console.log("Successfully updated Observation on the server side (updateObservation)");
             }).on('error', function (err) {
               // Handle error
-              console.log("Error while updating Observation on the server side: " + err);
+              console.log("Error while updating Observation on the server side (updateObservation): " + err);
             });
           break;
         }
@@ -763,7 +807,8 @@ define([
       readDBState: readDBState,
 
       CreateLocalPouchDB: CreateLocalPouchDB,
-      initialize: initialize
+      initialize: initialize,
+      isInitializedFunc: isInitializedFunc
     };
 
   }]);
