@@ -13,7 +13,8 @@ define([
      '$state',
      '$stateParams',
      'SelfReportStorageService',
-      function ($scope, $state, $stateParams, selfReportStorage) {
+      '$rootScope',
+      function ($scope, $state, $stateParams, selfReportStorage, $rootScope) {
         $scope.$on('event:initialized', function() {
           // Toggle range boundaries and step based on topic type none/numeric/range
           $scope.changeType = function () {
