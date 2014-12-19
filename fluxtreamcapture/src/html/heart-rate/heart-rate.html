@@ -1,4 +1,4 @@
-<ion-view title="Photo Upload">
+<ion-view title="Heart Rate">
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
     <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
@@ -6,8 +6,28 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <p>Heart rate : {{ heartRate }}</p>
-    <p>RR : {{ rr }}</p>
+    <div ng-if="serviceEnabled">
+      <div style="text-align: center; font-size: 2em; font-weight: bold; margin-top: 5px;">
+        <p>Heart rate : {{ heartRate }}</p>
+        <p>RR : {{ rr }}</p>
+      </div>
+      <p ng-if="!deviceConnected && !deviceLocked">Scanning for heart rate monitor</p>
+      <p ng-if="!deviceConnected && deviceLocked">Looking for locked device XX45X34</p>
+      <a ng-click="lockDevice" ng-if="deviceConnected && !deviceLocked">LOCK</a>
+      <a ng-click="unlockDevice" ng-if="deviceLocked">UNLOCK</a>
+      <p>No data uploaded.</p>
+      <p style="height: 300px; background: #E5E5E; overflow: hidden;">
+        History:<br />
+        <span ng-repeat="log in historyLogs">
+          {{ log }} <br />
+        </span>
+      </p>
+      <button class="button button-block button-positive" ng-click="disableService()">Disable</button>
+    </div>
+    <div ng-if="!serviceEnabled">
+      <p>Enable this to connect your bluetooth heart rate monitor to this app.</p>
+      <button class="button button-block button-positive" ng-click="enableService()">Enable</button>
+    </div>
   </ion-content>
 </ion-view>
 

@@ -24,6 +24,18 @@
     }
   }, {
     "do": {
+      "android_add_to_application_manifest": {
+        "element": {
+          "tag": "activity",
+          "attributes": {
+            "android:name": "io.trigger.forge.android.modules.flx_polar_h7.EnableBluetoothActivity",
+            "android:theme": "@android:style/Theme.Translucent.NoTitleBar"
+          }
+        }
+      }
+    }
+  }, {
+    "do": {
       "android_add_to_manifest": {
         "element": {
           "tag": "uses-feature",

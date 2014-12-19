@@ -1,11 +1,9 @@
 package io.trigger.forge.android.modules.flx_polar_h7;
 
-import java.util.HashMap;
+import io.trigger.forge.android.core.ForgeApp;
+
 import java.util.UUID;
 
-import com.google.gson.JsonObject;
-
-import io.trigger.forge.android.core.ForgeApp;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,6 +21,8 @@ import android.content.IntentFilter;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.google.gson.JsonObject;
+
 public class PolarH7Service extends Service {
 	
 	public static final String LOG_TAG = "flx_polar_h7";
@@ -38,9 +38,9 @@ public class PolarH7Service extends Service {
 			return 0;
 		}
 		
-		initialize();
+		boolean discoveryStarted = initialize();
 		
-		Log.d(LOG_TAG, "Polar H7 background service started");
+		Log.d(LOG_TAG, "Polar H7 background service started: " + discoveryStarted);
 		
 		return START_STICKY;
 	}
@@ -50,18 +50,26 @@ public class PolarH7Service extends Service {
 		return null;
 	}
 	
+	/**
+	 * Initializes the bluetooth adapter.
+	 * Returns whether bluetooth device discovery has been started.
+	 */
 	public boolean initialize() {
+		// Create bluetooth manager
 		if (bluetoothManager == null) {
 			bluetoothManager = (BluetoothManager) this.getSystemService(Context.BLUETOOTH_SERVICE);
 			if (bluetoothManager == null) {
 				Log.e(LOG_TAG, "Unable to initialize BluetoothManager");
+				ForgeApp.event("heartrate.error", eventDataForError("Unable to initialize BluetoothManager"));
 				return false;
 			}
 		}
 		
+		// Get bluetooth manager
 		bluetoothAdapter = bluetoothManager.getAdapter();
 		if (bluetoothAdapter == null) {
 			Log.e(LOG_TAG, "Unable to obtain a BluetoothAdapter");
+			ForgeApp.event("heartrate.error", eventDataForError("Unable to obtain a BluetoothAdapter"));
 			return false;
 		}
 		
@@ -73,32 +81,60 @@ public class PolarH7Service extends Service {
 		filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 		registerReceiver(bluetoothBroadcastEventReceiver, filter);
 		
-//		if (!bluetoothAdapter.isEnabled()) {
-//			Intent enableBlutoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-//			ForgeApp.getActivity().startActivityForResult(enableBlutoothIntent, 27);
-//			Intent discoverIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//			discoverIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-//			ForgeApp.getActivity().startActivity(discoverIntent);
-//		}
+		filter = new IntentFilter("io.trigger.forge.android.modules.flx_polar_h7.BLUETOOTH_ENABLED");
+		registerReceiver(bluetoothBroadcastEventReceiver, filter);
 		
-		boolean res = bluetoothAdapter.startDiscovery();
-		Log.d(LOG_TAG, "startDiscovery result: " + res);
-		
-		return true;
+		// Enable bluetooth if not enabled
+		if (!bluetoothAdapter.isEnabled()) {
+			// Start activity that will ask the user to enable bluetooth
+			Intent enableBluetoothIntent = new Intent(ForgeApp.getActivity().getBaseContext(), EnableBluetoothActivity.class);
+			enableBluetoothIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			ForgeApp.getActivity().startActivity(enableBluetoothIntent);
+			return false;
+		} else {
+			// Start discovering devices
+			return startDiscovery();
+		}
 	}
 	
+	/**
+	 * Starts the discovery of bluetooth devices (must be called when bluetooth has been enabled)
+	 */
+	private boolean startDiscovery() {
+		boolean res = bluetoothAdapter.startDiscovery();
+		Log.d(LOG_TAG, "startDiscovery result: " + res);
+		if (res) {
+			ForgeApp.event("heartrate.discoveryStarted");
+		}
+		return res;
+	}
+	
+	// Broadcast event received
 	private final BroadcastReceiver bluetoothBroadcastEventReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
 				// Bluetooth device found
 				bluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				connect(bluetoothDevice.getAddress());
+				boolean connectionSuccessful = connect(bluetoothDevice.getAddress());
+				if (!connectionSuccessful) {
+					// Connection to device failed, restart discovery
+					boolean res = bluetoothAdapter.startDiscovery();
+					Log.d(LOG_TAG, "Restarting bluetooth device discovery: " + res);
+				}
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
 				// End of discovery, restart it if the device was not found
 				if (bluetoothDevice == null) {
 					boolean res = bluetoothAdapter.startDiscovery();
 					Log.d(LOG_TAG, "Restarting bluetooth device discovery: " + res);
+				}
+			} else if ("io.trigger.forge.android.modules.flx_polar_h7.BLUETOOTH_ENABLED".equals(intent.getAction())) {
+				// The user has made a choice about enabling bluetooth
+				if (intent.getExtras().getBoolean("enabled")) {
+					Log.d(LOG_TAG, "Bluetooth has been enabled by user");
+					startDiscovery();
+				} else {
+					Log.d(LOG_TAG, "Bluetooth has not been enabled by user");
 				}
 			}
 		}
@@ -112,49 +148,57 @@ public class PolarH7Service extends Service {
 		super.onDestroy();
 	}
 	
+	/**
+	 * Connect to the device with the given address
+	 */
 	public boolean connect(final String address) {
 		Log.d(LOG_TAG, "Connecting " + address);
-		
+		// Check data
 		if (bluetoothAdapter == null || address == null) {
 			Log.w(LOG_TAG, "Bluetooth adapter not initialized or unspecified address");
 			return false;
 		}
 		
+		// Get bluetooth device
 		bluetoothDevice = bluetoothAdapter.getRemoteDevice(address);
 		if (bluetoothDevice == null) {
 			Log.w(LOG_TAG, "Device not found, unable to connect");
 			return false;
 		}
 		
+		// Connect to device
 		Log.d(LOG_TAG, "Connecting to device " + address);
 		bluetoothGatt = bluetoothDevice.connectGatt(this, false, gattCallback);
-		bluetoothGatt.connect();
-		bluetoothGatt.discoverServices();
-		Log.i(LOG_TAG, "Listing services:");
-		for (BluetoothGattService service : bluetoothGatt.getServices()) {
-			Log.i(LOG_TAG, "- " + service.toString());
+		boolean success = bluetoothGatt.connect();
+		if (success) {
+			// Start looking for services provided by the device
+			bluetoothGatt.discoverServices();
 		}
-		return true;
+		return success;
 	}
 	
+	// Gatt callback
 	private final BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
 		
 		@Override
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
+				// Device is now connected
 				Log.d(LOG_TAG, "State is connected");
+				ForgeApp.event("heartrate.deviceConnected");
 				bluetoothGatt.discoverServices();
 			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 				// Attempt to reconnect to the device
+				ForgeApp.event("heartrate.deviceDisconnected");
 				bluetoothGatt.connect();
 			}
 		};
 		
 		@Override
 		public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
-//			Log.d(LOG_TAG, "Characteristic changed: " + characteristic.getUuid());
 			int length = characteristic.getValue().length;
 			if (BluetoothUUIDs.HEART_RATE_MEASUREMENT.equals(characteristic.getUuid().toString())) {
+				// List of heart rate measurements received, send them to the Forge app and save them for upload
 				for (int i=1; i<length/2; i++) {
     				String rrValue = String.valueOf(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, i*2));
     				int heartRate = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1);
@@ -171,36 +215,12 @@ public class PolarH7Service extends Service {
 		}
 		
 		@Override
-		public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-			Log.d(LOG_TAG, "Characteristic read: " + characteristic + ", " + status);
-		}
-		
-		@Override
-		public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-			Log.d(LOG_TAG, "Characteristic write: " + characteristic + ", " + status);
-		}
-		
-		@Override
-		public void onDescriptorRead(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-			Log.d(LOG_TAG, "Descriptor read: " + descriptor + ", " + status);
-		}
-		
-		@Override
-		public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-			Log.d(LOG_TAG, "Descriptor write: " + descriptor + ", " + status);
-		}
-		
-		@Override
-		public void onReadRemoteRssi(BluetoothGatt gatt, int rssi, int status) {
-			Log.d(LOG_TAG, "Remote RSSI: " + rssi + ", " + status);
-		}
-		
-		@Override
 		public void onServicesDiscovered(BluetoothGatt gatt, int status) {
 			Log.d(LOG_TAG, "Services discovered: " + status);
 			// Try to find heartrate service
 			BluetoothGattService service = gatt.getService(UUID.fromString(BluetoothUUIDs.SERVICE_HEARTRATE));
 			if (service != null) {
+				ForgeApp.event("heartrate.heartrateServiceFound");
 				// Register to heartrate notifications
 				registerHeartrateCharacteristicNotifications(service);
 			}
@@ -208,6 +228,9 @@ public class PolarH7Service extends Service {
 		
 	};
 	
+	/**
+	 * Registers to the heart rate measurement
+	 */
 	private void registerHeartrateCharacteristicNotifications(BluetoothGattService heartrateService) {
 		BluetoothGattCharacteristic characteristic = heartrateService.getCharacteristic(UUID.fromString(BluetoothUUIDs.HEART_RATE_MEASUREMENT));
 		if (characteristic != null) {
@@ -218,6 +241,18 @@ public class PolarH7Service extends Service {
 		}
 	}
 	
+	/**
+	 * Generate Json object for an error event to be sent to the Forge app
+	 */
+	private JsonObject eventDataForError(String errorMessage) {
+		JsonObject eventData = new JsonObject();
+		eventData.addProperty("error", errorMessage);
+		return eventData;
+	}
+	
+	/**
+	 * Bluetooth communication constants
+	 */
 	public static class BluetoothUUIDs {
 		
 		// Services

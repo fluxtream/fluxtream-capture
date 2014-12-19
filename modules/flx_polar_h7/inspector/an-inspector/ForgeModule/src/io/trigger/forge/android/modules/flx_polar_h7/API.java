@@ -19,4 +19,16 @@ public class API {
 		});
 	}
 	
+	public static void stopService(final ForgeTask task) {
+		Log.d(PolarH7Service.LOG_TAG, "API: endService()");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				Intent intent = new Intent(ForgeApp.getActivity(), PolarH7Service.class);
+				ForgeApp.getActivity().stopService(intent);
+				task.success();
+			}
+		});
+	}
+	
 }
