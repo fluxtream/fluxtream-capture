@@ -3,7 +3,8 @@
 	"ios": {
 		"profiles": {
 			"DEFAULT": {
-        "provisioning_profile": "IOS_certificates/development/Fluxtream_Capture.mobileprovision"
+				"provisioning_profile": "/Users/Yury/projects/IOS_certificates/development/Fluxtream_Capture.mobileprovision",
+				"developer_certificate": "Yury Chernushenko"
 			}
 		},
 		"simulatorsdk": "7.1",

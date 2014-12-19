@@ -45,107 +45,115 @@ define([
      '$stateParams',
      '$state',
      'SelfReportStorageService',
+     '$rootScope',
 
-      function($scope, $stateParams, $state, selfReportStorage) {
+      function($scope, $stateParams, $state, selfReportStorage, $rootScope) {
+        $scope.$on('event:initialized', function () {
+          $scope.topicId = $stateParams.observationId.split("_")[1];
 
-        $scope.topicId = $stateParams.observationId.split("_")[1];
+          //Arrange DOM
+          //TODO test range and others with malicious input
+          $scope.readType = function () {
+            var sTypeOfTopic = $scope.oTopic.type;
+            if (sTypeOfTopic == "None") {
+              document.getElementById('valueItem').style.display = "none";
+            }
+            else if (sTypeOfTopic == "Numeric") {
+              document.getElementById('valueItem').style.display = "";
+              var elInput = document.createElement("input");
+              elInput.type = "text";
+              elInput.id = "observation.value";
+              document.getElementById("valueItem").appendChild(elInput);
+              document.getElementById("valueItem").className = "item item-input";
+            }
+            else if (sTypeOfTopic == "Range") {
+              document.getElementById('valueItem').style.display = "";
+              var elSelect = document.createElement('select');
+              elSelect.id = "observation.value";
 
-        //Arrange DOM
-        //TODO test range and others with malicious input
-        $scope.readType = function(){
-          var sTypeOfTopic = $scope.oTopic.type;
-          if (sTypeOfTopic == "None"){
-            document.getElementById('valueItem').style.display = "none";
-          }
-          else if (sTypeOfTopic == "Numeric") {
-            document.getElementById('valueItem').style.display = "";
-            var elInput =  document.createElement("input");
-            elInput.type = "text";
-            elInput.id = "observation.value";
-            document.getElementById("valueItem").appendChild(elInput);
-            document.getElementById("valueItem").className = "item item-input";
-          }
-          else if (sTypeOfTopic == "Range"){
-            document.getElementById('valueItem').style.display = "";
-            var elSelect = document.createElement('select');
-            elSelect.id = "observation.value";
+              //TODO how define range?
+              var nCounter = Number($scope.oTopic.rangeStart);
+              var nRangeEnd = Number($scope.oTopic.rangeEnd);
+              var nRangeStep = Number($scope.oTopic.step);
 
-            //TODO how define range?
-            var nCounter = Number($scope.oTopic.rangeStart);
-            var nRangeEnd = Number($scope.oTopic.rangeEnd);
-            var nRangeStep = Number($scope.oTopic.step);
+              while (nCounter <= nRangeEnd) {
+                var opt = document.createElement('option');
+                opt.value = nCounter;
+                opt.innerHTML = nCounter;
+                elSelect.appendChild(opt);
+                nCounter += nRangeStep;
+              }
 
-            while(nCounter <= nRangeEnd){
-              var opt = document.createElement('option');
-              opt.value = nCounter;
-              opt.innerHTML = nCounter;
-              elSelect.appendChild(opt);
-              nCounter += nRangeStep;
+              //TODO default value could be out of range? - Should't allow
+              document.getElementById("valueItem").appendChild(elSelect);
+              document.getElementById("valueItem").className = "item item-input item-select";
+            }
+          };
+
+          // Listen for the event - Topics and Observations arrays are loaded into memory
+          // required in case the page was reloaded
+          $scope.$on('event:state-read-finished', function () {
+            $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
+            $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
+
+            document.title = $scope.oTopic.name;
+
+            $scope.readType();
+
+            if ($scope.oTopic.type != "None") {
+              document.getElementById('observation.value').value = $scope.oObservation.value;
             }
 
-            //TODO default value could be out of range? - Should't allow
-            document.getElementById("valueItem").appendChild(elSelect);
-            document.getElementById("valueItem").className = "item item-input item-select";
-          }
-        };
+            document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
+            document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
+            document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
+            document.getElementById('observation.comment').value = $scope.oObservation.comment;
 
-        // Listen for the event - Topics and Observations arrays are loaded into memory
-        // required in case the page was reloaded
-        $scope.$on('event:state-read-finished', function() {
-          $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
-          $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
+            $scope.$$phase || $scope.$apply();
+          });
 
-          document.title = $scope.oTopic.name;
+          selfReportStorage.readDBState();
 
-          $scope.readType();
+          // Called when the form is submitted
+          $scope.editObservation = function () {
+            //Set values of observation
 
-          if ($scope.oTopic.type != "None") {
-            document.getElementById('observation.value').value = $scope.oObservation.value;
-          }
+            var tCreationDate = new Date();
 
-          document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
-          document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
-          document.getElementById('observation.timezone').value = $scope.oObservation.timezone;
-          document.getElementById('observation.comment').value = $scope.oObservation.comment;
+            if ($scope.oTopic.type == "None") {
+              sObservationValue = null;
+            } else {
+              sObservationValue = document.getElementById('observation.value').value;
+            }
 
-          $scope.$$phase || $scope.$apply();
+            var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
+              + document.getElementById('observation.observationTime').value).format();
+
+            $scope.oNewObservation = new selfReportStorage.Observation(
+              $scope.oObservation.id,
+              $scope.topicId,
+              sObservationValue,
+              $scope.oObservation.creationDate,
+              $scope.oObservation.creationTime,
+              document.getElementById('observation.observationDate').value,
+              tObservationTime,
+              tCreationDate,
+              document.getElementById('observation.timezone').value,
+              document.getElementById('observation.comment').value
+            );
+
+            selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
+            $scope.$$phase || $scope.$apply();
+            $state.go("history");
+
+          };
         });
-
-        selfReportStorage.readDBState();
-
-        // Called when the form is submitted
-        $scope.editObservation = function() {
-          //Set values of observation
-
-          var tCreationDate = new Date();
-
-          if ($scope.oTopic.type == "None") {
-            sObservationValue = null;
-          } else {
-            sObservationValue = document.getElementById('observation.value').value;
-          }
-
-          var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
-            + document.getElementById('observation.observationTime').value).format();
-
-          $scope.oNewObservation = new selfReportStorage.Observation(
-            $scope.oObservation.id,
-            $scope.topicId,
-            sObservationValue,
-            $scope.oObservation.creationDate,
-            $scope.oObservation.creationTime,
-            document.getElementById('observation.observationDate').value,
-            tObservationTime,
-            tCreationDate,
-            document.getElementById('observation.timezone').value,
-            document.getElementById('observation.comment').value
-          );
-
-          selfReportStorage.updateObservation($scope.oObservation.id, $scope.oNewObservation);
-          $scope.$$phase || $scope.$apply();
-          $state.go("history");
-
-        };
+        // Get token from backend and initialize local variables
+        if (!selfReportStorage.isInitializedFunc()) {
+          selfReportStorage.initialize();
+        } else {
+          $rootScope.$broadcast('event:initialized');
+        }
       }
     ]
   );
