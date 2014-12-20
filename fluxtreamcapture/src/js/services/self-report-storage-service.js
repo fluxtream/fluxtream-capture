@@ -442,35 +442,35 @@ define([
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Topics from the server side (readTopicsAsyncDB)");
+
+          // Read all docs into memory
+          dbTopics.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextTopic = new Topic(
+                row.doc._id,
+                row.doc.creationTime,
+                row.doc.updateTime,
+                row.doc.name,
+                row.doc.type,
+                row.doc.defaultValue,
+                row.doc.rangeStart,
+                row.doc.rangeEnd,
+                row.doc.step
+              );
+
+              aoCachedTopics.push(oNextTopic);
+            });
+            // Put pre-processing of data
+            fCallback(aoCachedTopics);
+
+          });
+
         }).on('error',  function (err) {
           // Handle error
           console.log("Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
         });
-
-      // Read all docs into memory
-
-      dbTopics.allDocs({include_docs: true}, function(err, response) {
-        response.rows.forEach( function (row)
-        {
-          //console.log(row.doc.name);
-          var oNextTopic = new Topic(
-            row.doc._id,
-            row.doc.creationTime,
-            row.doc.updateTime,
-            row.doc.name,
-            row.doc.type,
-            row.doc.defaultValue,
-            row.doc.rangeStart,
-            row.doc.rangeEnd,
-            row.doc.step
-          );
-
-          aoCachedTopics.push(oNextTopic);
-        });
-        // Put pre-processing of data
-        fCallback(aoCachedTopics);
-
-      });
     }
 
     /**
@@ -527,34 +527,34 @@ define([
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Observations on the server side (readObservationsAsyncDB)");
+
+          // Read all docs into memory
+          dbObservations.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextObservation = new Observation(
+                row.doc._id,
+                row.doc.topicId,
+                row.doc.value,
+                row.doc.creationDate,
+                row.doc.creationTime,
+                row.doc.observationDate,
+                row.doc.observationTime,
+                row.doc.updateTime,
+                row.doc.timezone,
+                row.doc.comment
+              );
+
+              aoCachedObservations.push(oNextObservation);
+            });
+            // Put pre-processing of data
+            fCallback(aoCachedObservations);
+          });
         }).on('error',  function (err) {
           // Handle error
           console.log("Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
         });
-
-      // Read all docs into memory
-      dbObservations.allDocs({include_docs: true}, function(err, response) {
-        response.rows.forEach( function (row)
-        {
-          //console.log(row.doc.name);
-          var oNextObservation = new Observation(
-            row.doc._id,
-            row.doc.topicId,
-            row.doc.value,
-            row.doc.creationDate,
-            row.doc.creationTime,
-            row.doc.observationDate,
-            row.doc.observationTime,
-            row.doc.updateTime,
-            row.doc.timezone,
-            row.doc.comment
-          );
-
-          aoCachedObservations.push(oNextObservation);
-        });
-        // Put pre-processing of data
-        fCallback(aoCachedObservations);
-      });
     }
 
 
