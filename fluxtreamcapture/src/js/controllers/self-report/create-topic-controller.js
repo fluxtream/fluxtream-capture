@@ -61,20 +61,27 @@ define([
             //TODO How we generate the ID for the Topic? - When connecting to server resolve topic Ids first
             //TODO any placeholders? - Should be clear where to enter value
             //TODO what to do with "status" field - use when archive for topics and delete for observations
-            $scope.oNewTopic = new selfReportStorage.Topic(
-              nLength,
-              tCurrentTime,
-              tCurrentTime,
-              document.getElementById('topic.name').value,
-              document.getElementById('topic.type').value,
-              document.getElementById('topic.defaultValue').value,
-              document.getElementById('topic.rangeStart').value,
-              document.getElementById('topic.rangeEnd').value,
-              document.getElementById('topic.step').value
-            );
 
-            selfReportStorage.createTopic($scope.oNewTopic);
-            $state.go("editTopics");
+            if(document.getElementById('topic.type').value === "Range" &&
+              (document.getElementById('topic.step').value === null ||
+                document.getElementById('topic.step').value <= 0)){
+              alert("Step can not be less than 0 for Range type");
+            } else {
+              $scope.oNewTopic = new selfReportStorage.Topic(
+                nLength,
+                tCurrentTime,
+                tCurrentTime,
+                document.getElementById('topic.name').value,
+                document.getElementById('topic.type').value,
+                document.getElementById('topic.defaultValue').value,
+                document.getElementById('topic.rangeStart').value,
+                document.getElementById('topic.rangeEnd').value,
+                document.getElementById('topic.step').value
+              );
+
+              selfReportStorage.createTopic($scope.oNewTopic);
+              $state.go("editTopics");
+            }
           };
         });
 
