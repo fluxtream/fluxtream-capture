@@ -29,14 +29,16 @@ define([
     var backendLink;
     var userLogin;
     var userCouchDBToken;
-    var isInitialized = 0;
+    var bIsInitialized = 0;
+    var bIsTopicsSynced = 0;
+    var bIsObservationsSynced = 0;
     // Client memory values
     var aoCachedTopics;
     var aoCachedObservations;
     var aoObservationsToSync;
 
     function initialize(){
-      if(!isInitialized){
+      if(!bIsInitialized){
         aoCachedTopics = [];
         aoCachedObservations = [];
         aoObservationsToSync = [];
@@ -62,7 +64,7 @@ define([
             // Create Local Pouch DB
             CreateLocalPouchDB();
 
-            isInitialized = 1;
+            bIsInitialized = 1;
             $rootScope.$broadcast('event:initialized');
           },
           error: function(result) {
@@ -77,9 +79,19 @@ define([
       }
     }
 
+    // If the topics were synced with a server
+    function isTopicsSynced(){
+      return bIsTopicsSynced;
+    }
+
+    // If the observations were synced with a server
+    function isObservationsSynced(){
+      return bIsObservationsSynced;
+    }
+
     // If the initialization passed
-    function isInitializedFunc(){
-      return isInitialized;
+    function isInitialized(){
+      return bIsInitialized;
     }
 
     function CreateLocalPouchDB () {
@@ -443,6 +455,8 @@ define([
           // Successfully synced
           console.log("Successfully read Topics from the server side (readTopicsAsyncDB)");
 
+          bIsTopicsSynced = 1;
+
           // Read all docs into memory
           dbTopics.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
@@ -527,6 +541,8 @@ define([
         .on('complete', function () {
           // Successfully synced
           console.log("Successfully read Observations on the server side (readObservationsAsyncDB)");
+
+          bIsObservationsSynced = 1;
 
           // Read all docs into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
@@ -808,7 +824,9 @@ define([
 
       CreateLocalPouchDB: CreateLocalPouchDB,
       initialize: initialize,
-      isInitializedFunc: isInitializedFunc
+      isInitialized: isInitialized,
+      isTopicsSynced: isTopicsSynced,
+      isObservationsSynced: isObservationsSynced
     };
 
   }]);

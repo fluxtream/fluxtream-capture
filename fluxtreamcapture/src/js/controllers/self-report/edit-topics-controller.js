@@ -28,7 +28,7 @@ define([
 
         // Read data from DB if it is epmty
         // TODO should be done periodically not only if reload was done
-        if (!$scope.aoTopics || $scope.aoTopics.length === 0) {
+        if (selfReportStorage.isTopicsSynced() === 0) {
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
@@ -40,7 +40,7 @@ define([
         //TODO test continuous scrolling
       });
 
-      if(!selfReportStorage.isInitializedFunc()) {
+      if(!selfReportStorage.isInitialized()) {
         selfReportStorage.initialize();
       } else {
         $rootScope.$broadcast('event:initialized');

@@ -113,7 +113,7 @@ define([
         });
 
         // Get token from backend and initialize local variables
-        if(!selfReportStorage.isInitializedFunc()) {
+        if(!selfReportStorage.isInitialized()) {
           selfReportStorage.initialize();
         } else {
           $rootScope.$broadcast('event:initialized');

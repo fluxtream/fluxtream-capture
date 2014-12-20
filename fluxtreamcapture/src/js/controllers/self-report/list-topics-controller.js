@@ -20,7 +20,7 @@ define([
         $scope.aoTopics = selfReportStorage.readTopics();
         $scope.$$phase || $scope.$apply();
 
-        if(!$scope.aoTopics || $scope.aoTopics.length === 0) {
+        if(selfReportStorage.isTopicsSynced() === 0) {
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
@@ -33,7 +33,7 @@ define([
       });
 
       // Get token from backend and initialize local variables
-      if(!selfReportStorage.isInitializedFunc()) {
+      if(!selfReportStorage.isInitialized()) {
         selfReportStorage.initialize();
       } else {
         $rootScope.$broadcast('event:initialized');
