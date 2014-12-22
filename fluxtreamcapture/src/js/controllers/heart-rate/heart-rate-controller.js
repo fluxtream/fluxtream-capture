@@ -63,7 +63,10 @@ define([
       });
       
       $scope.addHistoryLog = function(message) {
-        $scope.historyLogs.unshift(new Date().toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1") + " -> " + message);
+        $scope.historyLogs.unshift({
+          id: $scope.historyLogs.length,
+          message: new Date().toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1") + " -> " + message
+        });
         $scope.$$phase || $scope.$apply();
       };
       
