@@ -69,26 +69,32 @@ define([
             $scope.editTopic = function () {
               var tCurrentTime = new Date();
 
-              //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
-              $scope.oNewTopic = new selfReportStorage.Topic(
-                $scope.oTopic.id,
-                $scope.oTopic.creationTime,
-                tCurrentTime,
-                document.getElementById('topic.name').value,
-                document.getElementById('topic.type').value,
-                document.getElementById('topic.defaultValue').value,
-                document.getElementById('topic.rangeStart').value,
-                document.getElementById('topic.rangeEnd').value,
-                document.getElementById('topic.step').value
-              );
-              // TODO $scope.$$phase || $scope.$apply();
+              if(document.getElementById('topic.type').value === "Range" &&
+                  (document.getElementById('topic.step').value === null ||
+                    document.getElementById('topic.step').value <= 0)){
+                alert("Step can not be less than 0 for Range type");
+              } else {
+                //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
+                $scope.oNewTopic = new selfReportStorage.Topic(
+                  $scope.oTopic.id,
+                  $scope.oTopic.creationTime,
+                  tCurrentTime,
+                  document.getElementById('topic.name').value,
+                  document.getElementById('topic.type').value,
+                  document.getElementById('topic.defaultValue').value,
+                  document.getElementById('topic.rangeStart').value,
+                  document.getElementById('topic.rangeEnd').value,
+                  document.getElementById('topic.step').value
+                );
+                // TODO $scope.$$phase || $scope.$apply();
 
-              selfReportStorage.updateTopic($scope.oNewTopic);
-              $state.go("editTopics");
+                selfReportStorage.updateTopic($scope.oNewTopic);
+                $state.go("editTopics");
+              }
             };
           });
           // Get token from backend and initialize local variables
-          if (!selfReportStorage.isInitializedFunc()) {
+          if (!selfReportStorage.isInitialized()) {
             selfReportStorage.initialize();
           } else {
             $rootScope.$broadcast('event:initialized');

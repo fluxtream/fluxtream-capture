@@ -23,7 +23,7 @@ define([
 
         // Read data from DB if it is epmty
         // TODO should be done periodically not only if reload was done
-        if(!$scope.aoTopics || $scope.aoTopics.length === 0) {
+        if(selfReportStorage.isTopicsSynced() === 0) {
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
@@ -32,7 +32,7 @@ define([
 
         // Read data from DB if it is epmty
         // TODO should be done periodically not only if reload was done
-        if(!$scope.aoObservations || $scope.aoObservations.length === 0) {
+        if(selfReportStorage.isObservationsSynced() === 0) {
           selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
             $scope.aoObservations = aoObservations;
             $scope.$$phase || $scope.$apply();
@@ -53,7 +53,7 @@ define([
       });
 
       // Get token from backend and initialize local variables
-      if(!selfReportStorage.isInitializedFunc()) {
+      if(!selfReportStorage.isInitialized()) {
         selfReportStorage.initialize();
       } else {
         $rootScope.$broadcast('event:initialized');

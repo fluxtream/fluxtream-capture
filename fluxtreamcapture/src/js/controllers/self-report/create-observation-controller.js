@@ -49,6 +49,10 @@ define([
               var nRangeEnd = Number($scope.oTopic.rangeEnd);
               var nRangeStep = Number($scope.oTopic.step);
 
+              if (nRangeStep === 0){
+                nRangeStep = 1;
+              }
+
               while (nCounter <= nRangeEnd) {
                 var opt = document.createElement('option');
                 opt.value = nCounter;
@@ -113,7 +117,7 @@ define([
         });
 
         // Get token from backend and initialize local variables
-        if(!selfReportStorage.isInitializedFunc()) {
+        if(!selfReportStorage.isInitialized()) {
           selfReportStorage.initialize();
         } else {
           $rootScope.$broadcast('event:initialized');
