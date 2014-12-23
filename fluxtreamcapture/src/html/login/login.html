@@ -1,5 +1,14 @@
-<ion-view title="Login">
-  <ion-content>
+<ion-view title="Fluxtream Capture">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <div ng-if="currentScreen != 'loading' && currentScreen != 'home'">
+      <a class="button button-clear pull-left" ng-click="backToHome()">
+        <i class="ion-chevron-left"></i> Back
+      </a>
+    </div>
+  </ion-nav-bar>
+  
+  <ion-content class="login-screen" ng-class="{'has-footer': formErrorMessage}">
     <!-- LOADING SCREEN -->
     <div ng-if="currentScreen === 'loading' || loading">
       <div class="txt-align-center ajax-loading">
@@ -17,6 +26,9 @@
         </p>
       </div>
       <div ng-if="currentScreen === 'home'">
+        <div class="logo txt-align-center">
+          <img src="img/icons/f-144x144.png">
+        </div>
         <div class="list">
           <div class="item item-divider txt-align-center no-border">
             Already a user?<br /> Welcome back!
@@ -30,7 +42,7 @@
                 <button class="button button-block button-positive" ng-click="selectSignUp()">Sign up</button>
               </div>
           </div>
-        </div>        
+        </div>
       </div>
       <!-- SIGN IN SCREEN -->
       <div ng-if="currentScreen === 'sign-in'">
@@ -90,4 +102,16 @@
       </div>
     </div>
   </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark bar-balanced" ng-if="formErrorMessage">
+    <div class="title">
+      <div class="alert-danger">
+        <strong>
+          {{ formErrorMessage }}
+        </strong>
+      </div>
+    </div>
+  </div>
+  
 </ion-view>

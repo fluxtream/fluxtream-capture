@@ -17,8 +17,15 @@ define([
         });
       }
       
+      // If true, the page will be replaced with the loading icon
       $scope.loading = false;
-      $scope.currentScreen = 'home';
+      
+      // The current screen being displayed
+      $scope.currentScreen = 'loading';
+      
+      // The current error messages being displayed
+      $scope.errorMessage = "";
+      $scope.formErrorMessage = "";
       
       // Current setting values
       $scope.signin = {
@@ -27,37 +34,173 @@ define([
         target: ""
       };
       
+      // Current signing up values
+      $scope.signup = {
+        email: "",
+        username: "",
+        password: "",
+        password2: "",
+        firstname: "",
+        lastname: "",
+        target: ""
+      };
+      
       // Load initial settings
-//      $scope.valuesToLoad = Object.keys($scope.settings).length;
       userPrefs.onReady(function() {
-        $scope.signin.username = "dev";
-        $scope.signin.password = "foobarfoobar";
-        $scope.signin.target = "";
-//        for (var settingName in $scope.settings) {
-//          $scope.settings[settingName] = userPrefs.get("login." + settingName);
-//        }
+        $scope.signin.username = userPrefs.get("login.username");
+        $scope.signin.target = userPrefs.get("login.target");
+        $scope.signup.target = userPrefs.get("login.target");
+        $scope.currentScreen = 'home';
         $scope.$$phase || $scope.$apply();
       });
       
-      // Save settings on change
-//      $scope.save = function(settingName) {
-//        // TODO don't save password
-//        userPrefs.onReady(function() {
-//          userPrefs.set('login.' + settingName, $scope.settings[settingName]);
-//        });
-//      };
+      /**
+       * [Private] Updates the error message an refreshes the UI
+       */
+      $scope.setErrorMessage = function(errorMessage) {
+        forge.logging.info("Set error message: " + errorMessage);
+        $scope.errorMessage = errorMessage;
+        $scope.formErrorMessage = "";
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * [Private] Updates the form error message an refreshes the UI
+       */
+      $scope.setFormErrorMessage = function(errorMessage) {
+        forge.logging.info("Set form error message: " + errorMessage);
+        $scope.formErrorMessage = errorMessage;
+        $scope.errorMessage = "";
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * [Private] Remove all error messages
+       */
+      $scope.clearErrorMessages = function() {
+        $scope.formErrorMessage = "";
+        $scope.errorMessage = "";
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * [Called from button] Loads the login home screen
+       */
+      $scope.backToHome = function() {
+        forge.logging.info("Back to home");
+        $scope.clearErrorMessages();
+        $scope.currentScreen = "home";
+      };
       
       /**
        * [Called from button] Loads the sign in screen
        */
       $scope.selectSignIn = function() {
+        $scope.clearErrorMessages();
         $scope.currentScreen = "sign-in";
       };
       
-      // Try logging in to fluxtream
+      /**
+       * [Called from button] Loads the sign up screen
+       */
+      $scope.selectSignUp = function() {
+        $scope.clearErrorMessages();
+        $scope.currentScreen = "sign-up";
+      };
+      
+      /**
+       * [Called from button] Try logging in to fluxtream
+       */
       $scope.signIn = function() {
+        if (!$scope.signin.username) {
+          $scope.setFormErrorMessage("Please enter your username");
+          return;
+        }
+        if (!$scope.signin.password) {
+          $scope.setFormErrorMessage("Please enter your password");
+          return;
+        }
+        $scope.clearErrorMessages();
         forge.logging.info("Logging in...");
-        if (($scope.signin.username || env['test.username']) && ($scope.signin.password || env['test.password'])) {
+        // Save username and target to prefs
+        userPrefs.onReady(function() {
+          userPrefs.set('login.username', $scope.signin.username);
+          userPrefs.set('login.target', $scope.signin.target);
+        });
+        // Check internet connection
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Please connect to the internet.");
+          return;
+        }
+        // Sign in
+        $scope.loading = true;
+        $scope.$$phase || $scope.$apply();
+        // Clear cookies
+        forge.request.ajax({
+          type: "GET",
+          url: loginService.getTargetServer() + "logout",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function() {
+            // Login
+            loginService.signIn(
+              // Username
+              $scope.signin.username,
+              // Password
+              $scope.signin.password,
+              // Success
+              function() {
+                $state.go('listTopics');
+              },
+              // Error
+              function(message) {
+                forge.logging.info("Signing in with credentials failed");
+                $scope.setFormErrorMessage(message);
+                $scope.loading = false;
+                $scope.$$phase || $scope.$apply();
+              }
+            );
+          },
+          error: function(error) {
+            forge.logging.info("Error while logging in");
+            forge.logging.info(error);
+            alert("An error has occurred");
+          }
+        });
+      };
+      
+      /**
+       * [Called from button] Sign up using form
+       */
+      $scope.signUp = function() {
+        // Save target to prefs
+        userPrefs.set('login.target', $scope.signup.target);
+        // Check user input data
+        if (!$scope.signup.email) {
+          $scope.setFormErrorMessage("Missing e-mail address");
+        } else if (!$scope.signup.username) {
+          $scope.setFormErrorMessage("Missing username");
+        } else if (!$scope.signup.firstname) {
+          $scope.setFormErrorMessage("Missing first name");
+        } else if (!$scope.signup.lastname) {
+          $scope.setFormErrorMessage("Missing last name");
+        } else if (!$scope.signup.password) {
+          $scope.setFormErrorMessage("Missing password");
+        } else if ($scope.signup.password !== $scope.signup.password2) {
+          $scope.setFormErrorMessage("Passwords don't match");
+        } else {
+          // Check internet connection
+          if (!forge.is.connection.connected()) {
+            alert("You are offline. Please connect to the internet.");
+            return;
+          }
+          // Validation passed
+          $scope.clearErrorMessages();
+          forge.logging.info("Sign up: validation passed");
+          $scope.loading = true;
+          $scope.$$phase || $scope.$apply();
           // Clear cookies
           forge.request.ajax({
             type: "GET",
@@ -68,29 +211,34 @@ define([
             dataType: "json",
             success: function() {
               // Login
-              loginService.signIn(
-                // Username
-                $scope.signin.username,
-                // Password
-                $scope.signin.password,
+              loginService.signUp(
+                $scope.signup.username,
+                $scope.signup.password,
+                $scope.signup.firstname,
+                $scope.signup.lastname,
+                $scope.signup.email,
                 // Success
                 function() {
                   $state.go('listTopics');
                 },
                 // Error
-                function(message) {
-                  alert(message);
+                function(errorMessage) {
+                  // An error has occurred
+                  forge.logging.info("Sign up failed");
+                  // Set error message
+                  if (!errorMessage) errorMessage = "An error occurred. Please try again.";
+                  $scope.setFormErrorMessage(errorMessage);
+                  $scope.loading = false;
+                  $scope.$$phase || $scope.$apply();
                 }
               );
             },
             error: function(error) {
               forge.logging.info("Error while logging in");
               forge.logging.info(error);
-              alert("An error has occurred");
+              $scope.setFormErrorMessage("An error has occurred");
             }
           });
-        } else {
-          alert("Please type in your username and password");
         }
       };
       

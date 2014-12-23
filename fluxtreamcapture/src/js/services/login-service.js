@@ -21,16 +21,15 @@ define([
       var onSuccessFunction;
       
       /**
-       * (Public) Checks authentification to the fluxtream server
+       * (Public) Checks authentification to the fluxtream server (web only)
        * 
        * @param {function} success  The function that is called if the authentication succeeded
        */
       function checkAuth(username, password, success) {
         onSuccessFunction = success;
-        if (forge.is.web())
+        if (forge.is.web()) {
           checkAuthOnWeb();
-  //      else
-  //        checkAuthOnDevice();
+        }
       }
       
       /**
@@ -49,8 +48,6 @@ define([
           options.xhrFields.withCredentials = true;
           $.ajax(options);
         } else {
-  //        if (!username) username = userPrefs.get('login.username');
-  //        if (!password) password = userPrefs.get('login.password');
           if (username && password) {
             if (typeof options.headers === 'undefined') options.headers = {};
             options.headers.Authorization = 'Basic ' + btoa(username + ":" + password);
@@ -83,8 +80,7 @@ define([
        * (Private) Makes an ajax call to sign the user in using their username and password (mobile only)
        */
       function signIn(username, password, success, error) {
-        
-        forge.logging.info("Sign in: " + username + "/" + password);
+        forge.logging.info("Sign in: " + username + "/******");
         forge.logging.info("URL: " + getTargetServer() + "api/v1/mobile/signin");
         forge.request.ajax({
           url: getTargetServer() + "api/v1/mobile/signin",
@@ -100,30 +96,6 @@ define([
           },
           success: function(guestModel, textStatus) {
             handleAuthSuccessResponse(guestModel, textStatus);
-            
-            // TODO remove
-            forge.logging.info("Using token: " + userPrefs.get('login.fluxtream_access_token'));
-            forge.request.ajax({
-              type: "GET",
-              url: getTargetServer() + "api/v1/guest",
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              dataType: "json",
-              data: {
-                access_token: userPrefs.get('login.fluxtream_access_token'),
-                device_id: deviceIdService.getDeviceId()
-              },
-              success: function(x) {
-                forge.logging.info("SUCCESS");
-                forge.logging.info(x);
-              },
-              error: function(x) {
-                forge.logging.info("ERROR");
-                forge.logging.info(x);
-              }
-            });
-            
             if (success) success();
           },
           error: function(response) {
@@ -142,7 +114,8 @@ define([
         });
       }
       
-      function signUp(email, username, firstname, lastname, password, success, error) {
+      function signUp(username, password, firstname, lastname, email, success, error) {
+        forge.logging.info("Sign up: " + getTargetServer() + "api/v1/mobile/signup");
         forge.request.ajax({
           url: getTargetServer() + "api/v1/mobile/signup",
           type: "POST",
@@ -165,15 +138,11 @@ define([
           error: function(response) {
             forge.logging.info(response);
             // Credentials are set, but an error occured
-            if (response.statusCode === 401 || response.statusCode === "401") {
-              // Credentials are incorrect
-              forge.logging.info("The user credentials are incorrect, showing login page");
-              error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
-            } else {
-              // Another error happened
-              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + statusCode);
-              error("Error accessing " + getTargetServer() + "\nError code: " + statusCode);
-            }
+            errorMessage = "Error accessing " + getTargetServer();
+            try {
+              errorMessage = response.content;
+            } catch (e) {}
+            error(errorMessage);
           }
         });
       }
@@ -200,38 +169,6 @@ define([
         });
       }
       
-  //    function checkAuthOnDevice() {
-  //      forge.logging.info("Checking auth on device...");
-  //      // Execute after userPrefs access has been initialized
-  //      userPrefs.onReady(function() {
-  //        // Get username and password from user prefs
-  //        var username = userPrefs.get('login.username');
-  //        var password = userPrefs.get('login.password');
-  ////        if (!username && env['test.username']) {
-  ////          username = env['test.username'];
-  ////          userPrefs.set('login.username', username);
-  ////        }
-  ////        if (!password && env['test.password']) {
-  ////          password = env['test.password'];
-  ////          userPrefs.set('login.password', password);
-  ////        }
-  //        if (username && password) {
-  //          // Username and password retrieved, try logging in with them
-  //          forge.logging.info("Running ajax request to check credentials: " + getTargetServer() + "api/v1/guest");
-  //          ajaxCheckAuth({
-  //            success: handleAuthSuccessResponse,
-  //            error: function(response, content, type) {
-  //              forge.logging.info("Logging in failed");
-  //              handleAuthErrorResponseOnMobile(response.statusCode);
-  //            }
-  //          }, username, password);
-  //        } else {
-  //          // Username and password not set
-  //          handleAuthErrorResponseOnMobile();
-  //        }
-  //      });
-  //    }
-      
       function handleAuthSuccessResponse(guestModel, textStatus) {
         forge.logging.info("Logging in successful");
         forge.logging.info(guestModel);
@@ -253,7 +190,6 @@ define([
        */
       function logout() {
         userPrefs.set('login.isAuthenticated', false);
-  //      userPrefs.set('login.password', "");
         userPrefs.set('login.userId', null);
         $rootScope.$broadcast('user-logged-out');
         $state.go('login');
@@ -269,7 +205,7 @@ define([
         });
         
       }
-    
+      
       /**
        * (Public) Returns authentication status (true/false)
        */
