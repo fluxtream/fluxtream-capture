@@ -1,21 +1,93 @@
 <ion-view title="Login">
-  <div class="list login-screen">
-    <div class="item item-divider txt-align-center">
-      Sign in
-      <div class="list padding">
-        <label class="item item-input">
-          <input autocapitalize="none" type="text" placeholder="Username" ng-model="settings.username" ng-change="save('username')">
-        </label>
-        <label class="item item-input">
-          <input type="password" placeholder="Password" ng-model="settings.password" ng-change="save('password')">
-        </label>
-        <label class="item item-input">
-          <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="settings.target" ng-change="save('target')">
-        </label>
-        <button class="button button-block button-positive" ng-click="login()">
-          Log in
-        </button>
-      </div>        
+  <ion-content>
+    <!-- LOADING SCREEN -->
+    <div ng-if="currentScreen === 'loading' || loading">
+      <div class="txt-align-center ajax-loading">
+        <i class="icon ion-ios7-reloading"></i>
+      </div>
+      <p class="txt-align-center">
+        Loading...
+      </p>
     </div>
-  </div>
+    <div ng-if="!loading">
+      <!-- LOGIN WELCOME SCREEN -->
+      <div ng-if="errorMessage">
+        <p class="alert alert-danger txt-align-center">
+          {{ errorMessage }}
+        </p>
+      </div>
+      <div ng-if="currentScreen === 'home'">
+        <div class="list">
+          <div class="item item-divider txt-align-center no-border">
+            Already a user?<br /> Welcome back!
+            <div class="padding">
+              <button class="button button-block button-positive" ng-click="selectSignIn()">Sign in</button>
+            </div>
+          </div>
+          <div class="item item-divider txt-align-center">
+            New to Fluxtream?<br />Please sign up to use the app.
+              <div class="padding">
+                <button class="button button-block button-positive" ng-click="selectSignUp()">Sign up</button>
+              </div>
+          </div>
+        </div>        
+      </div>
+      <!-- SIGN IN SCREEN -->
+      <div ng-if="currentScreen === 'sign-in'">
+        <div class="list">
+          <div class="item item-divider txt-align-center">
+            Or sign in
+            <div class="list padding">
+              <label class="item item-input">
+                <input autocapitalize="none" type="text" placeholder="Username" ng-model="signin.username">
+              </label>
+              <label class="item item-input">
+                <input type="password" placeholder="Password" ng-model="signin.password">
+              </label>
+              <label class="item item-input">
+                 <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="signin.target" ng-change="save('target')">
+              </label>
+              <button class="button button-block button-positive" ng-click="signIn()">
+                Sign in
+              </button>
+            </div>        
+          </div>
+        </div>
+      </div>
+      <!-- SIGN UP SCREEN -->
+      <div ng-if="currentScreen === 'sign-up'">
+        <div class="list">
+          <div class="item item-divider">
+            <div class="padding txt-align-center">Or register</div>
+              <div class="list padding">
+                <label class="item item-input">
+                  <input autocapitalize="none" type="email" placeholder="E-mail address" ng-model="signup.email">
+                </label>
+                <label class="item item-input">
+                  <input autocapitalize="none" type="text" placeholder="Username" ng-model="signup.username">
+                </label>
+                <label class="item item-input">
+                  <input type="text" placeholder="First Name" ng-model="signup.firstname">
+                </label>
+                <label class="item item-input">
+                  <input type="text" placeholder="Last Name" ng-model="signup.lastname">
+                </label>
+                <label class="item item-input">
+                  <input type="password" placeholder="Password" ng-model="signup.password">
+                </label>
+                <label class="item item-input">
+                  <input type="password" placeholder="Repeat Password" ng-model="signup.password2">
+                </label>
+                <label class="item item-input">
+                   <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="signup.target" ng-change="save('target')">
+                </label>
+                <button class="button button-block button-positive" ng-click="signUp()">
+                  Sign up now
+                </button>
+              </div>  
+          </div>
+        </div>
+      </div>
+    </div>
+  </ion-content>
 </ion-view>

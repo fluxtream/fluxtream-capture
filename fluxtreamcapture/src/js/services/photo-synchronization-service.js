@@ -44,7 +44,10 @@ define([
           var options = {
             userId: loginService.getUserId(),
             upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
-            authentication: btoa(userPrefs.get("login.username") + ":" + userPrefs.get("login.password"))
+            authentication: '', // Authentication replaced with token
+            access_token: userPrefs.get('login.fluxtream_access_token'),
+            access_token_expiration: 99999999999999, // No expiration
+            access_token_update_url: "..." // No renewal needed
           };
           var orientation = [];
           if (forge.is.android()) {
@@ -85,7 +88,10 @@ define([
               {
                 userId: loginService.getUserId(),
                 upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
-                authentication: btoa(userPrefs.get('login.username') + ":" + userPrefs.get('login.password'))
+                authentication: '', // Authentication replaced with token
+                access_token: userPrefs.get('login.fluxtream_access_token'),
+                access_token_expiration: 99999999999999, // No expiration
+                access_token_update_url: "..." // No renewal needed
               },
               // Success
               function() {
