@@ -161,6 +161,8 @@ public class UploadService extends Service {
 		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
 		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
 		final String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
+		final String accessToken = prefs.getString("user." + userId + ".autoupload." + "access_token", "");
+		final long accessTokenExpiration = prefs.getLong("user." + userId + ".autoupload." + "access_token_expiration", 0);
 		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
 		final String deviceId = prefs.getString("user." + userId + ".autoupload." + "device_id", null);
 		// Send parameters to PhotoUploader
@@ -169,6 +171,8 @@ public class UploadService extends Service {
 			put("userId", UploadService.this.userId);
 			put("upload_url", UploadService.this.uploadURL);
 			put("authentication", authentication);
+			put("access_token", accessToken);
+			put("access_token_expiration", accessTokenExpiration);
 			put("access_token_update_url", accessTokenUpdateURL);
 			put("device_id", deviceId);
 		}});
@@ -210,8 +214,14 @@ public class UploadService extends Service {
 				if (paramValue != null) prefEditor.putInt("user." + userId + ".autoupload." + paramName, (Integer)paramValue);
 			}
 			
+			// Save long parameters
+			for (String paramName : new String[]{"access_token_expiration"}) {
+				Object paramValue = intent.getExtras().get(paramName);
+				if (paramValue != null) prefEditor.putLong("user." + userId + ".autoupload." + paramName, (Long)paramValue);
+			}
+			
 			// Save string parameters
-			for (String paramName : new String[]{"upload_url", "authentication", "access_token_update_url", "device_id"}) {
+			for (String paramName : new String[]{"upload_url", "authentication", "access_token", "access_token_update_url", "device_id"}) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null) {
 					prefEditor.putString("user." + userId + ".autoupload." + paramName, (String)paramValue);

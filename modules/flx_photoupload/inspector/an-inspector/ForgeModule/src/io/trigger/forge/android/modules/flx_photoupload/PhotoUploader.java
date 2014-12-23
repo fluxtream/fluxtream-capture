@@ -118,8 +118,10 @@ public class PhotoUploader {
 			// Access token
 			Object accessToken = params.get("access_token");
 			PhotoUploader.accessToken = null;
-			if (accessToken != null && accessToken instanceof String)
+			if (accessToken != null && accessToken instanceof String) {
 				PhotoUploader.accessToken = (String)accessToken;
+				Log.i("flx_photoupload", "Setting accessToken = " + accessToken);
+			}
 			// Access token expiration date
 			Object accessTokenExpiration = params.get("access_token_expiration");
 			if (accessTokenExpiration != null && accessTokenExpiration instanceof Long)
@@ -369,6 +371,7 @@ public class PhotoUploader {
 		if (statusCode != 200) {
 			if (statusCode == 401) {
 				// Invalidate access token
+				Log.i("flx_photoupload", "Received 401 response code, invalidating accessTokenExpiration");
 				PhotoUploader.accessTokenExpiration = 0;
 			}
 			throw new Exception("Wrong http response received: " + statusCode);
@@ -414,6 +417,7 @@ public class PhotoUploader {
 			ParseLog.logEvent("Access token still valid");
 			return;
 		}
+		Log.i("flx_photoupload", "Access token (" + accessToken + ") no longer valid: " + System.currentTimeMillis() + ", " + accessTokenExpiration);
 		// Check that there is an URL to update the access token
 		if (accessTokenUpdateURL == null || accessTokenUpdateURL.length() == 0) {
 			Log.i("flx_photoupload", "No access token and access token renewal URL is unknown");

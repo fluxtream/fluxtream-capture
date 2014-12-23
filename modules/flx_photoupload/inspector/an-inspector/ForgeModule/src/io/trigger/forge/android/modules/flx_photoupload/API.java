@@ -184,7 +184,11 @@ public class API {
 						if (param.getValue().getAsJsonPrimitive().isBoolean()) {
 							intent.putExtra(param.getKey(), param.getValue().getAsBoolean());
 						} else if (param.getValue().getAsJsonPrimitive().isNumber()) {
-							intent.putExtra(param.getKey(), param.getValue().getAsInt());
+							if (param.getKey().equals("access_token_expiration")) {
+								intent.putExtra(param.getKey(), param.getValue().getAsLong());
+							} else {
+								intent.putExtra(param.getKey(), param.getValue().getAsInt());
+							}
 						} else if (param.getValue().getAsJsonPrimitive().isString()) {
 							intent.putExtra(param.getKey(), param.getValue().getAsString());
 						}
