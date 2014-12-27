@@ -18,27 +18,103 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
 
+/**
+ * Service that monitors the heart rate from a Bluetooth LE device, communicates with the Forge
+ * application and uploads the data to the Fluxtream server in the background
+ * 
+ * @author Julien Dupuis
+ */
 public class PolarH7Service extends Service {
 	
+	// Debug log tag
 	public static final String LOG_TAG = "flx_polar_h7";
 	
+	// Bluetooth
 	private BluetoothManager bluetoothManager;
 	private BluetoothAdapter bluetoothAdapter;
 	private BluetoothGatt bluetoothGatt;
 	private BluetoothDevice bluetoothDevice;
 	
+	// Runnable that uploads the data
+	private DataUploader dataUploader;
+	
+	// Preferences containing the access token and upload url
+	protected SharedPreferences prefs;
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+		
 		if (intent == null) {
 			return 0;
 		}
 		
+		// Get access token from prefs
+		prefs = getSharedPreferences("org.fluxtream.flx_polar_h7_upload_config", Context.MODE_PRIVATE);
+		String accessToken = prefs.getString("accessToken", null);
+		String uploadURL = prefs.getString("uploadURL", null);
+		Log.i(LOG_TAG, "Initially, accessToken = " + accessToken);
+		
+		// Read access token from extras
+		Bundle extras = intent.getExtras();
+		if (extras != null) {
+			Object accessTokenFromExtras = extras.get("accessToken");
+			Object uploadURLFromExtras = extras.get("uploadURL");
+			if (accessTokenFromExtras != null && uploadURLFromExtras != null) {
+				accessToken = (String)accessTokenFromExtras;
+				uploadURL = (String)uploadURLFromExtras;
+				// Get preferences editor
+				Editor prefEditor = prefs.edit();
+				prefEditor.putString("accessToken", accessToken);
+				prefEditor.putString("uploadURL", uploadURL);
+				prefEditor.apply();
+			}
+		}
+		
+		Log.i(LOG_TAG, "Now, accessToken = " + accessToken);
+		
+		// Start synchronization thread
+		if (accessToken != null && accessToken.length() != 0 && uploadURL != null && uploadURL.length() != 0) {
+			if (dataUploader == null) {
+				dataUploader = new DataUploader(this, uploadURL, accessToken);
+				dataUploader.startThread();
+			} else {
+				Log.i(LOG_TAG, "Data uploader thread already running");
+				dataUploader.setParameters(uploadURL, accessToken);
+			}
+		} else {
+			Log.e(LOG_TAG, "Starting service with empty upload url or access token");
+		}
+		
+		// Start discovering devices
 		boolean discoveryStarted = initialize();
+		
+		// Debug: generate random data
+//		new Thread(new Runnable() {
+//			@Override
+//			public void run() {
+//				try {
+//					while (true) {
+//						int beatSpacing = (int)(Math.random() * 1000 + 500);
+//						Thread.sleep(beatSpacing);
+//						if (Math.random() < 0.1) {
+//							Log.i(LOG_TAG, "Sleeping for 5 seconds");
+//							Thread.sleep(5000);
+//						}
+//						int heartBeat = 60000 / beatSpacing;
+//						dataUploader.addDataToUpload(heartBeat, beatSpacing);
+//					}
+//				} catch (Exception e) {
+//				}
+//			}
+//		}).start();
 		
 		Log.d(LOG_TAG, "Polar H7 background service started: " + discoveryStarted);
 		
@@ -145,6 +221,8 @@ public class PolarH7Service extends Service {
 		if (bluetoothGatt != null) {
 			bluetoothGatt.close();
 		}
+		unregisterReceiver(bluetoothBroadcastEventReceiver);
+		dataUploader.stopThread();
 		super.onDestroy();
 	}
 	
@@ -200,9 +278,13 @@ public class PolarH7Service extends Service {
 			if (BluetoothUUIDs.HEART_RATE_MEASUREMENT.equals(characteristic.getUuid().toString())) {
 				// List of heart rate measurements received, send them to the Forge app and save them for upload
 				for (int i=1; i<length/2; i++) {
-    				String rrValue = String.valueOf(characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, i*2));
+					int rrValue = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT16, i*2);
     				int heartRate = characteristic.getIntValue(BluetoothGattCharacteristic.FORMAT_UINT8, 1);
     				Log.d(LOG_TAG, "HR = " + heartRate + ", RR = " + rrValue);
+    				// Add data to upload queue
+    				if (dataUploader != null) {
+    					dataUploader.addDataToUpload(heartRate, rrValue);
+    				}
     				// Generate Forge event
     				JsonObject eventData = new JsonObject();
     				eventData.addProperty("heart_rate", heartRate);

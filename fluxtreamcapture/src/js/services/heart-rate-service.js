@@ -19,6 +19,10 @@ define([
         // Initiate native background service
         forge.logging.info("Starting heart rate native service");
         forge.flx_polar_h7.startService(
+          // Upload URL
+          loginService.getTargetServer() + "api/v1/bodytrack/upload",
+          // Access token
+          loginService.getAccessToken(),
           // Success
           function() {
             forge.logging.info("Heart rate service started");

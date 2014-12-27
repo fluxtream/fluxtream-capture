@@ -107,8 +107,8 @@ define([
               error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
             } else {
               // Another error happened
-              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + statusCode);
-              error("Error accessing " + getTargetServer() + "\nError code: " + statusCode);
+              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
+              error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
             }
           }
         });
@@ -242,6 +242,13 @@ define([
         return userPrefs.get('login.userId');
       }
       
+      /**
+       * (Public) Returns the Fluxtream access token of the current user
+       */
+      function getAccessToken() {
+        return userPrefs.get('login.fluxtream_access_token');
+      }
+      
       return {
         checkAuth: checkAuth,
         signIn: signIn,
@@ -250,6 +257,7 @@ define([
         ajax: ajax,
         getUserName: getUserName,
         getUserId: getUserId,
+        getAccessToken: getAccessToken,
         getTargetServer: getTargetServer,
         logout: logout
       };

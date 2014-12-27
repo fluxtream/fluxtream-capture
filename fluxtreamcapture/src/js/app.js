@@ -17,6 +17,7 @@ $(document).ready(function() {
     "services/login-service",
     "services/photo-list-service",
     "services/photo-synchronization-service",
+    'services/heart-rate-service',
     'filters/self-report-filters',
     'services/user-prefs-service'
   ], function(appModules, env, routes, flxCom) {
@@ -34,6 +35,7 @@ $(document).ready(function() {
       '$rootScope',
       'PhotoListService', // Preloading photos
       'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
+      'HeartRateService', // Enable heart rate service on start if needed
       function(loginService, $ionicViewService, $state, userPrefs, $rootScope) {
         userPrefs.onReady(function() {
           // Check if the user is alreday logged in

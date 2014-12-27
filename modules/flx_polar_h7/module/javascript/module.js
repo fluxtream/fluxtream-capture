@@ -1,7 +1,7 @@
 // Expose the native API to javascript
 forge.flx_polar_h7 = {
-    startService: function(success, error) {
-        forge.internal.call('flx_polar_h7.startService', {}, success, error);
+    startService: function(uploadURL, accessToken, success, error) {
+        forge.internal.call('flx_polar_h7.startService', {uploadURL: uploadURL, accessToken: accessToken}, success, error);
     },
     stopService: function(success, error) {
         forge.internal.call('flx_polar_h7.stopService', {}, success, error);
