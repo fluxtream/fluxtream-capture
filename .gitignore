@@ -9,6 +9,7 @@ fluxtreamcapture/forge-error.log
 fluxtreamcapture/.template
 fluxtreamcapture/.lib
 fluxtreamcapture/src/test/
+fluxtreamcapture/local_config.json
 
 modules/*/.trigger
 modules/*/inspector/an-inspector.*

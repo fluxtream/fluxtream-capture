@@ -1,0 +1,101 @@
+{
+	"config_version": "4",
+	"name": "FluxtreamCapture",
+	"author": "julien.dupuis@gmail.com",
+	"version": "0.1",
+	"platform_version": "v2.2.7",
+	"description": "An empty app created by default",
+	"core": {
+		"general": {
+			"logging": {
+				"level": "DEBUG"
+			},
+			"reload": true,
+			"trusted_urls": [
+				"http://fluxtream.dev/*",
+				"http://fluxtream.org/*"
+			]
+		},
+		"ios": {
+			"minimum_version": "6.0",
+			"device_family": "any",
+			"package_name": "org.fluxtream.capture.*",
+			"webview": "UIWebView"
+		},
+		"android": {
+			"minimum_version": "16"
+		}
+	},
+	"modules": {
+		"request": {
+			"version": "2.6",
+			"config": {
+				"permissions": [
+					"*"
+				]
+			}
+		},
+		"file": {
+			"version": "2.6"
+		},
+		"prefs": {
+			"version": "2.1"
+		},
+		"urlhandler": {
+			"version": "2.1",
+			"config": {
+				"scheme": "fluxtream"
+			}
+		},
+		"icons": {
+			"version": "2.4",
+			"config": {
+				"android": {
+					"36": "img/icons/f-36x36.png",
+					"48": "img/icons/f-48x48.png",
+					"72": "img/icons/f-72x72.png",
+					"96": "img/icons/f-96x96.png",
+					"144": "img/icons/f-144x144.png"
+				},
+				"ios": {
+					"57": "img/icons/f-57x57.png",
+					"72": "img/icons/f-72x72.png",
+					"76": "img/icons/f-76x76.png",
+					"114": "img/icons/f-114x114.png",
+					"120": "img/icons/f-120x120.png",
+					"144": "img/icons/f-144x144.png",
+					"152": "img/icons/f-152x152.png",
+					"180": "img/icons/f-152x152.png"
+				}
+			}
+		},
+		"launchimage": {
+			"version": "2.8",
+			"config": {
+				"background-size": "cover",
+				"background-color": "#FFFFFF",
+				"android": "img/launch/launch-f-1536x2008.png",
+				"android-landscape": "img/launch/launch-f-2048x1496.png",
+				"hide-manually": true,
+				"ios": {
+					"1536x2048": "img/launch/launch-f-1536x2008.png",
+					"320x480": "img/launch/launch-f-320x480.png",
+					"640x1136": "img/launch/launch-f-640x1136.png",
+					"2048x1536": "img/launch/launch-f-2048x1496.png",
+					"1536x2008": "img/launch/launch-f-1536x2008.png",
+					"1024x768": "img/launch/launch-f-1024x748.png",
+					"2048x1496": "img/launch/launch-f-2048x1496.png",
+					"1024x748": "img/launch/launch-f-1024x748.png",
+					"640x960": "img/launch/launch-f-640x960.png",
+					"768x1004": "img/launch/launch-f-768x1004.png",
+					"768x1024": "img/launch/launch-f-768x1004.png",
+					"1242x2208": "img/launch/launch-f-1536x2008.png",
+					"750x1334": "img/launch/launch-f-640x1136.png"
+				}
+			}
+		},
+		"flx_photoupload": {
+			"version": "0.5.12"
+		}
+	}
+}
