@@ -15,7 +15,11 @@
       <p ng-if="!deviceConnected && deviceLocked">Looking for locked device XX45X34</p>
       <a ng-click="lockDevice" ng-if="deviceConnected && !deviceLocked">LOCK</a>
       <a ng-click="unlockDevice" ng-if="deviceLocked">UNLOCK</a>
-      <p>No data uploaded.</p>
+      <p>
+        Upload status:
+        {{ uploadStatus || "No data uploaded" }}
+        <span ng-if="uploadStatus == 'synced'">{{ getLastSyncDistanceInWords() }} </span>
+      </p>
       <p style="height: 300px; background: #E5E5E; overflow: hidden;">
         History:<br />
         <span ng-repeat="log in historyLogs">

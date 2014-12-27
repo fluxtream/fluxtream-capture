@@ -15,6 +15,10 @@ define([
     'UserPrefsService',
     function($rootScope, loginService, userPrefs) {
       
+      // The latest upload status ('none', 'uploading', 'synced', 'failed')
+      var uploadStatus = 'none';
+      var lastSyncTime;
+      
       function enableService() {
         // Initiate native background service
         forge.logging.info("Starting heart rate native service");
@@ -61,6 +65,7 @@ define([
       
       // Start service when a user connects and has enabled the heart rate service
       $rootScope.$on("user-logged-in", function() {
+        uploadStatus = 'none';
         forge.logging.info("User " + loginService.getUserId() + " is logged in");
         forge.logging.info("Heartrate enabled : " + userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled"));
         if (userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled")) {
@@ -99,10 +104,25 @@ define([
         // Broadcast received data
         $rootScope.$broadcast('heart-rate-info-received', {message: "Heart rate monitor disconnected"});
       });
+      forge.internal.addEventListener('heartrate.startUpload', function() {
+        uploadStatus = 'uploading';
+        $rootScope.$broadcast('heart-rate-upload-status', {status: uploadStatus});
+      });
+      forge.internal.addEventListener('heartrate.uploadDone', function() {
+        uploadStatus = 'synced';
+        lastSyncTime = new Date().getTime();
+        $rootScope.$broadcast('heart-rate-upload-status', {status: uploadStatus, lastSyncTime: lastSyncTime});
+      });
+      forge.internal.addEventListener('heartrate.uploadError', function() {
+        uploadStatus = 'error';
+        $rootScope.$broadcast('heart-rate-upload-status', {status: uploadStatus});
+      });
       
       // Public API
       return {
-        setHeartRateServiceEnabled: setHeartRateServiceEnabled
+        setHeartRateServiceEnabled: setHeartRateServiceEnabled,
+        getUploadStatus: function() { return uploadStatus; },
+        getLastSyncTime: function() { return lastSyncTime; }
       };
       
     }
