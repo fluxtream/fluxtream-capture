@@ -49,6 +49,9 @@ public class PolarH7Service extends Service {
 	// Preferences containing the access token and upload url
 	protected SharedPreferences prefs;
 	
+	// Whether the service has been initialized
+	protected boolean initialized = false;
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
@@ -62,9 +65,20 @@ public class PolarH7Service extends Service {
 		String uploadURL = prefs.getString("uploadURL", null);
 		Log.i(LOG_TAG, "Initially, accessToken = " + accessToken);
 		
-		// Read access token from extras
+		// Read extras
 		Bundle extras = intent.getExtras();
 		if (extras != null) {
+			// Get action
+			if (extras.containsKey("action")) {
+				String action = extras.getString("action");
+				Log.i(LOG_TAG, "Start with action: " + action);
+				if ("lock".equals(action)) {
+					lockDevice();
+				} else if ("unlock".equals(action)) {
+					unlockDevice();
+				}
+			}
+			// Read access token and upload url
 			Object accessTokenFromExtras = extras.get("accessToken");
 			Object uploadURLFromExtras = extras.get("uploadURL");
 			if (accessTokenFromExtras != null && uploadURLFromExtras != null) {
@@ -94,29 +108,11 @@ public class PolarH7Service extends Service {
 		}
 		
 		// Start discovering devices
-		boolean discoveryStarted = initialize();
-		
-		// Debug: generate random data
-//		new Thread(new Runnable() {
-//			@Override
-//			public void run() {
-//				try {
-//					while (true) {
-//						int beatSpacing = (int)(Math.random() * 1000 + 500);
-//						Thread.sleep(beatSpacing);
-//						if (Math.random() < 0.1) {
-//							Log.i(LOG_TAG, "Sleeping for 5 seconds");
-//							Thread.sleep(5000);
-//						}
-//						int heartBeat = 60000 / beatSpacing;
-//						dataUploader.addDataToUpload(heartBeat, beatSpacing);
-//					}
-//				} catch (Exception e) {
-//				}
-//			}
-//		}).start();
-		
-		Log.d(LOG_TAG, "Polar H7 background service started: " + discoveryStarted);
+		if (!initialized) {
+			initialized = true;
+			boolean discoveryStarted = initialize();
+			Log.d(LOG_TAG, "Polar H7 background service started: " + discoveryStarted);
+		}
 		
 		return START_STICKY;
 	}
@@ -191,12 +187,18 @@ public class PolarH7Service extends Service {
 		public void onReceive(Context context, Intent intent) {
 			if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
 				// Bluetooth device found
-				bluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-				boolean connectionSuccessful = connect(bluetoothDevice.getAddress());
-				if (!connectionSuccessful) {
-					// Connection to device failed, restart discovery
-					boolean res = bluetoothAdapter.startDiscovery();
-					Log.d(LOG_TAG, "Restarting bluetooth device discovery: " + res);
+				BluetoothDevice bluetoothDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				String address = bluetoothDevice.getAddress();
+				String lockedAddress = prefs.getString("locked_address", "");
+				if (lockedAddress.length() == 0 || lockedAddress.equals(address)) {
+					// No locked address or addresses match: connect to device
+					if (lockedAddress.length() != 0) {
+						Log.i(LOG_TAG, "Connecting to locked device: " + lockedAddress);
+					}
+					connect(address);
+				} else {
+					// Not connecting: address does not match locked address
+					Log.i(LOG_TAG, "Not connectiong to device: " + address + " != " + lockedAddress);
 				}
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(intent.getAction())) {
 				// End of discovery, restart it if the device was not found
@@ -222,7 +224,9 @@ public class PolarH7Service extends Service {
 			bluetoothGatt.close();
 		}
 		unregisterReceiver(bluetoothBroadcastEventReceiver);
-		dataUploader.stopThread();
+		if (dataUploader != null) {
+			dataUploader.stopThread();
+		}
 		super.onDestroy();
 	}
 	
@@ -267,8 +271,11 @@ public class PolarH7Service extends Service {
 				bluetoothGatt.discoverServices();
 			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 				// Attempt to reconnect to the device
+				Log.d(LOG_TAG, "State is disconnected");
 				ForgeApp.event("heartrate.deviceDisconnected");
 				bluetoothGatt.connect();
+			} else {
+				Log.d(LOG_TAG, "State is " + newState);
 			}
 		};
 		
@@ -330,6 +337,33 @@ public class PolarH7Service extends Service {
 		JsonObject eventData = new JsonObject();
 		eventData.addProperty("error", errorMessage);
 		return eventData;
+	}
+	
+	/**
+	 * Locks the current device so that this service will only connect to that particular device
+	 */
+	private void lockDevice() {
+		if (bluetoothDevice != null) {
+			String address = bluetoothDevice.getAddress();
+			Editor editor = prefs.edit();
+			editor.putString("locked_address", address);
+			editor.apply();
+			Log.i(LOG_TAG, "Locking to address: " + address);
+			ForgeApp.event("heartrate.lockSuccess");
+		} else {
+			Log.i(LOG_TAG, "No device connected, cannot lock device");
+			ForgeApp.event("heartrate.lockFailure");
+		}
+	}
+	
+	/**
+	 * Locks the current device so that this service will only connect to that particular device
+	 */
+	private void unlockDevice() {
+		Editor editor = prefs.edit();
+		editor.remove("locked_address");
+		editor.apply();
+		Log.i(LOG_TAG, "Unlocking device");
 	}
 	
 	/**

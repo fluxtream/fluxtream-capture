@@ -28,7 +28,7 @@ define([
       $scope.deviceConnected = false;
       
       // Whether the currently connected device is locked to this app
-      $scope.deviceLocked = false;
+      $scope.deviceLocked = heartRateService.deviceIsLocked();
       
       // List of history logs
       $scope.historyLogs = [];
@@ -59,6 +59,7 @@ define([
         $scope.noDataReceivedTimeout = setTimeout(function() {
           $scope.addHistoryLog("Not receiving data anymore");
         }, 5000);
+        $scope.deviceConnected = true;
         $scope.$$phase || $scope.$apply();
       });
       
@@ -105,6 +106,29 @@ define([
         $scope.deviceConnected = false;
         $scope.$$phase || $scope.$apply();
       });
+      
+      /**
+       * [Called from button] Locks the current device, so that we will connect only to that device in the future
+       */
+      $scope.lockDevice = function() {
+        heartRateService.lockDevice();
+      };
+      forge.internal.addEventListener('heartrate.lockSuccess', function() {
+        $scope.deviceLocked = true;
+        $scope.$$phase || $scope.$apply();
+      });
+      forge.internal.addEventListener('heartrate.lockFailure', function() {
+        alert('Locking device failed');
+      });
+      
+      /**
+       * [Called from button] Locks the current device, so that we will connect only to that device in the future
+       */
+      $scope.unlockDevice = function() {
+        heartRateService.unlockDevice();
+        $scope.deviceLocked = false;
+        $scope.$$phase || $scope.$apply();
+      };
       
       /**
        * Returns the time since the last sync in words

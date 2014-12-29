@@ -77,6 +77,21 @@ define([
         disableService();
       });
       
+      /**
+       * Locks the current device, so that we will connect only to that device in the future
+       */
+      function lockDevice() {
+        forge.flx_polar_h7.lockCurrentDevice();
+      }
+      
+      /**
+       * Locks the current device, so that we will connect only to that device in the future
+       */
+      function unlockDevice() {
+        forge.flx_polar_h7.unlockCurrentDevice();
+        userPrefs.set('heartRate.deviceLocked', true);
+      }
+      
       // Listen to internal event 'heartrate.data' and broadcast incoming data
       forge.internal.addEventListener("heartrate.data", function (data) {
         // Broadcast received data
@@ -117,12 +132,18 @@ define([
         uploadStatus = 'error';
         $rootScope.$broadcast('heart-rate-upload-status', {status: uploadStatus});
       });
+      forge.internal.addEventListener('heartrate.lockSuccess', function() {
+        userPrefs.set('heartRate.deviceLocked', true);
+      });
       
       // Public API
       return {
         setHeartRateServiceEnabled: setHeartRateServiceEnabled,
         getUploadStatus: function() { return uploadStatus; },
-        getLastSyncTime: function() { return lastSyncTime; }
+        getLastSyncTime: function() { return lastSyncTime; },
+        lockDevice: lockDevice,
+        unlockDevice: unlockDevice,
+        deviceIsLocked: function() { return userPrefs.get('heartRate.deviceLocked', false); }
       };
       
     }

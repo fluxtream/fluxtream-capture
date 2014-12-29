@@ -12,9 +12,9 @@
         <p>RR : {{ rr }}</p>
       </div>
       <p ng-if="!deviceConnected && !deviceLocked">Scanning for heart rate monitor</p>
-      <p ng-if="!deviceConnected && deviceLocked">Looking for locked device XX45X34</p>
-      <a ng-click="lockDevice" ng-if="deviceConnected && !deviceLocked">LOCK</a>
-      <a ng-click="unlockDevice" ng-if="deviceLocked">UNLOCK</a>
+      <p ng-if="!deviceConnected && deviceLocked">Looking for locked device</p>
+      <a ng-click="lockDevice()" ng-if="deviceConnected && !deviceLocked" class="button button-positive">LOCK</a>
+      <a ng-click="unlockDevice()" ng-if="deviceConnected && deviceLocked" class="button button-positive">UNLOCK</a>
       <p>
         Upload status:
         {{ uploadStatus || "No data uploaded" }}
