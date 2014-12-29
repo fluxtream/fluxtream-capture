@@ -89,7 +89,7 @@ define([
        */
       function unlockDevice() {
         forge.flx_polar_h7.unlockCurrentDevice();
-        userPrefs.set('heartRate.deviceLocked', true);
+        userPrefs.set('heartRate.deviceLocked', false);
       }
       
       // Listen to internal event 'heartrate.data' and broadcast incoming data
