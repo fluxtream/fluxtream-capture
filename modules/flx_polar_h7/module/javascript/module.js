@@ -5,6 +5,12 @@ forge.flx_polar_h7 = {
     },
     stopService: function(success, error) {
         forge.internal.call('flx_polar_h7.stopService', {}, success, error);
+    },
+    lockCurrentDevice: function(success, error) {
+        forge.internal.call('flx_polar_h7.lockCurrentDevice', {}, success, error);
+    },
+    unlockCurrentDevice: function(success, error) {
+        forge.internal.call('flx_polar_h7.unlockCurrentDevice', {}, success, error);
     }
 };
 

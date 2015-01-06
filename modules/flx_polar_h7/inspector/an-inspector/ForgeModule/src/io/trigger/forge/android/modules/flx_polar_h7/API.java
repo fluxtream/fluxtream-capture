@@ -58,4 +58,40 @@ public class API {
 		});
 	}
 	
+	/**
+	 * Stores the current heart rate device's address and make sure only this device will get connected
+	 */
+	public static void lockCurrentDevice(final ForgeTask task) {
+		Log.d(PolarH7Service.LOG_TAG, "API: lockCurrentDevice()");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				// Stop service
+				Intent intent = new Intent(ForgeApp.getActivity(), PolarH7Service.class);
+				intent.putExtra("action", "lock");
+				ForgeApp.getActivity().startService(intent);
+				// Notify success
+				task.success();
+			}
+		});
+	}
+	
+	/**
+	 * Removes the limitation on a single device, allowing to connect to any device
+	 */
+	public static void unlockCurrentDevice(final ForgeTask task) {
+		Log.d(PolarH7Service.LOG_TAG, "API: unlockCurrentDevice()");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				// Stop service
+				Intent intent = new Intent(ForgeApp.getActivity(), PolarH7Service.class);
+				intent.putExtra("action", "unlock");
+				ForgeApp.getActivity().startService(intent);
+				// Notify success
+				task.success();
+			}
+		});
+	}
+	
 }

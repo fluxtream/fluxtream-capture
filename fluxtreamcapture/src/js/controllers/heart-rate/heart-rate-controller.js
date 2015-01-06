@@ -28,7 +28,7 @@ define([
       $scope.deviceConnected = false;
       
       // Whether the currently connected device is locked to this app
-      $scope.deviceLocked = false;
+      $scope.deviceLocked = heartRateService.deviceIsLocked();
       
       // List of history logs
       $scope.historyLogs = [];
@@ -39,6 +39,10 @@ define([
       
       $scope.lastReceptionTimestamp = 0;
       $scope.noDataReceivedTimeout = null;
+      
+      // Upload status
+      $scope.uploadStatus = heartRateService.getUploadStatus();
+      $scope.lastSyncTime = heartRateService.getLastSyncTime();
       
       // Listen to broadcasted heart-rate data
       $rootScope.$on("heart-rate-data-received", function(event, data) {
@@ -55,6 +59,7 @@ define([
         $scope.noDataReceivedTimeout = setTimeout(function() {
           $scope.addHistoryLog("Not receiving data anymore");
         }, 5000);
+        $scope.deviceConnected = true;
         $scope.$$phase || $scope.$apply();
       });
       
@@ -86,6 +91,11 @@ define([
         $scope.$$phase || $scope.$apply();
       };
       
+      $rootScope.$on("heart-rate-upload-status", function(event, data) {
+        $scope.uploadStatus = data.status;
+        if (data.lastSyncTime) $scope.lastSyncTime = data.lastSyncTime;
+      });
+      
       // Update device connected status on internal event received
       forge.internal.addEventListener("heartrate.deviceConnected", function (data) {
         // Broadcast received data
@@ -96,6 +106,43 @@ define([
         $scope.deviceConnected = false;
         $scope.$$phase || $scope.$apply();
       });
+      
+      /**
+       * [Called from button] Locks the current device, so that we will connect only to that device in the future
+       */
+      $scope.lockDevice = function() {
+        heartRateService.lockDevice();
+      };
+      forge.internal.addEventListener('heartrate.lockSuccess', function() {
+        $scope.deviceLocked = true;
+        $scope.$$phase || $scope.$apply();
+      });
+      forge.internal.addEventListener('heartrate.lockFailure', function() {
+        alert('Locking device failed');
+      });
+      
+      /**
+       * [Called from button] Locks the current device, so that we will connect only to that device in the future
+       */
+      $scope.unlockDevice = function() {
+        heartRateService.unlockDevice();
+        $scope.deviceLocked = false;
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * Returns the time since the last sync in words
+       */
+      $scope.getLastSyncDistanceInWords = function() {
+        var seconds = Math.ceil((new Date().getTime() - $scope.lastSyncTime) / 1000);
+        if (seconds <= 1) return seconds + " second ago";
+        return seconds + " seconds ago";
+      };
+      
+      // Refresh UI every second
+      var interval = setInterval(function() {
+        $scope.$$phase || $scope.$apply();
+      }, 1000);
       
     }
   ]);
