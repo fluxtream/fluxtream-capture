@@ -14,13 +14,6 @@ define([
         //TODO bug in reordering (if reorder long enough)
         //TODO save order to the DB
 
-        // Reorder Topics
-        $scope.moveItem = function (oTopic, fromIndex, toIndex) {
-          //Move the item in the array
-          $scope.aoTopics.splice(fromIndex, 1);
-          $scope.aoTopics.splice(toIndex, 0, oTopic);
-        };
-
         // Read memory values
         $scope.aoTopics = selfReportStorage.readTopics();
         document.title = "Edit Topics";
@@ -45,6 +38,20 @@ define([
       } else {
         $rootScope.$broadcast('event:initialized');
       }
+
+      // Reorder Topics
+      $scope.moveItem = function (oTopic, fromIndex, toIndex) {
+        //Move the item in the array
+        $scope.aoTopics.splice(fromIndex, 1);
+        $scope.aoTopics.splice(toIndex, 0, oTopic);
+
+        for (var i = Math.min(fromIndex, toIndex); i < $scope.aoTopics.length; i++) {
+          $scope.aoTopics.topicNumber = i;
+        }
+
+        // TODO Could be done better if to use separate DB for order numbers
+        selfReportStorage.updateTopicNumbers($scope.aoTopics);
+      };
     }
   ]);
 });

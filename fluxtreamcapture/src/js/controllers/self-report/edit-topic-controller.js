@@ -84,7 +84,8 @@ define([
                   document.getElementById('topic.defaultValue').value,
                   document.getElementById('topic.rangeStart').value,
                   document.getElementById('topic.rangeEnd').value,
-                  document.getElementById('topic.step').value
+                  document.getElementById('topic.step').value,
+                  $scope.oTopic.topicNumber
                 );
                 // TODO $scope.$$phase || $scope.$apply();
 

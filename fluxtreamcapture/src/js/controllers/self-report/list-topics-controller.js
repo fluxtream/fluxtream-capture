@@ -19,9 +19,14 @@ define([
         // Read memory values
         $scope.aoTopics = selfReportStorage.readTopics();
         $scope.$$phase || $scope.$apply();
+        console.log("Current topics1:");
+        console.log($scope.aoTopics);
 
         if(selfReportStorage.isTopicsSynced() === 0) {
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+            console.log("Current topics2:");
+            console.log($scope.aoTopics);
+
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
           });

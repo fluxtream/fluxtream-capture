@@ -105,7 +105,8 @@ define([
       }
     }
 
-    function Topic (id, creationTime, updateTime, name, type, defaultValue, rangeStart, rangeEnd, step){
+    function Topic (id, creationTime, updateTime, name, type,
+                    defaultValue, rangeStart, rangeEnd, step, topicNumber){
       this.id = id.toString();
       this.creationTime = creationTime;
       this.updateTime = updateTime;
@@ -115,6 +116,7 @@ define([
       this.rangeStart = rangeStart;
       this.rangeEnd = rangeEnd;
       this.step = step;
+      this.topicNumber = topicNumber;
     }
 
     function Observation (id, topicId, value, creationDate, creationTime, observationDate, observationTime, updateTime, timezone, comment){
@@ -134,6 +136,8 @@ define([
      * (Public) Save Topic into storage
      */
     function createTopic(oTopic){
+      // Putting new topic to the end of the array
+      oTopic.topicNumber = aoCachedTopics.length;
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
@@ -147,7 +151,8 @@ define([
           defaultValue: oTopic.defaultValue,
           rangeStart: oTopic.rangeStart,
           rangeEnd: oTopic.rangeEnd,
-          step: oTopic.step},
+          step: oTopic.step,
+          topicNumber: oTopic.topicNumber},
 
         function callback(err, result) {
         if (!err) {
@@ -204,7 +209,8 @@ define([
               row.doc.defaultValue,
               row.doc.rangeStart,
               row.doc.rangeEnd,
-              row.doc.step
+              row.doc.step,
+              row.doc.topicNumber
             );
 
             aoCachedTopics.push(oNextTopic);
@@ -217,6 +223,7 @@ define([
             console.log("Accessing wrong link (readTopicsDB)");
           }
 
+          reorderTopics();
           $rootScope.$broadcast('event:topics-read-finished');
         });
       } else {
@@ -247,7 +254,8 @@ define([
               row.doc.defaultValue,
               row.doc.rangeStart,
               row.doc.rangeEnd,
-              row.doc.step
+              row.doc.step,
+              row.doc.topicNumber
             );
 
             aoCachedTopics.push(oNextTopic);
@@ -349,7 +357,8 @@ define([
               defaultValue: oTopic.defaultValue,
               rangeStart: oTopic.rangeStart,
               rangeEnd: oTopic.rangeEnd,
-              step: oTopic.step
+              step: oTopic.step,
+              topicNumber: oTopic.topicNumber
             });
           }, function(err, response) {
             if (!err) {
@@ -372,6 +381,56 @@ define([
           break;
         }
       }
+    }
+
+    /*
+    * (Public) Update topics numbers and Sync with a server
+    * */
+    function updateTopicNumbers(inputTopics) {
+      aoCachedTopics = inputTopics;
+
+      var nTopicsArrayLength = aoCachedTopics.length;
+      for (var i = 0; i < nTopicsArrayLength; i++) {
+        (function(cntr) {
+          var tCurrentTime = new Date();
+          aoCachedTopics[cntr].topicNumber = cntr;
+
+          // Save topic to client database
+          dbTopics.get(aoCachedTopics[cntr].id).then(function (oTopicDB) {
+            return dbTopics.put({
+              _id: oTopicDB._id,
+              _rev: oTopicDB._rev,
+              creationTime: tCurrentTime,
+              updateTime: oTopicDB.updateTime,
+              name: oTopicDB.name,
+              type: oTopicDB.type,
+              defaultValue: oTopicDB.defaultValue,
+              rangeStart: oTopicDB.rangeStart,
+              rangeEnd: oTopicDB.rangeEnd,
+              step: oTopicDB.step,
+              topicNumber: aoCachedTopics[cntr].topicNumber
+            });
+          }, function (err, response) {
+            if (!err) {
+              console.log('Successfully updated Topic number on client side (updateTopicNumbers)');
+            } else {
+              console.log('Error while updating Topic number on client side (updateTopicNumbers): ' + err);
+            }
+          });
+        })(i);
+      }
+
+      console.log('Successfully updated Topics numbers on client side (updateTopicNumbers)');
+      console.log("Updating Topic on the server side (updateTopicNumbers)");
+      //Push Observation to the server
+      dbTopics.replicate.to(remoteCouchTopicsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully updated Topics on the server side (updateTopicNumbers)");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while updating Topics on the server side (updateTopicNumbers): " + err);
+        });
     }
 
     /**
@@ -418,13 +477,28 @@ define([
               aoData[i].defaultValue,
               aoData[i].rangeStart,
               aoData[i].rangeEnd,
-              aoData[i].step
+              aoData[i].step,
+              aoData[i].topicNumber
             );
             aoCachedTopics.push(oNextTopic);
           }
           //Put preprocessing of data
+          reorderTopics();
           fCallback(aoCachedTopics);
         });
+      }
+    }
+
+    /**
+     * (Private) Reorder Topics according their numbers
+     */
+    function reorderTopics() {
+      var nTopicsArrayLength = aoCachedTopics.length;
+      for (var i = 0; i < nTopicsArrayLength; i++) {
+        //Move the item in the array
+        var oTopic = aoCachedTopics[i];
+        aoCachedTopics.splice(i, 1);
+        aoCachedTopics.splice(oTopic.topicNumber, 0, oTopic);
       }
     }
 
@@ -472,12 +546,14 @@ define([
                 row.doc.defaultValue,
                 row.doc.rangeStart,
                 row.doc.rangeEnd,
-                row.doc.step
+                row.doc.step,
+                row.doc.topicNumber
               );
 
               aoCachedTopics.push(oNextTopic);
             });
             // Put pre-processing of data
+            reorderTopics();
             fCallback(aoCachedTopics);
 
           });
@@ -520,12 +596,14 @@ define([
             row.doc.defaultValue,
             row.doc.rangeStart,
             row.doc.rangeEnd,
-            row.doc.step
+            row.doc.step,
+            row.doc.topicNumber
           );
 
           aoCachedTopics.push(oNextTopic);
         });
         // Put pre-processing of data
+        reorderTopics();
         return(aoCachedTopics);
       });
     }
@@ -810,6 +888,7 @@ define([
       readTopics: readTopics,
       readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
+      updateTopicNumbers: updateTopicNumbers,
 
       Observation : Observation,
       createObservation: createObservation,

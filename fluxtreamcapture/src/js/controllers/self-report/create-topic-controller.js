@@ -66,7 +66,14 @@ define([
               (document.getElementById('topic.step').value === null ||
                 document.getElementById('topic.step').value <= 0)){
               alert("Step can not be less than 0 for Range type");
-            } else {
+            }
+            else if(document.getElementById('topic.type').value === "Range" &&
+                   (document.getElementById('topic.rangeStart').value === null ||
+                    document.getElementById('topic.rangeEnd').value === null ||
+                    document.getElementById('topic.rangeEnd').value <= document.getElementById('topic.rangeStart').value)){
+              alert("Range defined incorrectly");
+            }
+            else {
               $scope.oNewTopic = new selfReportStorage.Topic(
                 nLength,
                 tCurrentTime,
@@ -76,7 +83,8 @@ define([
                 document.getElementById('topic.defaultValue').value,
                 document.getElementById('topic.rangeStart').value,
                 document.getElementById('topic.rangeEnd').value,
-                document.getElementById('topic.step').value
+                document.getElementById('topic.step').value,
+                null //Real value for the Topic Order defined in createTopic function
               );
 
               selfReportStorage.createTopic($scope.oNewTopic);
