@@ -8,7 +8,9 @@ define([
   'services/base64'
 ], function(appModules, env, storage) {
 
-  appModules.services.factory('SelfReportStorageService', ["Base64", "$http", "LoginService", '$rootScope', function(Base64, $http,  loginService, $rootScope) {
+  appModules.services.factory('SelfReportStorageService',
+    ["Base64", "$http", "LoginService", '$rootScope', "UserPrefsService",
+    function(Base64, $http,  loginService, $rootScope, userPrefs) {
     //TODO Save values to forge.prefs.set(key, value);
     //TODO When to check if the storage was initialized?
     //TODO Add all functions as methods of the class
@@ -48,9 +50,8 @@ define([
         remoteCouchTopicsAddress = env['fluxtream.couch.login.url'] + dbNameTopics;
         remoteCouchObservationsAddress = env['fluxtream.couch.login.url'] + dbNameObservations;
         backendLink = env['fluxtream.home.url'];
-
         $.ajax({
-          url: backendLink + 'api/v1/couch/',
+          url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
           xhrFields: {
             withCredentials: true
