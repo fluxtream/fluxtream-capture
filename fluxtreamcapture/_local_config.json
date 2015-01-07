@@ -1,0 +1,26 @@
+{
+	"general": {},
+	"ios": {
+		"profiles": {
+			"DEFAULT": {
+				"provisioning_profile": "/Users/Yury/projects/IOS_certificates/development/Fluxtream_Capture.mobileprovision/SelfReport.mobileprovision",
+				"developer_certificate": "Yury Chernushenko"
+			}
+		},
+		"simulatorsdk": "7.1",
+		"simulatorfamily": "iphone",
+		"simulatorvariant": "default",
+		"device": "device"
+	},
+	"android": {
+		"profiles": {
+			"DEFAULT": {
+				"keyalias": "SELF_REPORT",
+				"keypass": "TEMP_PASS",
+				"storepass": "TEMP_PASS",
+				"keystore": "/Users/Yury/projects/fluxtream-capture/fluxtreamcapture/my_keystore.keystore"
+			}
+		},
+		"purge": true
+	}
+}
