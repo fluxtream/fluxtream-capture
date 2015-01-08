@@ -73,6 +73,9 @@ define([
                     document.getElementById('topic.rangeEnd').value <= document.getElementById('topic.rangeStart').value)){
               alert("Range defined incorrectly");
             }
+            else if(document.getElementById('topic.name').value === null){
+              alert("Please specify Topic name");
+            }
             else {
               $scope.oNewTopic = new selfReportStorage.Topic(
                 nLength,
