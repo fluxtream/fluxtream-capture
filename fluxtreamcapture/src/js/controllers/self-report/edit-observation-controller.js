@@ -46,8 +46,9 @@ define([
      '$state',
      'SelfReportStorageService',
      '$rootScope',
+     '$filter' ,
 
-      function($scope, $stateParams, $state, selfReportStorage, $rootScope) {
+      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter) {
         $scope.$on('event:initialized', function () {
           $scope.topicId = $stateParams.observationId.split("_")[1];
 
@@ -104,6 +105,9 @@ define([
               document.getElementById('observation.value').value = $scope.oObservation.value;
             }
 
+            forge.ui.enhanceAllInputs();
+//            forge.ui.enhanceInput('#observation.observationDate');
+//            forge.ui.enhanceInput('#observation.observationTime');
             document.getElementById('observation.observationDate').value = $scope.oObservation.observationDate;
             document.getElementById('observation.observationTime').value = helperGetTimeFromDate($scope.oObservation.observationTime);
             document.getElementById('observation.timezone').value = $scope.oObservation.timezone;

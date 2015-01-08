@@ -99,6 +99,9 @@
 		},
 		"flx_polar_h7": {
 			"version": "0.1.9"
-		}
+		},
+		"ui": {
+      "version": "2.1"
+    }
 	}
 }

@@ -15,13 +15,19 @@ define([
      '$state',
      'SelfReportStorageService',
      '$rootScope',
+     '$filter' ,
 
-      function($scope, $stateParams, $state, selfReportStorage, $rootScope) {
+      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter) {
         $scope.$on('event:initialized', function() {
           //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
-          $scope.tObservationDate = new Date();
-          $scope.tObservationTime = $scope.tObservationDate;
+
+          forge.ui.enhanceAllInputs();
+          //forge.ui.enhanceInput('#observation.observationDate');
+          //forge.ui.enhanceInput('#observation.observationTime');
+          document.getElementById('observation.observationDate').value =  $filter("date")(Date.now(), 'yyyy-MM-dd');
+          document.getElementById('observation.observationTime').value  = $filter("date")(Date.now(), 'HH:mm:ss');
+          $scope.$$phase || $scope.$apply();
 
           //TODO is the type is range check that default value is in range
           //Arrange DOM
