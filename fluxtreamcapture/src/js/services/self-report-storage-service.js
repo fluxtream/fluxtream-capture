@@ -503,11 +503,13 @@ define([
       readObservationsAsyncDB(function(aoCachedObservations){
         var nNumberOfObservations = aoCachedObservations.length;
         var oNextObservationToDelete;
-        var aObservationsToDelete = [];
-        for(var i=0; i<nNumberOfObservations; i++) {
+        var i = 0;
+        while(i < nNumberOfObservations) {
           if (aoCachedObservations[i].topicId === oTopicToRemove.id){
             oNextObservationToDelete = aoCachedObservations[i];
-            aObservationsToDelete.push(i);
+            // Delete item and return counter one step back
+            aoCachedObservations.splice(i,1);
+            nNumberOfObservations--;
 
             // Delete Observations from Main DB
             dbObservations.get(oNextObservationToDelete.id, function(err, oObservation) {
@@ -544,16 +546,12 @@ define([
                   console.log("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
                 }
               });
+          } else {
+            i++;
           }
         }
-
-        // Delete Observations from the memory
-        var nNumberOfObservationsToDelete = aObservationsToDelete.length;
-        for(var j=0; j<nNumberOfObservationsToDelete; j++) {
-          aoCachedObservations.splice(j, 1);
-        }
-
-        console.log("Deleting Observtions on the server side (deleteTopic)");
+        
+        console.log("Deleting Observations on the server side (deleteTopic)");
         //Push Observations deletion to the server
         dbObservations.replicate.to(remoteCouchObservationsAddress)
           .on('complete', function () {
