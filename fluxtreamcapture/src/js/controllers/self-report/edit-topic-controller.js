@@ -14,8 +14,9 @@ define([
        '$stateParams',
        'SelfReportStorageService',
        '$rootScope',
+       '$ionicPopup',
 
-        function ($scope, $state, $stateParams, selfReportStorage, $rootScope) {
+        function ($scope, $state, $stateParams, selfReportStorage, $rootScope, $ionicPopup) {
           $scope.$on('event:initialized', function () {
             $scope.topicId = $stateParams.topicId;
 
@@ -64,6 +65,24 @@ define([
             });
 
             selfReportStorage.readTopicsDB();
+
+            // Called confirm dialog for deleting Topic
+            $scope.deleteTopic = function() {
+              var confirmPopup = $ionicPopup.confirm({
+                title: 'Deleting Topic',
+                template: 'Are you sure you want to delete Topic '+ $scope.oTopic.name +' (this would also delete observations)?',
+                okType: 'button-assertive'
+              });
+              confirmPopup.then(function(res) {
+                if(res) {
+                  selfReportStorage.deleteTopic($scope.oTopic);
+                  console.log("Topic deleted");
+                  $state.go("editTopics");
+                } else {
+                  console.log('Topic deletion canceled');
+                }
+              });
+            }
 
             // Called when the form is submitted
             $scope.editTopic = function () {

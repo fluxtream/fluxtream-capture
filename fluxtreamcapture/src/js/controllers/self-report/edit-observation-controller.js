@@ -47,8 +47,9 @@ define([
      'SelfReportStorageService',
      '$rootScope',
      '$filter' ,
+     '$ionicPopup',
 
-      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter) {
+      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter, $ionicPopup) {
         $scope.$on('event:initialized', function () {
           $scope.topicId = $stateParams.observationId.split("_")[1];
 
@@ -117,6 +118,24 @@ define([
           });
 
           selfReportStorage.readDBState();
+
+          // Called confirm dialog for deleting Observation
+          $scope.deleteObservation = function() {
+            var confirmPopup = $ionicPopup.confirm({
+              title: 'Deleting Observation',
+              template: 'Are you sure you want to delete Observation?',
+              okType: 'button-assertive'
+            });
+            confirmPopup.then(function(res) {
+              if(res) {
+                selfReportStorage.deleteObservation($scope.oObservation);
+                console.log("Observation deleted");
+                $state.go("history");
+              } else {
+                console.log('Observation deletion canceled');
+              }
+            });
+          }
 
           // Called when the form is submitted
           $scope.editObservation = function () {

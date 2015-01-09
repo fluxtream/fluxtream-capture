@@ -24,10 +24,16 @@ define([
     //Stores Topics information
     var dbTopics;
     var dbObservations;
+    var dbDeleteTopics;
+    var dbDeleteObservations;
     var dbNameTopics;
     var dbNameObservations;
+    var dbNameDeletedTopics;
+    var dbNameDeletedObservations;
     var remoteCouchTopicsAddress;
     var remoteCouchObservationsAddress;
+    var remoteCouchDeletedTopicsAddress;
+    var remoteCouchDeletedObservationsAddress;
     var backendLink;
     var userLogin;
     var userCouchDBToken;
@@ -45,10 +51,17 @@ define([
         aoCachedObservations = [];
         aoObservationsToSync = [];
 
+        // Main topics and observations names/links
         dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
         dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
         remoteCouchTopicsAddress = env['fluxtream.couch.login.url'] + dbNameTopics;
         remoteCouchObservationsAddress = env['fluxtream.couch.login.url'] + dbNameObservations;
+
+        // Deleted topics and observations names/links
+        dbNameDeletedTopics = "self_report_db_deleted_topics_" + loginService.getUserName();
+        dbNameDeletedObservations = "self_report_db_deleted_observations_" + loginService.getUserName();
+        remoteCouchDeletedTopicsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedTopics;
+        remoteCouchDeletedObservationsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedObservations;
         backendLink = env['fluxtream.home.url'];
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
@@ -64,6 +77,9 @@ define([
 
             // Create Local Pouch DB
             CreateLocalPouchDB();
+
+            // Topic and Observations should be removed from the main database, but should be saved into a new one
+            CreateLocalDeletedPouchDB();
 
             bIsInitialized = 1;
             $rootScope.$broadcast('event:initialized');
@@ -90,11 +106,14 @@ define([
       return bIsObservationsSynced;
     }
 
-    // If the initialization passed
+    // (Public) If the initialization passed
     function isInitialized(){
       return bIsInitialized;
     }
 
+    /*
+    * (Private) Used in initialize to create Main DB on client side
+    * */
     function CreateLocalPouchDB () {
       // Create Local PouchDB
       if ((userLogin != '') && (userCouchDBToken != '')) {
@@ -102,6 +121,19 @@ define([
         remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
         dbTopics = new PouchDB(dbNameTopics);
         dbObservations = new PouchDB(dbNameObservations);
+      }
+    }
+
+    /*
+    * (Private) Used while deleting Topics or observations
+    * */
+    function CreateLocalDeletedPouchDB () {
+      // Create Local PouchDB for deleted Topics and Observations
+      if ((userLogin != '') && (userCouchDBToken != '')) {
+        remoteCouchDeletedTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedTopicsAddress;
+        remoteCouchDeletedObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedObservationsAddress;
+        dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
+        dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
       }
     }
 
@@ -322,6 +354,228 @@ define([
       }
 
       return aoCachedTopics;
+    }
+
+
+    /**
+     * (Public) Delete specific Observation
+     */
+    function deleteObservation(oObservationToRemove) {
+      // Delete observation in memory
+      var nObservationsArrayLength = aoCachedObservations.length;
+      for (var i = 0; i < nObservationsArrayLength; i++) {
+        if (aoCachedObservations[i].id == oObservationToRemove.id) {
+          aoCachedObservations.splice(i, 1);
+          break;
+        }
+      }
+
+      // Remove Observation from Main Client DB
+      dbObservations.get(oObservationToRemove.id, function(err, oObservation) {
+        dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
+          if (!err) {
+            console.log('Successfully deleted Observation on client side (deleteObservation)');
+          } else {
+            console.log("Error while deleting Observation on the client side (deleteObservation): " + err);
+          }
+        });
+      });
+
+      console.log("Deleting Observation on the server side (deleteObservation)");
+      //Push Observation deletion to the server
+      dbObservations.replicate.to(remoteCouchObservationsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully deleted Observation on the server side (deleteObservation)");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while deleting Observation on the server side (deleteObservation): " + err);
+        });
+
+      // Save observation to client delete database
+      console.log("Saving Observation on the client side (deleteObservation)");
+      dbDeleteObservations.put({
+          _id: oObservationToRemove.id + oObservationToRemove.creationDate + oObservationToRemove.creationTime,
+          _rev: oObservationToRemove._rev,
+          topicId: oObservationToRemove.topicId,
+          value: oObservationToRemove.value,
+          creationDate: oObservationToRemove.creationDate,
+          creationTime: oObservationToRemove.creationTime,
+          observationDate: oObservationToRemove.observationDate,
+          observationTime: oObservationToRemove.observationTime,
+          updateTime: oObservationToRemove.updateTime,
+          timezone: oObservationToRemove.timezone,
+          comment: oObservationToRemove.comment },
+
+        function callback(err, result) {
+          if (!err) {
+            console.log('Successfully saved a Observation on client side Delete DB (deleteObservation)');
+          } else {
+            console.log("Error while saving Observation on the client side Delete DB (deleteObservation): " + err);
+          }
+        });
+
+      console.log("Saving Topic on the server side (deleteObservation)");
+      //Push Topic to the server
+      //TODO maybe not replication, but just push changes
+      dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while saving Deleted Observation on the server side Delete DB (deleteObservation): " + err);
+        });
+    }
+
+    /**
+     * (Public) Delete specific Topic
+     */
+    function deleteTopic(oTopicToRemove) {
+      //TODO should be optimized to do most of the operations on the server side
+      // Delete topic in memory
+      var nTopicsArrayLength = aoCachedTopics.length;
+      for (var i = 0; i < nTopicsArrayLength; i++) {
+        if (aoCachedTopics[i].id == oTopicToRemove.id) {
+          aoCachedTopics.splice(i, 1);
+          break;
+        }
+      }
+
+      // Remove Topic from Main Client DB
+      dbTopics.get(oTopicToRemove.id, function(err, oTopic) {
+        dbTopics.remove(oTopic._id, oTopic._rev, function(err, response) {
+          if (!err) {
+            console.log('Successfully deleted Topic on client side (deleteTopic)');
+          } else {
+            console.log("Error while deleting Topic on the client side (deleteTopic): " + err);
+          }
+        });
+      });
+
+      console.log("Deleting Topic on the server side (deleteTopic)");
+      //Push Topic deletion to the server
+      dbTopics.replicate.to(remoteCouchTopicsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully deleted Topic on the server side (deleteTopic)");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while deleting Topic on the server side (deleteTopic): " + err);
+        });
+
+      // Save topic to client delete database
+      console.log("Saving Topic on the client side (deleteTopic)");
+      dbDeleteTopics.put({
+          _id: oTopicToRemove.id + oTopicToRemove.creationTime,
+          creationTime: oTopicToRemove.creationTime,
+          updateTime: oTopicToRemove.updateTime,
+          name: oTopicToRemove.name,
+          type: oTopicToRemove.type,
+          defaultValue: oTopicToRemove.defaultValue,
+          rangeStart: oTopicToRemove.rangeStart,
+          rangeEnd: oTopicToRemove.rangeEnd,
+          step: oTopicToRemove.step,
+          topicNumber: oTopicToRemove.topicNumber},
+
+        function callback(err, result) {
+          if (!err) {
+            console.log('Successfully saved a Topic on client side Delete DB (deleteTopic)');
+          } else {
+            console.log("Error while saving Topic on the client side Delete DB (deleteTopic): " + err);
+          }
+        });
+
+      console.log("Saving Topic on the server side (deleteTopic)");
+      //Push Topic to the server
+      //TODO maybe not replication, but just push changes
+      dbDeleteTopics.replicate.to(remoteCouchDeletedTopicsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
+        }).on('error', function (err) {
+          // Handle error
+          console.log("Error while saving Deleted Topic on the server side Delete DB (deleteTopic): " + err);
+        });
+
+      // Delete associated observations
+      //TODO maybe change to variant without upgrading whole array
+      readObservationsAsyncDB(function(aoCachedObservations){
+        var nNumberOfObservations = aoCachedObservations.length;
+        var oNextObservationToDelete;
+        var aObservationsToDelete = [];
+        for(var i=0; i<nNumberOfObservations; i++) {
+          if (aoCachedObservations[i].topicId === oTopicToRemove.id){
+            oNextObservationToDelete = aoCachedObservations[i];
+            aObservationsToDelete.push(i);
+
+            // Delete Observations from Main DB
+            dbObservations.get(oNextObservationToDelete.id, function(err, oObservation) {
+              dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
+                if (!err) {
+                  console.log('Successfully deleted Observation on client side (deleteTopic)');
+                } else {
+                  console.log("Error while deleting Observation on the client side (deleteTopic): " + err);
+                }
+              });
+            });
+
+            console.log("oNextObservationToDelete:");
+            console.log(oNextObservationToDelete);
+            // Add Observation for Deletion DB
+            console.log("Saving Observation on the client side (deleteTopic)");
+            dbDeleteObservations.put({
+              _id: oNextObservationToDelete.id + oNextObservationToDelete.creationDate + oNextObservationToDelete.creationTime,
+              _rev: oNextObservationToDelete._rev,
+              topicId: oNextObservationToDelete.topicId,
+              value: oNextObservationToDelete.value,
+              creationDate: oNextObservationToDelete.creationDate,
+              creationTime: oNextObservationToDelete.creationTime,
+              observationDate: oNextObservationToDelete.observationDate,
+              observationTime: oNextObservationToDelete.observationTime,
+              updateTime: oNextObservationToDelete.updateTime,
+              timezone: oNextObservationToDelete.timezone,
+              comment: oNextObservationToDelete.comment },
+
+              function callback(err, result) {
+                if (!err) {
+                  console.log('Successfully saved a Observation on client side Delete DB (deleteTopic)');
+                } else {
+                  console.log("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
+                }
+              });
+          }
+        }
+
+        // Delete Observations from the memory
+        var nNumberOfObservationsToDelete = aObservationsToDelete.length;
+        for(var j=0; j<nNumberOfObservationsToDelete; j++) {
+          aoCachedObservations.splice(j, 1);
+        }
+
+        console.log("Deleting Observtions on the server side (deleteTopic)");
+        //Push Observations deletion to the server
+        dbObservations.replicate.to(remoteCouchObservationsAddress)
+          .on('complete', function () {
+            // Successfully synced
+            console.log("Successfully deleted Observations on the server side (deleteTopic)");
+          }).on('error', function (err) {
+            // Handle error
+            console.log("Error while deleting Observations on the server side (deleteTopic): " + err);
+          });
+
+        console.log("Saving Deleted Observations on the server side Delete DB (deleteTopic)");
+        //Push deleted observations to the server
+        //TODO maybe not replication, but just push changes
+        dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
+          .on('complete', function () {
+            // Successfully synced
+            console.log("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
+          }).on('error', function (err) {
+            // Handle error
+            console.log("Error while saving Deleted Observations on the server side Delete DB (deleteTopic): " + err);
+          });
+      });
     }
 
     /**
@@ -889,6 +1143,7 @@ define([
       readTopicsDB: readTopicsDB,
       updateTopic: updateTopic,
       updateTopicNumbers: updateTopicNumbers,
+      deleteTopic: deleteTopic,
 
       Observation : Observation,
       createObservation: createObservation,
@@ -898,6 +1153,7 @@ define([
       syncObservationsDB: syncObservationsDB,
       syncObservationsServer: syncObservationsServer,
       updateObservation: updateObservation,
+      deleteObservation: deleteObservation,
 
       findUniqueDates: findUniqueDates,
       readDBState: readDBState,

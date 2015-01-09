@@ -104,7 +104,7 @@ define([
               + document.getElementById('observation.observationTime').value).format();
 
             $scope.oNewObservation = new selfReportStorage.Observation(
-                Date.parse($scope.tObservationTime) + "_" + $stateParams.topicId,
+              Date.parse(tObservationTime) + "_" + $stateParams.topicId,
               $stateParams.topicId,
               sObservationValue,
               tCreationDate,
