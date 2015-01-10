@@ -88,20 +88,22 @@ define([
             $scope.editTopic = function () {
               var tCurrentTime = new Date();
 
-              if(document.getElementById('topic.type').value === "Range" &&
-                (document.getElementById('topic.step').value === null ||
+              if(document.getElementById('topic.name').value == 0){
+                alert("Please specify Topic name");
+              }
+              else if(document.getElementById('topic.type').value === "Range" &&
+                (document.getElementById('topic.rangeStart').value == 0 ||
+                  document.getElementById('topic.rangeEnd').value == 0 ||
+                  document.getElementById('topic.rangeEnd').value <=
+                  document.getElementById('topic.rangeStart').value)){
+                alert("Range defined incorrectly");
+              }
+              else if(document.getElementById('topic.type').value === "Range" &&
+                (document.getElementById('topic.step').value == 0 ||
                   document.getElementById('topic.step').value <= 0)){
                 alert("Step can not be less than 0 for Range type");
               }
-              else if(document.getElementById('topic.type').value === "Range" &&
-                (document.getElementById('topic.rangeStart').value === null ||
-                  document.getElementById('topic.rangeEnd').value === null ||
-                  document.getElementById('topic.rangeEnd').value <= document.getElementById('topic.rangeStart').value)){
-                alert("Range defined incorrectly");
-              }
-              else if(document.getElementById('topic.name').value === null){
-                alert("Please specify Topic name");
-              } else {
+              else {
                 //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
                 $scope.oNewTopic = new selfReportStorage.Topic(
                   $scope.oTopic.id,

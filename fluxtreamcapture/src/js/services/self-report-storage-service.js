@@ -346,13 +346,6 @@ define([
      * (Public) Read Topics from memory
      */
     function readTopics(){
-      if(!aoCachedTopics){
-        console.log("No topics in memory (readTopics)");
-      } else {
-        console.log("There are some topics in memory (readTopics)");
-        console.log(aoCachedTopics);
-      }
-
       return aoCachedTopics;
     }
 
@@ -550,7 +543,7 @@ define([
             i++;
           }
         }
-        
+
         console.log("Deleting Observations on the server side (deleteTopic)");
         //Push Observations deletion to the server
         dbObservations.replicate.to(remoteCouchObservationsAddress)
@@ -745,13 +738,7 @@ define([
      * (Private) Reorder Topics according their numbers
      */
     function reorderTopics() {
-      var nTopicsArrayLength = aoCachedTopics.length;
-      for (var i = 0; i < nTopicsArrayLength; i++) {
-        //Move the item in the array
-        var oTopic = aoCachedTopics[i];
-        aoCachedTopics.splice(i, 1);
-        aoCachedTopics.splice(oTopic.topicNumber, 0, oTopic);
-      }
+      aoCachedTopics.sort(function(a, b){return a.topicNumber - b.topicNumber});
     }
 
     /**
@@ -807,7 +794,6 @@ define([
             // Put pre-processing of data
             reorderTopics();
             fCallback(aoCachedTopics);
-
           });
 
         }).on('error',  function (err) {

@@ -62,19 +62,20 @@ define([
             //TODO any placeholders? - Should be clear where to enter value
             //TODO what to do with "status" field - use when archive for topics and delete for observations
 
-            if(document.getElementById('topic.type').value === "Range" &&
-              (document.getElementById('topic.step').value === null ||
-                document.getElementById('topic.step').value <= 0)){
-              alert("Step can not be less than 0 for Range type");
+            if(document.getElementById('topic.name').value == 0){
+              alert("Please specify Topic name");
             }
             else if(document.getElementById('topic.type').value === "Range" &&
-                   (document.getElementById('topic.rangeStart').value === null ||
-                    document.getElementById('topic.rangeEnd').value === null ||
-                    document.getElementById('topic.rangeEnd').value <= document.getElementById('topic.rangeStart').value)){
+              (document.getElementById('topic.rangeStart').value == 0 ||
+                document.getElementById('topic.rangeEnd').value == 0 ||
+                document.getElementById('topic.rangeEnd').value <=
+                document.getElementById('topic.rangeStart').value)){
               alert("Range defined incorrectly");
             }
-            else if(document.getElementById('topic.name').value === null){
-              alert("Please specify Topic name");
+            else if(document.getElementById('topic.type').value === "Range" &&
+              (document.getElementById('topic.step').value == 0 ||
+                document.getElementById('topic.step').value <= 0)){
+              alert("Step can not be less than 0 for Range type");
             }
             else {
               $scope.oNewTopic = new selfReportStorage.Topic(

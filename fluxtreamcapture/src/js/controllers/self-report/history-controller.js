@@ -58,6 +58,18 @@ define([
       } else {
         $rootScope.$broadcast('event:initialized');
       }
+
+      /*
+      * Find Topic name for corresponding id
+      * */
+      $scope.getNameById = function (topicId){
+        var nTopicsLength = $scope.aoTopics.length;
+        for (var i = 0; i < nTopicsLength;i++) {
+          if($scope.aoTopics[i].id == topicId) {
+            return $scope.aoTopics[i].name;
+          }
+        }
+      }
     }
   ]);
 

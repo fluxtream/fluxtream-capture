@@ -19,7 +19,7 @@
 
         <a ui-sref="editObservation({observationId: oObservation.id})" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true" class="item">
           <i style="font-size:8pt;">{{oObservation.observationTime | date : 'h:mm a'}}</i>
-          {{aoTopics[oObservation.topicId].name}}
+          {{getNameById(oObservation.topicId)}}
           <span class="item-note">
             {{oObservation.value}}
           </span>
