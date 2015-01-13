@@ -16,3 +16,6 @@
 #define DEFAULTS_USER_ID @"bodytrack_photo_upload_user_id"
 #define DEFAULTS_AUTHENTICATION @"bodytrack_photo_upload_authentication"
 #define DEFAULTS_UPLOAD_URL @"bodytrack_photo_upload_url"
+#define DEFAULTS_ACCESS_TOKEN @"bodytrack_photo_access_token"
+#define DEFAULTS_ACCESS_TOKEN_EXPIRATION @"bodytrack_photo_access_token_expiration"
+#define DEFAULTS_ACCESS_TOKEN_UPDATE_URL @"bodytrack_photo_access_token_update_url"

@@ -55,9 +55,9 @@
  * uploadURL: The URL at which the photos will be sent
  * authentication: The basic authentication string (base64 of "{username}:{password}")
  */
-+ (void)setUploadParameters:(ForgeTask *)task userId:(NSString *)userId uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication {
-    NSLog(@"API: setUploadParameters(%@, %@, %@)", userId, uploadURL, authentication);
-    [[PhotoUploader singleton] setUserId:userId uploadURL:uploadURL authentication:authentication];
++ (void)setUploadParameters:(ForgeTask *)task params:(NSDictionary *)params {
+    NSLog(@"API: setUploadParameters(%@)", params);
+    [[PhotoUploader singleton] setParams:params];
     [task success:nil];
 }
 
@@ -105,16 +105,16 @@
 }
 
 /**
- * This method takes a list of photo ids and produces a list of booleans, in the same order, telling
- * if each photo has already been uploaded or not
+ * This method takes a list of photo ids and produces a list of booleans, in the same order, giving the
+ * status of each photo ("none", "pending" or "uploaded")
  */
-+ (void)arePhotosUploaded:(ForgeTask *)task photoIds:(NSArray *)photoIds {
++ (void)getPhotoStatuses:(ForgeTask *)task photoIds:(NSArray *)photoIds {
     NSLog(@"API: arePhotosUploaded");
     int count = (int)photoIds.count;
     NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
     for (NSNumber *photoId in photoIds) {
         PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
-        [array addObject:[NSNumber numberWithBool:[@"uploaded" isEqualToString:photo.uploadStatus]]];
+        [array addObject:photo.uploadStatus];
     }
     [task success:array];
 }

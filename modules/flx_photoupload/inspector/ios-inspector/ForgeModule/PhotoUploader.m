@@ -14,9 +14,12 @@
 
 @interface PhotoUploader()
 
-// Upload URL and authentication string
+// Upload URL, authentication string and access token
 @property (nonatomic, strong) NSString *uploadURL;
 @property (nonatomic, strong) NSString *authentication;
+@property (nonatomic, strong) NSString *accessToken;
+@property (nonatomic, strong) NSNumber *accessTokenExpiration;
+@property (nonatomic, strong) NSString *accessTokenUpdateURL;
 
 // True if the upload thread is running
 @property (nonatomic) BOOL isUploading;
@@ -49,11 +52,15 @@
     return self;
 }
 
-- (void)setUserId:(NSString *)userId uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication {
-    NSLog(@"Set user id: %@", userId);
-    self.userId = userId;
-    self.uploadURL = uploadURL;
-    self.authentication = authentication;
+- (void)setParams:(NSDictionary *)params {
+    self.userId = [params objectForKey:@"userId"];
+    NSLog(@"Set user id: %@", self.userId);
+    self.uploadURL = [params objectForKey:@"upload_url"];
+    self.authentication = [params objectForKey:@"authentication"];
+    self.accessToken = [params objectForKey:@"access_token"];
+    self.accessTokenExpiration = [params objectForKey:@"access_token_expiration"];
+    self.accessTokenUpdateURL = [params objectForKey:@"access_token_update_url"];
+    
     [[PhotoLibrary singleton] clearPhotoList];
 }
 
@@ -263,7 +270,8 @@
     NSLog(@"Starting request to %@", self.uploadURL);
     NSURLRequest *request = [PhotoUploadRequest uploadRequestForAsset:asset
                                                             uploadURL:self.uploadURL
-                                                       authentication:self.authentication];
+                                                       authentication:self.authentication
+                                                          accessToken:self.accessToken];
     
     // Run request
     NSURLResponse *response = nil;

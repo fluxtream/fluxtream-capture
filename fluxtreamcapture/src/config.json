@@ -31,7 +31,8 @@
 			"version": "2.6",
 			"config": {
 				"permissions": [
-					"*"
+					"*",
+					"http://dev.fluxtream.org/*"
 				]
 			}
 		},
@@ -95,13 +96,27 @@
 			}
 		},
 		"flx_photoupload": {
-			"version": "0.5.28"
+			"version": "0.6.3"
 		},
 		"flx_polar_h7": {
 			"version": "0.1.9"
 		},
 		"ui": {
-      "version": "2.1"
-    }
+			"version": "2.1"
+		},
+		"display": {
+			"version": "2.4",
+			"config": {
+				"orientations": {
+					"ipad": "any",
+					"android": "portrait",
+					"iphone": "portrait"
+				},
+				"fullscreen": {
+					"ios7": "no-statusbar",
+					"ios": true
+				}
+			}
+		}
 	}
 }

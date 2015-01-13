@@ -19,7 +19,7 @@
 + (PhotoUploader *)singleton;
 
 // Sets the upload parameters
-- (void)setUserId:(NSString *)userId uploadURL:(NSString *)uploadURL authentication:(NSString *)authentication;
+- (void)setParams:(NSDictionary *)params;
 
 // Logs out the current user and empty the upload queue
 - (void)logoutUser;

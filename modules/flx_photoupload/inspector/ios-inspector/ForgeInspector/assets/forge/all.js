@@ -11,8 +11,8 @@ forge.flx_photoupload = {
   startAutouploadService: function(success, error) {
     forge.internal.call('flx_photoupload.startAutouploadService', {}, success, error);
   },
-  setUploadParameters: function(userId, uploadURL, authentication, success, error) {
-    forge.internal.call('flx_photoupload.setUploadParameters', {userId: userId, uploadURL: uploadURL, authentication: authentication}, success, error);
+  setUploadParameters: function(params, success, error) {
+    forge.internal.call('flx_photoupload.setUploadParameters', {params: params}, success, error);
   },
   setAutouploadOptions: function(options, success, error) {
     forge.internal.call('flx_photoupload.setAutouploadOptions', {params: options}, success, error);

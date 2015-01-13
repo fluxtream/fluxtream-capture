@@ -16,6 +16,7 @@
 
 + (NSURLRequest *)uploadRequestForAsset:(ALAsset *)asset
                               uploadURL:(NSString *)uploadURL
-                         authentication:(NSString *)authentication;
+                         authentication:(NSString *)authentication
+                            accessToken:(NSString *)accessToken;
 
 @end

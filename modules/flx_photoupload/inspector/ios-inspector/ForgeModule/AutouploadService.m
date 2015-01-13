@@ -84,6 +84,7 @@
 // Retrieves the autoupload parameters from the user defaults
 - (void)readAutouploadParameters {
     @synchronized (self) {
+        if (!self.userId) return;
         NSLog(@"Apply autoupload parameters");
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         self.uploadPortrait = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT]];
@@ -96,9 +97,17 @@
         self.landscapeLeftMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP]] intValue];
         self.landscapeRightMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP]] intValue];
         // Apply upload url and authentication parameters to PhotoUploader
-        [[PhotoUploader singleton] setUserId:self.userId
-                                   uploadURL:[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]]
-                              authentication:[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_AUTHENTICATION]]];
+        NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                      @"userId": self.userId,
+                                                                                      @"upload_url": [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]],
+                                                                                      }];
+        NSString *accessToken = [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN]];
+        NSString *accessTokenExpiration = [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_EXPIRATION]];
+        NSString *accessTokenUpdateURL = [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_UPDATE_URL]];
+        if (accessToken) [params setObject:accessToken forKey:@"access_token"];
+        if (accessTokenExpiration) [params setObject:accessTokenExpiration forKey:@"access_token_expiration"];
+        if (accessTokenUpdateURL) [params setObject:accessTokenUpdateURL forKey:@"access_token_update_url"];
+        [[PhotoUploader singleton] setParams:params];
     }
 }
 
@@ -129,6 +138,12 @@
             [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]];
         } else if ([key isEqualToString:@"authentication"]) {
             [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_AUTHENTICATION]];
+        } else if ([key isEqualToString:@"access_token"]) {
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN]];
+        } else if ([key isEqualToString:@"access_token_expiration"]) {
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_EXPIRATION]];
+        } else if ([key isEqualToString:@"access_token_update_url"]) {
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_UPDATE_URL]];
         } else if ([key isEqualToString:@"userId"]) {
             // Don't record user id, just keep it in memory
         } else {
