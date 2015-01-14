@@ -1,0 +1,1 @@
+window.forge = {}; window.forge.config = {"modules": {"inspector": {"version": "1.0"}, "flx_polar_h7": {"version": "0.1.9", "config": {}}}}; window.forge.module_mapping = {"inspector": "inspector", "flx_polar_h7": "flx_polar_h7"};
