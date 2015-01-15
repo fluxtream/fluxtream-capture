@@ -197,3 +197,353 @@ textarea.noResize { resize:none; }
   background-color: #ffffff;
   border: none;
 }
+
+/*******************************************
+ * WALL
+ *******************************************/
+
+.wall-post-author-name {
+  font-weight: bold;
+  text-transform: none;
+  font-size: 1em;
+  width: 100%;
+  display: block;
+  padding: 0;
+}
+
+.wall-post-time {
+  font-size: 0.8em;
+}
+
+.wall-post-message-body {
+  white-space: normal;
+}
+
+.wall-new-comment-input {
+  border: #E5E5E5 solid 1px;
+  height: 100px;
+  width: 80%;
+}
+
+.wall-submit-button {
+}
+
+.wall-post-avatar {
+  font-size: 40px;
+}
+
+.float-right { float: right; }
+
+.wall-comment-action, .wall-post-action  { 
+  position: absolute;  
+  top:15px; 
+  right: 15px;
+}
+.wall-comment-action span, .wall-post-action span { 
+  display: inline-block; 
+  font-size: 20px; 
+  padding-left: 15px; 
+  color: #3291B7; 
+}
+.card { 
+  box-shadow: none; 
+  margin-bottom: 5px; 
+  margin-top: 5px;
+  margin-left:  0;
+  margin-right: 0;
+}
+.card .card { 
+  margin: 20px 0 0; 
+}
+.card .card .item { 
+  border:none; 
+}
+.card .card .item-body {
+  border-bottom-width: 4px; 
+  border-bottom-color: #fff;  
+  border-bottom-style: solid;
+}
+.item-body .item-body, .item-body  .item-avatar {
+  background-color:  #E6F0F4;
+}
+.item-body  .item-avatar {
+  padding-left:  60px;  
+  padding-bottom: 0
+}
+.item-body  .item-body { 
+  padding-top: 0 
+}
+.item-body  .item-avatar h2,  .item-body  .item-avatar h3 { 
+  margin:  0 0 0 0; 
+}
+.item-body  .item-avatar img { 
+  width: 30px; height: 30px; 
+}
+.item-body  .item-avatar p { 
+  margin-top: 0; 
+  margin-bottom: 0;
+}
+
+.item-input-wrapper { 
+  background: none;
+}
+
+.wall-infinite-scroller {
+  padding-bottom: 60px;
+}
+
+.wall-new-comment-placeholder {
+  padding: 10px;
+  color: #E5E5E5;
+}
+
+.wall-new-comment-submit {
+  float: right;
+}
+
+.wall-new-comment-input {
+  margin-top: 10px;
+}
+
+/*******************************************
+ * COACH SELECTION
+ *******************************************/
+
+.coach-card, .connector-card {
+  margin: 10px 0;
+  min-height: 158px;
+  overflow: hidden;
+  border-color: #DDD;
+  background-color: #FFF;
+  position: relative;
+  z-index: 2;
+  display: block;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 16px;  
+}
+
+.coach-selected {
+  float: right;
+  color: #3399CC;
+  font-size: 1.3em;
+  margin: 15px 15px 0;
+/*  float: left;
+  color: forestgreen;
+  font-size: 1.3em;
+  margin-right: 10px;*/
+}
+
+.coach-remove {
+  float: right;
+  font-size: 1.3em;
+  padding: 15px 15px 30px 30px;
+  margin: -15px -15px 0px 0px;
+}
+
+.coach-photo {
+  float: left;
+  margin: 15px 15px;
+/*  margin-right: 15px;
+  display: none;*/
+}
+
+.coach-photo img {
+  width: 80px;
+}
+
+.coach-name {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #3399CC;
+  margin: 15px 15px 10px;
+}
+
+.coach-description {
+  white-space: normal;
+  font-size: .9em;
+  margin: 0 15px 15px;
+}
+
+.coach-cat { 
+  font-size: .9em;
+  margin: 10px 15px 0; 
+  text-transform: uppercase;
+  color: #8EA0C5;
+ }
+
+.coach-location {
+  font-size: .9em;
+  margin: 0 15px 10px;
+  text-transform: uppercase;
+  color: #8EA0C5;
+}
+
+.coach-media {
+  margin: 15px;
+}
+
+.card-actions { 
+  display: flex; 
+  clear: both; 
+}
+
+.card-actions div { 
+  -webkit-box-flex: 0;
+-webkit-flex: 0 0 50%;
+-moz-box-flex: 0;
+-moz-flex: 0 0 50%;
+-ms-flex: 0 0 50%;
+flex: 0 0 50%;
+max-width: 50%;
+text-align: center; 
+margin: 0; 
+border-color: #DDD;
+border-width: 1px 0 0;
+border-style: solid;
+color: #3399CC;
+}
+
+.card-actions div i { 
+  font-size: 27px;  
+  vertical-align: middle; 
+}
+
+.card-actions div:first-child {
+  border-right: 1px solid #ddd;
+}
+
+/*******************************************
+ * COACH DETAILS
+ *******************************************/
+a { 
+  color:#3399cc;  
+  text-decoration: none
+}
+
+
+.coach-details .actions button { 
+  clear:both;
+ }
+
+.coach-website { color: #3399cc; }
+
+button i { 
+  font-size: 28px; 
+  vertical-align: middle; 
+}
+
+.button-fair, .button.button-fair { 
+  color: #3399CC; 
+  background-color: #E6F0F4; 
+  border-color: #3399CC
+}
+.button-fair:hover { 
+  color: #3095cc; 
+  background-color: #E0eef1; 
+  border-color: #3095cc 
+}
+
+/*******************************************
+ * SHARING CONNECTORS
+ *******************************************/
+
+.coach-connector-selected, .coach-connector-to-come {
+  float: left;
+  color: #3095cc;
+  font-size: 27px;
+  margin-right: 10px;
+  width: 31px;
+  text-align: center;
+  margin-top: -4px;
+}
+
+.coach-connector-to-come {
+  height: 1em;
+}
+
+.coach-connector-selected span, .coach-connector-to-come span {
+  display: inline-block;
+  width: 27px;
+  height: 27px;
+  margin: 0 auto;
+}
+
+/*******************************************
+ * CONNECTORS
+ *******************************************/
+.connector-card {
+  min-height: 127px;
+  padding: 0;
+} /* see also .coach-card */ 
+
+.card-content-wrap {
+  overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.connector-status-icon {
+  float: left;
+  margin: 15px;
+  height: 50px;
+  color: #3399cc;
+  font-size: 1.4em;
+  line-height: 1.2em;
+  width: 22px;
+}
+.connector-status-icon span {
+  display: inline-block;
+  height: 22px;
+  width: 22px;
+}
+.connector-name, .connector-status {
+  overflow: hidden;
+  height: 100%;
+}
+.connector-name {
+  margin-top: 15px;
+  margin-bottom: 10px;
+  font-size: 1.3em; 
+  line-height: 1.2em;
+}
+.connector-status {
+  color: #8EA0C5;
+}
+.connector-image {
+ float:right;
+ margin: 15px;
+ width: 100px;
+ border: 1px solid #ddd;
+}
+.connector-image img {
+  width: 100%; 
+  display: block;
+}
+.btn-no-style {
+  padding: 0;
+  margin: 0;
+  border: none;
+  text-indent: 0;
+  background: transparent;
+  text-align: center;
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.8em;
+  -webkit-appearance: none;
+}
+.connector-sync i {
+  color: #3399CC ;
+}
+
+.connector-installing div:first-child {
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 100%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 100%;
+  -ms-flex: 0 0 100%;
+  flex: 0 0 100%;
+  max-width: 100%;
+  border-right: 0;
+}

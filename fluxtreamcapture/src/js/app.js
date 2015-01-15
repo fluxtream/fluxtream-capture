@@ -19,7 +19,8 @@ $(document).ready(function() {
     "services/photo-synchronization-service",
     'services/heart-rate-service',
     'filters/self-report-filters',
-    'services/user-prefs-service'
+    'services/user-prefs-service',
+    'services/push-notifications'
   ], function(appModules, env, routes, flxCom) {
     
     // Get current page or set main page
@@ -33,16 +34,19 @@ $(document).ready(function() {
       '$state',
       'UserPrefsService',
       '$rootScope',
+      'PushNotificationService',
       'PhotoListService', // Preloading photos
       'PhotoSynchronizationService', // Upload unuploaded photos and photo metadata
       'HeartRateService', // Enable heart rate service on start if needed
-      function(loginService, $ionicViewService, $state, userPrefs, $rootScope) {
+      function(loginService, $ionicViewService, $state, userPrefs, $rootScope, pushNotifications) {
         userPrefs.onReady(function() {
           // Check if the user is alreday logged in
           if (loginService.isAuthenticated()) {
             // User is logged in, load main page
             $state.go("listTopics");
             window.location = initialRoute;
+            // Tell the push notification service the user is logged in
+            pushNotifications.authenticationDone();
             // Clear navigation history to prevent going back to the initialization page
             $ionicViewService.clearHistory();
             // Hide launch screen

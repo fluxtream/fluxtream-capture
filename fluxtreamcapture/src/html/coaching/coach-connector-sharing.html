@@ -1,0 +1,34 @@
+<ion-view title="Share with {{ coachName }}">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="{{ backLink }}({{ backLinkParams }})" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content class="has-footer">
+    <div class="txt-align-center ajax-loading" ng-if="loading">
+      <i class="icon ion-ios7-reloading"></i>
+    </div>
+    <div class="list">
+      <div ng-repeat="connector in connectors" class="item" ng-click="toggleConnector(connector)">
+        <div class="coach-connector-selected" ng-if="connector.shared && !connector.updating">
+          <span class="ion-ios7-checkmark-outline"></span>
+        </div>
+        <div class="coach-connector-selected coach-connector-loading" ng-if="connector.updating">
+          <span class="icon ion-ios7-reloading"></span>
+        </div>
+        <div class="coach-connector-to-come" ng-if="!connector.shared && !connector.updating">
+          <span></span>
+        </div> 
+        {{ connector.prettyName }}
+      </div>
+    </div>
+  </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark">
+  </div>
+  
+</ion-view>

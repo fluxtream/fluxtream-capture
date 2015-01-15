@@ -1,0 +1,72 @@
+<ion-view title="Settings: Connectors">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="settings" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content class="has-footer">
+    <div class="txt-align-center ajax-loading" ng-if="!connectors.length">
+      <i class="icon ion-ios7-reloading"></i>
+    </div>
+    <ion-list>
+      <div class="padding">
+        <ion-item class="card connector-card" ng-repeat="connector in connectors" ng-click="installConnector(connector)">
+          <div class="card-content-wrap">
+            <!-- Connector status icon -->
+            <div class="connector-status-icon">
+              <!-- Installed -->
+              <span class="ion-checkmark-circled" ng-if="connector.installed && !connector.loading"></span>
+              <!-- Installing -->
+              <span class="ion-loading-d" ng-if="connector.installed && connector.loading"></span>
+              <!-- Non installed -->
+              <span ng-if="!connector.installed"></span>
+            </div>
+            <!-- Connector image -->
+            <div class="connector-image">
+              <img src="{{ connector.image }}" />
+            </div>
+            <!-- Connector name -->
+            <p class="connector-name">{{ connector.name }}</p>
+            <!-- Status -->
+            <p class="connector-status" ng-if="connector.installed">Status: {{ connector.status }}</p>
+            <!-- Installed -->
+            <div class="card-actions" ng-if="connector.installed">
+              <!-- Installed -->
+              <div class="action padding connector-remove" ng-click="uninstallConnector(connector); $event.stopPropagation();">
+                <i class="ion-ios7-close-empty"></i> Remove
+              </div>
+              <!-- Installed and synchronizing -->
+              <div class="action padding connector-sync" ng-if="!connector.syncing">
+                <i class="ion-ios7-reload"></i> 
+                <button class="btn-no-style" ng-click="synchronizeNow(connector); $event.stopPropagation();"> Sync now</button>
+              </div>
+              <!-- Installed and not synchronizing -->
+              <div class="action padding connector-sync" ng-if="connector.syncing">
+                <i class="ion-ios7-reloading"></i> 
+              </div>
+            </div>
+            <!-- Not installed -->
+            <div class="card-actions connector-installing" ng-if="!connector.installed">
+              <!-- Loading -->
+              <div class="action padding connector-remove" ng-if="connector.loading" ng-click="uninstallConnector(connector); $event.stopPropagation();">
+                <i class="ion-ios7-reloading"></i>
+              </div>
+              <!-- Not installed -->
+              <div class="action padding" ng-if="!connector.loading">
+                <i class="ion-ios7-cloud-download-outline"></i> Install
+              </div>
+            </div>
+          </div>
+        </ion-item>
+      </div>
+    </ion-list>
+  </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark">
+  </div>
+  
+</ion-view>

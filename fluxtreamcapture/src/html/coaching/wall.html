@@ -1,0 +1,161 @@
+<ion-view title="{{ getPageTitle() }}">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="wall" class="button button-clear pull-left" ng-if="singlePost">
+      <i class="ion-chevron-left"></i> Back
+    </a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content class="has-footer">
+    <div class="txt-align-center ajax-loading" ng-if="loading">
+      <i class="icon ion-ios7-reloading"></i>
+    </div>
+    <ion-refresher ng-if="!loading"
+      pulling-text="Pull to refresh..."
+      on-refresh="refreshWall()"
+      refreshing-icon="ion-ios7-reloading">
+    </ion-refresher>
+    <ion-list>
+      <!-- List is empty -->
+      <div ng-if="!postList.length && !loading && !refreshing">
+        <div class="list card padding" ng-if="hasCoach == 'no'">
+          <div class="wall-post-message-body item item-body">
+            <div>
+              You don't have any messages. Get support and start the conversation.
+            </div>
+            <div class="card-actions connector-installing">
+              <div class="action padding" ui-sref="selectCoach">
+                Get support
+                <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="list card padding" ng-if="hasCoach == 'yes'">
+          <div class="wall-post-message-body item item-body">
+            <div style="text-align:center">
+              No messages yet
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- List of posts -->
+      <div class="list card padding" ng-repeat="post in postList">
+        <!-- Post header -->
+        <div class="item item-avatar" ng-click="loadPost(post)">
+          <!-- Avatar -->
+          <img src="{{ (post.from ? post.from.photoURL : localUserPhotoURL) || 'img/avatar-dummy.png' }}">
+          <!-- Actions -->
+          <div class="wall-post-action" ng-if="!post.from">
+            <span class="wall-edit-post-link" ng-click="editPost(post); $event.stopPropagation();"><i class="ion-edit"></i></span>
+            <span class="wall-delete-post-link" ng-click="deletePost(post); $event.stopPropagation();"><i class="ion-ios7-trash-outline"></i></span>
+          </div>
+          <!-- Author -->
+          <h2 class="wall-post-author-name">
+            {{ post.from ? post.from.fullname : "You" }}
+          </h2>
+          <!-- Time -->
+          <p class="wall-post-time">
+            {{ convertTime(post.creationTime) }}
+          </p>
+        </div>
+        <!-- Post body -->
+        <div class="wall-post-message-body item item-body">
+          <div ng-click="loadPost(post)">
+            {{ post.body }}
+          </div>
+          <!-- List of comments -->
+          <div class="list card" ng-if="post.comments.length">
+            <h2>Comments</h2>
+            <div ng-repeat="comment in post.comments">
+              <div class="item item-avatar">
+                <img src="{{ (comment.from ? comment.from.photoURL : localUserPhotoURL) || 'img/avatar-dummy.png' }}">
+                <h3 class="wall-comment-author-name">
+                  {{ comment.from ? comment.from.fullname : "You" }}
+                </h3>
+                <div class="wall-comment-action" ng-if="!comment.from">
+                  <span class="wall-edit-comment-link" ng-click="editComment(post, comment)"><i class="ion-edit"></i></span>
+                  <span class="wall-delete-comment-link" ng-click="deleteComment(post, comment)"><i class="ion-ios7-trash-outline"></i></span>
+                </div>
+                <p class="wall-comment-time">
+                  {{ convertTime(comment.creationTime) }}
+                </p>
+              </div>
+              <div class="wall-comment-body item item-body">
+                <div ng-if="!comment.editing">
+                  {{ comment.body }}
+                </div>
+                <div ng-if="comment.editing">
+                  <button ng-disabled="!comment.newBody"
+                          class="wall-new-comment-submit button button-small button-positive"
+                          ng-click="submitCommentUpdate(post, comment)">
+                    Save
+                  </button>
+                  <textarea class="wall-new-comment-input" ng-model="comment.newBody">
+                  </textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Add comment button -->
+          <div class="wall-new-comment">
+            <p class="wall-new-comment-placeholder" ng-if="!post.editingNewComment" ng-click="editNewComment(post)">
+              Add comment
+            </p>
+            <div ng-if="post.editingNewComment">
+              <button ng-disabled="!post.newComment"
+                      class="wall-new-comment-submit button button-small button-positive"
+                      ng-click="submitNewComment(post)">
+                Send
+              </button>
+              <textarea class="wall-new-comment-input" ng-model="post.newComment"
+                        placeholder="Add comment">
+              </textarea>
+            </div>
+          </div>
+        </div>             
+      </div>
+    </ion-list>
+    <div ng-if="!isOnline && !lastPostLoaded">
+      You are offline. Please connect to the Internet to load more messages.
+    </div>
+    <ion-infinite-scroll on-infinite="loadMorePosts()" distance="10%" ng-if="!refreshing && postList.length && !singlePost && !lastPostLoaded">
+    </ion-infinite-scroll>
+    <div class="wall-infinite-scroller" ng-if="!singlePost"></div>
+  </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark">
+  </div>
+  
+  <script id="tutorial-modal" type="text/ng-template">
+    <ion-modal-view>
+      <ion-content>
+        <ion-slide-box style="background: white">
+          <ion-slide style="height: {{ modalHeight }}px;">
+            <div class="box blue">
+              <h1>Tutorial page 1</h1>
+              <button ng-click="dismissTutorialModal()">Skip</button>
+            </div>
+          </ion-slide>
+          <ion-slide style="height: {{ modalHeight }}px;">
+            <div class="box yellow">
+              <h1>Tutorial page 2</h1>
+              <button ng-click="dismissTutorialModal()">Skip</button>
+            </div>
+          </ion-slide>
+          <ion-slide style="height: {{ modalHeight }}px;">
+            <div class="box pink">
+              <h1>Tutorial page 3</h1>
+              <button ng-click="dismissTutorialModal()">Start using the app</button>
+            </div>
+          </ion-slide>
+        </ion-slide-box>
+      </ion-content>
+    </ion-modal-view>
+  </script>
+  
+</ion-view>

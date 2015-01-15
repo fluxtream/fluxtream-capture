@@ -5,11 +5,17 @@ define([
   'config/env',
   'app-modules',
   'services/user-prefs-service',
-  'services/login-service'
+  'services/login-service',
+  'services/push-notifications'
 ], function(env, appModules) {
   
-  appModules.controllers.controller('LoginController', ['$scope', 'LoginService', 'UserPrefsService', '$state',
-    function($scope, loginService, userPrefs, $state) {
+  appModules.controllers.controller('LoginController', [
+    '$scope',
+    'LoginService',
+    'UserPrefsService',
+    '$state',
+    'PushNotificationService',
+    function($scope, loginService, userPrefs, $state, pushNotifications) {
       
       if (forge.is.web()) {
         loginService.checkAuth("", "", function() {
@@ -152,6 +158,8 @@ define([
               $scope.signin.password,
               // Success
               function() {
+                // Tell the push notification service the user is logged in
+                pushNotifications.authenticationDone();
                 $state.go('listTopics');
               },
               // Error
@@ -219,6 +227,8 @@ define([
                 $scope.signup.email,
                 // Success
                 function() {
+                  // Tell the push notification service the user is logged in
+                  pushNotifications.authenticationDone();
                   $state.go('listTopics');
                 },
                 // Error

@@ -1,0 +1,43 @@
+<ion-view title="Get Support">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+    <a ui-sref="wall" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content class="has-footer">
+    <div class="txt-align-center ajax-loading" ng-if="loading">
+      <i class="icon ion-ios7-reloading"></i>
+    </div>
+    <div class="list padding" ng-if="!loading">
+      <div ng-repeat="coach in coaches" class="coach-card">
+        <div class="coach-photo">
+          <img src="{{ coach.photoURL || 'img/avatar-dummy.png' }}">
+        </div>
+        <div class="coach-selected" ng-if="coach.isOwnCoach">
+          <span class="ion-checkmark-circled"></span>
+        </div>
+        <div class="coach-name">
+          {{ coach.fullname }}
+        </div>
+        <div class="coach-cat">{{ coach.coachCategory }}</div>
+        <div class="coach-location">{{ coach.location }}</div> 
+        <div class="coach-description">
+         {{ coach.profilePresentation || "No description" }}
+        </div>
+        <div class="card-actions">
+          <div class="action card-details-coach padding" ng-click="loadCoachDetails(coach)"><i class="ion-ios7-eye-outline"></i> View more</div>
+          <div class="action card-contact-coach padding" ng-if="coach.isOwnCoach" ng-click="loadCoachConnectorSharing(coach)">Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
+          <div class="action card-contact-coach padding" ng-if="!coach.isOwnCoach" ng-click="selectCoach(coach)"><i class="ion-ios7-email-outline"></i> Add coach</div>
+        </div>
+      </div>      
+    </div>
+  </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark">
+  </div>
+  
+</ion-view>

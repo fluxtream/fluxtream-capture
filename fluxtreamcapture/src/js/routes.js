@@ -17,7 +17,12 @@ define([
   'controllers/photo-upload/photo-upload-settings-controller',
   'controllers/photo-upload/photo-preview-controller',
   'controllers/photo-upload/photo-metadata-controller',
-  'controllers/heart-rate/heart-rate-controller'
+  'controllers/heart-rate/heart-rate-controller',
+  'controllers/coaching/coach-connector-sharing-controller',
+  'controllers/coaching/coach-details-controller',
+  'controllers/coaching/select-coach-controller',
+  'controllers/coaching/settings-connectors-controller',
+  'controllers/coaching/wall-controller',
 ], function(appModules) {
   appModules.app.config(function($stateProvider, $urlRouterProvider) {
     // Routing
@@ -91,6 +96,36 @@ define([
         url: "/heart-rate",
         templateUrl: "html/heart-rate/heart-rate.html",
         controller: "HeartRateController"
+      })
+      .state('wall', {
+        url: "/wall",
+        templateUrl: "html/coaching/wall.html",
+        controller: "wallController"
+      })
+      .state('wallPost', {
+        url: "/wall-post/:postId",
+        templateUrl: "html/coaching/wall.html",
+        controller: "wallController"
+      })
+      .state('selectCoach', {
+        url: "/select-coach",
+        templateUrl: "html/coaching/select-coach.html",
+        controller: "selectCoachController"
+      })
+      .state('coachDetails', {
+        url: "/coach-details/:coachUsername",
+        templateUrl: "html/coaching/coach-details.html",
+        controller: "coachDetailsController"
+      })
+      .state('coachConnectorSharing', {
+        url: "/coach-connector-sharing/:from/:coachUsername",
+        templateUrl: "html/coaching/coach-connector-sharing.html",
+        controller: "coachConnectorSharingController"
+      })
+      .state('settingsConnectors', {
+        url: "/settings/connectors",
+        templateUrl: "html/coaching/settings-connectors.html",
+        controller: "settingsConnectorsController"
       })
       .state('settings', {
         url: "/settings",

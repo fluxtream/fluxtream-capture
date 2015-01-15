@@ -30,10 +30,11 @@
     <!-- Right menu -->
     <ion-side-menu side="right" ng-controller="NavController">
       <ion-list>
-        <ion-item><button class="button icon-left ion-clipboard button-clear button-dark" ng-click="navigateTo('listTopics')">Self Report</button></ion-item>
-        <ion-item ng-if="!isWeb"><button class="button icon-left ion-heart button-clear button-dark" ng-click="navigateTo('heartRate')">Heart Rate</button></ion-item>
-        <ion-item ng-if="!isWeb"><button class="button icon-left ion-camera button-clear button-dark" ng-click="navigateTo('photoUpload')">Photo Upload</button></ion-item>
-        <ion-item ng-if="!isWeb"><button class="button icon-left ion-settings button-clear button-dark" ng-click="navigateTo('settings')">Settings</button></ion-item>
+        <ion-item ng-click="navigateTo('listTopics')"><button class="button icon-left ion-clipboard button-clear button-dark">Self Report</button></ion-item>
+        <ion-item ng-click="navigateTo('wall')"><button class="button icon-left ion-chatbubbles button-clear button-dark">Messages</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('heartRate')"><button class="button icon-left ion-heart button-clear button-dark">Heart Rate</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('photoUpload')"><button class="button icon-left ion-camera button-clear button-dark">Photo Upload</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('settings')"><button class="button icon-left ion-settings button-clear button-dark">Settings</button></ion-item>
         <ion-item><button class="button icon-left ion-log-out button-clear button-dark" ng-click="logout()">Log out</button></ion-item>
       </ion-list>
     </ion-side-menu>

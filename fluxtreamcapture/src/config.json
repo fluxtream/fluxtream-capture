@@ -117,6 +117,13 @@
 					"ios": true
 				}
 			}
+		},
+		"parse": {
+			"version": "2.2",
+			"config": {
+				"clientKey": "M7NjOGuss30PR0pW5QfVhIKPzGdubjVbJQFuBbnh",
+				"applicationId": "niQCFuRYTf9l9h99ArCLWYXCZKEOdvcbmnRR6FRi"
+			}
 		}
 	}
 }

@@ -82,68 +82,72 @@ define([
       function signIn(username, password, success, error) {
         forge.logging.info("Sign in: " + username + "/******");
         forge.logging.info("URL: " + getTargetServer() + "api/v1/mobile/signin");
-        forge.request.ajax({
-          url: getTargetServer() + "api/v1/mobile/signin",
-          type: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          dataType: "json",
-          data: {
-            username: username,
-            password: password,
-            device_id: deviceIdService.getDeviceId()
-          },
-          success: function(guestModel, textStatus) {
-            handleAuthSuccessResponse(guestModel, textStatus);
-            if (success) success();
-          },
-          error: function(response) {
-            forge.logging.info(response);
-            // Credentials are set, but an error occured
-            if (response.statusCode === 401 || response.statusCode === "401") {
-              // Credentials are incorrect
-              forge.logging.info("The user credentials are incorrect, showing login page");
-              error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
-            } else {
-              // Another error happened
-              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
-              error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
+        deviceIdService.getDeviceIdAsync(function(deviceId) {
+          forge.request.ajax({
+            url: getTargetServer() + "api/v1/mobile/signin",
+            type: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            dataType: "json",
+            data: {
+              username: username,
+              password: password,
+              device_id: deviceId
+            },
+            success: function(guestModel, textStatus) {
+              handleAuthSuccessResponse(guestModel, textStatus);
+              if (success) success();
+            },
+            error: function(response) {
+              forge.logging.info(response);
+              // Credentials are set, but an error occured
+              if (response.statusCode === 401 || response.statusCode === "401") {
+                // Credentials are incorrect
+                forge.logging.info("The user credentials are incorrect, showing login page");
+                error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
+              } else {
+                // Another error happened
+                forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
+                error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
+              }
             }
-          }
+          });
         });
       }
       
       function signUp(username, password, firstname, lastname, email, success, error) {
         forge.logging.info("Sign up: " + getTargetServer() + "api/v1/mobile/signup");
-        forge.request.ajax({
-          url: getTargetServer() + "api/v1/mobile/signup",
-          type: "POST",
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          dataType: "json",
-          data: {
-            username: username,
-            password: password,
-            firstname: firstname,
-            lastname: lastname,
-            email: email,
-            device_id: deviceIdService.getDeviceId()
-          },
-          success: function(guestModel, textStatus) {
-            handleAuthSuccessResponse(guestModel, textStatus);
-            if (success) success();
-          },
-          error: function(response) {
-            forge.logging.info(response);
-            // Credentials are set, but an error occured
-            errorMessage = "Error accessing " + getTargetServer();
-            try {
-              errorMessage = response.content;
-            } catch (e) {}
-            error(errorMessage);
-          }
+        deviceIdService.getDeviceIdAsync(function(deviceId) {
+          forge.request.ajax({
+            url: getTargetServer() + "api/v1/mobile/signup",
+            type: "POST",
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            dataType: "json",
+            data: {
+              username: username,
+              password: password,
+              firstname: firstname,
+              lastname: lastname,
+              email: email,
+              device_id: deviceId
+            },
+            success: function(guestModel, textStatus) {
+              handleAuthSuccessResponse(guestModel, textStatus);
+              if (success) success();
+            },
+            error: function(response) {
+              forge.logging.info(response);
+              // Credentials are set, but an error occured
+              errorMessage = "Error accessing " + getTargetServer();
+              try {
+                errorMessage = response.content;
+              } catch (e) {}
+              error(errorMessage);
+            }
+          });
         });
       }
       
