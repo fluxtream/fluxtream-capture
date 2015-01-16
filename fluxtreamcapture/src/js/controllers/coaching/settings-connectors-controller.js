@@ -5,16 +5,18 @@ define([
   'app-modules',
   'config/env',
   'services/user-prefs-service',
-  'services/connectors-communication'
+  'services/connectors-communication',
+  'services/login-service'
 ], function(appModules, env) {
   
   appModules.controllers.controller('settingsConnectorsController', [
     '$scope',
     'ConnectorsCommunicationService',
     'UserPrefsService',
+    'LoginService',
     '$ionicActionSheet',
     '$state',
-    function($scope, connectorsCom, userPrefs, $ionicActionSheet, $state) {
+    function($scope, connectorsCom, userPrefs, loginService, $ionicActionSheet, $state) {
       
       // List of connectors
       $scope.connectors = [];
@@ -91,7 +93,7 @@ define([
             // Load modal view to authorize connector
             forge.tabs.openWithOptions(
               {
-                url: env["theupgrade.home.url"] + "proxy/connectors/add/" + connector.connectorName,
+                url: loginService.getTargetServer() + "proxy/connectors/add/" + connector.connectorName,
                 pattern: "*://*/proxy/connectors/added*",
                 buttonText: "Cancel",
                 title: "Connect device"

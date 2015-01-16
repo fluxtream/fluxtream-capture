@@ -12,13 +12,6 @@ define([
     "LoginService",
     function(userPrefs, loginService) {
       
-      // Access token used for subsequent communication with the server
-      var myAccessToken = "";
-      
-      function setAccessToken(accessToken) {
-        myAccessToken = accessToken;
-      }
-      
       // The cached list of coaches
       var coachList = [];
       
@@ -39,12 +32,12 @@ define([
        * Fetches the list of coaches
        */
       function getCoaches(ownCoachesOnly, success, error) {
-        forge.logging.info("Get selected coaches with token " + myAccessToken);
+        forge.logging.info("Get selected coaches with token " + loginService.getAccessToken());
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted",
           data: {
-            "access_token": myAccessToken,
+            "access_token": loginService.getAccessToken(),
             "ownCoachesOnly": ownCoachesOnly
           },
           headers: {
@@ -90,7 +83,7 @@ define([
         forge.logging.info("Adding coach: " + coachUsername);
         forge.request.ajax({
           type: "POST",
-          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "?access_token=" + myAccessToken,
+          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "?access_token=" + loginService.getAccessToken(),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -115,7 +108,7 @@ define([
         forge.logging.info("Removing coach: " + coachUsername);
         forge.request.ajax({
           type: "DELETE",
-          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "?access_token=" + myAccessToken,
+          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "?access_token=" + loginService.getAccessToken(),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -142,7 +135,7 @@ define([
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors",
           data: {
-            access_token: myAccessToken
+            access_token: loginService.getAccessToken()
           },
           headers: {
             'Content-Type': 'application/json'
@@ -168,7 +161,7 @@ define([
         forge.logging.info("Share connector " + connectorName + " with coach " + coachUsername);
         forge.request.ajax({
           type: "POST",
-          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + myAccessToken,
+          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + loginService.getAccessToken(),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -193,7 +186,7 @@ define([
         forge.logging.info("Unshare connector " + connectorName + " with coach " + coachUsername);
         forge.request.ajax({
           type: "DELETE",
-          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + myAccessToken,
+          url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + loginService.getAccessToken(),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -213,7 +206,6 @@ define([
       
       // Public API
       return {
-        setAccessToken: setAccessToken,
         addCoach: addCoach,
         removeCoach: removeCoach,
         getSelectedCoaches: getSelectedCoaches,

@@ -1,15 +1,29 @@
 <ion-view title="Settings">
+  
+  <!-- Header -->
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
     <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
   </ion-nav-bar>
-  <ion-content>
-    <ul class="list">
-      <li class="item" ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb">
+  
+  <!-- Body -->
+  <ion-content class="has-footer">
+    <ion-list>
+      <ion-item ui-sref="settingsConnectors">
+        Connectors
+      </ion-item>
+    </ion-list>
+    <ion-list>
+      <ion-item ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb">
         Photo Upload Settings
-      </li>
-    </ul>
+      </ion-item>
+    </ion-list>
   </ion-content>
+  
+  <!-- Footer -->
+  <div class="bar bar-footer bar-dark">
+  </div>
+  
 </div>

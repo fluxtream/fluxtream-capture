@@ -14,16 +14,6 @@ define([
     "LoginService",
     function(userPrefs, imageCache, loginService) {
       
-      // Access token used for subsequent communication with the server
-      var myAccessToken = "";
-      
-      /**
-       * Sets the access token for communicating with the server
-       */
-      function setAccessToken(accessToken) {
-        myAccessToken = accessToken;
-      }
-      
       /**
        * Cache the list of connectors for offline use
        */
@@ -48,7 +38,7 @@ define([
         // Get installed
         forge.request.ajax({
           type: "GET",
-          url: loginService.getTargetServer() + "api/v1/connectors/installed?access_token=" + myAccessToken,
+          url: loginService.getTargetServer() + "api/v1/connectors/installed?access_token=" + loginService.getAccessToken(),
           headers: {
             'Content-Type': 'application/json'
           },
@@ -62,7 +52,7 @@ define([
             // Get uninstalled
             forge.request.ajax({
               type: "GET",
-              url: loginService.getTargetServer() + "api/v1/connectors/uninstalled?access_token=" + myAccessToken,
+              url: loginService.getTargetServer() + "api/v1/connectors/uninstalled?access_token=" + loginService.getAccessToken(),
               headers: {
                 'Content-Type': 'application/json'
               },
@@ -131,7 +121,7 @@ define([
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/sync/" + connectorName,
           data: {
-            access_token: myAccessToken
+            access_token: loginService.getAccessToken()
           },
           headers: {
             'Content-Type': 'application/json'
@@ -144,7 +134,6 @@ define([
       
       // Public API
       return {
-        setAccessToken: setAccessToken,
         getFullConnectorList: getFullConnectorList,
         getCachedConnectors: getCachedConnectors,
         synchronizeNow: synchronizeNow
