@@ -15,13 +15,17 @@ define([
     'UserPrefsService',
     '$state',
     'PushNotificationService',
-    function($scope, loginService, userPrefs, $state, pushNotifications) {
+    '$rootScope',
+    function($scope, loginService, userPrefs, $state, pushNotifications, $rootScope) {
       
       if (forge.is.web()) {
         loginService.checkAuth("", "", function() {
           $state.go('listTopics');
         });
       }
+      
+      // Disable menu drag in login screen
+      $rootScope.disableDragMenu = true;
       
       // If true, the page will be replaced with the loading icon
       $scope.loading = false;

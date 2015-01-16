@@ -20,6 +20,11 @@ define([
        */
       var onSuccessFunction;
       
+      // Enable menu drag on login
+      $rootScope.$on('user-logged-in', function() {
+        $rootScope.disableDragMenu = false;
+      });
+      
       /**
        * (Public) Checks authentification to the fluxtream server (web only)
        * 
