@@ -185,6 +185,7 @@ define([
         userPrefs.set('login.userId', guestModel.id + "");
         userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
         userPrefs.set('login.isAuthenticated', true);
+        userPrefs.set('login.photoURL', guestModel.photoURL);
         if (typeof (guestModel.username) !== "undefined") {
           if (typeof onSuccessFunction === 'function') onSuccessFunction();
         } else {
