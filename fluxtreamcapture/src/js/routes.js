@@ -21,6 +21,7 @@ define([
   'controllers/coaching/coach-connector-sharing-controller',
   'controllers/coaching/coach-details-controller',
   'controllers/coaching/select-coach-controller',
+  'controllers/coaching/find-coach-controller',
   'controllers/coaching/settings-connectors-controller',
   'controllers/coaching/wall-controller',
 ], function(appModules) {
@@ -111,6 +112,11 @@ define([
         url: "/select-coach",
         templateUrl: "html/coaching/select-coach.html",
         controller: "selectCoachController"
+      })
+      .state('findCoach', {
+        url: "/find-coach",
+        templateUrl: "html/coaching/find-coach.html",
+        controller: "findCoachController"
       })
       .state('coachDetails', {
         url: "/coach-details/:coachUsername",

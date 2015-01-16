@@ -69,11 +69,32 @@ define([
       }
       
       /**
-       * Fetches the list of coaches of the local user
+       * Returns the Fluxtream user matching the search string
        */
-      function getSelectedCoaches(success, error) {
-        forge.logging.info("Get selected coaches");
-        getCoaches(true, success, error);
+      function findCoach(searchString, success, error) {
+        forge.logging.info("Searching for coach: " + searchString);
+        forge.request.ajax({
+          type: "POST",
+          url: loginService.getTargetServer() + "api/v1/buddies/find?access_token=" + loginService.getAccessToken(),
+          data: {
+            username: searchString
+          },
+          dataType: "json",
+          success: function(data, code) {
+            forge.logging.info("Search complete: " + JSON.stringify(data));
+            success(data);
+          },
+          error: function(response) {
+            if (response.statusCode == '404' || response.statusCode == 404) {
+              forge.logging.info("No coach found matching " + searchString);
+              success(null);
+            } else {
+              forge.logging.info("An error has occurred while finding coach");
+              forge.logging.info(response);
+              error(response.content || "An error has occurred");
+            }
+          }
+        });
       }
       
       /**
@@ -208,8 +229,8 @@ define([
       return {
         addCoach: addCoach,
         removeCoach: removeCoach,
-        getSelectedCoaches: getSelectedCoaches,
         getCoachList: getCoachList,
+        findCoach: findCoach,
         getCoachByUsername: getCoachByUsername,
         getConnectors: getConnectors,
         shareConnectorWithCoach: shareConnectorWithCoach,

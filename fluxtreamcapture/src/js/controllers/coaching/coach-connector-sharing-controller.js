@@ -13,7 +13,8 @@ define([
     '$stateParams',
     'CoachingCommunicationService',
     'UserPrefsService',
-    function($scope, $stateParams, coachingCom, userPrefs) {
+    '$state',
+    function($scope, $stateParams, coachingCom, userPrefs, $state) {
       
       // List of connectors
       $scope.connectors = [];
@@ -22,7 +23,7 @@ define([
       $scope.coach = coachingCom.getCoachByUsername($stateParams.coachUsername);
       
       // Name of the coach
-      $scope.coachName = $scope.coach.fullname;
+      $scope.coachName = $scope.coach ? $scope.coach.fullname : "";
       
       // True while the list is being loaded
       $scope.loading = true;
@@ -49,6 +50,28 @@ define([
           
         }
       );
+      
+      // Fetch coach data if missing
+      if (!$scope.coach) {
+        coachingCom.getCoachList(
+          // Success
+          function() {
+            $scope.coach = coachingCom.getCoachByUsername($stateParams.coachUsername);
+            if ($scope.coach) {
+              $scope.coachName = $scope.coach.fullname;
+              $scope.$$phase || $scope.$apply();
+            } else {
+              alert("An error has occurred");
+              $state.go('selectCoach');
+            }
+          },
+          // Error
+          function() {
+            alert("An error has occurred");
+            $state.go('selectCoach');
+          }
+        );
+      }
       
       /**
        * [Called from page] Toggles the sharing state of a connector

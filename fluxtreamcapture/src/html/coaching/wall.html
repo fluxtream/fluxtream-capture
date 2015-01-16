@@ -1,9 +1,8 @@
 <ion-view title="{{ getPageTitle() }}">
   
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-    <a ui-sref="wall" class="button button-clear pull-left" ng-if="singlePost">
-      <i class="ion-chevron-left"></i> Back
-    </a>
+    <a ui-sref="wall" class="button button-clear pull-left" ng-if="singlePost"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="listTopics" class="button button-clear pull-left" ng-if="!singlePost"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
@@ -24,11 +23,11 @@
         <div class="list card padding" ng-if="hasCoach == 'no'">
           <div class="wall-post-message-body item item-body">
             <div>
-              You don't have any messages. Get support and start the conversation.
+              You don't have any messages. Share your data with trusted buddies and start the conversation.
             </div>
             <div class="card-actions connector-installing">
-              <div class="action padding" ui-sref="selectCoach">
-                Get support
+              <div class="action padding" ui-sref="findCoach">
+                Add buddies
                 <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i>
               </div>
             </div>

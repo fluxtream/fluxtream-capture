@@ -1,20 +1,28 @@
-<ion-view title="Trusted Buddies">
+<ion-view title="Find Buddies">
   
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-    <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="selectCoach" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
   </ion-nav-bar>
   
   <ion-content class="has-footer">
+    <div class="list padding">
+      <label class="item item-input">
+        <input autocapitalize="none" type="text" placeholder="Type in username to search" ng-model="input.searchString" ng-change="onSearchStringChange()">
+      </label>
+      <button class="button button-block button-positive" ng-click="searchCoach()" ng-disabled="!input.searchString">
+        Search
+      </button>
+    </div>
     <div class="txt-align-center ajax-loading" ng-if="loading">
       <i class="icon ion-ios7-reloading"></i>
     </div>
-    <div class="list padding" ng-if="!loading">
-      <div ng-if="!coaches.length">
-        No trusted buddy. Add one with the "+" button at the bottom of the screen.
-      </div>
+    <div ng-if="errorMessage" style="color: red;">
+      {{ errorMessage }}
+    </div>
+    <div class="list padding" ng-if="coaches.length">
       <div ng-repeat="coach in coaches" class="coach-card">
         <div class="coach-photo">
           <img src="{{ coach.photoURL || 'img/avatar-dummy.png' }}">
@@ -31,8 +39,7 @@
          {{ coach.profilePresentation || "No description" }}
         </div>
         <div class="card-actions">
-          <div class="action card-details-coach padding" ng-click="loadCoachDetails(coach)"><i class="ion-ios7-eye-outline"></i> View more</div>
-          <div class="action card-contact-coach padding" ng-click="loadCoachConnectorSharing(coach)">Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
+          <div class="action card-contact-coach padding" ng-click="addCoach(coach)">Add buddy <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
         </div>
       </div>      
     </div>
@@ -40,7 +47,6 @@
   
   <!-- Footer -->
   <div class="bar bar-footer bar-dark">
-    <a id="footer-rigcreate" ui-sref="findCoach" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
   </div>
   
 </ion-view>

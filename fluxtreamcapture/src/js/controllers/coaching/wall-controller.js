@@ -48,25 +48,19 @@ define([
       $scope.localUserPhotoURL = userPrefs.get('login.photoURL');
       
       // Check whether the user has a coach
-//      coachingCom.getCoachList(
-//        // Success
-//        function(coachList) {
-//          $scope.hasCoach = "no";
-//          coachList.forEach(function(coach) {
-//            if (coach.isOwnCoach) {
-//              $scope.hasCoach = "yes";
-//            }
-//            if (!$scope.refreshing) $scope.loading = false;
-//          });
-//          $scope.$$phase || $scope.$apply();
-//        },
-//        // Error
-//        function(content) {
-//          forge.logging.info("Error while fetching coach list");
-//          forge.logging.info(content);
-//        }
-//      );
-$scope.hasCoach = "yes";
+      coachingCom.getCoachList(
+        // Success
+        function(coachList) {
+          if (coachList.length) $scope.hasCoach = "yes";
+          else $scope.hasCoach = "no";
+          $scope.$$phase || $scope.$apply();
+        },
+        // Error
+        function(content) {
+          forge.logging.info("Error while fetching coach list");
+          forge.logging.info(content);
+        }
+      );
       
       /**
        * [Called from page] Returns the title to be displayed in the header

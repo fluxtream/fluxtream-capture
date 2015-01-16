@@ -22,15 +22,12 @@
         <div class="coach-cat">{{ coach.coachCategory }}</div>
         <div class="coach-location">{{ coach.location }}</div>
         <div class="actions float-right">
-          <button class="button button-positive button-small padding-left padding-right float-right" ng-click="loadCoachConnectorSharing()" ng-if="coach.isOwnCoach">
+          <button class="button button-positive button-small padding-left padding-right float-right" ng-click="loadCoachConnectorSharing()">
             Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i>
           </button>
           <br />
-          <button class="button button-assertive button-small padding-left padding-right float-right" ng-click="removeCoach()" ng-if="coach.isOwnCoach">
+          <button class="button button-assertive button-small padding-left padding-right float-right" ng-click="removeCoach()">
             Remove
-          </button>
-          <button class="button button-positive button-small padding-left padding-right" ng-click="selectCoach()" ng-if="!coach.isOwnCoach">
-            Add coach
           </button>
         </div>
         <div class="coach-description">
