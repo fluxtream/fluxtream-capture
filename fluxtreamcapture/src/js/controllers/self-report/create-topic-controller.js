@@ -16,6 +16,10 @@ define([
       '$rootScope',
       function ($scope, $state, $stateParams, selfReportStorage, $rootScope) {
         $scope.$on('event:initialized', function() {
+          // Delete status icon
+          $("#create-topic-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
+
           // Toggle range boundaries and step based on topic type none/numeric/range
           $scope.changeType = function () {
             var sTypeOfTopic = document.getElementById('topic.type').value;
@@ -40,12 +44,6 @@ define([
           };
 
           document.title = "New Topic";
-
-          //TODO what if the result would not be returned?
-          selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
-            $scope.aoTopics = aoTopics;
-            $scope.$$phase || $scope.$apply();
-          });
 
           // Called when the form is submitted
           $scope.createTopic = function () {
@@ -97,9 +95,24 @@ define([
           };
         });
 
+        // If can not reach fluxtream-app backend
+        $scope.$on('event:initFailed', function() {
+          //TODO test continuous scrolling
+          $("#create-topic-footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+        });
+
         if(!selfReportStorage.isInitialized()) {
+          // Set status icon to spinning wheel
+          $("#create-topic-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+
           selfReportStorage.initialize();
         } else {
+          // Delete status icon
+          $("#create-topic-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
+
           $rootScope.$broadcast('event:initialized');
         }
       }

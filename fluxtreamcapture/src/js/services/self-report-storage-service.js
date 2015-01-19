@@ -63,6 +63,14 @@ define([
         remoteCouchDeletedTopicsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedTopics;
         remoteCouchDeletedObservationsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedObservations;
         backendLink = env['fluxtream.home.url'];
+
+
+        // Creating in case of the offline for fluxtream backend
+        dbTopics = new PouchDB(dbNameTopics);
+        dbObservations = new PouchDB(dbNameObservations);
+        dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
+        dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
+
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
@@ -119,8 +127,6 @@ define([
       if ((userLogin != '') && (userCouchDBToken != '')) {
         remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
         remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
-        dbTopics = new PouchDB(dbNameTopics);
-        dbObservations = new PouchDB(dbNameObservations);
       }
     }
 
@@ -132,8 +138,6 @@ define([
       if ((userLogin != '') && (userCouchDBToken != '')) {
         remoteCouchDeletedTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedTopicsAddress;
         remoteCouchDeletedObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedObservationsAddress;
-        dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
-        dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
       }
     }
 
@@ -761,8 +765,6 @@ define([
      */
     function readTopicsAsyncDB(fCallback){
       // TODO should be fetching gradually
-      aoCachedTopics = [];
-
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
@@ -770,6 +772,7 @@ define([
           console.log("Successfully read Topics from the server side (readTopicsAsyncDB)");
 
           bIsTopicsSynced = 1;
+          aoCachedTopics = [];
 
           // Read all docs into memory
           dbTopics.allDocs({include_docs: true}, function(err, response) {
@@ -791,14 +794,38 @@ define([
 
               aoCachedTopics.push(oNextTopic);
             });
-            // Put pre-processing of data
             reorderTopics();
             fCallback(aoCachedTopics);
           });
 
         }).on('error',  function (err) {
           // Handle error
-          console.log("Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
+          console.log("OFFLINE Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
+          aoCachedTopics = [];
+
+          // Read all docs into memory
+          dbTopics.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextTopic = new Topic(
+                row.doc._id,
+                row.doc.creationTime,
+                row.doc.updateTime,
+                row.doc.name,
+                row.doc.type,
+                row.doc.defaultValue,
+                row.doc.rangeStart,
+                row.doc.rangeEnd,
+                row.doc.step,
+                row.doc.topicNumber
+              );
+
+              aoCachedTopics.push(oNextTopic);
+            });
+            reorderTopics();
+            fCallback(aoCachedTopics);
+          });
         });
     }
 
@@ -851,7 +878,6 @@ define([
      */
     function readObservationsAsyncDB(fCallback){
       // TODO should be fetching gradually
-      aoCachedObservations = [];
 
       // Get Observations from the server and save locally
       dbObservations.replicate.from(remoteCouchObservationsAddress)
@@ -860,6 +886,7 @@ define([
           console.log("Successfully read Observations on the server side (readObservationsAsyncDB)");
 
           bIsObservationsSynced = 1;
+          aoCachedObservations = [];
 
           // Read all docs into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
@@ -885,8 +912,34 @@ define([
             fCallback(aoCachedObservations);
           });
         }).on('error',  function (err) {
+          aoCachedObservations = [];
+
           // Handle error
-          console.log("Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
+          console.log("OFFLINE Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
+
+          // Read all docs into memory
+          dbObservations.allDocs({include_docs: true}, function(err, response) {
+            response.rows.forEach( function (row)
+            {
+              //console.log(row.doc.name);
+              var oNextObservation = new Observation(
+                row.doc._id,
+                row.doc.topicId,
+                row.doc.value,
+                row.doc.creationDate,
+                row.doc.creationTime,
+                row.doc.observationDate,
+                row.doc.observationTime,
+                row.doc.updateTime,
+                row.doc.timezone,
+                row.doc.comment
+              );
+
+              aoCachedObservations.push(oNextObservation);
+            });
+            // Put pre-processing of data
+            fCallback(aoCachedObservations);
+          });
         });
     }
 
@@ -1045,14 +1098,38 @@ define([
      */
     function readObservations(){
       if(!aoCachedObservations){
-        console.log("No observations in memory (readObservations)");
         aoCachedObservations = [];
-      } else {
-        console.log("There are some observations in memory (readObservations)");
-        console.log(aoCachedObservations);
       }
 
       return aoCachedObservations;
+    }
+
+    /*
+    * (Public) Check if CouchDB is reachable
+    * */
+    function pingCouch(){
+      var sCouchAddress = env['fluxtream.couch.login.url'];
+      sCouchAddress = sCouchAddress.slice( 1 );
+
+      $.ajax({
+        url: "http://" + sCouchAddress,
+        type: 'GET',
+        success: function(response) {
+          var result = $.parseJSON(response);
+
+          if(result.couchdb === "Welcome"){
+            console.log("You are online (pingCouch): ");
+          } else {
+            console.log("You are offline (pingCouch): ");
+            $rootScope.$broadcast('event:offline');
+          }
+
+        },
+        error: function(result) {
+          console.log("You are offline (pingCouch): ");
+          $rootScope.$broadcast('event:offline');
+        }
+      });
     }
 
     /**
@@ -1146,7 +1223,10 @@ define([
       initialize: initialize,
       isInitialized: isInitialized,
       isTopicsSynced: isTopicsSynced,
-      isObservationsSynced: isObservationsSynced
+      isObservationsSynced: isObservationsSynced,
+
+
+      pingCouch: pingCouch
     };
 
   }]);

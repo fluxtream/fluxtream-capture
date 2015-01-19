@@ -19,8 +19,11 @@ define([
 
       function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter) {
         $scope.$on('event:initialized', function() {
-          //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
+          // Delete status icon
+          $("#create-observation-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
 
+          //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
           forge.ui.enhanceAllInputs();
           //forge.ui.enhanceInput('#observation.observationDate');
@@ -77,6 +80,10 @@ define([
           // Listen for the event - Topics array is loaded into memory
           // required in case the page was reloaded
           $scope.$on('event:topics-read-finished', function () {
+            // Delete status icon
+            $("#create-observation-footer-center-icon").attr('class', '');
+            $scope.$$phase || $scope.$apply();
+
             $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
 
             document.title = $scope.oTopic.name;
@@ -85,6 +92,10 @@ define([
 
             $scope.readType();
           });
+
+          // Set status icon to spinning wheel
+          $("#create-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
 
           selfReportStorage.readTopicsDB();
 
@@ -122,10 +133,24 @@ define([
 
         });
 
-        // Get token from backend and initialize local variables
+        // If can not reach fluxtream-app backend
+        $scope.$on('event:initFailed', function() {
+          //TODO test continuous scrolling
+          $("#create-observation-footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+        });
+
         if(!selfReportStorage.isInitialized()) {
+          // Set status icon to spinning wheel
+          $("#create-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+
           selfReportStorage.initialize();
         } else {
+          // Delete status icon
+          $("#create-observation-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
+
           $rootScope.$broadcast('event:initialized');
         }
       }
