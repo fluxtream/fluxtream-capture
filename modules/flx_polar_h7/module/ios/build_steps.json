@@ -5,5 +5,11 @@
         "framework": "CoreBluetooth.framework"
       }
     }
-  }
+  },{
+    "do": {
+        "ios_add_background_mode": {
+            "mode": "bluetooth-central"
+        }
+    }
+}
 ]

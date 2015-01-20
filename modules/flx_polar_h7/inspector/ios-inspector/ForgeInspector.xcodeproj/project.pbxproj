@@ -256,6 +256,15 @@
 			attributes = {
 				LastUpgradeCheck = 0600;
 				ORGANIZATIONNAME = "Trigger Corp";
+				TargetAttributes = {
+					B3FC517615C14B2A003574D9 = {
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = B3FC517115C14B2A003574D9 /* Build configuration list for PBXProject "ForgeInspector" */;
 			compatibilityVersion = "Xcode 3.2";

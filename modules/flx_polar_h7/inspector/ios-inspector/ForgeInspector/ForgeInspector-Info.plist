@@ -9,15 +9,13 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
-	<array>
-	</array>
+	<array/>
 	<key>CFBundleIcons</key>
 	<dict>
 		<key>CFBundlePrimaryIcon</key>
 		<dict>
 			<key>CFBundleIconFiles</key>
-			<array>
-			</array>
+			<array/>
 		</dict>
 	</dict>
 	<key>CFBundleIcons~ipad</key>
@@ -25,8 +23,7 @@
 		<key>CFBundlePrimaryIcon</key>
 		<dict>
 			<key>CFBundleIconFiles</key>
-			<array>
-			</array>
+			<array/>
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
@@ -45,9 +42,9 @@
 	<string>1.0</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>UIRequiredDeviceCapabilities</key>
+	<key>UIBackgroundModes</key>
 	<array>
-		<string>armv7</string>
+		<string>bluetooth-central</string>
 	</array>
 	<key>UILaunchImages~ipad</key>
 	<array>
@@ -74,6 +71,10 @@
 	</array>
 	<key>UIPrerenderedIcon</key>
 	<false/>
+	<key>UIRequiredDeviceCapabilities</key>
+	<array>
+		<string>armv7</string>
+	</array>
 	<key>UIStatusBarHidden</key>
 	<false/>
 	<key>UISupportedInterfaceOrientations</key>
