@@ -76,7 +76,9 @@ define([
       }
       
       userPrefs.onReady(function() {
-        startAutoupload();
+        if (loginService.isAuthenticated()) {
+          startAutoupload();
+        }
       });
       
       // Initialize native photo upload module

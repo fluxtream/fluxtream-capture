@@ -61,16 +61,21 @@
 }
 
 - (void)addDataToUploadHeartBeat:(int)heartBeat beatSpacing:(int)beatSpacing {
-    // Add new data to
-    [self.unsynchronizedData setValue:[DataUploader encodeDataHeartRate:heartBeat beatSpacing:beatSpacing]
-                            forKey:[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]].description];
-    [[NSUserDefaults standardUserDefaults] setValue:self.unsynchronizedData forKey:@"heartrate.unsynchronizedData"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    NSLog(@"Adding data (%d, %d) ; Data counter = %d", heartBeat, beatSpacing, self.unsynchronizedData.count);
-    // Interrupt waiting thread
-    [self.interruptCondition lock];
-    [self.interruptCondition signal];
-    [self.interruptCondition unlock];
+        // Add new data to
+        NSUInteger dataSizeBefore = self.unsynchronizedData.count;
+        [self.unsynchronizedData setValue:[DataUploader encodeDataHeartRate:heartBeat beatSpacing:beatSpacing]
+                                   forKey:[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]].description];
+        [[NSUserDefaults standardUserDefaults] setValue:self.unsynchronizedData forKey:@"heartrate.unsynchronizedData"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSLog(@"Adding data (%d, %d) ; Data counter = %d", heartBeat, beatSpacing, (int)self.unsynchronizedData.count);
+        // Interrupt waiting thread
+        if (self.unsynchronizedData.count != dataSizeBefore) {
+            [self.interruptCondition lock];
+            [self.interruptCondition signal];
+            [self.interruptCondition unlock];
+        } else {
+            // Data has been replaced by a new value, don't signal count change
+        }
 }
 
 /**
@@ -110,14 +115,16 @@
     while (![NSThread currentThread].cancelled) {
         @try {
             // Record the number of data before waiting for 5 seconds to see if new data has arrived in the meantime
-            int dataCountBeforeWait = self.unsynchronizedData.count;
+            NSUInteger dataCountBeforeWait = self.unsynchronizedData.count;
             // Wait for 5 seconds (unless data size is already worth uploading)
             if (self.unsynchronizedData.count < BUNCH_SIZE) {
                 @synchronized(self) {
+                    NSLog(@"Waiting for 5 seconds...");
                     // Wait for 5 seconds. This will get notified if data comes in.
                     [self.interruptCondition lock];
                     [self.interruptCondition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
                     [self.interruptCondition unlock];
+                    NSLog(@"Waiting over");
                 }
             }
             // Stop if the thread should be canceled
@@ -125,8 +132,10 @@
             // Check if data should be uploaded (i.e. if no data has been added over the last 5 seconds, or the bunch size has been reached)
             if (self.unsynchronizedData.count != 0 && (self.unsynchronizedData.count == dataCountBeforeWait || self.unsynchronizedData.count >= BUNCH_SIZE)) {
                 // No data received for 5 seconds or data bunch size reached
-                NSLog(@"self.dataCounter = %d and dataCountBeforeWait = %d", self.unsynchronizedData.count, dataCountBeforeWait);
+                NSLog(@"self.dataCounter = %d and dataCountBeforeWait = %d", (int)self.unsynchronizedData.count, (int)dataCountBeforeWait);
                 [self synchronizeNextDataBunch];
+            } else {
+                NSLog(@"Not synchronizing yet");
             }
         } @catch (NSException *e) {
             // End the thread if it must be terminated
@@ -198,6 +207,7 @@
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     [request setURL:[NSURL URLWithString:[self.uploadURL stringByAppendingString:@"?"]]];
+    [request setTimeoutInterval:30.0];
     // Add body to request
     NSData *body = [[NSString stringWithFormat:@"access_token=%@&dev_nickname=%@&channel_names=%@&data=%@",
                      [self.accessToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
@@ -230,7 +240,7 @@
                                                          userInfo:nil];
     
     // The request was successful, remove data from queue
-    NSLog(@"Removing %d pieces of data", data.count);
+    NSLog(@"Removing %d pieces of data", (int)data.count);
     [self removeDataFromQueue:data];
     if (self.unsynchronizedData.count < BUNCH_SIZE) {
         [[ForgeApp sharedApp] event:@"heartrate.uploadDone" withParam:NULL];
