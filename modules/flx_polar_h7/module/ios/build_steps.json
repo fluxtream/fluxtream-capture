@@ -1,0 +1,15 @@
+[
+  {
+    "do": {
+      "add_ios_system_framework": {
+        "framework": "CoreBluetooth.framework"
+      }
+    }
+  },{
+    "do": {
+        "ios_add_background_mode": {
+            "mode": "bluetooth-central"
+        }
+    }
+}
+]

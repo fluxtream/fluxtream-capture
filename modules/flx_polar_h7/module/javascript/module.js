@@ -13,8 +13,3 @@ forge.flx_polar_h7 = {
         forge.internal.call('flx_polar_h7.unlockCurrentDevice', {}, success, error);
     }
 };
-
-// Register for our native event
-forge.internal.addEventListener("flx_polar_h7.resume", function () {
-	alert("Welcome back!");
-});

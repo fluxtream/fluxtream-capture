@@ -51,6 +51,10 @@ define([
 
       function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter, $ionicPopup) {
         $scope.$on('event:initialized', function () {
+          // Delete status icon
+          $("#edit-observation-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
+
           $scope.topicId = $stateParams.observationId.split("_")[1];
 
           //Arrange DOM
@@ -95,6 +99,10 @@ define([
           // Listen for the event - Topics and Observations arrays are loaded into memory
           // required in case the page was reloaded
           $scope.$on('event:state-read-finished', function () {
+            // Delete status icon
+            $("#edit-observation-footer-center-icon").attr('class', '');
+            $scope.$$phase || $scope.$apply();
+
             $scope.oTopic = selfReportStorage.readTopic($scope.topicId);
             $scope.oObservation = selfReportStorage.readObservation($stateParams.observationId);
 
@@ -116,6 +124,10 @@ define([
 
             $scope.$$phase || $scope.$apply();
           });
+
+          // Set status icon to spinning wheel
+          $("#edit-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
 
           selfReportStorage.readDBState();
 
@@ -171,10 +183,25 @@ define([
 
           };
         });
-        // Get token from backend and initialize local variables
-        if (!selfReportStorage.isInitialized()) {
+
+        // If can not reach fluxtream-app backend
+        $scope.$on('event:initFailed', function() {
+          //TODO test continuous scrolling
+          $("#edit-observation-footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+        });
+
+        if(!selfReportStorage.isInitialized()) {
+          // Set status icon to spinning wheel
+          $("#edit-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.$$phase || $scope.$apply();
+
           selfReportStorage.initialize();
         } else {
+          // Delete status icon
+          $("#edit-observation-footer-center-icon").attr('class', '');
+          $scope.$$phase || $scope.$apply();
+
           $rootScope.$broadcast('event:initialized');
         }
       }
