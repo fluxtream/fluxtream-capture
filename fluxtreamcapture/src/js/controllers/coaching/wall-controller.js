@@ -1,5 +1,8 @@
 /**
- * Controller for the wall screen
+ * Controller for the wall screen.
+ * If there is a stateParam "postId", then a single message is shown.
+ * If there is a stateParam "coachUsername", then only messages to/from this specific coach are
+ * shown and the user can send a new message.
  */
 define([
   'app-modules',
@@ -22,6 +25,14 @@ define([
       
       // True if only one post is being displayed
       $scope.singlePost = $stateParams.postId ? true : false;
+      
+      // Username of the coach (if in coach mode)
+      $scope.coachFilter = $stateParams.coachUsername;
+      
+      // Actual name (fullname) of the coach (if any)
+      if ($scope.coachFilter) {
+        $scope.coachName = coachingCom.getCoachByUsername($stateParams.coachUsername).fullname;
+      }
       
       // List of posts on the wall
       $scope.postList = [];
@@ -47,6 +58,17 @@ define([
       // URL of the local user's photo
       $scope.localUserPhotoURL = userPrefs.get('login.photoURL');
       
+      // True when editing a new message for the coach (when coachFilter is on only)
+      $scope.editNewMessage = false;
+      
+      // True if the new message is currently being sent
+      $scope.sendingMessage = false;
+      
+      // The new message being edited by the user
+      $scope.newMessage = {
+        body: ""
+      };
+      
       // Check whether the user has a coach
       coachingCom.getCoachList(
         // Success
@@ -66,7 +88,16 @@ define([
        * [Called from page] Returns the title to be displayed in the header
        */
       $scope.getPageTitle = function() {
-        return $scope.singlePost ? "Message" : "Messages";
+        if ($scope.singlePost) {
+          // Showing a single message
+          return "Message";
+        }
+        if ($scope.coachFilter) {
+          // Showing to interaction with a given coach
+          return "Messaging with " + $scope.coachName;
+        }
+        // Showing the wall
+        return "All Messages";
       };
       
       /**
@@ -351,6 +382,39 @@ define([
       $scope.deletePost = function(post) {
         alert("Deleting posts is not enabled yet");
         return false;
+      };
+      
+      /**
+       * [Called from button] Shows the new message edit box
+       */
+      $scope.startEditingNewMessage = function() {
+        $scope.editNewMessage = true;
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * [Called from button] Sends the new message
+       */
+      $scope.sendNewMessage = function() {
+        if ($scope.sendingMessage) return;
+        $scope.sendingMessage = true;
+        forge.logging.info("Sending new wall message to " + $scope.coachFilter);
+        wallCom.sendNewPost($scope.newMessage.body, $scope.coachFilter,
+          // Success
+          function(newPost) {
+            $scope.newMessage.body = "";
+            $scope.editNewMessage = false;
+            $scope.postList.unshift(newPost);
+            $scope.sendingMessage = false;
+            $scope.$$phase || $scope.$apply();
+          },
+          // Error
+          function() {
+            alert("An error has occurred. Your message was not sent. Please try again.");
+            $scope.sendingMessage = false;
+            $scope.$$phase || $scope.$apply();
+          }
+        );
       };
       
       // Initially load single post

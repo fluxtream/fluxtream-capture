@@ -123,6 +123,11 @@ define([
         templateUrl: "html/coaching/coach-details.html",
         controller: "coachDetailsController"
       })
+      .state('coachMessaging', {
+        url: "/coach-messaging/:coachUsername",
+        templateUrl: "html/coaching/wall.html",
+        controller: "wallController"
+      })
       .state('coachConnectorSharing', {
         url: "/coach-connector-sharing/:from/:coachUsername",
         templateUrl: "html/coaching/coach-connector-sharing.html",

@@ -25,13 +25,11 @@
         <div class="coach-name">
           {{ coach.fullname }}
         </div>
-        <div class="coach-cat">{{ coach.coachCategory }}</div>
-        <div class="coach-location">{{ coach.location }}</div> 
-        <div class="coach-description">
-         {{ coach.profilePresentation || "No description" }}
-        </div>
+        <button class="button button-assertive button-small padding-left padding-right float-right" ng-click="removeCoach(coach)">
+          Remove
+        </button>
         <div class="card-actions">
-          <div class="action card-details-coach padding" ng-click="loadCoachDetails(coach)"><i class="ion-ios7-eye-outline"></i> View more</div>
+          <div class="action card-contact-coach padding" ng-click="loadCoachMessaging(coach)">Messages <i class="ion-compose" style="margin-top:1px;"></i></div>
           <div class="action card-contact-coach padding" ng-click="loadCoachConnectorSharing(coach)">Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
         </div>
       </div>      

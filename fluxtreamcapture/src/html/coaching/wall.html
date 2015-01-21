@@ -2,7 +2,8 @@
   
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
     <a ui-sref="wall" class="button button-clear pull-left" ng-if="singlePost"><i class="ion-chevron-left"></i> Back</a>
-    <a ui-sref="listTopics" class="button button-clear pull-left" ng-if="!singlePost"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="selectCoach" class="button button-clear pull-left" ng-if="coachFilter"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="listTopics" class="button button-clear pull-left" ng-if="!singlePost && !coachFilter"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
@@ -18,6 +19,36 @@
       refreshing-icon="ion-ios7-reloading">
     </ion-refresher>
     <ion-list>
+      <!-- Edit message to coach -->
+      <button class="button button-positive" ng-if="coachFilter && !editNewMessage" ng-click="startEditingNewMessage()">
+        New message
+      </button>
+      <div class="list card padding" ng-if="editNewMessage">
+        <!-- Post header -->
+        <div class="item item-avatar" ng-click="loadPost(post)">
+          <!-- Avatar -->
+          <img src="{{ localUserPhotoURL || 'img/avatar-dummy.png' }}">
+          <!-- Author -->
+          <h2 class="wall-post-author-name">
+            You
+          </h2>
+          <!-- Time -->
+          <p class="wall-post-time">
+            new message to {{ coachName }}
+          </p>
+        </div>
+        <!-- Post body -->
+        <div class="wall-post-message-body item item-body">
+          <button ng-disabled="sendingMessage || !newMessage.body"
+                  class="wall-new-comment-submit button button-small button-positive"
+                  ng-click="sendNewMessage()">
+            <span ng-if="!sendingMessage">Send</span>
+            <span ng-if="sendingMessage" class="ion-ios7-reloading float-right"></span>
+          </button>
+          <textarea class="wall-new-comment-input" ng-model="newMessage.body" placeholder="New message">
+          </textarea>
+        </div>             
+      </div>
       <!-- List is empty -->
       <div ng-if="!postList.length && !loading && !refreshing">
         <div class="list card padding" ng-if="hasCoach == 'no'">
@@ -42,7 +73,7 @@
         </div>
       </div>
       <!-- List of posts -->
-      <div class="list card padding" ng-repeat="post in postList">
+      <div class="list card padding" ng-repeat="post in postList" ng-if="!coachFilter || post.from.username == coachFilter || post.to.username == coachFilter">
         <!-- Post header -->
         <div class="item item-avatar" ng-click="loadPost(post)">
           <!-- Avatar -->

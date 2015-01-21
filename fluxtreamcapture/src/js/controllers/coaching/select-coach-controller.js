@@ -31,6 +31,14 @@ define([
       };
       
       /**
+       * Loads the wall view filtered with the given coach
+       */
+      $scope.loadCoachMessaging = function(coach) {
+        forge.logging.info("Load coach messaging page");
+        $state.go("coachMessaging", {coachUsername: coach.username});
+      };
+      
+      /**
        * Loads the connector sharing page for a given coach
        */
       $scope.loadCoachConnectorSharing = function(coach) {
@@ -39,28 +47,25 @@ define([
       };
       
       /**
-       * [Called from page] Selects a coach to be the user's coach
+       * [Called from page] Remove a coach from the selected coaches
        */
-      $scope.selectCoach = function(coach) {
-        forge.logging.info("Selecting coach: " + coach.fullname);
+      $scope.removeCoach = function(coach) {
+        forge.logging.info("Show remove coach action sheet");
         var hideActionSheet = $ionicActionSheet.show({
-          buttons: [{text: 'Yes, Add'}],
-          titleText: 'Do you want to add ' + coach.fullname + ' as a personal coach?',
+          destructiveText: 'Yes, Remove',
+          titleText: 'Do you want to remove ' + coach.fullname + ' from your coaches?',
           cancelText: 'Cancel',
-          buttonClicked: function(index) {
-            forge.logging.info("Add coach");
-            coachingCom.addCoach(coach.username,
+          destructiveButtonClicked: function(index) {
+            // Remove coach now
+            coachingCom.removeCoach(coach.username,
               // Success
               function() {
-                forge.logging.info("Go to connector sharing screen");
-                coach.isOwnCoach = true;
-                $scope.loadCoachConnectorSharing(coach);
+                $scope.coaches.splice($scope.coaches.indexOf(coach), 1);
+                $scope.$$phase || $scope.$apply();
               },
               // Error
               function() {
-                alert("An error has occurred while adding the coach");
-                coach.isOwnCoach = false;
-                $scope.$$phase || $scope.$apply();
+                alert("An error has occurred while removing the coach");
               }
             );
             return true;

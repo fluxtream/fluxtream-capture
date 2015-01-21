@@ -253,6 +253,23 @@ define([
         });
       }
       
+      /**
+       * Sends a new wall post to a coach
+       */
+      function sendNewPost(body, username, success, error) {
+        // TODO Actually post message
+        setTimeout(function() {
+          success({
+            to: {
+              username: username,
+              fullname: "Coach's full name"
+            },
+            body: body,
+            id: 4
+          });
+        }, 1000);
+      }
+      
       // Public API
       return {
         getWallPosts: getWallPosts,
@@ -261,7 +278,8 @@ define([
         addComment: addComment,
         updateComment: updateComment,
         deleteComment: deleteComment,
-        postCountPerQuery: postCountPerQuery
+        postCountPerQuery: postCountPerQuery,
+        sendNewPost: sendNewPost
       };
       
     }
