@@ -179,6 +179,8 @@ define([
             forge.logging.info("Error while logging in");
             forge.logging.info(error);
             alert("An error has occurred");
+            $scope.loading = false;
+            $scope.$$phase || $scope.$apply();
           }
         });
       };

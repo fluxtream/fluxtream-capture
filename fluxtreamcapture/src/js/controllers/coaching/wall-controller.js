@@ -402,11 +402,11 @@ define([
         forge.logging.info("Sending new wall message to " + $scope.coachFilter);
         wallCom.sendNewPost($scope.newMessage.body, $scope.coachFilter,
           // Success
-          function(newPost) {
+          function() {
             $scope.newMessage.body = "";
             $scope.editNewMessage = false;
-            $scope.postList.unshift(newPost);
             $scope.sendingMessage = false;
+            $scope.refreshWall();
             $scope.$$phase || $scope.$apply();
           },
           // Error

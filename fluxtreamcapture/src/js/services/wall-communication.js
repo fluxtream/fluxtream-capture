@@ -257,17 +257,27 @@ define([
        * Sends a new wall post to a coach
        */
       function sendNewPost(body, username, success, error) {
-        // TODO Actually post message
-        setTimeout(function() {
-          success({
-            to: {
-              username: username,
-              fullname: "Coach's full name"
-            },
-            body: body,
-            id: 4
-          });
-        }, 1000);
+        forge.logging.info("Sending message to " + username);
+        forge.request.ajax({
+          type: "POST",
+          url: loginService.getTargetServer() + "api/v1/posts/?access_token=" + loginService.getAccessToken(),
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: {
+            to: username,
+            message: body
+          },
+          success: function(data) {
+            forge.logging.info("New message was successfully sent");
+            success();
+          },
+          error: function(content) {
+            forge.logging.info("Error while posting new message");
+            forge.logging.info(content);
+            error(content);
+          }
+        });
       }
       
       // Public API

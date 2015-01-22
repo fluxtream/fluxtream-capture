@@ -18,7 +18,7 @@
     </ion-refresher>
     <ion-list>
       <!-- Edit message to coach -->
-      <button class="button button-positive" ng-if="coachFilter && !editNewMessage" ng-click="startEditingNewMessage()">
+      <button class="button button-block button-positive" ng-if="coachFilter && !editNewMessage" ng-click="startEditingNewMessage()">
         New message
       </button>
       <div class="list card padding" ng-if="editNewMessage">
@@ -62,7 +62,7 @@
             </div>
           </div>
         </div>
-        <div class="list card padding" ng-if="hasCoach == 'yes'">
+        <div class="list card padding" ng-if="hasCoach == 'yes' && !coachFilter">
           <div class="wall-post-message-body item item-body">
             <div style="text-align:center">
               No messages yet
