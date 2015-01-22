@@ -123,7 +123,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   width: 90px;
   height: 90px;
   overflow: hidden;
-  
+
   background-size: cover;
   background-position: 50% 50%;
 }
@@ -227,7 +227,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   display: block;
 }
 
-.login-screen .item-divider {   
+.login-screen .item-divider {
   background-color: #ffffff;
   border: none;
 }
@@ -268,57 +268,58 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .float-right { float: right; }
 
-.wall-comment-action, .wall-post-action  { 
-  position: absolute;  
-  top:15px; 
+.wall-comment-action, .wall-post-action {
+  position: absolute;
+  top:15px;
   right: 15px;
 }
-.wall-comment-action span, .wall-post-action span { 
-  display: inline-block; 
-  font-size: 20px; 
-  padding-left: 15px; 
-  color: #3291B7; 
+.wall-comment-action span, .wall-post-action span {
+  display: inline-block;
+  font-size: 20px;
+  padding-left: 15px;
+  color: #3291B7;
 }
-.card { 
-  box-shadow: none; 
-  margin-bottom: 5px; 
+.card {
+  box-shadow: none;
+  margin-bottom: 5px;
   margin-top: 5px;
-  margin-left:  0;
+  margin-left: 0;
   margin-right: 0;
 }
-.card .card { 
-  margin: 20px 0 0; 
+.card .card {
+  margin: 20px 0 0;
 }
-.card .card .item { 
-  border:none; 
+.card .card .item {
+  border:none;
 }
 .card .card .item-body {
-  border-bottom-width: 4px; 
-  border-bottom-color: #fff;  
+  border-bottom-width: 4px;
+  border-bottom-color: #fff;
   border-bottom-style: solid;
 }
-.item-body .item-body, .item-body  .item-avatar {
-  background-color:  #E6F0F4;
+.item-body .item-body, .item-body .item-avatar {
+  background-color: #E6F0F4;
 }
-.item-body  .item-avatar {
-  padding-left:  60px;  
+.item-body .item-avatar {
+  padding-left: 60px;
   padding-bottom: 0
 }
-.item-body  .item-body { 
-  padding-top: 0 
+.item-body .item-body {
+  padding-top: 0;
 }
-.item-body  .item-avatar h2,  .item-body  .item-avatar h3 { 
-  margin:  0 0 0 0; 
+.item-body .item-avatar h2, .item-body .item-avatar h3 {
+  margin: 0 0 0 0;
 }
-.item-body  .item-avatar img { 
-  width: 30px; height: 30px; 
+.item-body .item-avatar img {
+  width: 30px !important;
+  height: 30px !important;
 }
-.item-body  .item-avatar p { 
-  margin-top: 0; 
+.item-body .item-avatar p {
+  margin-top: 0;
   margin-bottom: 0;
 }
 
-.item-input-wrapper { 
+.item-input-wrapper {
   background: none;
 }
 
@@ -369,7 +370,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   display: block;
   border-width: 1px;
   border-style: solid;
-  font-size: 16px;  
+  font-size: 16px;
 }
 
 .coach-selected {
@@ -414,9 +415,9 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   margin: 0 15px 15px;
 }
 
-.coach-cat { 
+.coach-cat {
   font-size: .9em;
-  margin: 10px 15px 0; 
+  margin: 10px 15px 0;
   text-transform: uppercase;
   color: #8EA0C5;
  }
@@ -432,12 +433,12 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   margin: 15px;
 }
 
-.card-actions { 
-  display: flex; 
-  clear: both; 
+.card-actions {
+  display: flex;
+  clear: both;
 }
 
-.card-actions div { 
+.card-actions div {
   -webkit-box-flex: 0;
 -webkit-flex: 0 0 50%;
 -moz-box-flex: 0;
@@ -445,17 +446,17 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 -ms-flex: 0 0 50%;
 flex: 0 0 50%;
 max-width: 50%;
-text-align: center; 
-margin: 0; 
+text-align: center;
+margin: 0;
 border-color: #DDD;
 border-width: 1px 0 0;
 border-style: solid;
 color: #3399CC;
 }
 
-.card-actions div i { 
-  font-size: 27px;  
-  vertical-align: middle; 
+.card-actions div i {
+  font-size: 27px;
+  vertical-align: middle;
 }
 
 .card-actions div:first-child {
@@ -465,32 +466,32 @@ color: #3399CC;
 /*******************************************
  * COACH DETAILS
  *******************************************/
-a { 
-  color:#3399cc;  
+a {
+  color:#3399cc;
   text-decoration: none
 }
 
 
-.coach-details .actions button { 
+.coach-details .actions button {
   clear:both;
  }
 
 .coach-website { color: #3399cc; }
 
-button i { 
-  font-size: 28px; 
-  vertical-align: middle; 
+button i {
+  font-size: 28px;
+  vertical-align: middle;
 }
 
-.button-fair, .button.button-fair { 
-  color: #3399CC; 
-  background-color: #E6F0F4; 
+.button-fair, .button.button-fair {
+  color: #3399CC;
+  background-color: #E6F0F4;
   border-color: #3399CC
 }
-.button-fair:hover { 
-  color: #3095cc; 
-  background-color: #E0eef1; 
-  border-color: #3095cc 
+.button-fair:hover {
+  color: #3095cc;
+  background-color: #E0eef1;
+  border-color: #3095cc
 }
 
 /*******************************************
@@ -531,7 +532,7 @@ button i {
 .connector-card {
   min-height: 127px;
   padding: 0;
-} /* see also .coach-card */ 
+} /* see also .coach-card */
 
 .card-content-wrap {
   overflow: hidden;
@@ -561,7 +562,7 @@ button i {
 .connector-name {
   margin-top: 15px;
   margin-bottom: 10px;
-  font-size: 1.3em; 
+  font-size: 1.3em;
   line-height: 1.2em;
 }
 .connector-status {
@@ -574,7 +575,7 @@ button i {
  border: 1px solid #ddd;
 }
 .connector-image img {
-  width: 100%; 
+  width: 100%;
   display: block;
 }
 .btn-no-style {
