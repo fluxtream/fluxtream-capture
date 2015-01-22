@@ -77,6 +77,22 @@ textarea.noResize { resize:none; }
 }
 
 /*******************************************
+ * Menu
+ *******************************************/
+
+ion-side-menu.menu, ion-side-menu .list ion-item, ion-side-menu .list ion-item.activated {
+  background: #444444;
+}
+
+ion-side-menu .list ion-item, ion-side-menu .list ion-item.activated {
+  border: 1px solid #333;
+}
+
+ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .list ion-item.activated {
+  color: #f6f6f6;
+}
+
+/*******************************************
  * Loading screens
  *******************************************/
 

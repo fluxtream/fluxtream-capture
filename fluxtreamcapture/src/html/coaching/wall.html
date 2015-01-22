@@ -18,9 +18,11 @@
     </ion-refresher>
     <ion-list>
       <!-- Edit message to coach -->
-      <button class="button button-block button-positive" ng-if="coachFilter && !editNewMessage" ng-click="startEditingNewMessage()">
-        New message
-      </button>
+      <div class="list padding" ng-if="coachFilter && !editNewMessage">
+        <button class="button button-block button-positive" ng-click="startEditingNewMessage()">
+          New message
+        </button>
+      </div>
       <div class="list card padding" ng-if="editNewMessage">
         <!-- Post header -->
         <div class="item item-avatar" ng-click="loadPost(post)">
