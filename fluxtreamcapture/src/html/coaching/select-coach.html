@@ -8,9 +8,7 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="txt-align-center ajax-loading" ng-if="loading">
-      <i class="icon ion-ios7-reloading"></i>
-    </div>
+    <div class="flx-reload-icon" ng-if="loading"></div>
     <div class="list padding" ng-if="!loading">
       <div ng-if="!coaches.length">
         No trusted buddy. Add one with the "+" button at the bottom of the screen.

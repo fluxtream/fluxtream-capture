@@ -8,9 +8,7 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="txt-align-center ajax-loading" ng-if="loading">
-      <i class="icon ion-ios7-reloading"></i>
-    </div>
+    <div class="flx-reload-icon" ng-if="loading"></div>
     <div class="list">
       <div ng-repeat="connector in connectors" class="item" ng-click="toggleConnector(connector)">
         <div class="coach-connector-selected" ng-if="connector.shared && !connector.updating">

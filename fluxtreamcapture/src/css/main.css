@@ -77,6 +77,21 @@ textarea.noResize { resize:none; }
 }
 
 /*******************************************
+ * Loading screens
+ *******************************************/
+
+.flx-reload-icon {
+  background: url("../img/loading.gif") no-repeat center;
+  height: 72px;
+  width: 100%;
+}
+
+/* Loading icon within ion-refresher */
+.ionic-refresher-content .flx-reload-icon {
+  height: 32px;
+}
+
+/*******************************************
  * Photo upload screen
  *******************************************/
 

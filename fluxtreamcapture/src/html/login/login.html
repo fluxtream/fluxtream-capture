@@ -10,14 +10,7 @@
   
   <ion-content class="login-screen" ng-class="{'has-footer': formErrorMessage}">
     <!-- LOADING SCREEN -->
-    <div ng-if="currentScreen === 'loading' || loading">
-      <div class="txt-align-center ajax-loading">
-        <i class="icon ion-ios7-reloading"></i>
-      </div>
-      <p class="txt-align-center">
-        Loading...
-      </p>
-    </div>
+    <div class="flx-reload-icon" ng-if="currentScreen === 'loading' || loading"></div>
     <div ng-if="!loading">
       <!-- LOGIN WELCOME SCREEN -->
       <div ng-if="errorMessage">

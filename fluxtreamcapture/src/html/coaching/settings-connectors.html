@@ -8,9 +8,7 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="txt-align-center ajax-loading" ng-if="!connectors.length">
-      <i class="icon ion-ios7-reloading"></i>
-    </div>
+    <div class="flx-reload-icon" ng-if="!connectors.length"></div>
     <ion-list>
       <div class="padding">
         <ion-item class="card connector-card" ng-repeat="connector in connectors" ng-click="installConnector(connector)">

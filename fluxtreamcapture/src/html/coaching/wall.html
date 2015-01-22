@@ -10,13 +10,11 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="txt-align-center ajax-loading" ng-if="loading">
-      <i class="icon ion-ios7-reloading"></i>
-    </div>
+    <div class="flx-reload-icon" ng-if="loading"></div>
     <ion-refresher ng-if="!loading"
       pulling-text="Pull to refresh..."
       on-refresh="refreshWall()"
-      refreshing-icon="ion-ios7-reloading">
+      refreshing-icon="flx-reload-icon">
     </ion-refresher>
     <ion-list>
       <!-- Edit message to coach -->
