@@ -20,6 +20,39 @@ define([
           $("#create-topic-footer-center-icon").attr('class', '');
           $scope.$$phase || $scope.$apply();
 
+          // Read memory values
+          $scope.aoTopics = selfReportStorage.readTopics();
+
+          // If can not reach couchDB
+          $scope.$on('event:offline', function() {
+            //TODO test continuous scrolling
+            $("#create-topic-footer-center-icon").attr('class', 'icon ion-alert self-report-footer-icon');
+            $scope.$$phase || $scope.$apply();
+          });
+
+          // TODO isTopicsSynced is not used properly
+          if(selfReportStorage.isTopicsSynced() === 0) {
+            // Set status icon to spinning wheel
+            $("#create-topic-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+            $scope.$$phase || $scope.$apply();
+
+            selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+              // Delete status icon
+              $("#create-topic-footer-center-icon").attr('class', '');
+              $scope.$$phase || $scope.$apply();
+
+              // Check if you are online
+              selfReportStorage.pingCouch();
+
+              $scope.aoTopics = aoTopics;
+              $scope.$$phase || $scope.$apply();
+            });
+          } else {
+            // Check if you are online
+            selfReportStorage.pingCouch();
+          }
+
+
           // Toggle range boundaries and step based on topic type none/numeric/range
           $scope.changeType = function () {
             var sTypeOfTopic = document.getElementById('topic.type').value;
@@ -53,6 +86,9 @@ define([
             //TODO when the Topics array is empty this would give and error (definetely on the mobile phone version)
             if (!$scope.aoTopics) $scope.aoTopics = []; // TODO remove this line but fix initialization bug
             var nLength = $scope.aoTopics.length;
+
+            console.log("TOPICs LENGTH");
+            console.log(nLength);
 
             //TODO Topic Name is a mandatory field - Error/Notification message under the header
             //TODO If user is pressing + and save button very fast he would get empty entry (if name could be empty)

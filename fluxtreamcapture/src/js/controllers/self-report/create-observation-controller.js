@@ -86,6 +86,9 @@ define([
 
             $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
 
+            console.log("TOPIC ID");
+            console.log($stateParams.topicId);
+
             document.title = $scope.oTopic.name;
 
             $scope.$$phase || $scope.$apply();
