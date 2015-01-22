@@ -34,8 +34,8 @@ define([
         $scope.coachName = coachingCom.getCoachByUsername($stateParams.coachUsername).fullname;
       }
       
-      // List of posts on the wall
-      $scope.postList = [];
+      // List of posts on the wall (array ; null before it was first loaded)
+      $scope.postList = null;
       
       // Id of the last post of the list
       $scope.lastPostId = null;
@@ -75,6 +75,7 @@ define([
         function(coachList) {
           if (coachList.length) $scope.hasCoach = "yes";
           else $scope.hasCoach = "no";
+          if ($scope.postList) $scope.loading = false;
           $scope.$$phase || $scope.$apply();
         },
         // Error
@@ -194,8 +195,8 @@ define([
             forge.logging.info("Post retrieved");
             forge.logging.info(post.body);
             $scope.postList = [post];
-            $scope.$$phase || $scope.$apply();
             $scope.loading = false;
+            $scope.$$phase || $scope.$apply();
             $scope.$broadcast('scroll.refreshComplete');
           },
           // Error
