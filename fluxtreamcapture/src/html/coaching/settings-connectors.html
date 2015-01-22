@@ -43,14 +43,14 @@
               </div>
               <!-- Installed and not synchronizing -->
               <div class="action padding connector-sync" ng-if="connector.syncing">
-                <i class="ion-ios7-reloading"></i> 
+                <span class="connector-loading"></span>
               </div>
             </div>
             <!-- Not installed -->
             <div class="card-actions connector-installing" ng-if="!connector.installed">
               <!-- Loading -->
               <div class="action padding connector-remove" ng-if="connector.loading" ng-click="uninstallConnector(connector); $event.stopPropagation();">
-                <i class="ion-ios7-reloading"></i>
+                <span class="connector-loading"></span>
               </div>
               <!-- Not installed -->
               <div class="action padding" ng-if="!connector.loading">

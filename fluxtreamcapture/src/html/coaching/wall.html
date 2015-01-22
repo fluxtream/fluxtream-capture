@@ -39,13 +39,14 @@
         </div>
         <!-- Post body -->
         <div class="wall-post-message-body item item-body">
-          <button ng-disabled="sendingMessage || !newMessage.body"
+          <button ng-if="!sendingMessage"
+                  ng-disabled="!newMessage.body"
                   class="wall-new-comment-submit button button-small button-positive"
                   ng-click="sendNewMessage()">
-            <span ng-if="!sendingMessage">Send</span>
-            <span ng-if="sendingMessage" class="ion-ios7-reloading float-right"></span>
+            Send
           </button>
-          <textarea class="wall-new-comment-input" ng-model="newMessage.body" placeholder="New message">
+          <span ng-if="sendingMessage" class="sending-new-message"></span>
+          <textarea class="wall-new-message-input" ng-model="newMessage.body" placeholder="New message">
           </textarea>
         </div>             
       </div>

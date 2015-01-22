@@ -21,18 +21,12 @@
             <p ng-if="photo.upload_status == 'uploaded'" class="photo-status-uploaded">
               <span class="ion-checkmark-round"></span>
             </p>
-            <p ng-if="photo.upload_status == 'pending'" class="photo-status-pending">
-              <span class="ion-load-d"></span>
-            </p>
+            <p ng-if="photo.upload_status == 'pending'" class="photo-status-uploading"></p>
             <p ng-if="photo.upload_status == 'failed'" class="photo-status-failed">
               <span class="ion-load-d"></span>
             </p>
-            <p ng-if="photo.upload_status == 'uploading'" class="photo-status-uploading">
-              <span class="ion-loading-d"></span>
-            </p>
-            <p ng-if="photo.upload_status == 'deleting'" class="photo-status-pending">
-              <span class="ion-loading-d"></span>
-            </p>
+            <p ng-if="photo.upload_status == 'uploading'" class="photo-status-uploading"></p>
+            <p ng-if="photo.upload_status == 'deleting'" class="photo-status-uploading"></p>
             <p ng-if="photo.upload_status == 'none'">
               <button class="button button-stable button-fair button-small upload-photo-button" ng-click="uploadPhoto(photo)">
                 <i class="ion-ios7-cloud-upload-outline"></i>
