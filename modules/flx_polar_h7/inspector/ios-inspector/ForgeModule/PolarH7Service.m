@@ -7,10 +7,12 @@
 
 #import "PolarH7Service.h"
 #import "DataUploader.h"
+#import "PulseTracker.h"
 
 @interface PolarH7Service()
 
 @property (strong, nonatomic) DataUploader *dataUploader;
+@property (strong, nonatomic) PulseTracker *pulseTracker;
 
 @end
 
@@ -47,29 +49,27 @@
         } else {
             self.dataUploader = [[DataUploader alloc] initWithUploadURL:uploadURL accessToken:accessToken];
             [self.dataUploader startThread];
-            [self startSimulationThread]; // TODO remove
+            self.pulseTracker = [[PulseTracker alloc] initWithDataUploader:self.dataUploader];
+            [self.pulseTracker setEnabled:true];
         }
     }
 }
 
-// TODO remove...
-// Simulation for debug purposes only
-- (void)startSimulationThread {
-    NSThread *thread = [[NSThread alloc] initWithTarget:self selector:@selector(runSimulationThread) object:NULL];
-    [thread start];
+- (void)stopService {
+    // Disable pulse tracker
+    self.pulseTracker.enabled = false;
+    // Stop uploader
+    [self.dataUploader stopThread];
+    self.dataUploader = nil;
 }
-- (void)runSimulationThread {
-    NSCondition *condition = [NSCondition new];
-    NSLog(@"Starting simulation thread");
-    while (true) {
-        NSLog(@"Adding simulation data");
-        [self.dataUploader addDataToUploadHeartBeat:60 beatSpacing:1000];
-        [condition lock];
-        [condition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:1]];
-        [condition unlock];
-    }
+
+- (void)lockCurrentDevice {
+    [self.pulseTracker lockCurrentDevice:true];
 }
-// TODO ...until here
+
+- (void)unlockCurrentDevice {
+    [self.pulseTracker lockCurrentDevice:false];
+}
 
 @end
 

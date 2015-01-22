@@ -1,20 +1,15 @@
 module("flx_polar_h7");
 
-// In this test we call the example showAlert API method with an example string
-asyncTest("Attempt to show an alert with no text", 1, function() {
-	forge.flx_polar_h7.showAlert("Hello, testing world!", function () {
-		askQuestion("Did you see an alert with the message 'Hello, testing world!'?", {
-			Yes: function () {
-				ok(true, "User claims success");
-				start();
-			},
-			No: function () {
-				ok(false, "User claims failure");
-				start();
-			}
-		});
-	}, function () {
-		ok(false, "API method returned failure");
-		start();
-	});
+asyncTest("Enable autoupload for dev", 1, function() {
+  askQuestion("Start service?", {
+    Yes: function() {
+      forge.flx_polar_h7.startService("http://dev.fluxtream.org/api/v1/bodytrack/upload", 'bf0f0f07-d9c2-4515-84ca-3a20861f3970');
+      ok(true, "User claims success");
+      start();
+    },
+    No: function() {
+      ok(true, "User canceled");
+      start();
+    }
+  });
 });

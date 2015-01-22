@@ -18,6 +18,8 @@
 		B3FC524815C17B2C003574D9 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC524715C17B2C003574D9 /* SystemConfiguration.framework */; };
 		F93EDECC1A6688B700D91345 /* PolarH7Service.m in Sources */ = {isa = PBXBuildFile; fileRef = F93EDECB1A6688B700D91345 /* PolarH7Service.m */; };
 		F93EDED01A668A4500D91345 /* DataUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = F93EDECF1A668A4500D91345 /* DataUploader.m */; };
+		F9FFD9BA1A6E681B00A0B413 /* PulseTracker.m in Sources */ = {isa = PBXBuildFile; fileRef = F9FFD9B91A6E681B00A0B413 /* PulseTracker.m */; };
+		F9FFD9BC1A6E717000A0B413 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FFD9BB1A6E717000A0B413 /* CoreBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,9 @@
 		F93EDECD1A66895700D91345 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
 		F93EDECE1A668A4500D91345 /* DataUploader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataUploader.h; sourceTree = "<group>"; };
 		F93EDECF1A668A4500D91345 /* DataUploader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DataUploader.m; sourceTree = "<group>"; };
+		F9FFD9B81A6E681B00A0B413 /* PulseTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PulseTracker.h; sourceTree = "<group>"; };
+		F9FFD9B91A6E681B00A0B413 /* PulseTracker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PulseTracker.m; sourceTree = "<group>"; };
+		F9FFD9BB1A6E717000A0B413 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9FFD9BC1A6E717000A0B413 /* CoreBluetooth.framework in Frameworks */,
 				B3FC524815C17B2C003574D9 /* SystemConfiguration.framework in Frameworks */,
 				B3FC524215C177EA003574D9 /* AssetsLibrary.framework in Frameworks */,
 				B3FC51FF15C1523D003574D9 /* CoreGraphics.framework in Frameworks */,
@@ -69,6 +75,8 @@
 		B31B6D4315C13D5200854074 = {
 			isa = PBXGroup;
 			children = (
+				F9FFD9B81A6E681B00A0B413 /* PulseTracker.h */,
+				F9FFD9B91A6E681B00A0B413 /* PulseTracker.m */,
 				F93EDECE1A668A4500D91345 /* DataUploader.h */,
 				F93EDECF1A668A4500D91345 /* DataUploader.m */,
 				F93EDECD1A66895700D91345 /* Constants.h */,
@@ -95,6 +103,7 @@
 		B31B6D5015C13D5200854074 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				F9FFD9BB1A6E717000A0B413 /* CoreBluetooth.framework */,
 				B37C3A5C162717A200B50A60 /* ForgeCore.framework */,
 				B3FC524715C17B2C003574D9 /* SystemConfiguration.framework */,
 				B3FC524115C177EA003574D9 /* AssetsLibrary.framework */,
@@ -184,6 +193,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F9FFD9BA1A6E681B00A0B413 /* PulseTracker.m in Sources */,
 				B3CC61F21716ECB500A1A8EF /* flx_polar_h7_API.m in Sources */,
 				F93EDECC1A6688B700D91345 /* PolarH7Service.m in Sources */,
 				B3CC61F41716ECBB00A1A8EF /* flx_polar_h7_EventListener.m in Sources */,
@@ -229,7 +239,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s i386 arm64 x86_64";
@@ -257,7 +267,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s i386 arm64 x86_64";
@@ -277,6 +287,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ForgeModule-Prefix.pch";
 				HEADER_SEARCH_PATHS = "./**";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -298,6 +309,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ForgeModule-Prefix.pch";
 				HEADER_SEARCH_PATHS = "./**";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

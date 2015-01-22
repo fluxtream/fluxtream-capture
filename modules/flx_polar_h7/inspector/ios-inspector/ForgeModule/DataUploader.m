@@ -10,17 +10,15 @@
 
 @interface DataUploader()
 
-//@property (strong, nonatomic) NSUserDefaults *userDefaults;
-
+// Upload thread
 @property (strong, nonatomic) NSThread *thread;
 @property (nonatomic, strong) NSCondition *interruptCondition;
 
-// Counts the number of unuploaded samples
-//@property (nonatomic) int dataCounter;
-
+// Upload request parameters
 @property (strong, nonatomic) NSString *uploadURL;
 @property (strong, nonatomic) NSString *accessToken;
 
+// List of data that must still be synchronized
 @property (strong, nonatomic) NSMutableDictionary *unsynchronizedData;
 
 @end
@@ -31,11 +29,8 @@
 - (instancetype)initWithUploadURL:(NSString *)uploadURL accessToken:(NSString *)accessToken {
     if (self = [super init]) {
         // Get user defaults containing the sampled data
-//        self.userDefaults = [[NSUserDefaults alloc] initWithSuiteName:@"org.fluxtream.flx_polar_h7_data"];
         self.unsynchronizedData = [[[NSUserDefaults standardUserDefaults] valueForKey:@"heartrate.unsynchronizedData"] mutableCopy];
         if (!self.unsynchronizedData) self.unsynchronizedData = [NSMutableDictionary new];
-        // Count the data
-//        self.dataCounter = self.userDefaults.dictionaryRepresentation.count;
         // Init parameters
         [self setParametersUploadURL:uploadURL accessToken:accessToken];
         // Create interrupt condition for the thread
@@ -66,23 +61,33 @@
 }
 
 - (void)addDataToUploadHeartBeat:(int)heartBeat beatSpacing:(int)beatSpacing {
-    // Add new data to
-    [self.unsynchronizedData setValue:[DataUploader encodeDataHeartRate:heartBeat beatSpacing:beatSpacing]
-                            forKey:[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]].description];
-    [[NSUserDefaults standardUserDefaults] setValue:self.unsynchronizedData forKey:@"heartrate.unsynchronizedData"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-//    self.dataCounter++;
-    NSLog(@"Adding data (%d, %d) ; Data counter = %d", heartBeat, beatSpacing, self.unsynchronizedData.count);
-    // Interrupt waiting thread
-    [self.interruptCondition lock];
-    [self.interruptCondition signal];
-    [self.interruptCondition unlock];
+        // Add new data to
+        NSUInteger dataSizeBefore = self.unsynchronizedData.count;
+        [self.unsynchronizedData setValue:[DataUploader encodeDataHeartRate:heartBeat beatSpacing:beatSpacing]
+                                   forKey:[NSNumber numberWithDouble:[[NSDate date] timeIntervalSince1970]].description];
+        [[NSUserDefaults standardUserDefaults] setValue:self.unsynchronizedData forKey:@"heartrate.unsynchronizedData"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
+        NSLog(@"Adding data (%d, %d) ; Data counter = %d", heartBeat, beatSpacing, (int)self.unsynchronizedData.count);
+        // Interrupt waiting thread
+        if (self.unsynchronizedData.count != dataSizeBefore) {
+            [self.interruptCondition lock];
+            [self.interruptCondition signal];
+            [self.interruptCondition unlock];
+        } else {
+            // Data has been replaced by a new value, don't signal count change
+        }
 }
 
+/**
+ * Encodes data as a string
+ */
 + (NSString *)encodeDataHeartRate:(int)heartBeat beatSpacing:(int)beatSpacing {
     return [NSString stringWithFormat:@"%d,%d", heartBeat, beatSpacing];
 }
 
+/**
+ * Decodes data from a string. Returns an array containing two integers : heart rate and beat spacing.
+ */
 + (NSArray *)decodeData:(NSString *)data {
     int heartBeat = 0;
     int beatSpacing = 0;
@@ -102,19 +107,24 @@
     return @[[NSNumber numberWithInt:heartBeat], [NSNumber numberWithInt:beatSpacing]];
 }
 
+/**
+ * Loops to upload the data when it comes in
+ */
 - (void)runUploadThread {
     NSLog(@"Starting HR upload thread");
     while (![NSThread currentThread].cancelled) {
         @try {
             // Record the number of data before waiting for 5 seconds to see if new data has arrived in the meantime
-            int dataCountBeforeWait = self.unsynchronizedData.count;
+            NSUInteger dataCountBeforeWait = self.unsynchronizedData.count;
             // Wait for 5 seconds (unless data size is already worth uploading)
             if (self.unsynchronizedData.count < BUNCH_SIZE) {
                 @synchronized(self) {
+                    NSLog(@"Waiting for 5 seconds...");
                     // Wait for 5 seconds. This will get notified if data comes in.
                     [self.interruptCondition lock];
                     [self.interruptCondition waitUntilDate:[NSDate dateWithTimeIntervalSinceNow:5]];
                     [self.interruptCondition unlock];
+                    NSLog(@"Waiting over");
                 }
             }
             // Stop if the thread should be canceled
@@ -122,11 +132,16 @@
             // Check if data should be uploaded (i.e. if no data has been added over the last 5 seconds, or the bunch size has been reached)
             if (self.unsynchronizedData.count != 0 && (self.unsynchronizedData.count == dataCountBeforeWait || self.unsynchronizedData.count >= BUNCH_SIZE)) {
                 // No data received for 5 seconds or data bunch size reached
-                NSLog(@"self.dataCounter = %d and dataCountBeforeWait = %d", self.unsynchronizedData.count, dataCountBeforeWait);
+                NSLog(@"self.dataCounter = %d and dataCountBeforeWait = %d", (int)self.unsynchronizedData.count, (int)dataCountBeforeWait);
                 [self synchronizeNextDataBunch];
+            } else {
+                NSLog(@"Not synchronizing yet");
             }
         } @catch (NSException *e) {
+            // End the thread if it must be terminated
             if ([NSThread currentThread].cancelled) return;
+            // An error has occurred, wait for 20 seconds before the next retry
+            [[ForgeApp sharedApp] event:@"heartrate.uploadError" withParam:NULL];
             NSLog(@"Exception: %@", e);
             NSLog(@"Pausing HR upload thread for 20 seconds");
             NSCondition *condition = [NSCondition new];
@@ -164,6 +179,9 @@
     }
 }
 
+/**
+ * Uploads the next MAX_BUNCH_SIZE samples
+ */
 - (void)synchronizeNextDataBunch {
     NSLog(@"Synchronizing now");
     [[ForgeApp sharedApp] event:@"heartrate.startUpload" withParam:NULL];
@@ -184,90 +202,49 @@
     NSString *dataString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     NSLog(@"Data to send: %@", dataString);
     
-    /*
-    // Create list of parameters
-    List<NameValuePair> params = new ArrayList<NameValuePair>();
-    params.add(new BasicNameValuePair("dev_nickname", "PolarStrap"));
-    params.add(new BasicNameValuePair("channel_names", "[\"HeartBeat\",\"BeatSpacing\"]"));
-    params.add(new BasicNameValuePair("data", dataString));
-    params.add(new BasicNameValuePair("access_token", accessToken));
-    
     // Create request
-    HttpPost httpPost = new HttpPost(uploadURL);
-    httpPost.setEntity(new UrlEncodedFormEntity(params, HTTP.UTF_8));
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setURL:[NSURL URLWithString:[self.uploadURL stringByAppendingString:@"?"]]];
+    [request setTimeoutInterval:30.0];
+    // Add body to request
+    NSData *body = [[NSString stringWithFormat:@"access_token=%@&dev_nickname=%@&channel_names=%@&data=%@",
+                     [self.accessToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                     @"PolarStrap",
+                     [@"[\"HeartBeat\",\"BeatSpacing\"]" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                     [dataString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]
+                    dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *bodyLength = [NSString stringWithFormat:@"%ld", (long)[body length]];
+    [request setValue:bodyLength forHTTPHeaderField:@"Content-Length"];
+    [request setHTTPBody:body];
     
-    // Execute request with a timeout of 30 seconds
-    HttpParams httpParams = new BasicHttpParams();
-    HttpConnectionParams.setConnectionTimeout(httpParams, 30000);
-    HttpConnectionParams.setSoTimeout(httpParams, 30000);
-    HttpClient httpClient = new DefaultHttpClient(httpParams);
-    HttpResponse response = httpClient.execute(httpPost);
+    // Send request and wait for response
+    NSURLResponse *response;
+    NSData *responseData = [NSURLConnection sendSynchronousRequest:request
+                                                 returningResponse:&response
+                                                             error:&error];
     
-    // Check response status code
-    int statusCode = response.getStatusLine().getStatusCode();
-    Log.i(PolarH7Service.LOG_TAG, "Response status code: " + statusCode);
-    if (statusCode / 100 != 2) {
-        throw new Exception("Wrong http response received when fetching access token (" + statusCode + ")");
-    }
-    // Read response
-    BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-    String line = null;
-    String responseBody = "";
-    while ((line = reader.readLine()) != null) {
-        responseBody = responseBody + line;
-    }
-    Log.i(PolarH7Service.LOG_TAG, "Upload response: " + responseBody);
-    // Parse response
-    JSONObject jsonResponse = new JSONObject(responseBody);
-    // Get whether the request was successful
-    String successfulRecords = jsonResponse.getString("successful_records");
-    boolean success = (Integer.parseInt(successfulRecords) != 0);
-     */
-    BOOL success = YES;
-    if (success) {
-        // The request was successful, remove data from queue
-        NSLog(@"Removing %d pieces of data", data.count);
-        [self removeDataFromQueue:data];
-        if (self.unsynchronizedData.count < BUNCH_SIZE) {
-            [[ForgeApp sharedApp] event:@"heartrate.uploadDone" withParam:NULL];
-        }
+    // Make sure status code is 2**
+    int statusCode = (int)[(NSHTTPURLResponse*) response statusCode];
+    NSLog(@"Response status code: %d", statusCode);
+    if (statusCode / 100 != 2) @throw [NSException exceptionWithName:@"Wrong status code"
+                                                              reason:[NSString stringWithFormat:@"Received wrong status code: %d", statusCode]
+                                                            userInfo:nil];
+    
+    // Make sure response indicates successful records
+    NSDictionary *json = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&error];
+    int successfulRecords = [NSString stringWithFormat:@"%@", [json objectForKey:@"successful_records"]].intValue;
+    if (!successfulRecords) @throw [NSException exceptionWithName:@"Wrong response"
+                                                           reason:[NSString stringWithFormat:@"Unexpected response: %@", [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding]]
+                                                         userInfo:nil];
+    
+    // The request was successful, remove data from queue
+    NSLog(@"Removing %d pieces of data", (int)data.count);
+    [self removeDataFromQueue:data];
+    if (self.unsynchronizedData.count < BUNCH_SIZE) {
+        [[ForgeApp sharedApp] event:@"heartrate.uploadDone" withParam:NULL];
     }
 }
 
-
-
 @end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
