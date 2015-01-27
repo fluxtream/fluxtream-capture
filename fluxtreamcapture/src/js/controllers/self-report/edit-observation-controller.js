@@ -67,7 +67,7 @@ define([
             else if (sTypeOfTopic == "Numeric") {
               document.getElementById('valueItem').style.display = "";
               var elInput = document.createElement("input");
-              elInput.type = "text";
+              elInput.type = "number";
               elInput.id = "observation.value";
               document.getElementById("valueItem").appendChild(elInput);
               document.getElementById("valueItem").className = "item item-input";
