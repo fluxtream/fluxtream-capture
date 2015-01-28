@@ -103,7 +103,7 @@ define([
           tempArray.topicNumber = i;
         }
 
-        $scope.tempArray = tempArray;
+        $scope.aoTopics = tempArray;
         $scope.$$phase || $scope.$apply();
 
         // TODO Could be done better if to use separate DB for order numbers
