@@ -90,6 +90,7 @@ define([
       $scope.moveItem = function (oTopic, fromIndex, toIndex) {
         //Move the item in the array
         $scope.aoTopics.splice(fromIndex, 1);
+        $scope.$$phase || $scope.$apply();
         $scope.aoTopics.splice(toIndex, 0, oTopic);
 
         for (var i = Math.min(fromIndex, toIndex); i < $scope.aoTopics.length; i++) {
