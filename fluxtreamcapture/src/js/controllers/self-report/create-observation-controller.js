@@ -25,11 +25,13 @@ define([
 
           //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
+          // Set current values of time and date
           forge.ui.enhanceAllInputs();
-          //forge.ui.enhanceInput('#observation.observationDate');
-          //forge.ui.enhanceInput('#observation.observationTime');
           document.getElementById('observation.observationDate').value =  $filter("date")(Date.now(), 'yyyy-MM-dd');
           document.getElementById('observation.observationTime').value  = $filter("date")(Date.now(), 'HH:mm:ss');
+          var timezone = jstz.determine();
+          document.getElementById('observation.timezone').value  = timezone.name();
+
           $scope.$$phase || $scope.$apply();
 
           //TODO is the type is range check that default value is in range
