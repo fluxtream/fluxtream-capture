@@ -127,6 +127,9 @@
 		},
 		"tabs": {
 			"version": "2.9"
+		},
+		"flx_toggle_keyboard": {
+			"version": "0.1"
 		}
 	}
 }

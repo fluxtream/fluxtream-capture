@@ -89,21 +89,27 @@ define([
       // Reorder Topics
       $scope.moveItem = function (oTopic, fromIndex, toIndex) {
         //Move the item in the array
-//        $scope.aoTopics.splice(fromIndex, 1);
-//        $scope.$$phase || $scope.$apply();
-//        $scope.aoTopics.splice(toIndex, 0, oTopic);
-        var tempArray = [];
-        for (var i = 0; i < $scope.aoTopics.length; i++) {
-          tempArray.push($scope.aoTopics[i]);
-        }
-        tempArray.splice(fromIndex, 1);
-        tempArray.splice(toIndex, 0, oTopic);
+        $scope.aoTopics.splice(fromIndex, 1);
+        $scope.$$phase || $scope.$apply();
+        $scope.aoTopics.splice(toIndex, 0, oTopic);
 
-        for (var i = Math.min(fromIndex, toIndex); i < tempArray.length; i++) {
-          tempArray.topicNumber = i;
+        for (var i = Math.min(fromIndex, toIndex); i < $scope.aoTopics.length; i++) {
+          $scope.aoTopics.topicNumber = i;
         }
 
-        $scope.aoTopics = tempArray;
+//        var tempArray = [];
+//        for (var i = 0; i < $scope.aoTopics.length; i++) {
+//          tempArray.push($scope.aoTopics[i]);
+//        }
+//        tempArray.splice(fromIndex, 1);
+//        tempArray.splice(toIndex, 0, oTopic);
+//
+//        for (var i = Math.min(fromIndex, toIndex); i < tempArray.length; i++) {
+//          tempArray.topicNumber = i;
+//        }
+//
+//        $scope.aoTopics = tempArray;
+
         $scope.$$phase || $scope.$apply();
 
         // TODO Could be done better if to use separate DB for order numbers
