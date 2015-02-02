@@ -25,11 +25,13 @@ define([
 
           //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
+          // Set current values of time and date
           forge.ui.enhanceAllInputs();
-          //forge.ui.enhanceInput('#observation.observationDate');
-          //forge.ui.enhanceInput('#observation.observationTime');
           document.getElementById('observation.observationDate').value =  $filter("date")(Date.now(), 'yyyy-MM-dd');
           document.getElementById('observation.observationTime').value  = $filter("date")(Date.now(), 'HH:mm:ss');
+          var timezone = jstz.determine();
+          document.getElementById('observation.timezone').value  = timezone.name();
+
           $scope.$$phase || $scope.$apply();
 
           //TODO is the type is range check that default value is in range
@@ -38,15 +40,17 @@ define([
             var sTypeOfTopic = $scope.oTopic.type;
             if (sTypeOfTopic == "None") {
               document.getElementById('valueItem').style.display = "none";
+              document.getElementById('observation.comment').focus();
             }
             else if (sTypeOfTopic == "Numeric") {
               document.getElementById('valueItem').style.display = "";
               var elInput = document.createElement("input");
-              elInput.type = "text";
+              elInput.type = "number";
               elInput.id = "observation.value";
               elInput.value = $scope.oTopic.defaultValue;
               document.getElementById("valueItem").appendChild(elInput);
               document.getElementById("valueItem").className = "item item-input";
+              document.getElementById('observation.value').focus();
             }
             else if (sTypeOfTopic == "Range") {
               document.getElementById('valueItem').style.display = "";
@@ -83,17 +87,10 @@ define([
             // Delete status icon
             $("#create-observation-footer-center-icon").attr('class', '');
             $scope.$$phase || $scope.$apply();
-
             $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
-
-            console.log("TOPIC ID");
-            console.log($stateParams.topicId);
-
             document.title = $scope.oTopic.name;
-
-            $scope.$$phase || $scope.$apply();
-
             $scope.readType();
+            $scope.$$phase || $scope.$apply();
           });
 
           // Set status icon to spinning wheel

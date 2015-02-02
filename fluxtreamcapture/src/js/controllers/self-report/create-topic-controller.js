@@ -73,6 +73,7 @@ define([
               document.getElementById('rangeStartItem').style.display = "";
               document.getElementById('rangeEndItem').style.display = "";
               document.getElementById('stepItem').style.display = "";
+              document.getElementById('topic.step').value = "1";
             }
           };
 
@@ -86,9 +87,6 @@ define([
             //TODO when the Topics array is empty this would give and error (definetely on the mobile phone version)
             if (!$scope.aoTopics) $scope.aoTopics = []; // TODO remove this line but fix initialization bug
             var nLength = $scope.aoTopics.length;
-
-            console.log("TOPICs LENGTH");
-            console.log(nLength);
 
             //TODO Topic Name is a mandatory field - Error/Notification message under the header
             //TODO If user is pressing + and save button very fast he would get empty entry (if name could be empty)
