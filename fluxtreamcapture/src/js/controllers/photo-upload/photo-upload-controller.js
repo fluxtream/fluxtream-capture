@@ -125,6 +125,8 @@ define([
           });
           $scope.loadPhotoStatuses();
           $scope.loadPhotoThumbnails();
+          forge.logging.info($scope.photos);
+          $scope.$$phase || $scope.$apply();
         });
       };
       
