@@ -9,7 +9,7 @@
   
   <ion-content class="has-footer">
     <div class="flx-reload-icon" ng-if="loading && !isOffline"></div>
-    <div ng-if="loading && isOffline">You are offline. Please connect to the Internet.</div>
+    <div ng-if="loading && isOffline" class="padding">You are offline. Please connect to the Internet.</div>
     <div class="list padding" ng-if="!loading">
       <div ng-if="!coaches.length">
         No trusted buddy. Add one with the "+" button at the bottom of the screen.

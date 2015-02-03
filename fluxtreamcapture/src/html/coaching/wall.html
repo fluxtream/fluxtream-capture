@@ -150,7 +150,7 @@
         </div>
       </div>
     </ion-list>
-    <div ng-if="!isOnline && !lastPostLoaded && !singlePost">
+    <div ng-if="!isOnline && !lastPostLoaded && !singlePost" class="padding">
       You are offline. Please connect to the Internet to load more messages.
     </div>
     <ion-infinite-scroll on-infinite="loadMorePosts()" distance="10%" ng-if="!refreshing && postList.length && !singlePost && !lastPostLoaded">
