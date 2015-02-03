@@ -81,8 +81,7 @@ define([
         },
         // Error
         function(content) {
-          forge.logging.info("Error while fetching coach list");
-          forge.logging.info(content);
+          forge.logging.error("Error while fetching coach list: " + JSON.stringify(content));
         }
       );
       
@@ -122,7 +121,6 @@ define([
        * [Called from page] Loads the screen that presents a post with its comments
        */
       $scope.loadPost = function(post) {
-        forge.logging.info("Load post " + post.id);
         $state.go("wallPost", {postId: post.id});
       };
       
@@ -155,14 +153,12 @@ define([
         wallCom.getWallPosts($scope.lastPostId,
           // Success
           function(posts, lastPostId) {
-            forge.logging.info("More posts received");
             // Add posts
             $scope.postList = posts;
             $scope.sortPosts();
             $scope.lastPostId = lastPostId;
             // Check if end of wall has been reached
             if (posts.length < wallCom.postCountPerQuery) {
-              forge.logging.info("Reaching the bottom of the wall because " + posts.length + " < " + wallCom.postCountPerQuery);
               $scope.lastPostLoaded = true;
             }
             // Refresh UI
@@ -175,8 +171,7 @@ define([
           },
           // Error
           function(content) {
-            forge.logging.info("Error while fetching wall posts");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching wall posts: " + JSON.stringify(content));
             $scope.$broadcast('scroll.infiniteScrollComplete');
             $scope.$broadcast('scroll.refreshComplete');
           }
@@ -197,8 +192,6 @@ define([
           },
           // Success
           function(post) {
-            forge.logging.info("Post retrieved");
-            forge.logging.info(post.body);
             $scope.postList = [post];
             $scope.loading = false;
             $scope.$$phase || $scope.$apply();
@@ -206,8 +199,7 @@ define([
           },
           // Error
           function(content) {
-            forge.logging.info("Error while fetching post");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching post: " + JSON.stringify(content));
             $scope.$broadcast('scroll.refreshComplete');
           }
         );
@@ -220,7 +212,6 @@ define([
         if ($scope.singlePost) {
           $scope.loadSinglePost();
         } else {
-          forge.logging.info("Refresh wall");
           // Populate wall with cached data
           $scope.postList = wallCom.getCachedWallPosts();
           $scope.sortPosts();
@@ -275,7 +266,6 @@ define([
        * [Called from page] Enables the edition of a new comment for the given post
        */
       $scope.editNewComment = function(post) {
-        forge.logging.info("Edit new comment");
         // Disable other edition
         $scope.disableAllEditBoxes();
         // Mark post as being edited
@@ -291,7 +281,6 @@ define([
        * [Called from page] Uploads the new comment
        */
       $scope.submitNewComment = function(post) {
-        forge.logging.info("Submit new comment");
         if (post.newComment) {
           var comment = {
             body: post.newComment,
@@ -304,12 +293,10 @@ define([
           $scope.$$phase || $scope.$apply();
           wallCom.addComment(post.id, comment.body,
             // Success
-            function() {
-              forge.logging.info("Comment pushed successfully");
-            },
+            function() {},
             // Error
             function() {
-              forge.logging.info("An error occurred while pushing a comment");
+              forge.logging.error("An error occurred while pushing a comment");
             }
           );
         }
@@ -319,7 +306,6 @@ define([
        * [Called from pages] Presents the user with a confirmation box and then deletes an existing comment
        */
       $scope.deleteComment = function(post, comment) {
-        forge.logging.info("Deleting comment?");
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Delete',
           titleText: 'Delete this comment?',
@@ -330,12 +316,10 @@ define([
             $scope.$$phase || $scope.$apply();
             wallCom.deleteComment(post.id, comment.id,
               // Success
-              function() {
-                forge.logging.info("Comment deleted successfully");
-              },
+              function() {},
               // Error
               function() {
-                forge.logging.info("Error while deleting comment");
+                forge.logging.error("Error while deleting comment");
               }
             );
             return true;
@@ -347,7 +331,6 @@ define([
        * [Called from page] Enables the edition of an existing comment
        */
       $scope.editComment = function(post, comment) {
-        forge.logging.info("Edit comment");
         // Disable active comment
         $scope.disableAllEditBoxes();
         // Mark as editing
@@ -364,17 +347,14 @@ define([
        * [Called from page] Uploads the changes made to an existing comment
        */
       $scope.submitCommentUpdate = function(post, comment) {
-        forge.logging.info("Submit comment update");
         comment.editing = false;
         comment.body = comment.newBody;
         wallCom.updateComment(post.id, comment.id, comment.newBody,
           // Success
-          function() {
-            forge.logging.info("Comment updated successfully");
-          },
+          function() {},
           // Error
           function() {
-            forge.logging.info("Error while updating comment");
+            forge.logging.error("Error while updating comment");
           }
         );
         return true;
@@ -408,7 +388,6 @@ define([
           return;
         }
         $scope.sendingMessage = true;
-        forge.logging.info("Sending new wall message to " + $scope.coachFilter);
         wallCom.sendNewPost($scope.newMessage.body, $scope.coachFilter,
           // Success
           function() {
@@ -442,7 +421,6 @@ define([
 //            scope: $scope,
 //            animation: 'slide-in-up'
 //          }).then(function(modal) {
-//            forge.logging.info("MODAL LOADED");
 //            $scope.modal = modal;
 //            $scope.modal.show();
 //          });

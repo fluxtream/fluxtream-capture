@@ -126,7 +126,6 @@ define([
           });
           $scope.loadPhotoStatuses();
           $scope.loadPhotoThumbnails();
-          forge.logging.info($scope.photos);
           $scope.$$phase || $scope.$apply();
         });
       };
@@ -155,8 +154,7 @@ define([
           },
           // Error
           function(error) {
-            forge.logging.info("Error while getting photo statuses");
-            forge.logging.info(error);
+            forge.logging.error("Error while getting photo statuses: " + JSON.stringify(error));
           }
         );
       };
@@ -183,7 +181,7 @@ define([
                 $timeout(loadNext, 1);
               },
               function() {
-                forge.logging.info("Error while getting thumbnail");
+                forge.logging.error("Error while getting thumbnail");
               }
             );
           }
@@ -193,7 +191,6 @@ define([
       
       // Initially load photos
       photoSync.onReady(function() {
-        forge.logging.info("Call to setUploadParameters successful");
         // Initially load photos
         userPrefs.onReady(function() {
           if (!forge.is.web()) {
@@ -209,18 +206,14 @@ define([
        * Marks a photo for upload and adds a photo to the upload queue
        */
       $scope.uploadPhoto = function(photo) {
-        forge.logging.info("Uploading photo: " + photo.id);
         photo.upload_status = 'pending';
         $scope.$$phase || $scope.$apply();
         photoSync.uploadPhoto(photo.id,
           // Success
-          function() {
-            forge.logging.info("Upload photo call returned success");
-          },
+          function() {},
           // Error
           function(error) {
-            forge.logging.info("Upload photo call returned error");
-            forge.logging.info(error);
+            forge.logging.error("Upload photo call returned error: " + JSON.stringify(error));
           }
         );
       };
@@ -229,7 +222,6 @@ define([
        * Called when the delete button is pressed. Removes photo from server and/or from local storage.
        */
       $scope.deletePhoto = function(photo) {
-        forge.logging.info("Delete photo " + photo.id + "?");
         $ionicActionSheet.show({
           buttons: photo.upload_status == 'uploaded' ? [{text: "No, only delete online photo"}] : [],
           titleText: 'Delete photo from this device?',
@@ -243,7 +235,6 @@ define([
               alert("You are offline. Please connect to the Internet to delete this photo.");
               return;
             }
-            forge.logging.info("Deleting photo " + photo.id + " from server (index = " + index + ")");
             var currentStatus = photo.upload_status;
             photo.upload_status = "deleting";
             $scope.$$phase || $scope.$apply();
@@ -266,7 +257,6 @@ define([
             return true;
           },
           destructiveButtonClicked: function(index) {
-            forge.logging.info("Deleting photo " + photo.id + " from server AND device");
             var currentStatus = photo.upload_status;
             photo.upload_status = "deleting";
             $scope.$$phase || $scope.$apply();
@@ -304,7 +294,6 @@ define([
         function() {
           if (!forge.is.web()) {
             userPrefs.onReady(function() {
-              forge.logging.info("Reloading photo list");
               photoListService.reloadPhotos();
               $scope.addAllPhotosFromGallery();
             });
@@ -312,8 +301,7 @@ define([
         },
         // Error
         function(content) {
-          forge.logging.info("Error on forge.event.appResumed.appListener");
-          forge.logging(content);
+          forge.logging.error("Error on forge.event.appResumed.appListener: " + JSON.stringify(content));
         }
       );
       
@@ -321,50 +309,45 @@ define([
       
       // Photo upload started
       $scope.$on("photoupload.started", function(event, data) {
-        forge.logging.info("Received event: photo " + data.photoId + " upload started");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
           photo.upload_status = 'uploading';
           $scope.$$phase || $scope.$apply();
         } else {
-          forge.logging.info("Unknown photo " + data.photoId);
+          forge.logging.warning("Upload started for unknown photo: " + data.photoId);
         }
       });
       
       // Photo successfully uploaded
       $scope.$on("photoupload.uploaded", function(event, data) {
-        forge.logging.info("Received event: photo " + data.photoId + " upload successful");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
           photo.upload_status = 'uploaded';
           $scope.$$phase || $scope.$apply();
         } else {
-          forge.logging.info("Unknown photo " + data.photoId);
+          forge.logging.warning("Unknown photo uploaded: " + data.photoId);
         }
       });
       
       // Photo upload canceled
       $scope.$on("photoupload.canceled", function(event, data) {
-        forge.logging.info("Received event: photo " + data.photoId + " upload canceled");
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
           photo.upload_status = 'none';
           $scope.$$phase || $scope.$apply();
         } else {
-          forge.logging.info("Unknown photo " + data.photoId);
+          forge.logging.warning("Cancelled upload of unknown photo: " + data.photoId);
         }
       });
       
       // Photo upload failed
       $scope.$on("photoupload.failed", function(event, data) {
-        forge.logging.info("Received event: photo " + data.photoId + " upload failed");
-        forge.logging.info(data.error);
         var photo = $scope.getPhoto(data.photoId);
         if (photo) {
           photo.upload_status = 'failed';
           $scope.$$phase || $scope.$apply();
         } else {
-          forge.logging.info("Unknown photo " + data.photoId);
+          forge.logging.warning("Upload failed for unknown photo: " + data.photoId);
         }
       });
       

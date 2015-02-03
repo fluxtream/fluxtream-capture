@@ -39,8 +39,6 @@ define([
       
       // Initialize the autoupload service with the autoupload parameters from user prefs
       function startAutoupload() {
-//        if (userPrefs.get("user." + loginService.getUserId() + '.photos.autoupload_enabled', false)) {
-          forge.logging.info("Starting autoupload service");
           var options = {
             userId: loginService.getUserId(),
             upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
@@ -61,18 +59,12 @@ define([
           });
           forge.flx_photoupload.setAutouploadOptions(options,
             // Success
-            function() {
-              forge.logging.info("Autoupload service started successfully");
-            },
+            function() {},
             // Error
             function(error) {
-              forge.logging.info("Error starting the autoupload service:");
-              forge.logging.info(error);
+              forge.logging.error("Error starting the autoupload service: " + JSON.stringify(error));
             }
           );
-//        } else {
-//          forge.logging.info("Not starting autoupload service");
-//        }
       }
       
       userPrefs.onReady(function() {
@@ -84,7 +76,6 @@ define([
       // Initialize native photo upload module
       $rootScope.$on("user-logged-in", function() {
         userPrefs.onReady(function() {
-          forge.logging.info("Calling setUploadParameters with userId = " + loginService.getUserId());
           forge.flx_photoupload.setUploadParameters(
             // Parameters
             {
@@ -100,7 +91,6 @@ define([
               photoUploadModuleInitialized = true;
               // Upload all pending photos
               var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
-              forge.logging.info("Unuploaded photos: " + JSON.stringify(unuploadedPhotos));
               unuploadedPhotos.forEach(function(photoId) {
                 forge.flx_photoupload.uploadPhoto(photoId);
               });
@@ -114,8 +104,7 @@ define([
             },
             // Error
             function(error) {
-              forge.logging.info("Call to setUploadParameters failed");
-              forge.logging.info(error);
+              forge.logging.error("Call to setUploadParameters failed: " + JSON.stringify(error));
             }
           );
         });
@@ -123,12 +112,10 @@ define([
       $rootScope.$on("user-logged-out", function() {
         forge.flx_photoupload.logoutUser(
           // Success
-          function() {
-            forge.logging.info("Autoupload service successfully stopped");
-          },
+          function() {},
           // Error
           function() {
-            forge.logging.info("Error while stopping the autoupload service");
+            forge.logging.error("Error while stopping the autoupload service");
           }
         );
       });
@@ -145,7 +132,6 @@ define([
         var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
         var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
         if (unsynchronized.indexOf(photoId) === -1) {
-          forge.logging.info("Add photo " + photoId + " to " + type + " sync list");
           unsynchronized.push(photoId);
         }
         userPrefs.set(pref, JSON.stringify(unsynchronized));
@@ -161,9 +147,8 @@ define([
         var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
         var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
         if (unsynchronized.indexOf(photoId) !== -1) {
-          forge.logging.info("Remove photo " + photoId + " from " + type + " sync list");
           unsynchronized.splice(unsynchronized.indexOf(photoId), 1);
-        } else forge.logging.info(photoId + " not in list");
+        }
         userPrefs.set(pref, JSON.stringify(unsynchronized));
       }
       
@@ -188,31 +173,26 @@ define([
           removeFromUnsynchronized(photoId, "metadata");
           return;
         }
-        forge.logging.info("Synchronizing metadata for photo " + photoId + ": " + metadata);
         // Get facet for photo
         forge.flx_photoupload.getFacetId(parseInt(photoId),
           // Success
           function(facetId) {
-            forge.logging.info(loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set");
             loginService.ajax({
               url: loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set",
               type: "POST",
               data: JSON.parse(metadata),
               success: function(response) {
-                forge.logging.info("Metadata successfully saved");
-                forge.logging.info(response);
                 // Remove from unsynchronized list
                 removeFromUnsynchronized(photoId, "metadata");
               },
               error: function(response) {
-                forge.logging.info("Error while saving data");
-                forge.logging.info(response);
+                forge.logging.error("Error while uploading photo metadata: " + JSON.stringify(response));
               }
             });
           },
           // Error
           function(error) {
-            forge.logging.info("Photo " + photoId + " not uploaded yet");
+            forge.logging.error("Trying to add metadata for photo " + photoId + " that is not uploaded yet");
           }
         );
       }
@@ -275,14 +255,11 @@ define([
                 type: "DELETE",
                 timeout: 10000,
                 success: function(response) {
-                  forge.logging.info("Photo successfully deleted from server");
-                  forge.logging.info(response);
                   // Mark photo as unuploaded
                   forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
                 },
                 error: function(response) {
-                  forge.logging.info("Error while deleting photo from server");
-                  forge.logging.info(response);
+                  forge.logging.error("Error while deleting photo from server: " + JSON.stringify(response));
                   if (response.statusCode == 404) {
                     // Photo does not exist online anymore
                     // Mark photo as unuploaded
@@ -295,8 +272,7 @@ define([
             },
             // Error
             function(content) {
-              forge.logging.info("Photo " + photoId + " not uploaded yet");
-              error(content);
+              forge.logging.error("Trying to delete from the server photo " + photoId + " that is not uploaded yet: " + JSON.stringify(content));
             }
           );
         } else {

@@ -27,7 +27,6 @@ define([
        * Loads the connector sharing page for a given coach
        */
       $scope.loadCoachConnectorSharing = function() {
-        forge.logging.info("Load coach connector sharing");
         $state.go("coachConnectorSharing", {from: "from-details", coachUsername: $stateParams.coachUsername});
       };
       
@@ -35,7 +34,6 @@ define([
        * [Called from page] Remove a coach from the selected coaches
        */
       $scope.removeCoach = function() {
-        forge.logging.info("Show remove coach action sheet");
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Remove',
           titleText: 'Do you want to remove ' + $scope.coach.fullname + ' from your coaches?',
@@ -61,7 +59,6 @@ define([
        * [Called from page] Selects the coach to be one of the user's coaches
        */
       $scope.selectCoach = function() {
-        forge.logging.info("Selecting coach: " + $scope.coach.fullname);
         var hideActionSheet = $ionicActionSheet.show({
           buttons: [{text: 'Yes, Add'}],
           titleText: 'Do you want to add ' + $scope.coach.fullname + ' as a personal coach?',
@@ -70,7 +67,6 @@ define([
             coachingCom.addCoach($scope.coach.username,
               // Success
               function() {
-                forge.logging.info("Go to connector sharing screen");
                 $scope.coach.isOwnCoach = true;
                 $scope.loadCoachConnectorSharing();
               },

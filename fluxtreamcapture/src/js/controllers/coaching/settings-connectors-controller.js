@@ -31,12 +31,10 @@ define([
        * Requests the list of connectors, and continue polling while a connector is synchronizing
        */
       $scope.updateConnectorList = function() {
-        forge.logging.info("Fetch connector list");
         $scope.polling = true;
         connectorsCom.getFullConnectorList(
           // Success
           function(connectors) {
-            forge.logging.info("Connector list fetched");
             // Update connector list
             $scope.connectors = connectors;
             $scope.$$phase || $scope.$apply();
@@ -100,13 +98,11 @@ define([
               },
               // Success
               function() {
-                forge.logging.info("Tab successfully closed");
                 $scope.updateConnectorList();
               },
               // Error
               function(content) {
-                forge.logging.info("Error while opening tab");
-                forge.logging.info(content);
+                forge.logging.error("Error while opening tab: " + JSON.stringify(content));
                 $scope.updateConnectorList();
               }
             );
@@ -162,14 +158,13 @@ define([
         connectorsCom.synchronizeNow(connector.connectorName,
           // Success
           function() {
-            forge.logging.info("Synchronization started successfully");
             if (!$scope.polling) {
               $scope.updateConnectorList();
             }
           },
           // Error
           function(error) {
-            forge.logging.info("Synchronization launch failed: " + error);
+            forge.logging.error("Synchronization launch failed: " + JSON.stringify(error));
             connector.syncing = false;
             $scope.$$phase || $scope.$apply();
           }

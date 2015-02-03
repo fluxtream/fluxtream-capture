@@ -51,7 +51,6 @@ define([
        * [Called from page] Called when a tag's value has been changed
        */
       $scope.tagChanged = function() {
-        forge.logging.info("tagChanged");
         if ($scope.tags[$scope.tags.length - 1].value) {
           // Last tag edited, add a new empty tag
           $scope.tags.push({value: ""});
@@ -65,7 +64,6 @@ define([
        * [Called from page] Removes the given tag from the tag list
        */
       $scope.deleteTag = function(tag) {
-        forge.logging.info("Removing tag: " + tag.value);
         $scope.tags.splice($scope.tags.indexOf(tag), 1);
       };
       
@@ -84,7 +82,6 @@ define([
         };
         // Save to user prefs
         userPrefs.set("user." + loginService.getUserId() + ".photo.metadata." + $scope.photoId, JSON.stringify(metadata));
-        forge.logging.info("Metadata saved locally for photo " + $scope.photoId + ": " + JSON.stringify(metadata));
         // Upload photo if not uploaded yet
         photoSync.uploadPhoto(parseInt($scope.photoId), function() {}, function() {});
         // Upload metadata

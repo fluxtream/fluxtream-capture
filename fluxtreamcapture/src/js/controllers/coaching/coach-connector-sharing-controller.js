@@ -101,12 +101,9 @@ define([
           alert("You are offline. Please connect to the Internet to " + (connector.shared ? "unshare" : "share") + " data.");
           return;
         }
-        forge.logging.info("Toggling connector: " + connector.connectorName);
         connector.updating = true;
         $scope.$$phase || $scope.$apply();
         if (!connector.shared) {
-          forge.logging.info("Connector is currently unshared, share it");
-          forge.logging.info(typeof coachingCom);
           coachingCom.shareConnectorWithCoach($stateParams.coachUsername, connector.connectorName,
             // Success
             function() {
@@ -122,7 +119,6 @@ define([
             }
           );
         } else {
-          forge.logging.info("Connector is currently shared, unshare it");
           coachingCom.unshareConnectorWithcoach($stateParams.coachUsername, connector.connectorName,
             // Success
             function() {

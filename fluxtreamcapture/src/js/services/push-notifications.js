@@ -38,16 +38,12 @@ define([
       userPrefs.onReady(function() {
         if (!forge.is.web()) {
           deviceIdService.getDeviceIdAsync(function(deviceId) {
-            forge.logging.info("Subscribing to push notification channel: channel_" + deviceId);
             forge.parse.push.subscribe("channel_" + deviceId,
               // Success
-              function() {
-                forge.logging.info("Subscription to push notification channel successful");
-              },
+              function() {},
               // Error
               function(content) {
-                forge.logging.info("Subscription to push notification channel failed");
-                forge.logging.info(content);
+                forge.logging.error("Subscription to push notification channel failed: " + JSON.stringify(content));
               }
             );
           });
@@ -56,14 +52,10 @@ define([
       
       // Register to push notification events
       forge.event.messagePushed.addListener(function(pushNotificationData) {
-        forge.logging.info("Received push notification");
-        forge.logging.info(pushNotificationData);
         // Determine if the app with active or not when the push notification arrived (note: on Android, always consider the app was not active)
         if (Date.now() - appResumeTime > 3000 && !forge.is.android()) {
-          forge.logging.info("App was active: " + (Date.now() - appResumeTime) + " > " + 3000);
           appActiveOnNotification = true;
         } else {
-          forge.logging.info("App was not active: " + (Date.now() - appResumeTime) + " <= " + 3000);
           appActiveOnNotification = false;
         }
         // Remember the push notification information
@@ -72,15 +64,11 @@ define([
         // If the user is already authenticated, apply the push notification (otherwise it'll be postponed until the user is logged in)
         if (loginService.isAuthenticated()) {
           loadPostScreen();
-        } else {
-          forge.logging.info("Not authenticated yet, waiting to redirect push notification");
         }
       });
       
       // Listen to the 'app resumed' event to know the last resume time
       forge.event.appResumed.addListener(function(data) {
-        forge.logging.info("App resumed");
-        forge.logging.info(data);
         appResumeTime = Date.now();
       });
       
@@ -91,15 +79,12 @@ define([
        * @returns {undefined}
        */
       function loadPostScreen() {
-        forge.logging.info("Load post screen");
         if (postToLoad) {
           // There is a post to view
           if (!appActiveOnNotification) {
             // Notification was pressed from OS, show the page now
-            forge.logging.info("Loading wall post " + postToLoad);
             $state.go("wallPost", {postId: postToLoad});
           } else {
-            forge.logging.info("App was active on notification, not showing post");
             // App was active on notification, ask the user if they want to see the page now
             // TODO Manage in-app notifications
 //            var loadScreen = confirm(notificationMessage + ". Do you want to see it now?"); // TODO Improve the UI of this
@@ -111,7 +96,6 @@ define([
           postToLoad = null;
         } else {
           // There is no wall post to load
-          forge.logging.info("No wall post to load");
         }
       }
       

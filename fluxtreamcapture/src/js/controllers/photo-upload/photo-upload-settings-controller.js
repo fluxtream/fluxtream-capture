@@ -70,12 +70,10 @@ define([
                 for (var i = 0; i < photoStatuses.length; i++) {
                   if (photoStatuses[i] == 'none') $scope.unuploadedCount[orientation]++;
                 }
-                forge.logging.info("There are " + $scope.unuploadedCount[orientation] + " unuploaded " + orientation + " photos");
               },
               // Error
               function(error) {
-                forge.logging.info("Error while getting photo statuses for orientation " + orientation);
-                forge.logging.info(error);
+                forge.logging.error("Error while getting photo statuses for orientation " + orientation + ": " + JSON.stringify(error));
               }
             );
           });
@@ -87,14 +85,12 @@ define([
         // Callback
         function() {
           if (!forge.is.web()) {
-            forge.logging.info("Recounting unuploaded photos");
             $scope.countUnuploadedPhotos();
           }
         },
         // Error
         function(content) {
-          forge.logging.info("Error on forge.event.appResumed.appListener");
-          forge.logging(content);
+          forge.logging.error("Error on forge.event.appResumed.appListener: " + JSON.stringify(content));
         }
       );
       
@@ -108,30 +104,8 @@ define([
         photoSync.startAutoupload();
       };
       
-//      /**
-//       * Stops the background upload service
-//       */
-//      $scope.stopPhotoUploadService = function() {
-//        forge.flx_photoupload.stopAutouploadService(
-//          // Success
-//          function() {
-//            forge.logging.info("Autoupload service successfully stopped");
-//          },
-//          // Error
-//          function() {
-//            forge.logging.info("Error while stopping the autoupload service");
-//          }
-//        );
-//      };
-      
       // Start photo upload service at start
-//      var startAutoupload = false;
-//      $scope.orientations.forEach(function(orientation) {
-//        if ($scope.settings['upload_' + orientation]) startAutoupload = true;
-//      });
-//      if (startAutoupload) {
-        $scope.startPhotoUploadService();
-//      }
+      $scope.startPhotoUploadService();
       
       /**
        * Saves and applies the user's choices
@@ -139,9 +113,7 @@ define([
       $scope.save = function(orientation) {
         var unuploadedCount = $scope.unuploadedCount[orientation];
         var enablingAutoupload = $scope.settings['upload_' + orientation];
-        forge.logging.info("User choice: " + orientation + " := " + enablingAutoupload + " (count: " + unuploadedCount + ")");
         if (enablingAutoupload && unuploadedCount !== 0) {
-          forge.logging.info("Asking user if they want to upload the unuploaded photos for orientation " + orientation);
           $ionicActionSheet.show({
             buttons: [{text: "No"}, {text: 'Upload'}],
             titleText: 'You have ' + unuploadedCount + ' existing photos with this orientation. Upload them now?',

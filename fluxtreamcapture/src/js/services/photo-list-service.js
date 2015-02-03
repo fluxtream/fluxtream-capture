@@ -27,7 +27,6 @@ define([
       forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
-          forge.logging.info("Loaded photo list");
           // Data can either be json-encoded string or an actual array
           if (typeof jsonArray === 'string') {
             // Json string, convert to array
@@ -37,7 +36,6 @@ define([
             photoList = jsonArray;
           }
           initialized = true;
-          forge.logging.info("Photo list has been initialized");
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
@@ -45,8 +43,7 @@ define([
         },
         // Error
         function(error) {
-          forge.logging.error("Error while calling getPhotoList:");
-          forge.logging.error(error);
+          forge.logging.error("Error while calling getPhotoList: " + JSON.stringify(error));
         }
       );
     };
@@ -95,7 +92,6 @@ define([
     
     ["photoupload.started", "photoupload.uploaded", "photoupload.canceled", "photoupload.failed"].forEach(function(eventName) {
       forge.internal.addEventListener(eventName, function(data) {
-        forge.logging.info("Native event received: " + eventName + " -> " + JSON.stringify(data));
         $rootScope.$broadcast(eventName, data);
       });
     });

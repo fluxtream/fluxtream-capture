@@ -30,7 +30,6 @@ define([
        * [Called from page] Loads the page of a coach where the user can select/remove them as a coach
        */
       $scope.loadCoachDetails = function(coach) {
-        forge.logging.info("Load coach details");
         $state.go("coachDetails", {coachUsername: coach.username});
       };
       
@@ -38,7 +37,6 @@ define([
        * Loads the wall view filtered with the given coach
        */
       $scope.loadCoachMessaging = function(coach) {
-        forge.logging.info("Load coach messaging page");
         $state.go("coachMessaging", {coachUsername: coach.username});
       };
       
@@ -46,7 +44,6 @@ define([
        * Loads the connector sharing page for a given coach
        */
       $scope.loadCoachConnectorSharing = function(coach) {
-        forge.logging.info("Load coach connector sharing");
         $state.go("coachConnectorSharing", {from: "from-coach-list", coachUsername: coach.username});
       };
       
@@ -54,7 +51,6 @@ define([
        * [Called from page] Remove a coach from the selected coaches
        */
       $scope.removeCoach = function(coach) {
-        forge.logging.info("Show remove coach action sheet");
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Remove',
           titleText: 'Do you want to remove ' + coach.fullname + ' from your coaches?',
@@ -92,8 +88,7 @@ define([
             },
             // Error
             function(content) {
-              forge.logging.info("Error while fetching coach list");
-              forge.logging.info(content);
+              forge.logging.error("Error while fetching coach list:" + JSON.stringify(content));
               $scope.getCoachListTimeout = $timeout($scope.getCoachList, 1000);
             }
           );

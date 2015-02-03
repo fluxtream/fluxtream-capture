@@ -34,7 +34,6 @@ define([
        * Fetches the list of connectors, both installed and uninstalled
        */
       function getFullConnectorList(success, error) {
-        forge.logging.info("Requesting full connector list");
         // Get installed
         forge.request.ajax({
           type: "GET",
@@ -44,7 +43,6 @@ define([
           },
           dataType: "json",
           success: function(installedConnectors, code) {
-            forge.logging.info("Installed connectors received");
             // Mark connectors as installed
             installedConnectors.forEach(function(connector) {
               connector.installed = true;
@@ -58,7 +56,6 @@ define([
               },
               dataType: "json",
               success: function(uninstalledConnectors, code) {
-                forge.logging.info("Uninstalled connectors received");
                 // Mark connectors as uninstalled
                 uninstalledConnectors.forEach(function(connector) {
                   connector.installed = false;
@@ -86,28 +83,24 @@ define([
                 success(connectors);
                 // Cache images
                 connectors.forEach(function(connector) {
-                  forge.logging.info(connector.image);
                   imageCache.cacheImage(
                     connector.image,
                     function(uri) {
-                      forge.logging.info("Success: " + uri);
                       connector.image = uri;
                       cacheConnectors(connectors);
                     },
-                    function() { forge.logging.info("Error"); }
+                    function() {}
                   );
                 });
               },
               error: function(content) {
-                forge.logging.info("Error while fetching uninstalled connectors");
-                forge.logging.info(content);
+                forge.logging.error("Error while fetching uninstalled connectors: " + JSON.stringify(content));
                 error(content);
               }
             });
           },
           error: function(content) {
-            forge.logging.info("Error while fetching installed connectors");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching installed connectors: " + JSON.stringify(content));
             error(content);
           }
         });

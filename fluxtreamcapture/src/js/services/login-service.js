@@ -85,8 +85,6 @@ define([
        * (Private) Makes an ajax call to sign the user in using their username and password (mobile only)
        */
       function signIn(username, password, success, error) {
-        forge.logging.info("Sign in: " + username + "/******");
-        forge.logging.info("URL: " + getTargetServer() + "api/v1/mobile/signin");
         deviceIdService.getDeviceIdAsync(function(deviceId) {
           forge.request.ajax({
             url: getTargetServer() + "api/v1/mobile/signin",
@@ -105,15 +103,13 @@ define([
               if (success) success();
             },
             error: function(response) {
-              forge.logging.info(response);
               // Credentials are set, but an error occured
               if (response.statusCode === 401 || response.statusCode === "401") {
                 // Credentials are incorrect
-                forge.logging.info("The user credentials are incorrect, showing login page");
                 error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
               } else {
                 // Another error happened
-                forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
+                forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
                 error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
               }
             }
@@ -122,7 +118,6 @@ define([
       }
       
       function signUp(username, password, firstname, lastname, email, success, error) {
-        forge.logging.info("Sign up: " + getTargetServer() + "api/v1/mobile/signup");
         deviceIdService.getDeviceIdAsync(function(deviceId) {
           forge.request.ajax({
             url: getTargetServer() + "api/v1/mobile/signup",
@@ -144,7 +139,6 @@ define([
               if (success) success();
             },
             error: function(response) {
-              forge.logging.info(response);
               // Credentials are set, but an error occured
               errorMessage = "Error accessing " + getTargetServer();
               try {
@@ -157,21 +151,20 @@ define([
       }
       
       function checkAuthOnWeb() {
-        forge.logging.info("Checking auth on web...");
         ajaxCheckAuth({
           success: handleAuthSuccessResponse,
           error: function(jqXHR, textStatus, stackTrace) {
             forge.logging.debug("status: " + jqXHR.status);
             forge.logging.debug("status: " + stackTrace);
             if (jqXHR.status === 401) {
-              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest (status.result is not \"OK\"): " + textStatus);
+              forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest (status.result is not \"OK\"): " + textStatus);
               if (forge.is.web()) {
                 window.location = getTargetServer() + "mobile/signIn?r=" + env["loggedIn.redirect_uri"];
               } else {
                 window.location = getTargetServer() + "mobile/signIn?r=fluxtream://mainmenu";
               }
             } else {
-              forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
+              forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
               alert("Error accessing " + getTargetServer() + "\nError code: " + textStatus);
             }
           }
@@ -179,8 +172,6 @@ define([
       }
       
       function handleAuthSuccessResponse(guestModel, textStatus) {
-        forge.logging.info("Logging in successful");
-        forge.logging.info(guestModel);
         userPrefs.set('login.username', guestModel.username);
         userPrefs.set('login.userId', guestModel.id + "");
         userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
@@ -189,7 +180,7 @@ define([
         if (typeof (guestModel.username) !== "undefined") {
           if (typeof onSuccessFunction === 'function') onSuccessFunction();
         } else {
-          forge.logging.info("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
+          forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
           alert("Error accessing " + getTargetServer() + "\nError code: " + textStatus);
         }
         $rootScope.$broadcast('user-logged-in');

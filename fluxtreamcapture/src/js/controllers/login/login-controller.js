@@ -68,7 +68,6 @@ define([
        * [Private] Updates the error message an refreshes the UI
        */
       $scope.setErrorMessage = function(errorMessage) {
-        forge.logging.info("Set error message: " + errorMessage);
         $scope.errorMessage = errorMessage;
         $scope.formErrorMessage = "";
         $scope.$$phase || $scope.$apply();
@@ -78,7 +77,6 @@ define([
        * [Private] Updates the form error message an refreshes the UI
        */
       $scope.setFormErrorMessage = function(errorMessage) {
-        forge.logging.info("Set form error message: " + errorMessage);
         $scope.formErrorMessage = errorMessage;
         $scope.errorMessage = "";
         $scope.$$phase || $scope.$apply();
@@ -97,7 +95,6 @@ define([
        * [Called from button] Loads the login home screen
        */
       $scope.backToHome = function() {
-        forge.logging.info("Back to home");
         $scope.clearErrorMessages();
         $scope.currentScreen = "home";
       };
@@ -131,7 +128,6 @@ define([
           return;
         }
         $scope.clearErrorMessages();
-        forge.logging.info("Logging in...");
         // Save username and target to prefs
         userPrefs.onReady(function() {
           userPrefs.set('login.username', $scope.signin.username);
@@ -168,7 +164,7 @@ define([
               },
               // Error
               function(message) {
-                forge.logging.info("Signing in with credentials failed");
+                forge.logging.error("Signing in with credentials failed: " + message);
                 $scope.setFormErrorMessage(message);
                 $scope.loading = false;
                 $scope.$$phase || $scope.$apply();
@@ -176,8 +172,7 @@ define([
             );
           },
           error: function(error) {
-            forge.logging.info("Error while logging in");
-            forge.logging.info(error);
+            forge.logging.error("Error while logging in: " + JSON.stringify(error));
             alert("An error has occurred");
             $scope.loading = false;
             $scope.$$phase || $scope.$apply();
@@ -212,7 +207,6 @@ define([
           }
           // Validation passed
           $scope.clearErrorMessages();
-          forge.logging.info("Sign up: validation passed");
           $scope.loading = true;
           $scope.$$phase || $scope.$apply();
           // Clear cookies
@@ -240,7 +234,7 @@ define([
                 // Error
                 function(errorMessage) {
                   // An error has occurred
-                  forge.logging.info("Sign up failed");
+                  forge.logging.error("Sign up failed: " + errorMessage);
                   // Set error message
                   if (!errorMessage) errorMessage = "An error occurred. Please try again.";
                   $scope.setFormErrorMessage(errorMessage);
@@ -250,8 +244,7 @@ define([
               );
             },
             error: function(error) {
-              forge.logging.info("Error while logging in");
-              forge.logging.info(error);
+              forge.logging.error("Error while logging in: " + JSON.stringify(error));
               $scope.setFormErrorMessage("An error has occurred");
             }
           });

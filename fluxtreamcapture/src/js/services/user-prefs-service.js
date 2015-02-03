@@ -34,13 +34,12 @@ define([
                 // Success
                 function(value) {
                   values[key] = value;
-                  forge.logging.info("Storage: " + key + " = " + (key.indexOf(".password") === -1 ? value : "****** (not showing password in logs)"));
                   itemCount--;
                   if (itemCount === 0) initializationDone();
                 },
                 // Error
                 function(content) {
-                  forge.logging.error("Error while fetching user prefs (" + key + "): " + content);
+                  forge.logging.error("Error while fetching user prefs (" + key + "): " + JSON.stringify(content));
                 }
               );
             } else {
@@ -52,7 +51,7 @@ define([
       },
       // Error
       function(content) {
-        forge.logging.error("Error while fetching user prefs: " + content);
+        forge.logging.error("Error while fetching user prefs: " + JSON.stringify(content));
       }
     );
     
