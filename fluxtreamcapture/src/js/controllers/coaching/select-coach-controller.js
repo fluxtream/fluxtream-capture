@@ -53,9 +53,13 @@ define([
       $scope.removeCoach = function(coach) {
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Remove',
-          titleText: 'Do you want to remove ' + coach.fullname + ' from your coaches?',
+          titleText: 'Remove ' + coach.fullname + ' from your trusted buddies?',
           cancelText: 'Cancel',
           destructiveButtonClicked: function(index) {
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. Please connect to the Internet to remove this buddy.");
+              return true;
+            }
             // Remove coach now
             coachingCom.removeCoach(coach.username,
               // Success

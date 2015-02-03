@@ -154,8 +154,6 @@ define([
         ajaxCheckAuth({
           success: handleAuthSuccessResponse,
           error: function(jqXHR, textStatus, stackTrace) {
-            forge.logging.debug("status: " + jqXHR.status);
-            forge.logging.debug("status: " + stackTrace);
             if (jqXHR.status === 401) {
               forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest (status.result is not \"OK\"): " + textStatus);
               if (forge.is.web()) {
