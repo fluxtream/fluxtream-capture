@@ -77,6 +77,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/buddies/find?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           data: {
             username: searchString
           },

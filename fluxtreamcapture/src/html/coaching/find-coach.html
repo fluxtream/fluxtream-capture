@@ -12,7 +12,7 @@
       <label class="item item-input">
         <input autocapitalize="none" type="text" placeholder="Type in username to search" ng-model="input.searchString" ng-change="onSearchStringChange()">
       </label>
-      <button class="button button-block button-positive" ng-click="searchCoach()" ng-disabled="!input.searchString">
+      <button class="button button-block button-positive" ng-click="searchCoach()" ng-disabled="!input.searchString || loading">
         Search
       </button>
     </div>

@@ -14,7 +14,8 @@ define([
     'UserPrefsService',
     '$ionicActionSheet',
     '$state',
-    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state, $timeout) {
       
       // List of available coaches
       $scope.coaches = [];
@@ -52,6 +53,13 @@ define([
       $scope.searchCoach = function() {
         var searchString = $scope.input.searchString;
         $scope.errorMessage = false;
+        if (!forge.is.connection.connected()) {
+          // Induce small delay to show to the user that the message has been refreshed
+          $timeout(function() {
+            $scope.errorMessage = "You are offline. Please connect to the Internet and try again.";
+          }, 200);
+          return;
+        }
         $scope.loading = true;
         $scope.$$phase || $scope.$apply();
         coachingCom.findCoach(searchString,
@@ -71,6 +79,9 @@ define([
           function(errorMessage) {
             $scope.loading = false;
             $scope.errorMessage = errorMessage || "No error message";
+            if (!forge.is.connection.connected()) {
+              $scope.errorMessage = "You are offline. Please connect to the Internet and try again.";
+            }
             $scope.coaches = [];
             $scope.$$phase || $scope.$apply();
           }
