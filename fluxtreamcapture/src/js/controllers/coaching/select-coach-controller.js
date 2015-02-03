@@ -24,7 +24,7 @@ define([
       $scope.loading = true;
       
       // True if the device is not connected
-      $scope.isOffline = false;
+      $scope.isOffline = !forge.is.connection.connected();
       
       /**
        * [Called from page] Loads the page of a coach where the user can select/remove them as a coach

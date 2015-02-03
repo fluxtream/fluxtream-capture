@@ -156,6 +156,7 @@ define([
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors",
+          timeout: 10000,
           data: {
             access_token: loginService.getAccessToken()
           },
@@ -184,6 +185,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -209,6 +211,7 @@ define([
         forge.request.ajax({
           type: "DELETE",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted/" + coachUsername + "/connectors/" + connectorName + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },

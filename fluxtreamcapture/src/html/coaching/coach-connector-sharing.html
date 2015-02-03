@@ -8,7 +8,8 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="flx-reload-icon" ng-if="loading"></div>
+    <div class="flx-reload-icon" ng-if="loading && !isOffline"></div>
+    <div ng-if="loading && isOffline">You are offline. Please connect to the Internet.</div>
     <div class="list">
       <div ng-repeat="connector in connectors" class="item" ng-click="toggleConnector(connector)">
         <div class="coach-connector-selected" ng-if="connector.shared && !connector.updating">
