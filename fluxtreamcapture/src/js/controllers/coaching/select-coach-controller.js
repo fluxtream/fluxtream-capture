@@ -14,13 +14,17 @@ define([
     'UserPrefsService',
     '$ionicActionSheet',
     '$state',
-    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state, $timeout) {
       
       // List of available coaches
       $scope.coaches = [];
       
       // True until the coach list has been loaded
       $scope.loading = true;
+      
+      // True if the device is not connected
+      $scope.isOffline = false;
       
       /**
        * [Called from page] Loads the page of a coach where the user can select/remove them as a coach
@@ -74,19 +78,37 @@ define([
       };
       
       // Initially load coach list
-      coachingCom.getCoachList(
-        // Success
-        function(coachList) {
-          $scope.coaches = coachList;
-          $scope.loading = false;
+      $scope.getCoachListTimeout = null;
+      $scope.getCoachList = function() {
+        if (forge.is.connection.connected()) {
+          $scope.isOffline = false;
           $scope.$$phase || $scope.$apply();
-        },
-        // Error
-        function(content) {
-          forge.logging.info("Error while fetching coach list");
-          forge.logging.info(content);
+          coachingCom.getCoachList(
+            // Success
+            function(coachList) {
+              $scope.coaches = coachList;
+              $scope.loading = false;
+              $scope.$$phase || $scope.$apply();
+            },
+            // Error
+            function(content) {
+              forge.logging.info("Error while fetching coach list");
+              forge.logging.info(content);
+              $scope.getCoachListTimeout = $timeout($scope.getCoachList, 1000);
+            }
+          );
+        } else {
+          $scope.isOffline = true;
+          $scope.$$phase || $scope.$apply();
+          $scope.getCoachListTimeout = $timeout($scope.getCoachList, 200);
         }
-      );
+      };
+      $scope.getCoachList();
+      
+      // Cancel timeout on destroy
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.getCoachListTimeout);
+      });
       
     }
   ]);

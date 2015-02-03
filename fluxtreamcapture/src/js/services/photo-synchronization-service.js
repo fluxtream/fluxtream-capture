@@ -273,6 +273,7 @@ define([
               loginService.ajax({
                 url: loginService.getTargetServer() + "api/v1/bodytrack/photo/" + loginService.getUserId() + "/" + facetId,
                 type: "DELETE",
+                timeout: 10000,
                 success: function(response) {
                   forge.logging.info("Photo successfully deleted from server");
                   forge.logging.info(response);

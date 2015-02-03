@@ -17,7 +17,8 @@ define([
     "PhotoSynchronizationService",
     "$ionicScrollDelegate",
     "$ionicActionSheet",
-    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet) {
+    "$timeout",
+    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -160,6 +161,12 @@ define([
         );
       };
       
+      // Load next timeout
+      $scope.loadNextTimeout = null;
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.loadNextTimeout);
+      });
+      
       // Load photo thumbnails one by one
       $scope.loadPhotoThumbnails = function() {
         var photos = [];
@@ -173,7 +180,7 @@ define([
               function(thumb) {
                 photo.src = thumb;
                 $scope.$$phase || $scope.$apply();
-                setTimeout(loadNext, 1);
+                $timeout(loadNext, 1);
               },
               function() {
                 forge.logging.info("Error while getting thumbnail");
@@ -232,6 +239,10 @@ define([
             // Do nothing
           },
           buttonClicked: function(index) {
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. Please connect to the Internet to delete this photo.");
+              return;
+            }
             forge.logging.info("Deleting photo " + photo.id + " from server (index = " + index + ")");
             var currentStatus = photo.upload_status;
             photo.upload_status = "deleting";
@@ -246,7 +257,8 @@ define([
               // Error
               function() {
                 // Restore status
-                alert("Photo could not be deleted from server. Please try again later.");
+                alert(forge.is.connection.connected() ? "Photo could not be deleted from server. Please try again later." :
+                        "You are offline. Please connect to the Internet to delete this photo.");
                 photo.upload_status = currentStatus;
                 $scope.$$phase || $scope.$apply();
               }
@@ -259,6 +271,10 @@ define([
             photo.upload_status = "deleting";
             $scope.$$phase || $scope.$apply();
             var removeFromServer = currentStatus == 'uploaded';
+            if (removeFromServer && !forge.is.connection.connected()) {
+              alert("You are offline. Please connect to the Internet to delete this photo.");
+              return;
+            }
             photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, true,
               // Success
               function() {
@@ -270,7 +286,8 @@ define([
               // Error
               function() {
                 // Restore status
-                alert("Photo could not be deleted from server. Please try again later.");
+                alert(forge.is.connection.connected() ? "Photo could not be deleted from server. Please try again later." :
+                        "You are offline. Please connect to the Internet to delete this photo.");
                 photo.upload_status = currentStatus;
                 $scope.$$phase || $scope.$apply();
               }

@@ -36,6 +36,7 @@ define([
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/buddies/trusted",
+          timeout: 10000,
           data: {
             "access_token": loginService.getAccessToken(),
             "ownCoachesOnly": ownCoachesOnly

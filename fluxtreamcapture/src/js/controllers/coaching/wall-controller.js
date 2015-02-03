@@ -21,7 +21,8 @@ define([
     '$stateParams',
     '$state',
     '$ionicModal',
-    function($scope, coachingCom, wallCom, userPrefs, $ionicActionSheet, $stateParams, $state, $ionicModal) {
+    '$timeout',
+    function($scope, coachingCom, wallCom, userPrefs, $ionicActionSheet, $stateParams, $state, $ionicModal, $timeout) {
       
       // True if only one post is being displayed
       $scope.singlePost = $stateParams.postId ? true : false;
@@ -126,11 +127,15 @@ define([
       };
       
       // Refresh time display periodically
+      $scope.refreshTimesTimeout = null;
       $scope.refreshTimes = function() {
         $scope.$$phase || $scope.$apply();
-        setTimeout($scope.refreshTimes, 20000);
+        $scope.refreshTimesTimeout = $timeout($scope.refreshTimes, 20000);
       };
-      setTimeout($scope.refreshTimes, 20000);
+      $scope.refreshTimesTimeout = $timeout($scope.refreshTimes, 20000);
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.refreshTimesTimeout);
+      })
       
       /**
        * Loads additional posts from the server to complete the wall
@@ -184,7 +189,7 @@ define([
           $stateParams.postId,
           // Preload
           function(post) {
-            if ($scope.postList.length == 0) {
+            if (!$scope.postList || $scope.postList.length == 0) {
               $scope.postList = [post];
               $scope.loading = false;
               $scope.$$phase || $scope.$apply();
@@ -277,7 +282,7 @@ define([
         post.editingNewComment = true;
         $scope.$$phase || $scope.$apply();
         // Focus on textarea
-        setTimeout(function() {
+        $timeout(function() {
           $("textarea:visible").focus();
         }, 0);
       };
@@ -350,7 +355,7 @@ define([
         comment.newBody = comment.body;
         $scope.$$phase || $scope.$apply();
         // Focus on textarea
-        setTimeout(function() {
+        $timeout(function() {
           $("textarea:visible").focus();
         }, 0);
       };
@@ -398,6 +403,10 @@ define([
        */
       $scope.sendNewMessage = function() {
         if ($scope.sendingMessage) return;
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Please connect to the Internet.");
+          return;
+        }
         $scope.sendingMessage = true;
         forge.logging.info("Sending new wall message to " + $scope.coachFilter);
         wallCom.sendNewPost($scope.newMessage.body, $scope.coachFilter,

@@ -37,7 +37,6 @@ define([
           }
           // Cache comments' sender image
           if (post.comments) {
-            forge.logging.info(post.comments.length + " comments for post " + post.id);
             post.comments.forEach(function(comment) {
               forge.logging.info(comment);
               if (comment.from && comment.from.photoURL) {
@@ -261,6 +260,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/posts/?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },

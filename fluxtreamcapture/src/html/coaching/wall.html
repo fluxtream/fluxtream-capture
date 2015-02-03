@@ -147,10 +147,10 @@
               </textarea>
             </div>
           </div>
-        </div>             
+        </div>
       </div>
     </ion-list>
-    <div ng-if="!isOnline && !lastPostLoaded">
+    <div ng-if="!isOnline && !lastPostLoaded && !singlePost">
       You are offline. Please connect to the Internet to load more messages.
     </div>
     <ion-infinite-scroll on-infinite="loadMorePosts()" distance="10%" ng-if="!refreshing && postList.length && !singlePost && !lastPostLoaded">
