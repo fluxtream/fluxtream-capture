@@ -12,16 +12,8 @@ define([
   appModules.controllers.controller('ListTopicsController', ['$scope', '$timeout', 'SelfReportStorageService', '$rootScope',
     function ($scope, $timeout, selfReportStorage, $rootScope) {
       document.title = "Self Report";
-
+      //showKeyboard
       $scope.$on('event:initialized', function() {
-//        forge.internal.call(
-//          'flx_toggle_keyboard.showAlert',
-//          {text: 'Test'},
-//          function () { alert('Success!') },
-//          function (e) { alert('Error: '+e.message)}
-//        )
-
-
         // Delete status icon
         $("#list-topics-footer-center-icon").attr('class', '');
         $scope.$$phase || $scope.$apply();

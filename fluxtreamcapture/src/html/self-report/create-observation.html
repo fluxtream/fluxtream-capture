@@ -2,7 +2,7 @@
 <ion-view title={{oTopic.name}}>
 
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-    <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <span ng-click="goBack()" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</span>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
@@ -59,7 +59,7 @@
 
   <!-- Footer -->
   <div class="bar bar-footer bar-dark">
-    <a ui-sref="listTopics"> <button id="footer-left" class="button button-clear pull-left">Cancel</button> </a>
+    <button id="footer-left" class="button button-clear pull-left" ng-click="goBack()">Cancel</button>
     <h1 class='title' id='create-observation-footer-center' style='line-height: 100%; padding-top: 6px;'><i id='create-observation-footer-center-icon'></i></h1>
     <button id="footer-right" class="button button-clear pull-right" ng-click="createObservation()">Save</button>
   </div>
