@@ -254,6 +254,7 @@ define([
         // Mark all posts' new comment as not being edited
         $scope.postList.forEach(function(post) {
           post.editingNewComment = false;
+          post.editing = false;
           if (post.comments) {
             post.comments.forEach(function(comment) {
               comment.editing = false;
@@ -282,6 +283,10 @@ define([
        */
       $scope.submitNewComment = function(post) {
         if (post.newComment) {
+          if (!forge.is.connection.connected()) {
+            alert("You are offline. Connect to the Internet to submit a comment.");
+            return;
+          }
           var comment = {
             body: post.newComment,
             creationTime: moment().format()
@@ -296,6 +301,11 @@ define([
             function() {},
             // Error
             function() {
+              post.comments.splice(post.comments.indexOf(comment), 1);
+              alert("An error has occurred. Your comment was not saved. Please try again.");
+              post.editingNewComment = true;
+              post.newComment = comment.body;
+              $scope.$$phase || $scope.$apply();
               forge.logging.error("An error occurred while pushing a comment");
             }
           );
@@ -311,14 +321,20 @@ define([
           titleText: 'Delete this comment?',
           cancelText: 'Cancel',
           destructiveButtonClicked: function(index) {
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. Connect to the Internet to delete a comment.");
+              return true;
+            }
             // Remove coach now
-            post.comments.splice(post.comments.indexOf(comment), 1);
-            $scope.$$phase || $scope.$apply();
             wallCom.deleteComment(post.id, comment.id,
               // Success
-              function() {},
+              function() {
+                post.comments.splice(post.comments.indexOf(comment), 1);
+                $scope.$$phase || $scope.$apply();
+              },
               // Error
               function() {
+                alert("An error has occurred. The comment was not deleted. Please try again.");
                 forge.logging.error("Error while deleting comment");
               }
             );
@@ -331,7 +347,7 @@ define([
        * [Called from page] Enables the edition of an existing comment
        */
       $scope.editComment = function(post, comment) {
-        // Disable active comment
+        // Disable active edition
         $scope.disableAllEditBoxes();
         // Mark as editing
         comment.editing = true;
@@ -347,6 +363,10 @@ define([
        * [Called from page] Uploads the changes made to an existing comment
        */
       $scope.submitCommentUpdate = function(post, comment) {
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Connect to the Internet to submit a comment.");
+          return;
+        }
         comment.editing = false;
         comment.body = comment.newBody;
         wallCom.updateComment(post.id, comment.id, comment.newBody,
@@ -360,13 +380,74 @@ define([
         return true;
       };
       
+      /**
+       * [Called from page] Enables the edition of an existing post
+       */
       $scope.editPost = function(post) {
-        alert("Editing posts is not enabled yet");
+        // Disable active edition
+        $scope.disableAllEditBoxes();
+        // Mark as editing
+        post.editing = true;
+        post.newBody = post.body;
+        $scope.$$phase || $scope.$apply();
+        // Focus on textarea
+        $timeout(function() {
+          $("textarea:visible").focus();
+        }, 0);
+      };
+      
+      /**
+       * [Called from page] Uploads the changes made to an existing post
+       */
+      $scope.submitPostUpdate = function(post) {
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Connect to the Internet to submit a change.");
+          return false;
+        }
+        post.editing = false;
+        var oldBody = post.body;
+        post.body = post.newBody;
+        wallCom.updatePost(post.id, post.newBody,
+          // Success
+          function() {},
+          // Error
+          function() {
+            post.body = oldBody;
+            post.editing = true;
+            alert("An error has occurred. The post was not saved. Please try again.");
+            $scope.$$phase || $scope.$apply();
+            forge.logging.error("Error while updating comment");
+          }
+        );
         return false;
       };
       
       $scope.deletePost = function(post) {
-        alert("Deleting posts is not enabled yet");
+        var hideActionSheet = $ionicActionSheet.show({
+          destructiveText: 'Yes, Delete',
+          titleText: post.comments && post.comments.length ? 'Delete this post and all its comments?' : 'Delete this post?',
+          cancelText: 'Cancel',
+          destructiveButtonClicked: function(index) {
+            // Remove coach now
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. You must connect to the Internet to delete posts.");
+              return true;
+            }
+            wallCom.deletePost(post.id,
+              // Success
+              function() {
+                $scope.postList.splice($scope.postList.indexOf(post), 1);
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function() {
+                alert("An error has occurred. The post was not deleted. Please try again.");
+                forge.logging.error("Error while deleting post");
+              }
+            );
+            return true;
+          }
+        });
         return false;
       };
       

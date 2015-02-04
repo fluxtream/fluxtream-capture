@@ -270,8 +270,8 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .wall-comment-action, .wall-post-action {
   position: absolute;
-  top:15px;
-  right: 15px;
+  top:0px;
+  right: 0px;
 }
 .wall-comment-action span, .wall-post-action span {
   display: inline-block;
@@ -279,6 +279,20 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   padding-left: 15px;
   color: #3291B7;
 }
+
+.wall-edit-post-link, .wall-delete-post-link, .wall-edit-comment-link, .wall-delete-comment-link {
+  padding: 15px;
+  margin: 0px;
+}
+
+.wall-edit-post-link, .wall-edit-comment-link {
+  padding-right: 0px;
+}
+
+.wall-delete-post-link, .wall-delete-comment-link {
+  padding-left: 0px;
+}
+
 .card {
   box-shadow: none;
   margin-bottom: 5px;

@@ -95,8 +95,17 @@
         </div>
         <!-- Post body -->
         <div class="wall-post-message-body item item-body">
-          <div ng-click="loadPost(post)">
+          <div ng-click="loadPost(post)" ng-if="!post.editing">
             {{ post.body }}
+          </div>
+          <div ng-if="post.editing">
+            <button ng-disabled="!post.newBody"
+                    class="wall-new-comment-submit button button-small button-positive"
+                    ng-click="submitPostUpdate(post)">
+              Save
+            </button>
+            <textarea class="wall-new-comment-input" ng-model="post.newBody">
+            </textarea>
           </div>
           <!-- List of comments -->
           <div class="list card" ng-if="post.comments.length">

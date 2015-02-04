@@ -51,6 +51,17 @@ define([
           if (post) return post;
           return null;
         },
+        deletePost: function(postId) {
+          delete this.posts["post" + postId];
+          posts.persistPosts();
+        },
+        updatePost: function(postId, newBody) {
+          var post = this.posts["post" + postId];
+          if (post) {
+            post.body = newBody;
+            posts.persistPosts();
+          }
+        },
         getPostList: function() {
           var posts = [];
           for (var index in this.posts) {
@@ -86,6 +97,7 @@ define([
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/posts/all",
+          timeout: 20000,
           data: {
             access_token: loginService.getAccessToken(),
             includeComments: true,
@@ -140,6 +152,7 @@ define([
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId,
+          timeout: 10000,
           data: {
             access_token: loginService.getAccessToken(),
             includeComments: true
@@ -165,6 +178,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           data: {
             message: messageBody
           },
@@ -183,12 +197,13 @@ define([
       }
       
       /**
-       * Adds a new comment to a post
+       * Changes the content of a post comment
        */
       function updateComment(postId, commentId, newMessageBody, success, error) {
         forge.request.ajax({
           type: "PUT",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments/" + commentId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           data: {
             message: newMessageBody
           },
@@ -213,6 +228,7 @@ define([
         forge.request.ajax({
           type: "DELETE",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments/" + commentId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -222,6 +238,55 @@ define([
           },
           error: function(content) {
             forge.logging.error("Error while deleting comment: " + JSON.stringify(content));
+            error(content);
+          }
+        });
+      }
+      
+      /**
+       * Changes the content of an existing post
+       */
+      function updatePost(postId, newMessageBody, success, error) {
+        forge.request.ajax({
+          type: "PUT",
+          url: loginService.getTargetServer() + "api/v1/posts/" + postId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
+          data: {
+            message: newMessageBody
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function(data, code) {
+            posts.updatePost(postId, newMessageBody);
+            success(data);
+          },
+          error: function(content) {
+            forge.logging.error("Error while updating post: " + JSON.stringify(content));
+            error(content);
+          }
+        });
+      }
+      
+      /**
+       * Deletes an existing post
+       */
+      function deletePost(postId, success, error) {
+        forge.request.ajax({
+          type: "DELETE",
+          url: loginService.getTargetServer() + "api/v1/posts/" + postId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function(data, code) {
+            posts.deletePost(postId);
+            success(data);
+          },
+          error: function(content) {
+            forge.logging.error("Error while deleting post: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -260,6 +325,8 @@ define([
         addComment: addComment,
         updateComment: updateComment,
         deleteComment: deleteComment,
+        updatePost: updatePost,
+        deletePost: deletePost,
         postCountPerQuery: postCountPerQuery,
         sendNewPost: sendNewPost
       };
