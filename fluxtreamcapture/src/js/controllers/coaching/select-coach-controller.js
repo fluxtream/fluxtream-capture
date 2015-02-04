@@ -69,7 +69,7 @@ define([
               },
               // Error
               function() {
-                alert("An error has occurred while removing the coach");
+                alert("An error has occurred while removing " + coach.fullname + " from your trusted buddies.");
               }
             );
             return true;

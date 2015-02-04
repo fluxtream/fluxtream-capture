@@ -386,9 +386,9 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .coach-remove {
   float: right;
-  font-size: 1.3em;
-  padding: 15px 15px 30px 30px;
-  margin: -15px -15px 0px 0px;
+  font-size: 1.8em;
+  padding: 10px 10px 15px 15px;
+  color: #ef4e3a;
 }
 
 .coach-photo {
@@ -440,18 +440,18 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .card-actions div {
   -webkit-box-flex: 0;
--webkit-flex: 0 0 50%;
--moz-box-flex: 0;
--moz-flex: 0 0 50%;
--ms-flex: 0 0 50%;
-flex: 0 0 50%;
-max-width: 50%;
-text-align: center;
-margin: 0;
-border-color: #DDD;
-border-width: 1px 0 0;
-border-style: solid;
-color: #3399CC;
+  -webkit-flex: 0 0 50%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 50%;
+  -ms-flex: 0 0 50%;
+  flex: 0 0 50%;
+  max-width: 50%;
+  text-align: center;
+  margin: 0;
+  border-color: #DDD;
+  border-width: 1px 0 0;
+  border-style: solid;
+  color: #3399CC;
 }
 
 .card-actions div i {
@@ -459,8 +459,27 @@ color: #3399CC;
   vertical-align: middle;
 }
 
-.card-actions div:first-child {
+.card-actions div:not(:last-child) {
   border-right: 1px solid #ddd;
+}
+
+.card-actions div.card-select-coach, .card-actions div.card-select-coach:first-child {
+  flex: 0 0 100%;
+  max-width: 100%;
+  width: 100%;
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
+}
+
+.error-message {
+  color: #ef4e3a;
+  padding: 0px 10px;
+  margin: 0px;
+}
+
+.list.find-coach-form {
+  margin: 0px;
 }
 
 /*******************************************

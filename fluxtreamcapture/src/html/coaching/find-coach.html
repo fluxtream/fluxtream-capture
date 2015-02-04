@@ -8,7 +8,7 @@
   </ion-nav-bar>
   
   <ion-content class="has-footer">
-    <div class="list padding">
+    <div class="list padding find-coach-form">
       <label class="item item-input">
         <input autocapitalize="none" type="text" placeholder="Type in username to search" ng-model="input.searchString" ng-change="onSearchStringChange()">
       </label>
@@ -17,10 +17,10 @@
       </button>
     </div>
     <div class="flx-reload-icon" ng-if="loading"></div>
-    <div ng-if="errorMessage" style="color: red;">
+    <div ng-if="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
-    <div class="list padding" ng-if="coaches.length">
+    <div class="list padding find-coach-results" ng-if="coaches.length">
       <div ng-repeat="coach in coaches" class="coach-card">
         <div class="coach-photo">
           <img src="{{ coach.photoURL || 'img/avatar-dummy.png' }}">
@@ -37,7 +37,7 @@
          {{ coach.profilePresentation || "No description" }}
         </div>
         <div class="card-actions">
-          <div class="action card-contact-coach padding" ng-click="addCoach(coach)">Add buddy <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
+          <div class="action card-select-coach padding" ng-click="addCoach(coach)">Add buddy <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
         </div>
       </div>      
     </div>

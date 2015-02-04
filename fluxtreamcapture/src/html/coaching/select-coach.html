@@ -21,12 +21,12 @@
         <div class="coach-selected" ng-if="coach.isOwnCoach">
           <span class="ion-checkmark-circled"></span>
         </div>
+        <div class="coach-remove" ng-click="removeCoach(coach)">
+          <span class="ion-close-round"></span>
+        </div>
         <div class="coach-name">
           {{ coach.fullname }}
         </div>
-        <button class="button button-assertive button-small padding-left padding-right float-right" ng-click="removeCoach(coach)">
-          Remove
-        </button>
         <div class="card-actions">
           <div class="action card-contact-coach padding" ng-click="loadCoachMessaging(coach)">Messages <i class="ion-compose" style="margin-top:1px;"></i></div>
           <div class="action card-contact-coach padding" ng-click="loadCoachConnectorSharing(coach)">Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
