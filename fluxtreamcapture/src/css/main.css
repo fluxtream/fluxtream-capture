@@ -612,3 +612,7 @@ button i {
   width: 22px;
   height: 22px;
 }
+
+.connector-install-manually {
+  color: #666666;
+}

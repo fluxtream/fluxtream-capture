@@ -16,7 +16,8 @@ define([
     'LoginService',
     '$ionicActionSheet',
     '$state',
-    function($scope, connectorsCom, userPrefs, loginService, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, connectorsCom, userPrefs, loginService, $ionicActionSheet, $state, $timeout) {
       
       // List of connectors
       $scope.connectors = [];
@@ -25,12 +26,19 @@ define([
       $scope.polling = false;
       
       // URL of the server from which the images will be fetched
-      $scope.imageOriginURL = env['fluxtream.home.url']
+      $scope.imageOriginURL = env['fluxtream.home.url'];
+      
+      // Cancellable timeout for refresh list
+      $scope.updateConnectorListTimeout = null;
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.updateConnectorListTimeout);
+      });
       
       /**
        * Requests the list of connectors, and continue polling while a connector is synchronizing
        */
       $scope.updateConnectorList = function() {
+        $timeout.cancel($scope.updateConnectorListTimeout);
         $scope.polling = true;
         connectorsCom.getFullConnectorList(
           // Success
@@ -47,7 +55,7 @@ define([
             });
             if (connectorSynchronizing) {
               // A connector is synchronizing, poll again in 3 seconds
-              setTimeout($scope.updateConnectorList, 3000);
+              $scope.updateConnectorListTimeout = $timeout($scope.updateConnectorList, 3000);
             } else {
               // No more connector is synchronizing, stop polling
               $scope.polling = false;
@@ -58,6 +66,8 @@ define([
             if (!$scope.connectors.length) {
               alert('Could not get connector list');
               $state.go('settings');
+            } else {
+              $scope.updateConnectorListTimeout = $timeout($scope.updateConnectorList, 3000);
             }
           }
         );
@@ -75,6 +85,7 @@ define([
       $scope.installConnector = function(connector) {
         if (connector.loading) return;
         if (connector.installed) return;
+        if (!connector.installable) return;
         if (!forge.is.connection.connected()) {
           alert("You must be online to install a connector.");
           return;

@@ -38,6 +38,7 @@ define([
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/connectors/installed?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -62,13 +63,18 @@ define([
                 });
                 // Merge installed and uninstalled connectors
                 var connectors = installedConnectors.concat(uninstalledConnectors);
-                // Remove "FluxtreamCapture" and "Zeo" from list
+                // Remove "FluxtreamCapture", "Zeo", "Mymee" and "QuantifiedMind" from list
                 for (var i = 0; i < connectors.length; i++) {
-                  if (connectors[i].connectorName == "fluxtream_capture" || connectors[i].connectorName == "zeo") {
+                  if (connectors[i].connectorName == "fluxtream_capture" || connectors[i].connectorName == "zeo"
+                          || connectors[i].connectorName == "mymee" || connectors[i].connectorName == "quantifiedmind") {
                     connectors.splice(i, 1);
                     i--;
                   }
                 }
+                // Set as installable/uninstallable (Beddit is not installable)
+                connectors.forEach(function(connector) {
+                  connector.installable = connector.connectorName != "beddit";
+                });
                 // Sort connectors by name
                 connectors.sort(function(a, b) {
                   return (a.name < b.name) ? -1 : (a.name === b.name) ? 0 : 1;
@@ -113,6 +119,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/sync/" + connectorName,
+          timeout: 10000,
           data: {
             access_token: loginService.getAccessToken()
           },

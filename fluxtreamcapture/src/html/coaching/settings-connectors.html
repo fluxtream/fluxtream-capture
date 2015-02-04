@@ -54,7 +54,12 @@
               </div>
               <!-- Not installed -->
               <div class="action padding" ng-if="!connector.loading">
-                <i class="ion-ios7-cloud-download-outline"></i> Install
+                <span ng-if="connector.installable">
+                  <i class="ion-ios7-cloud-download-outline"></i> Install
+                </span>
+                <span ng-if="!connector.installable" class="connector-install-manually">
+                  Please install manually from website
+                </span>
               </div>
             </div>
           </div>
