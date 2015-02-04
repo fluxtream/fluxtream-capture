@@ -60,6 +60,8 @@ define([
               // No more connector is synchronizing, stop polling
               $scope.polling = false;
             }
+            // Reapply to make sure UI is completely refreshed (to prevent images from not reloading)
+            $timeout(function() { $scope.$$phase || $scope.$apply(); }, 1);
           },
           // Error
           function() {
@@ -181,6 +183,7 @@ define([
           }
         );
       };
+      
     }
   ]);
   

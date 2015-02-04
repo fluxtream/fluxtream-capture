@@ -18,7 +18,7 @@
               <!-- Installed -->
               <span class="ion-checkmark-circled" ng-if="connector.installed && !connector.loading"></span>
               <!-- Installing -->
-              <span class="ion-loading-d" ng-if="connector.installed && connector.loading"></span>
+              <span class="connector-loading" ng-if="connector.installed && connector.loading"></span>
               <!-- Non installed -->
               <span ng-if="!connector.installed"></span>
             </div>
