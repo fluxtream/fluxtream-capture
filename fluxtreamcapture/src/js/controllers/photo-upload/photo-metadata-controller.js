@@ -31,7 +31,7 @@ define([
       $scope.comment = {value: ""};
       
       // Load tags and comment from memory
-      var metadata = userPrefs.get("photo.metadata." + $scope.photoId);
+      var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + $scope.photoId);
       if (metadata) {
         // Parse metadata
         metadata = JSON.parse(metadata);
