@@ -162,6 +162,66 @@ define([
         synchronizeNow();
       });
       
+      /* Loading metadata */
+      
+      /**
+       * Downloads the metadata associated with a photo
+       * 
+       * preload is called if there is cached metadata for this photo
+       * success is called with the downloaded metadata
+       * error is called if the request failed
+       * notUploaded is called if the photo is not uploaded (and therefore has no metadata online)
+       */
+      function getMetadata(photoId, preload, success, error, notUploaded) {
+        // Get cached metadata
+        var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + photoId);
+        if (metadata) {
+          preload(JSON.parse(metadata));
+        }
+        // Check if there is unsynchronized metadata for this photo
+        var unsynchronized = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.metadata.unsynchronized", "[]"));
+        var metadataIsUnsynchronized = false;
+        unsynchronized.forEach(function(unsyncPhotoId) {
+          if (unsyncPhotoId == photoId) {
+            metadataIsUnsynchronized = true;
+          }
+        });
+        if (metadataIsUnsynchronized && metadata) {
+          // There is unsynchronized metadata for this photo, don't download
+          success(JSON.parse(metadata));
+          return;
+        }
+        // Get facet for photo
+        if (forge.is.connection.connected()) {
+          forge.flx_photoupload.getFacetId(parseInt(photoId),
+            // Success
+            function(facetId) {
+              // Download metadata
+              loginService.ajax({
+                url: loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/get",
+                type: "GET",
+                timeout: 10000,
+                success: function(response) {
+                  userPrefs.set("user." + loginService.getUserId() + ".photo.metadata." + photoId, response);
+                  success(JSON.parse(response));
+                },
+                error: function(response) {
+                  forge.logging.error("Error while downloading photo metadata: " + JSON.stringify(response));
+                  error();
+                }
+              });
+            },
+            // Error
+            function(error) {
+              // Photo is not uploaded
+              notUploaded();
+            }
+          );
+        } else {
+          // No connection
+          error();
+        }
+      }
       
       /* Synchronizing metadata */
       
@@ -174,6 +234,14 @@ define([
         if (!metadata) {
           removeFromUnsynchronized(photoId, "metadata");
           return;
+        } else {
+          // Convert tag array to comma-separated string
+          metadata = JSON.parse(metadata);
+          var tags = "";
+          metadata.tags.forEach(function(tag) {
+            if (tag) tags += (tags ? "," : "") + tag;
+          });
+          metadata.tags = tags;
         }
         // Get facet for photo
         forge.flx_photoupload.getFacetId(parseInt(photoId),
@@ -182,7 +250,7 @@ define([
             loginService.ajax({
               url: loginService.getTargetServer() + "api/bodytrack/metadata/" + loginService.getUserId() + "/FluxtreamCapture.photo/" + facetId + "/set",
               type: "POST",
-              data: JSON.parse(metadata),
+              data: metadata,
               success: function(response) {
                 // Remove from unsynchronized list
                 removeFromUnsynchronized(photoId, "metadata");
@@ -229,7 +297,6 @@ define([
       
       // Initialize synchronization timeout
       timeout = setTimeout(synchronizeNow, 10000);
-      
       
       /* Photo upload */
       
@@ -290,6 +357,7 @@ define([
       /* Public API */
       
       return {
+        getMetadata: getMetadata,
         synchronizeMetadata: synchronizeMetadata,
         uploadPhoto: uploadPhoto,
         onReady: onReady,

@@ -132,7 +132,6 @@ define([
         photoListService.reloadPhotos();
         // When the photo list has been fetched, load it
         photoListService.onReady(function() {
-          forge.logging.info("Photo list received, initializing view");
           $scope.setPhotoList(photoListService.getPhotoList());
         });
       };

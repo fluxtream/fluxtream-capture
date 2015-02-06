@@ -22,6 +22,12 @@ define([
       // The photo id
       $scope.photoId = $stateParams.photoId;
       
+      // True while loading
+      $scope.loading = true;
+      
+      // True once a change has been made
+      $scope.hasChanges = false;
+      
       // The list of tags
       $scope.tags = [
         {value: ""}
@@ -30,22 +36,48 @@ define([
       // The comment
       $scope.comment = {value: ""};
       
-      // Load tags and comment from memory
-      var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + $scope.photoId);
-      if (metadata) {
-        // Parse metadata
-        metadata = JSON.parse(metadata);
+      // Cached metadata to be used if server metadata cannot be fetched
+      $scope.cachedMetadata = null;
+      
+      // Sets the metadata values
+      $scope.updateMetadata = function(metadata) {
+        $scope.loading = false;
         // Empty tag list
         $scope.tags = [];
         // Add all tags
-        metadata.tags.split(",").forEach(function(tag) {
-          if (tag) $scope.tags.push({value: tag});
-        });
+        if (metadata && metadata.tags) {
+          metadata.tags.forEach(function(tag) {
+            if (tag) $scope.tags.push({value: tag});
+          });
+        }
         // Add empty tag at the end
         $scope.tags.push({value: ""});
         // Update comment
-        $scope.comment.value = metadata.comment;
-      }
+        $scope.comment.value = metadata && metadata.comment ? metadata.comment : "";
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      // Load tags and comment (download from server ; load from memory if downloading fails or if there are unuploaded changes)
+      photoSync.getMetadata($scope.photoId,
+        // Preloading cached metadata
+        function(metadata) {
+          // Save cached metadata to use if the online metadata is not available (e.g. offline mode)
+          $scope.cachedMetadata = metadata;
+        },
+        // Success
+        function(metadata) {
+          $scope.updateMetadata(metadata);
+        },
+        // Error
+        function() {
+          // Failure, load local metadata
+          $scope.updateMetadata($scope.cachedMetadata);
+        },
+        // Photo not uploaded yet, no metadata
+        function() {
+          $scope.updateMetadata($scope.cachedMetadata);
+        }
+      );
       
       /**
        * [Called from page] Called when a tag's value has been changed
@@ -58,6 +90,19 @@ define([
           // Two last tags are empty, remove last
           $scope.tags.pop();
         }
+        $scope.tags.forEach(function(tag) {
+          tag.value = tag.value.replace(",", "_");
+        });
+        $scope.hasChanges = true;
+        $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * [Called from page] Called when the comment's value has been changed
+       */
+      $scope.commentChanged = function() {
+        $scope.hasChanges = true;
+        $scope.$$phase || $scope.$apply();
       };
       
       /**
@@ -72,9 +117,9 @@ define([
        */
       $scope.applyChanges = function() {
         // Build metadata array
-        var tags = "";
+        var tags = [];
         $scope.tags.forEach(function(tag) {
-          if (tag.value) tags += (tags ? "," : "") + tag.value;
+          if (tag.value) tags.push(tag.value);
         });
         var metadata = {
           tags: tags,

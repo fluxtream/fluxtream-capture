@@ -197,12 +197,38 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   width: 100%;
 }
 
+div.photo-metadata {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  color: white;
+  text-shadow: 1px 1px 3px black, 2px 2px 3px black, -1px -1px 3px black, -2px -2px 3px black,
+               1px -1px 3px black, 2px -2px 3px black, -1px 1px 3px black, -2px 2px 3px black;
+  font-weight: bold;
+}
+
+.photo-metadata-edit {
+  display: block;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 10px 10px 30px 30px;
+  color: white;
+  font-size: 1.6em;
+}
+
 /*******************************************
  * Photo metadata screen
  *******************************************/
 
 .photo-metadata-remove {
   padding: 10px 0px 10px 10px;
+}
+
+.list.photo-metadata-first-list {
+  margin-bottom: 10px;
 }
 
 /*******************************************

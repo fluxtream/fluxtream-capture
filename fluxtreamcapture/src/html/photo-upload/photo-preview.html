@@ -6,8 +6,14 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
+    <div class="flx-reload-icon" ng-if="!photoSrc"></div>
     <div class="photo-preview">
       <img src="{{ photoSrc }}" style="-webkit-transform: rotate({{ orientationTag }}deg);">
+    </div>
+    <div class="photo-metadata" ng-if="photoSrc">
+      <a ui-sref="photoMetadata({photoId: photoId})" class="photo-metadata-edit"><i class="icon ion-edit"></i></a>
+      <p ng-if="metadata.comment">Comment: {{ metadata.comment }}</p>
+      <p ng-if="metadata.tags.length">Tags: <span ng-repeat="tag in metadata.tags">{{ tag }} </span></p>
     </div>
   </ion-content>
 </ion-view>

@@ -29,7 +29,6 @@ define([
      * (Private) Loads all photos from the device image gallery
      */
     function loadPhotos() {
-      forge.logging.info("Load photos");
       // Call native module to get the photo list
       forge.flx_photoupload.getPhotoList(
         // Success
@@ -42,7 +41,6 @@ define([
             // Acual array
             photoList = jsonArray;
           }
-          forge.logging.info("Photos loaded: " + photoList.length);
           cachedPhotoList = photoList;
           initialized = true;
           functionsToExecute.forEach(function(functionToExecute) {
@@ -64,7 +62,6 @@ define([
      * Re-runs the photo loading process to update the photo list
      */
     function reloadPhotos() {
-      forge.logging.info("Reload photos");
       // Don't reload if loading is already in progress
       if (!initialized) {
         reloadAgain = true;
