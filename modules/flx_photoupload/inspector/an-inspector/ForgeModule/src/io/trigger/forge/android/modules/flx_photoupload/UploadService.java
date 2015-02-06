@@ -276,39 +276,42 @@ public class UploadService extends Service {
 							},
 					null, null, null);
 			// Check for each image if it must be uploaded
-			while (cursor != null && cursor.moveToNext()) {
-				// Get photo info
-				int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
-				int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
-				int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
-				long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
-				int orientationTag = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
-				// Swap width and height if orientationTag is set to 90 or 270
-				if (orientationTag == 90 || orientationTag == 270) {
-					int tmp = width;
-					width = height;
-					height = tmp;
+			try {
+				while (cursor != null && cursor.moveToNext()) {
+					// Get photo info
+					int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+					int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
+					int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
+					long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+					int orientationTag = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+					// Swap width and height if orientationTag is set to 90 or 270
+					if (orientationTag == 90 || orientationTag == 270) {
+						int tmp = width;
+						width = height;
+						height = tmp;
+					}
+					// Check if photo needs to be uploaded
+					boolean mustBeUploaded = true;
+					if (width > height) {
+						// Landscape
+						if (!this.uploadLandscape) mustBeUploaded = false;
+						if (dateTaken < this.landscapeMinimumTimestamp) mustBeUploaded = false;
+					} else {
+						// Portrait
+						if (!this.uploadPortrait) mustBeUploaded = false;
+						if (dateTaken < this.portraitMinimumTimestamp) mustBeUploaded = false;
+					}
+					if (PhotoUploader.getPhotoStatus(photoId).equals("uploaded")) mustBeUploaded = false;
+					// Enqueue photo for upload if needed
+					if (mustBeUploaded) {
+						Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
+						ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
+						PhotoUploader.uploadPhoto(photoId);
+					}
 				}
-				// Check if photo needs to be uploaded
-				boolean mustBeUploaded = true;
-				if (width > height) {
-					// Landscape
-					if (!this.uploadLandscape) mustBeUploaded = false;
-					if (dateTaken < this.landscapeMinimumTimestamp) mustBeUploaded = false;
-				} else {
-					// Portrait
-					if (!this.uploadPortrait) mustBeUploaded = false;
-					if (dateTaken < this.portraitMinimumTimestamp) mustBeUploaded = false;
-				}
-				if (PhotoUploader.getPhotoStatus(photoId).equals("uploaded")) mustBeUploaded = false;
-				// Enqueue photo for upload if needed
-				if (mustBeUploaded) {
-					Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
-					ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
-					PhotoUploader.uploadPhoto(photoId);
-				}
+			} finally {
+				cursor.close();
 			}
-			cursor.close();
 			return WAIT_ON_NO_MORE_PHOTO;
 		}
 		return WAIT_ON_DISABLED;

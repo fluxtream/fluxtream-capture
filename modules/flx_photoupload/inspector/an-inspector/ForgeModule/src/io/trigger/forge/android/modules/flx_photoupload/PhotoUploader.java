@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.Set;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -478,12 +477,15 @@ public class PhotoUploader {
 		Cursor cursor = contentResolver.query(contentUri, new String[] {
 				MediaStore.Images.Media.DATA,
 				MediaStore.Images.Media.DATE_TAKEN }, null, null, null);
-		cursor.moveToFirst();
-		// Create result
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
-		map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
-		cursor.close();
+		try {
+			cursor.moveToFirst();
+			// Create result
+			map.put("path", cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)));
+			map.put("timestamp", cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000 + "");
+		} finally {
+			cursor.close();
+		}
 		// Return result map
 		return map;
 	}
