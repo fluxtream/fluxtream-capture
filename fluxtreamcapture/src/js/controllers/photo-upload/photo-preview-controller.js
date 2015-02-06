@@ -16,7 +16,8 @@ define([
     "PhotoListService",
     'UserPrefsService',
     "PhotoSynchronizationService",
-    function($scope, $stateParams, photoListService, userPrefs, photoSync) {
+    "$timeout",
+    function($scope, $stateParams, photoListService, userPrefs, photoSync, $timeout) {
       
       // Photo id
       $scope.photoId = $stateParams.photoId;
@@ -44,12 +45,12 @@ define([
       };
       
       // Retrieve photo on initialization
-      photoListService.onReady(function() {
-        // Get list of photos
-        var photoList = photoListService.getPhotoList();
-        // Find photo
-        photoList.forEach(function(rawPhotoData) {
-          if (rawPhotoData.id == $scope.photoId) {
+      // Get list of photos
+      var photoList = photoListService.getCachedPhotoList();
+      // Find photo
+      photoList.forEach(function(rawPhotoData) {
+        if (rawPhotoData.id == $scope.photoId) {
+          $timeout(function() {
             // Set page title
             $scope.pageTitle = moment(rawPhotoData.date_taken * 1000).format("YYYY-MM-DD h:mm A");
             // Set photo image source
@@ -67,20 +68,21 @@ define([
               $scope.photoSrc = rawPhotoData.uri;
               $scope.orientationTag = rawPhotoData.orientation_tag;
             }
-          }
-        });
-        // Load metadata
-        photoSync.getMetadata($scope.photoId,
-          // Preloading cached metadata
-          $scope.updataMetadata,
-          // Success
-          $scope.updataMetadata,
-          // Error
-          function() {},
-          // Photo not uploaded yet, no metadata
-          function() {}
-        );
+          }, 300);
+        }
       });
+      // Load metadata
+      photoSync.getMetadata($scope.photoId,
+        // Preloading cached metadata
+        $scope.updataMetadata,
+        // Success
+        $scope.updataMetadata,
+        // Error
+        function() {},
+        // Photo not uploaded yet, no metadata
+        function() {}
+      );
+      
     }
   ]);
   
