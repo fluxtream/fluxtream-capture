@@ -108,25 +108,32 @@ define([
         return photoFound;
       };
       
+      $scope.setPhotoList = function(rawPhotoList) {
+        // Empty photo list
+        $scope.photos = [];
+        // Get raw photo list
+        $scope.rawPhotoList = rawPhotoList;
+        // Create photo list
+        $scope.rawPhotoList.forEach(function(rawPhotoData) {
+          $scope.addPhoto(rawPhotoData);
+        });
+        $scope.loadPhotoStatuses();
+        $scope.loadPhotoThumbnails();
+        $scope.$$phase || $scope.$apply();
+      };
+      
       /**
        * Loads all photos from the device image gallery
        */
       $scope.addAllPhotosFromGallery = function() {
+        // Preload cached photos
+        $scope.setPhotoList(photoListService.getCachedPhotoList());
         // Make sure the photo list is fresh
         photoListService.reloadPhotos();
         // When the photo list has been fetched, load it
         photoListService.onReady(function() {
-          // Empty photo list
-          $scope.photos = [];
-          // Get raw photo list
-          $scope.rawPhotoList = photoListService.getPhotoList();
-          // Create photo list
-          $scope.rawPhotoList.forEach(function(rawPhotoData) {
-            $scope.addPhoto(rawPhotoData);
-          });
-          $scope.loadPhotoStatuses();
-          $scope.loadPhotoThumbnails();
-          $scope.$$phase || $scope.$apply();
+          forge.logging.info("Photo list received, initializing view");
+          $scope.setPhotoList(photoListService.getPhotoList());
         });
       };
       

@@ -4,14 +4,16 @@
 define([
   'config/env',
   'app-modules',
-  'services/login-service'
+  'services/login-service',
+  'services/photo-list-service'
 ], function(env, appModules) {
   
   appModules.services.factory("PhotoSynchronizationService", [
     "LoginService",
     "UserPrefsService",
     "$rootScope",
-    function(loginService, userPrefs, $rootScope) {
+    "PhotoListService",
+    function(loginService, userPrefs, $rootScope, photoListService) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -257,6 +259,8 @@ define([
                 success: function(response) {
                   // Mark photo as unuploaded
                   forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+                  // Reload photo list
+                  setTimeout(photoListService.reloadPhotos, 1000);
                 },
                 error: function(response) {
                   forge.logging.error("Error while deleting photo from server: " + JSON.stringify(response));
@@ -278,6 +282,8 @@ define([
         } else {
           // Photo not uploaded, only delete it locally
           forge.flx_photoupload.markPhotoAsUnuploaded(photoId, deletePhotoLocally ? 1 : 0, success, error);
+          // Reload photo list
+          setTimeout(photoListService.reloadPhotos, 1000);
         }
       }
       

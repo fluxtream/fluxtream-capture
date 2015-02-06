@@ -16,13 +16,20 @@ define([
     // The list of photos
     var photoList;
     
+    // A cached list of photos for preloading the photo view
+    var cachedPhotoList = [];
+    
     // Functions to execute once the photo list has been initialized
     var functionsToExecute = [];
+    
+    // If true, the photo list will be reloaded again once the reload has finished (useful if photos are deleted in the meantime)
+    var reloadAgain = false;
     
     /**
      * (Private) Loads all photos from the device image gallery
      */
     function loadPhotos() {
+      forge.logging.info("Load photos");
       // Call native module to get the photo list
       forge.flx_photoupload.getPhotoList(
         // Success
@@ -35,11 +42,16 @@ define([
             // Acual array
             photoList = jsonArray;
           }
+          forge.logging.info("Photos loaded: " + photoList.length);
+          cachedPhotoList = photoList;
           initialized = true;
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
           functionsToExecute = [];
+          if (reloadAgain) {
+            reloadPhotos();
+          }
         },
         // Error
         function(error) {
@@ -52,11 +64,14 @@ define([
      * Re-runs the photo loading process to update the photo list
      */
     function reloadPhotos() {
+      forge.logging.info("Reload photos");
       // Don't reload if loading is already in progress
-      if (!initialized) return;
+      if (!initialized) {
+        reloadAgain = true;
+        return;
+      }
       // Reset initialization status
       initialized = false;
-      functionsToExecute = [];
       photoList = null;
       // Reload photos
       loadPhotos();
@@ -100,6 +115,7 @@ define([
     return {
       isInitialized: function() { return initialized; },
       getPhotoList: function() { return photoList; },
+      getCachedPhotoList: function() { return cachedPhotoList; },
       reloadPhotos: reloadPhotos,
       onReady: onReady
     };
