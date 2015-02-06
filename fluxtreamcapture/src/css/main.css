@@ -311,6 +311,15 @@ div.photo-metadata {
   margin: 0px;
 }
 
+.wall-deleting-post, .wall-deleting-comment {
+  background: url("../img/loading.gif") no-repeat center;
+  background-size: 20px 20px;
+  width: 41px;
+  height: 20px;
+  position: relative;
+  top: 3px;
+}
+
 .wall-edit-post-link, .wall-edit-comment-link {
   padding-right: 0px;
 }
