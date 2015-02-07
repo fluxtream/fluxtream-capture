@@ -12,10 +12,11 @@
   <ion-content>
     <ion-list show-reorder="data.showReorder = true">
       <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="editTopic({topicId: oTopic.id})">
-        {{oTopic.name}}
+        <span class="edit-topics-caption">{{oTopic.name}}</span>
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
         </ion-reorder-button>
+
       </ion-item>
     </ion-list>
   </ion-content>

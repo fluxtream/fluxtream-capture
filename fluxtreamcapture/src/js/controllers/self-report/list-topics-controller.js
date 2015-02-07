@@ -42,6 +42,11 @@ define([
             $("#list-topics-footer-center-icon").attr('class', '');
             $scope.$$phase || $scope.$apply();
 
+            //If list is empty show add button
+            if(aoTopics.length === 0){
+              $("#footer-right").text('Add Topic');
+            }
+
             // Check if you are online
             selfReportStorage.pingCouch();
 

@@ -684,3 +684,7 @@ button i {
 .connector-install-manually {
   color: #666666;
 }
+
+.edit-topics-caption {
+  padding-left: 4em;
+}
