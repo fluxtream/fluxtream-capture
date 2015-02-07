@@ -54,9 +54,9 @@ define([
               document.getElementById("valueItem").appendChild(elInput);
               document.getElementById("valueItem").className = "item item-input";
               //TODO make numeric keyboard
-//              document.getElementById('observation.value').focus();
-//              //Show Keyboard
-//              forge.internal.call('flx_toggle_keyboard.showKeyboard');
+              document.getElementById('observation.value').focus();
+              //Show Keyboard
+              forge.internal.call('flx_toggle_keyboard.showKeyboard');
             }
             else if (sTypeOfTopic == "Range") {
               document.getElementById('valueItem').style.display = "";
