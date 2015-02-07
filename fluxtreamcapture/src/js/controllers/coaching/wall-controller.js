@@ -21,7 +21,8 @@ define([
     '$stateParams',
     '$state',
     '$ionicModal',
-    function($scope, coachingCom, wallCom, userPrefs, $ionicActionSheet, $stateParams, $state, $ionicModal) {
+    '$timeout',
+    function($scope, coachingCom, wallCom, userPrefs, $ionicActionSheet, $stateParams, $state, $ionicModal, $timeout) {
       
       // True if only one post is being displayed
       $scope.singlePost = $stateParams.postId ? true : false;
@@ -80,8 +81,7 @@ define([
         },
         // Error
         function(content) {
-          forge.logging.info("Error while fetching coach list");
-          forge.logging.info(content);
+          forge.logging.error("Error while fetching coach list: " + JSON.stringify(content));
         }
       );
       
@@ -121,16 +121,19 @@ define([
        * [Called from page] Loads the screen that presents a post with its comments
        */
       $scope.loadPost = function(post) {
-        forge.logging.info("Load post " + post.id);
         $state.go("wallPost", {postId: post.id});
       };
       
       // Refresh time display periodically
+      $scope.refreshTimesTimeout = null;
       $scope.refreshTimes = function() {
         $scope.$$phase || $scope.$apply();
-        setTimeout($scope.refreshTimes, 20000);
+        $scope.refreshTimesTimeout = $timeout($scope.refreshTimes, 20000);
       };
-      setTimeout($scope.refreshTimes, 20000);
+      $scope.refreshTimesTimeout = $timeout($scope.refreshTimes, 20000);
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.refreshTimesTimeout);
+      })
       
       /**
        * Loads additional posts from the server to complete the wall
@@ -150,14 +153,12 @@ define([
         wallCom.getWallPosts($scope.lastPostId,
           // Success
           function(posts, lastPostId) {
-            forge.logging.info("More posts received");
             // Add posts
             $scope.postList = posts;
             $scope.sortPosts();
             $scope.lastPostId = lastPostId;
             // Check if end of wall has been reached
             if (posts.length < wallCom.postCountPerQuery) {
-              forge.logging.info("Reaching the bottom of the wall because " + posts.length + " < " + wallCom.postCountPerQuery);
               $scope.lastPostLoaded = true;
             }
             // Refresh UI
@@ -170,8 +171,7 @@ define([
           },
           // Error
           function(content) {
-            forge.logging.info("Error while fetching wall posts");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching wall posts: " + JSON.stringify(content));
             $scope.$broadcast('scroll.infiniteScrollComplete');
             $scope.$broadcast('scroll.refreshComplete');
           }
@@ -184,7 +184,7 @@ define([
           $stateParams.postId,
           // Preload
           function(post) {
-            if ($scope.postList.length == 0) {
+            if (!$scope.postList || $scope.postList.length == 0) {
               $scope.postList = [post];
               $scope.loading = false;
               $scope.$$phase || $scope.$apply();
@@ -192,8 +192,6 @@ define([
           },
           // Success
           function(post) {
-            forge.logging.info("Post retrieved");
-            forge.logging.info(post.body);
             $scope.postList = [post];
             $scope.loading = false;
             $scope.$$phase || $scope.$apply();
@@ -201,8 +199,7 @@ define([
           },
           // Error
           function(content) {
-            forge.logging.info("Error while fetching post");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching post: " + JSON.stringify(content));
             $scope.$broadcast('scroll.refreshComplete');
           }
         );
@@ -215,7 +212,6 @@ define([
         if ($scope.singlePost) {
           $scope.loadSinglePost();
         } else {
-          forge.logging.info("Refresh wall");
           // Populate wall with cached data
           $scope.postList = wallCom.getCachedWallPosts();
           $scope.sortPosts();
@@ -258,6 +254,7 @@ define([
         // Mark all posts' new comment as not being edited
         $scope.postList.forEach(function(post) {
           post.editingNewComment = false;
+          post.editing = false;
           if (post.comments) {
             post.comments.forEach(function(comment) {
               comment.editing = false;
@@ -270,14 +267,14 @@ define([
        * [Called from page] Enables the edition of a new comment for the given post
        */
       $scope.editNewComment = function(post) {
-        forge.logging.info("Edit new comment");
         // Disable other edition
         $scope.disableAllEditBoxes();
         // Mark post as being edited
         post.editingNewComment = true;
+        post.newComment = "";
         $scope.$$phase || $scope.$apply();
         // Focus on textarea
-        setTimeout(function() {
+        $timeout(function() {
           $("textarea:visible").focus();
         }, 0);
       };
@@ -286,25 +283,45 @@ define([
        * [Called from page] Uploads the new comment
        */
       $scope.submitNewComment = function(post) {
-        forge.logging.info("Submit new comment");
         if (post.newComment) {
+          if (!forge.is.connection.connected()) {
+            alert("You are offline. Connect to the Internet to submit a comment.");
+            return;
+          }
           var comment = {
             body: post.newComment,
             creationTime: moment().format()
           };
-          if (!post.comments) post.comments = [];
-          post.comments.push(comment);
-          post.editingNewComment = false;
-          post.newComment = "";
+          post.sendingNewComment = true;
           $scope.$$phase || $scope.$apply();
           wallCom.addComment(post.id, comment.body,
             // Success
             function() {
-              forge.logging.info("Comment pushed successfully");
+              // Fetch updated wall post to get the new comment's id
+              wallCom.getWallPost(post.id,
+                // Preloaded
+                function() {},
+                // Success
+                function(postUpdated) {
+                  post.editingNewComment = false;
+                  post.sendingNewComment = false;
+                  post.comments = postUpdated.comments;
+                  $scope.$$phase || $scope.$apply();
+                },
+                // Error
+                function() {
+                  // Comment uploaded, but request to fetch post failed, refresh wall
+                  post.editingNewComment = false;
+                  post.sendingNewComment = false;
+                  $scope.refreshWall();
+                }
+              );
             },
             // Error
             function() {
-              forge.logging.info("An error occurred while pushing a comment");
+              alert("An error has occurred. Your comment was not saved. Please try again.");
+              post.sendingNewComment = false;
+              $scope.$$phase || $scope.$apply();
             }
           );
         }
@@ -314,23 +331,29 @@ define([
        * [Called from pages] Presents the user with a confirmation box and then deletes an existing comment
        */
       $scope.deleteComment = function(post, comment) {
-        forge.logging.info("Deleting comment?");
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Delete',
           titleText: 'Delete this comment?',
           cancelText: 'Cancel',
           destructiveButtonClicked: function(index) {
-            // Remove coach now
-            post.comments.splice(post.comments.indexOf(comment), 1);
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. Connect to the Internet to delete a comment.");
+              return true;
+            }
+            comment.deleting = true;
             $scope.$$phase || $scope.$apply();
+            // Remove comment now
             wallCom.deleteComment(post.id, comment.id,
               // Success
               function() {
-                forge.logging.info("Comment deleted successfully");
+                post.comments.splice(post.comments.indexOf(comment), 1);
+                $scope.$$phase || $scope.$apply();
               },
               // Error
               function() {
-                forge.logging.info("Error while deleting comment");
+                alert("An error has occurred. The comment was not deleted. Please try again.");
+                comment.deleting = false;
+                $scope.$$phase || $scope.$apply();
               }
             );
             return true;
@@ -342,15 +365,14 @@ define([
        * [Called from page] Enables the edition of an existing comment
        */
       $scope.editComment = function(post, comment) {
-        forge.logging.info("Edit comment");
-        // Disable active comment
+        // Disable active edition
         $scope.disableAllEditBoxes();
         // Mark as editing
         comment.editing = true;
         comment.newBody = comment.body;
         $scope.$$phase || $scope.$apply();
         // Focus on textarea
-        setTimeout(function() {
+        $timeout(function() {
           $("textarea:visible").focus();
         }, 0);
       };
@@ -359,29 +381,102 @@ define([
        * [Called from page] Uploads the changes made to an existing comment
        */
       $scope.submitCommentUpdate = function(post, comment) {
-        forge.logging.info("Submit comment update");
-        comment.editing = false;
-        comment.body = comment.newBody;
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Connect to the Internet to submit a comment.");
+          return;
+        }
+        comment.sendingUpdate = true;
+        $scope.$$phase || $scope.$apply();
         wallCom.updateComment(post.id, comment.id, comment.newBody,
           // Success
           function() {
-            forge.logging.info("Comment updated successfully");
+            comment.body = comment.newBody;
+            comment.sendingUpdate = false;
+            comment.editing = false;
+            $scope.$$phase || $scope.$apply();
           },
           // Error
           function() {
-            forge.logging.info("Error while updating comment");
+            alert("An error has occurred. Your comment was not saved. Please try again.");
+            comment.sendingUpdate = false;
+            $scope.$$phase || $scope.$apply();
           }
         );
         return true;
       };
       
+      /**
+       * [Called from page] Enables the edition of an existing post
+       */
       $scope.editPost = function(post) {
-        alert("Editing posts is not enabled yet");
+        // Disable active edition
+        $scope.disableAllEditBoxes();
+        // Mark as editing
+        post.editing = true;
+        post.newBody = post.body;
+        $scope.$$phase || $scope.$apply();
+        // Focus on textarea
+        $timeout(function() {
+          $("textarea:visible").focus();
+        }, 0);
+      };
+      
+      /**
+       * [Called from page] Uploads the changes made to an existing post
+       */
+      $scope.submitPostUpdate = function(post) {
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Connect to the Internet to submit a change.");
+          return false;
+        }
+        post.sendingUpdate = true;
+        $scope.$$phase || $scope.$apply();
+        wallCom.updatePost(post.id, post.newBody,
+          // Success
+          function() {
+            post.editing = false;
+            post.body = post.newBody;
+            post.sendingUpdate = false;
+            $scope.$$phase || $scope.$apply();
+          },
+          // Error
+          function() {
+            alert("An error has occurred. Your change was not saved. Please try again.");
+            post.sendingUpdate = false;
+            $scope.$$phase || $scope.$apply();
+          }
+        );
         return false;
       };
       
       $scope.deletePost = function(post) {
-        alert("Deleting posts is not enabled yet");
+        var hideActionSheet = $ionicActionSheet.show({
+          destructiveText: 'Yes, Delete',
+          titleText: post.comments && post.comments.length ? 'Delete this post and all its comments?' : 'Delete this post?',
+          cancelText: 'Cancel',
+          destructiveButtonClicked: function(index) {
+            // Remove coach now
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. You must connect to the Internet to delete posts.");
+              return true;
+            }
+            post.deleting = true;
+            wallCom.deletePost(post.id,
+              // Success
+              function() {
+                $scope.postList.splice($scope.postList.indexOf(post), 1);
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function() {
+                alert("An error has occurred. The post was not deleted. Please try again.");
+                post.deleting = false;
+                $scope.$$phase || $scope.$apply();
+              }
+            );
+            return true;
+          }
+        });
         return false;
       };
       
@@ -398,8 +493,11 @@ define([
        */
       $scope.sendNewMessage = function() {
         if ($scope.sendingMessage) return;
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Please connect to the Internet.");
+          return;
+        }
         $scope.sendingMessage = true;
-        forge.logging.info("Sending new wall message to " + $scope.coachFilter);
         wallCom.sendNewPost($scope.newMessage.body, $scope.coachFilter,
           // Success
           function() {
@@ -433,7 +531,6 @@ define([
 //            scope: $scope,
 //            animation: 'slide-in-up'
 //          }).then(function(modal) {
-//            forge.logging.info("MODAL LOADED");
 //            $scope.modal = modal;
 //            $scope.modal.show();
 //          });

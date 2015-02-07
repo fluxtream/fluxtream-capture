@@ -14,7 +14,8 @@ define([
     'CoachingCommunicationService',
     'UserPrefsService',
     '$state',
-    function($scope, $stateParams, coachingCom, userPrefs, $state) {
+    '$timeout',
+    function($scope, $stateParams, coachingCom, userPrefs, $state, $timeout) {
       
       // List of connectors
       $scope.connectors = [];
@@ -28,28 +29,47 @@ define([
       // True while the list is being loaded
       $scope.loading = true;
       
+      $scope.isOffline = !forge.is.connection.connected();
+      
       // Back link
       $scope.backLink = $stateParams.from === 'from-coach-list' ? "selectCoach" : "coachDetails";
       $scope.backLinkParams = $stateParams.from === 'from-coach-list' ? {} : {coachUsername: $stateParams.coachUsername};
       
       // Fetch connector list
-      coachingCom.getConnectors($stateParams.coachUsername,
-        // Success
-        function(connectors) {
-          connectors.forEach(function(connector) {
-            if (connector.connectorName == "fluxtream_capture") {
-              connector.prettyName = "Data gathered by this app";
-            }
-          });
-          $scope.connectors = connectors;
-          $scope.loading = false;
+      $scope.getConnectorsTimeout = null;
+      $scope.getConnectors = function() {
+        if (forge.is.connection.connected()) {
+          $scope.isOffline = false;
           $scope.$$phase || $scope.$apply();
-        },
-        // Error
-        function() {
-          
+          coachingCom.getConnectors($stateParams.coachUsername,
+            // Success
+            function(connectors) {
+              connectors.forEach(function(connector) {
+                if (connector.connectorName == "fluxtream_capture") {
+                  connector.prettyName = "Data gathered by this app";
+                }
+              });
+              $scope.connectors = connectors;
+              $scope.loading = false;
+              $scope.$$phase || $scope.$apply();
+            },
+            // Error
+            function() {
+              $scope.getConnectorsTimeout = $timeout($scope.getConnectors, 1000);
+            }
+          );
+        } else {
+          $scope.isOffline = true;
+          $scope.$$phase || $scope.$apply();
+          $scope.getConnectorsTimeout = $timeout($scope.getConnectors, 200);
         }
-      );
+      }
+      $scope.getConnectors();
+      
+      // Cancel timeout on destroy
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.getConnectorsTimeout);
+      });
       
       // Fetch coach data if missing
       if (!$scope.coach) {
@@ -77,12 +97,13 @@ define([
        * [Called from page] Toggles the sharing state of a connector
        */
       $scope.toggleConnector = function(connector) {
-        forge.logging.info("Toggling connector: " + connector.connectorName);
+        if (!forge.is.connection.connected()) {
+          alert("You are offline. Please connect to the Internet to " + (connector.shared ? "unshare" : "share") + " data.");
+          return;
+        }
         connector.updating = true;
         $scope.$$phase || $scope.$apply();
         if (!connector.shared) {
-          forge.logging.info("Connector is currently unshared, share it");
-          forge.logging.info(typeof coachingCom);
           coachingCom.shareConnectorWithCoach($stateParams.coachUsername, connector.connectorName,
             // Success
             function() {
@@ -92,11 +113,12 @@ define([
             },
             // Error
             function() {
-              alert("Network error. Please try again.")
+              alert(forge.is.connection.connected() ? "Network error. Please try again." : "You are offline. Please connect to the Internet to share data.");
+              connector.updating = false;
+              $scope.$$phase || $scope.$apply();
             }
           );
         } else {
-          forge.logging.info("Connector is currently shared, unshare it");
           coachingCom.unshareConnectorWithcoach($stateParams.coachUsername, connector.connectorName,
             // Success
             function() {
@@ -106,7 +128,9 @@ define([
             },
             // Error
             function() {
-              alert("Network error. Please try again.")
+              alert(forge.is.connection.connected() ? "Network error. Please try again." : "You are offline. Please connect to the Internet to unshare data.");
+              connector.updating = false;
+              $scope.$$phase || $scope.$apply();
             }
           );
         }

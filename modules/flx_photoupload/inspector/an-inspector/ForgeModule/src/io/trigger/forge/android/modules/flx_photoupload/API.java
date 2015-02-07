@@ -58,59 +58,67 @@ public class API {
 				// JSON result container
 				JsonArray photoList = new JsonArray();
 				// Construct result be adding each photo
-				while (cursor != null && cursor.moveToNext()) {
-					// Get photo info
-					int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
-					int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
-					int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
-					long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
-					int orientationTag = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION));
-					// Swap width and height if orientationTag is set to 90 or 270
-					if (orientationTag == 90 || orientationTag == 270) {
-						int tmp = width;
-						width = height;
-						height = tmp;
-					}
-					// Construct json object
-					JsonObject photoObject = new JsonObject();
-					photoObject.addProperty("id", photoId);
-					photoObject.addProperty("uri", "content://media/external/images/media/" + photoId);
-					photoObject.addProperty("orientation", width > height ? "landscape" : "portrait");
-					photoObject.addProperty("orientation_tag", orientationTag);
-					photoObject.addProperty("date_taken", dateTaken);
-					// Get thumbnail if any
-					Cursor thumbCursor = ForgeApp.getActivity().getContentResolver().query(
-							MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
-							new String[] { ImageColumns._ID },
-							MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
-							new String[] { photoId + "" },
-							null);
-					if (thumbCursor != null) {
-						if (!thumbCursor.moveToFirst()) {
-							// Thumbnail does not exist
-							// Force generation of thumbnail
-							Log.i("flx_photos", "Generate thumbnail for photo " + photoId);
-							MediaStore.Images.Thumbnails.getThumbnail(
-									ForgeApp.getActivity().getContentResolver(),
-									photoId,
-									MediaStore.Images.Thumbnails.MINI_KIND,
-									null);
-							// Get thumbnail again
-							thumbCursor = ForgeApp.getActivity().getContentResolver().query(
-									MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
-									new String[] { ImageColumns._ID },
-									MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
-									new String[] { photoId + "" },
-									null);
+				try {
+					while (cursor != null && cursor.moveToNext()) {
+						// Get photo info
+						int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+						int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
+						int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
+						long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+						int orientationTag = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.ORIENTATION));
+						// Swap width and height if orientationTag is set to 90 or 270
+						if (orientationTag == 90 || orientationTag == 270) {
+							int tmp = width;
+							width = height;
+							height = tmp;
 						}
-						if (thumbCursor.moveToFirst()) {
-							int thumbnailId = thumbCursor.getInt(0);
-							photoObject.addProperty("thumb_id", thumbnailId);
-							photoObject.addProperty("thumb_uri", "content://media/external/images/thumbnails/" + thumbnailId);
+						// Construct json object
+						JsonObject photoObject = new JsonObject();
+						photoObject.addProperty("id", photoId);
+						photoObject.addProperty("uri", "content://media/external/images/media/" + photoId);
+						photoObject.addProperty("orientation", width > height ? "landscape" : "portrait");
+						photoObject.addProperty("orientation_tag", orientationTag);
+						photoObject.addProperty("date_taken", dateTaken);
+						// Get thumbnail if any
+						Cursor thumbCursor = ForgeApp.getActivity().getContentResolver().query(
+								MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+								new String[] { ImageColumns._ID },
+								MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
+								new String[] { photoId + "" },
+								null);
+						if (thumbCursor != null) {
+							try {
+								if (!thumbCursor.moveToFirst()) {
+									// Thumbnail does not exist
+									// Force generation of thumbnail
+									Log.i("flx_photos", "Generate thumbnail for photo " + photoId);
+									MediaStore.Images.Thumbnails.getThumbnail(
+											ForgeApp.getActivity().getContentResolver(),
+											photoId,
+											MediaStore.Images.Thumbnails.MINI_KIND,
+											null);
+									// Get thumbnail again
+									thumbCursor = ForgeApp.getActivity().getContentResolver().query(
+											MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+											new String[] { ImageColumns._ID },
+											MediaStore.Images.Thumbnails.IMAGE_ID + " = ?",
+											new String[] { photoId + "" },
+											null);
+								}
+								if (thumbCursor.moveToFirst()) {
+									int thumbnailId = thumbCursor.getInt(0);
+									photoObject.addProperty("thumb_id", thumbnailId);
+									photoObject.addProperty("thumb_uri", "content://media/external/images/thumbnails/" + thumbnailId);
+								}
+							} finally {
+								thumbCursor.close();
+							}
 						}
+						// Add photo to list
+						photoList.add(photoObject);
 					}
-					// Add photo to list
-					photoList.add(photoObject);
+				} finally {
+					cursor.close();
 				}
 				// Return photo list
 				task.success(photoList.toString());

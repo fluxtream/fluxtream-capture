@@ -21,27 +21,22 @@ define([
       
       function enableService() {
         // Initiate native background service
-        forge.logging.info("Starting heart rate native service");
         forge.flx_polar_h7.startService(
           // Upload URL
           loginService.getTargetServer() + "api/v1/bodytrack/upload",
           // Access token
           loginService.getAccessToken(),
           // Success
-          function() {
-            forge.logging.info("Heart rate service started");
-          },
+          function() {},
           // Error
           function(content) {
-            forge.logging.info("Error while starting heart rate service");
-            forge.logging.info(content);
+            forge.logging.error("Error while starting heart rate service: " + JSON.stringify(content));
           }
         );
       }
       
       function disableService() {
         // Stop native background service
-        forge.logging.info("Stopping heart rate native service");
         forge.flx_polar_h7.stopService();
       }
       
@@ -66,8 +61,6 @@ define([
       // Start service when a user connects and has enabled the heart rate service
       $rootScope.$on("user-logged-in", function() {
         uploadStatus = 'none';
-        forge.logging.info("User " + loginService.getUserId() + " is logged in");
-        forge.logging.info("Heartrate enabled : " + userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled"));
         if (userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled")) {
           enableService();
         }

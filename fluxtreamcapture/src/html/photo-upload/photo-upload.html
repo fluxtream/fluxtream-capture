@@ -6,6 +6,7 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content flx-scroll="onScroll()">
+    <div class="flx-reload-icon" ng-if="!loaded"></div>
     <div ng-if="loaded">
       <!-- Photo list -->
       <div class="list padding">
@@ -41,11 +42,6 @@
         </div>
       </div>
       <!-- End of photo list -->
-    </div>
-    <div ng-if="!loaded">
-      <p>
-        Loading your photos...
-      </p>
     </div>
   </ion-content>
 </ion-view>

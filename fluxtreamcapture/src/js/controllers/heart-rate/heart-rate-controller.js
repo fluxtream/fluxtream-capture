@@ -16,7 +16,8 @@ define([
     'LoginService',
     'UserPrefsService',
     'HeartRateService',
-    function($scope, $rootScope, loginService, userPrefs, heartRateService) {
+    '$timeout',
+    function($scope, $rootScope, loginService, userPrefs, heartRateService, $timeout) {
       
       // No heart rate on web
       if (forge.is.web()) return;
@@ -40,6 +41,11 @@ define([
       $scope.lastReceptionTimestamp = 0;
       $scope.noDataReceivedTimeout = null;
       
+      // Cancel timeout when the page is left
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.noDataReceivedTimeout);
+      });
+      
       // Upload status
       $scope.uploadStatus = heartRateService.getUploadStatus();
       $scope.lastSyncTime = heartRateService.getLastSyncTime();
@@ -53,10 +59,8 @@ define([
           $scope.addHistoryLog("Receiving data");
         }
         $scope.lastReceptionTimestamp = new Date().getTime();
-        if ($scope.noDataReceivedTimeout) {
-          clearTimeout($scope.noDataReceivedTimeout);
-        }
-        $scope.noDataReceivedTimeout = setTimeout(function() {
+        $timeout.cancel($scope.noDataReceivedTimeout);
+        $scope.noDataReceivedTimeout = $imeout(function() {
           $scope.addHistoryLog("Not receiving data anymore");
         }, 5000);
         $scope.deviceConnected = true;
@@ -85,9 +89,7 @@ define([
         heartRateService.setHeartRateServiceEnabled(false);
         $scope.serviceEnabled = false;
         $scope.deviceConnected = false;
-        if ($scope.noDataReceivedTimeout) {
-          clearTimeout($scope.noDataReceivedTimeout);
-        }
+        $timeout.cancel($scope.noDataReceivedTimeout);
         $scope.$$phase || $scope.$apply();
       };
       

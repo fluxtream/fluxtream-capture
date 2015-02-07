@@ -14,7 +14,8 @@ define([
     'UserPrefsService',
     '$ionicActionSheet',
     '$state',
-    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state, $timeout) {
       
       // List of available coaches
       $scope.coaches = [];
@@ -22,11 +23,13 @@ define([
       // True until the coach list has been loaded
       $scope.loading = true;
       
+      // True if the device is not connected
+      $scope.isOffline = !forge.is.connection.connected();
+      
       /**
        * [Called from page] Loads the page of a coach where the user can select/remove them as a coach
        */
       $scope.loadCoachDetails = function(coach) {
-        forge.logging.info("Load coach details");
         $state.go("coachDetails", {coachUsername: coach.username});
       };
       
@@ -34,7 +37,6 @@ define([
        * Loads the wall view filtered with the given coach
        */
       $scope.loadCoachMessaging = function(coach) {
-        forge.logging.info("Load coach messaging page");
         $state.go("coachMessaging", {coachUsername: coach.username});
       };
       
@@ -42,7 +44,6 @@ define([
        * Loads the connector sharing page for a given coach
        */
       $scope.loadCoachConnectorSharing = function(coach) {
-        forge.logging.info("Load coach connector sharing");
         $state.go("coachConnectorSharing", {from: "from-coach-list", coachUsername: coach.username});
       };
       
@@ -50,12 +51,15 @@ define([
        * [Called from page] Remove a coach from the selected coaches
        */
       $scope.removeCoach = function(coach) {
-        forge.logging.info("Show remove coach action sheet");
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Remove',
-          titleText: 'Do you want to remove ' + coach.fullname + ' from your coaches?',
+          titleText: 'Remove ' + coach.fullname + ' from your trusted buddies?',
           cancelText: 'Cancel',
           destructiveButtonClicked: function(index) {
+            if (!forge.is.connection.connected()) {
+              alert("You are offline. Please connect to the Internet to remove this buddy.");
+              return true;
+            }
             // Remove coach now
             coachingCom.removeCoach(coach.username,
               // Success
@@ -65,7 +69,7 @@ define([
               },
               // Error
               function() {
-                alert("An error has occurred while removing the coach");
+                alert("An error has occurred while removing " + coach.fullname + " from your trusted buddies.");
               }
             );
             return true;
@@ -74,19 +78,36 @@ define([
       };
       
       // Initially load coach list
-      coachingCom.getCoachList(
-        // Success
-        function(coachList) {
-          $scope.coaches = coachList;
-          $scope.loading = false;
+      $scope.getCoachListTimeout = null;
+      $scope.getCoachList = function() {
+        if (forge.is.connection.connected()) {
+          $scope.isOffline = false;
           $scope.$$phase || $scope.$apply();
-        },
-        // Error
-        function(content) {
-          forge.logging.info("Error while fetching coach list");
-          forge.logging.info(content);
+          coachingCom.getCoachList(
+            // Success
+            function(coachList) {
+              $scope.coaches = coachList;
+              $scope.loading = false;
+              $scope.$$phase || $scope.$apply();
+            },
+            // Error
+            function(content) {
+              forge.logging.error("Error while fetching coach list:" + JSON.stringify(content));
+              $scope.getCoachListTimeout = $timeout($scope.getCoachList, 1000);
+            }
+          );
+        } else {
+          $scope.isOffline = true;
+          $scope.$$phase || $scope.$apply();
+          $scope.getCoachListTimeout = $timeout($scope.getCoachList, 200);
         }
-      );
+      };
+      $scope.getCoachList();
+      
+      // Cancel timeout on destroy
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.getCoachListTimeout);
+      });
       
     }
   ]);

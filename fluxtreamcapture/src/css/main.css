@@ -197,12 +197,38 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   width: 100%;
 }
 
+div.photo-metadata {
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  color: white;
+  text-shadow: 1px 1px 3px black, 2px 2px 3px black, -1px -1px 3px black, -2px -2px 3px black,
+               1px -1px 3px black, 2px -2px 3px black, -1px 1px 3px black, -2px 2px 3px black;
+  font-weight: bold;
+}
+
+.photo-metadata-edit {
+  display: block;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  padding: 10px 10px 30px 30px;
+  color: white;
+  font-size: 1.6em;
+}
+
 /*******************************************
  * Photo metadata screen
  *******************************************/
 
 .photo-metadata-remove {
   padding: 10px 0px 10px 10px;
+}
+
+.list.photo-metadata-first-list {
+  margin-bottom: 10px;
 }
 
 /*******************************************
@@ -270,8 +296,8 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .wall-comment-action, .wall-post-action {
   position: absolute;
-  top:15px;
-  right: 15px;
+  top:0px;
+  right: 0px;
 }
 .wall-comment-action span, .wall-post-action span {
   display: inline-block;
@@ -279,6 +305,29 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   padding-left: 15px;
   color: #3291B7;
 }
+
+.wall-edit-post-link, .wall-delete-post-link, .wall-edit-comment-link, .wall-delete-comment-link {
+  padding: 15px;
+  margin: 0px;
+}
+
+.wall-deleting-post, .wall-deleting-comment {
+  background: url("../img/loading.gif") no-repeat center;
+  background-size: 20px 20px;
+  width: 41px;
+  height: 20px;
+  position: relative;
+  top: 3px;
+}
+
+.wall-edit-post-link, .wall-edit-comment-link {
+  padding-right: 0px;
+}
+
+.wall-delete-post-link, .wall-delete-comment-link {
+  padding-left: 0px;
+}
+
 .card {
   box-shadow: none;
   margin-bottom: 5px;
@@ -386,9 +435,9 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .coach-remove {
   float: right;
-  font-size: 1.3em;
-  padding: 15px 15px 30px 30px;
-  margin: -15px -15px 0px 0px;
+  font-size: 1.8em;
+  padding: 10px 10px 15px 15px;
+  color: #ef4e3a;
 }
 
 .coach-photo {
@@ -440,18 +489,18 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 
 .card-actions div {
   -webkit-box-flex: 0;
--webkit-flex: 0 0 50%;
--moz-box-flex: 0;
--moz-flex: 0 0 50%;
--ms-flex: 0 0 50%;
-flex: 0 0 50%;
-max-width: 50%;
-text-align: center;
-margin: 0;
-border-color: #DDD;
-border-width: 1px 0 0;
-border-style: solid;
-color: #3399CC;
+  -webkit-flex: 0 0 50%;
+  -moz-box-flex: 0;
+  -moz-flex: 0 0 50%;
+  -ms-flex: 0 0 50%;
+  flex: 0 0 50%;
+  max-width: 50%;
+  text-align: center;
+  margin: 0;
+  border-color: #DDD;
+  border-width: 1px 0 0;
+  border-style: solid;
+  color: #3399CC;
 }
 
 .card-actions div i {
@@ -459,8 +508,27 @@ color: #3399CC;
   vertical-align: middle;
 }
 
-.card-actions div:first-child {
+.card-actions div:not(:last-child) {
   border-right: 1px solid #ddd;
+}
+
+.card-actions div.card-select-coach, .card-actions div.card-select-coach:first-child {
+  flex: 0 0 100%;
+  max-width: 100%;
+  width: 100%;
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
+}
+
+.error-message {
+  color: #ef4e3a;
+  padding: 0px 10px;
+  margin: 0px;
+}
+
+.list.find-coach-form {
+  margin: 0px;
 }
 
 /*******************************************
@@ -611,4 +679,8 @@ button i {
   background-size: 22px 22px;
   width: 22px;
   height: 22px;
+}
+
+.connector-install-manually {
+  color: #666666;
 }

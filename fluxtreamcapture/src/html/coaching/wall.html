@@ -48,7 +48,7 @@
           <span ng-if="sendingMessage" class="sending-new-message"></span>
           <textarea class="wall-new-message-input" ng-model="newMessage.body" placeholder="New message">
           </textarea>
-        </div>             
+        </div>
       </div>
       <!-- List is empty -->
       <div ng-if="!postList.length && !loading && !refreshing">
@@ -82,7 +82,8 @@
           <!-- Actions -->
           <div class="wall-post-action" ng-if="!post.from">
             <span class="wall-edit-post-link" ng-click="editPost(post); $event.stopPropagation();"><i class="ion-edit"></i></span>
-            <span class="wall-delete-post-link" ng-click="deletePost(post); $event.stopPropagation();"><i class="ion-ios7-trash-outline"></i></span>
+            <span class="wall-delete-post-link" ng-if="!post.deleting" ng-click="deletePost(post); $event.stopPropagation();"><i class="ion-ios7-trash-outline"></i></span>
+            <span class="wall-deleting-post" ng-if="post.deleting"></span>
           </div>
           <!-- Author -->
           <h2 class="wall-post-author-name">
@@ -95,8 +96,19 @@
         </div>
         <!-- Post body -->
         <div class="wall-post-message-body item item-body">
-          <div ng-click="loadPost(post)">
+          <div ng-click="loadPost(post)" ng-if="!post.editing">
             {{ post.body }}
+          </div>
+          <div ng-if="post.editing">
+            <button ng-disabled="!post.newBody"
+                    ng-if="!post.sendingUpdate"
+                    class="wall-new-comment-submit button button-small button-positive"
+                    ng-click="submitPostUpdate(post)">
+              Save
+            </button>
+            <span ng-if="post.sendingUpdate" class="sending-new-message"></span>
+            <textarea class="wall-new-comment-input" ng-model="post.newBody">
+            </textarea>
           </div>
           <!-- List of comments -->
           <div class="list card" ng-if="post.comments.length">
@@ -109,7 +121,8 @@
                 </h3>
                 <div class="wall-comment-action" ng-if="!comment.from">
                   <span class="wall-edit-comment-link" ng-click="editComment(post, comment)"><i class="ion-edit"></i></span>
-                  <span class="wall-delete-comment-link" ng-click="deleteComment(post, comment)"><i class="ion-ios7-trash-outline"></i></span>
+                  <span class="wall-delete-comment-link" ng-if="!comment.deleting" ng-click="deleteComment(post, comment)"><i class="ion-ios7-trash-outline"></i></span>
+                  <span class="wall-deleting-comment" ng-if="comment.deleting"></span>
                 </div>
                 <p class="wall-comment-time">
                   {{ convertTime(comment.creationTime) }}
@@ -121,10 +134,12 @@
                 </div>
                 <div ng-if="comment.editing">
                   <button ng-disabled="!comment.newBody"
+                          ng-if="!comment.sendingUpdate"
                           class="wall-new-comment-submit button button-small button-positive"
                           ng-click="submitCommentUpdate(post, comment)">
                     Save
                   </button>
+                  <span ng-if="comment.sendingUpdate" class="sending-new-message"></span>
                   <textarea class="wall-new-comment-input" ng-model="comment.newBody">
                   </textarea>
                 </div>
@@ -138,19 +153,21 @@
             </p>
             <div ng-if="post.editingNewComment">
               <button ng-disabled="!post.newComment"
+                      ng-if="!post.sendingNewComment"
                       class="wall-new-comment-submit button button-small button-positive"
                       ng-click="submitNewComment(post)">
                 Send
               </button>
+              <span ng-if="post.sendingNewComment" class="sending-new-message"></span>
               <textarea class="wall-new-comment-input" ng-model="post.newComment"
                         placeholder="Add comment">
               </textarea>
             </div>
           </div>
-        </div>             
+        </div>
       </div>
     </ion-list>
-    <div ng-if="!isOnline && !lastPostLoaded">
+    <div ng-if="!isOnline && !lastPostLoaded && !singlePost" class="padding">
       You are offline. Please connect to the Internet to load more messages.
     </div>
     <ion-infinite-scroll on-infinite="loadMorePosts()" distance="10%" ng-if="!refreshing && postList.length && !singlePost && !lastPostLoaded">

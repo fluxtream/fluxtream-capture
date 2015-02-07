@@ -16,8 +16,14 @@ define([
     // The list of photos
     var photoList;
     
+    // A cached list of photos for preloading the photo view
+    var cachedPhotoList = [];
+    
     // Functions to execute once the photo list has been initialized
     var functionsToExecute = [];
+    
+    // If true, the photo list will be reloaded again once the reload has finished (useful if photos are deleted in the meantime)
+    var reloadAgain = false;
     
     /**
      * (Private) Loads all photos from the device image gallery
@@ -27,7 +33,6 @@ define([
       forge.flx_photoupload.getPhotoList(
         // Success
         function(jsonArray) {
-          forge.logging.info("Loaded photo list");
           // Data can either be json-encoded string or an actual array
           if (typeof jsonArray === 'string') {
             // Json string, convert to array
@@ -36,17 +41,19 @@ define([
             // Acual array
             photoList = jsonArray;
           }
+          cachedPhotoList = photoList;
           initialized = true;
-          forge.logging.info("Photo list has been initialized");
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
           functionsToExecute = [];
+          if (reloadAgain) {
+            reloadPhotos();
+          }
         },
         // Error
         function(error) {
-          forge.logging.error("Error while calling getPhotoList:");
-          forge.logging.error(error);
+          forge.logging.error("Error while calling getPhotoList: " + JSON.stringify(error));
         }
       );
     };
@@ -56,10 +63,12 @@ define([
      */
     function reloadPhotos() {
       // Don't reload if loading is already in progress
-      if (!initialized) return;
+      if (!initialized) {
+        reloadAgain = true;
+        return;
+      }
       // Reset initialization status
       initialized = false;
-      functionsToExecute = [];
       photoList = null;
       // Reload photos
       loadPhotos();
@@ -95,7 +104,6 @@ define([
     
     ["photoupload.started", "photoupload.uploaded", "photoupload.canceled", "photoupload.failed"].forEach(function(eventName) {
       forge.internal.addEventListener(eventName, function(data) {
-        forge.logging.info("Native event received: " + eventName + " -> " + JSON.stringify(data));
         $rootScope.$broadcast(eventName, data);
       });
     });
@@ -104,6 +112,7 @@ define([
     return {
       isInitialized: function() { return initialized; },
       getPhotoList: function() { return photoList; },
+      getCachedPhotoList: function() { return cachedPhotoList; },
       reloadPhotos: reloadPhotos,
       onReady: onReady
     };

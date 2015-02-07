@@ -52,10 +52,8 @@ define([
           callbacks.push(callback);
           // Start request to fetch the device id
           if (env["using_parse"]) {
-            forge.logging.info("Fetching device id from Parse");
             fetchDeviceId();
           } else {
-            forge.logging.info("Generating new device id");
             deviceId = generateUUID();
             userPrefs.set("login.deviceId", deviceId);
             // Execute callbacks
@@ -76,7 +74,6 @@ define([
             forge.parse.installationInfo(
               // Success
               function(info) {
-                forge.logging.info(info);
                 // Store device id
                 userPrefs.set("login.deviceId", info.id);
                 // Execute callbacks
@@ -86,8 +83,7 @@ define([
               },
               // Error
               function(content) {
-                forge.logging.info("Getting parse information failed");
-                forge.logging.info(content);
+                forge.logging.error("Getting parse information failed: " + JSON.stringify(content));
                 // Try again
                 setTimeout(fetchDeviceId, 500);
               }

@@ -14,7 +14,8 @@ define([
     'UserPrefsService',
     '$ionicActionSheet',
     '$state',
-    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, coachingCom, userPrefs, $ionicActionSheet, $state, $timeout) {
       
       // List of available coaches
       $scope.coaches = [];
@@ -34,7 +35,6 @@ define([
        * [Called from page] Loads the page of a coach where the user can select/remove them as a coach
        */
       $scope.loadCoachDetails = function(coach) {
-        forge.logging.info("Load coach details");
         $state.go("coachDetails", {coachUsername: coach.username});
       };
       
@@ -42,7 +42,6 @@ define([
        * Loads the connector sharing page for a given coach
        */
       $scope.loadCoachConnectorSharing = function(coach) {
-        forge.logging.info("Load coach connector sharing");
         $state.go("coachConnectorSharing", {from: "from-coach-list", coachUsername: coach.username});
       };
       
@@ -52,6 +51,13 @@ define([
       $scope.searchCoach = function() {
         var searchString = $scope.input.searchString;
         $scope.errorMessage = false;
+        if (!forge.is.connection.connected()) {
+          // Induce small delay to show to the user that the message has been refreshed
+          $timeout(function() {
+            $scope.errorMessage = "You are offline. Please connect to the Internet and try again.";
+          }, 200);
+          return;
+        }
         $scope.loading = true;
         $scope.$$phase || $scope.$apply();
         coachingCom.findCoach(searchString,
@@ -71,6 +77,9 @@ define([
           function(errorMessage) {
             $scope.loading = false;
             $scope.errorMessage = errorMessage || "No error message";
+            if (!forge.is.connection.connected()) {
+              $scope.errorMessage = "You are offline. Please connect to the Internet and try again.";
+            }
             $scope.coaches = [];
             $scope.$$phase || $scope.$apply();
           }
@@ -86,17 +95,14 @@ define([
        * [Called from page] Selects a coach to be the user's coach
        */
       $scope.addCoach = function(coach) {
-        forge.logging.info("Selecting coach: " + coach.fullname);
         var hideActionSheet = $ionicActionSheet.show({
           buttons: [{text: 'Yes, Add'}],
           titleText: 'Do you want to add ' + coach.fullname + ' to your trusted buddies?',
           cancelText: 'Cancel',
           buttonClicked: function(index) {
-            forge.logging.info("Add coach");
             coachingCom.addCoach(coach.username,
               // Success
               function() {
-                forge.logging.info("Go to connector sharing screen");
                 coach.isOwnCoach = true;
                 $scope.loadCoachConnectorSharing(coach);
               },

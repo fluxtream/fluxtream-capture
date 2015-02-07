@@ -16,7 +16,8 @@ define([
     'LoginService',
     '$ionicActionSheet',
     '$state',
-    function($scope, connectorsCom, userPrefs, loginService, $ionicActionSheet, $state) {
+    '$timeout',
+    function($scope, connectorsCom, userPrefs, loginService, $ionicActionSheet, $state, $timeout) {
       
       // List of connectors
       $scope.connectors = [];
@@ -25,18 +26,23 @@ define([
       $scope.polling = false;
       
       // URL of the server from which the images will be fetched
-      $scope.imageOriginURL = env['fluxtream.home.url']
+      $scope.imageOriginURL = env['fluxtream.home.url'];
+      
+      // Cancellable timeout for refresh list
+      $scope.updateConnectorListTimeout = null;
+      $scope.$on("$destroy", function() {
+        $timeout.cancel($scope.updateConnectorListTimeout);
+      });
       
       /**
        * Requests the list of connectors, and continue polling while a connector is synchronizing
        */
       $scope.updateConnectorList = function() {
-        forge.logging.info("Fetch connector list");
+        $timeout.cancel($scope.updateConnectorListTimeout);
         $scope.polling = true;
         connectorsCom.getFullConnectorList(
           // Success
           function(connectors) {
-            forge.logging.info("Connector list fetched");
             // Update connector list
             $scope.connectors = connectors;
             $scope.$$phase || $scope.$apply();
@@ -49,17 +55,21 @@ define([
             });
             if (connectorSynchronizing) {
               // A connector is synchronizing, poll again in 3 seconds
-              setTimeout($scope.updateConnectorList, 3000);
+              $scope.updateConnectorListTimeout = $timeout($scope.updateConnectorList, 3000);
             } else {
               // No more connector is synchronizing, stop polling
               $scope.polling = false;
             }
+            // Reapply to make sure UI is completely refreshed (to prevent images from not reloading)
+            $timeout(function() { $scope.$$phase || $scope.$apply(); }, 1);
           },
           // Error
           function() {
             if (!$scope.connectors.length) {
               alert('Could not get connector list');
               $state.go('settings');
+            } else {
+              $scope.updateConnectorListTimeout = $timeout($scope.updateConnectorList, 3000);
             }
           }
         );
@@ -77,6 +87,7 @@ define([
       $scope.installConnector = function(connector) {
         if (connector.loading) return;
         if (connector.installed) return;
+        if (!connector.installable) return;
         if (!forge.is.connection.connected()) {
           alert("You must be online to install a connector.");
           return;
@@ -100,13 +111,11 @@ define([
               },
               // Success
               function() {
-                forge.logging.info("Tab successfully closed");
                 $scope.updateConnectorList();
               },
               // Error
               function(content) {
-                forge.logging.info("Error while opening tab");
-                forge.logging.info(content);
+                forge.logging.error("Error while opening tab: " + JSON.stringify(content));
                 $scope.updateConnectorList();
               }
             );
@@ -162,19 +171,19 @@ define([
         connectorsCom.synchronizeNow(connector.connectorName,
           // Success
           function() {
-            forge.logging.info("Synchronization started successfully");
             if (!$scope.polling) {
               $scope.updateConnectorList();
             }
           },
           // Error
           function(error) {
-            forge.logging.info("Synchronization launch failed: " + error);
+            forge.logging.error("Synchronization launch failed: " + JSON.stringify(error));
             connector.syncing = false;
             $scope.$$phase || $scope.$apply();
           }
         );
       };
+      
     }
   ]);
   

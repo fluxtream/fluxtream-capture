@@ -34,17 +34,16 @@ define([
        * Fetches the list of connectors, both installed and uninstalled
        */
       function getFullConnectorList(success, error) {
-        forge.logging.info("Requesting full connector list");
         // Get installed
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/connectors/installed?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
           dataType: "json",
           success: function(installedConnectors, code) {
-            forge.logging.info("Installed connectors received");
             // Mark connectors as installed
             installedConnectors.forEach(function(connector) {
               connector.installed = true;
@@ -58,20 +57,24 @@ define([
               },
               dataType: "json",
               success: function(uninstalledConnectors, code) {
-                forge.logging.info("Uninstalled connectors received");
                 // Mark connectors as uninstalled
                 uninstalledConnectors.forEach(function(connector) {
                   connector.installed = false;
                 });
                 // Merge installed and uninstalled connectors
                 var connectors = installedConnectors.concat(uninstalledConnectors);
-                // Remove "FluxtreamCapture" and "Zeo" from list
+                // Remove "FluxtreamCapture", "Zeo", "Mymee" and "QuantifiedMind" from list
                 for (var i = 0; i < connectors.length; i++) {
-                  if (connectors[i].connectorName == "fluxtream_capture" || connectors[i].connectorName == "zeo") {
+                  if (connectors[i].connectorName == "fluxtream_capture" || connectors[i].connectorName == "zeo"
+                          || connectors[i].connectorName == "mymee" || connectors[i].connectorName == "quantifiedmind") {
                     connectors.splice(i, 1);
                     i--;
                   }
                 }
+                // Set as installable/uninstallable (Beddit is not installable)
+                connectors.forEach(function(connector) {
+                  connector.installable = connector.connectorName != "beddit";
+                });
                 // Sort connectors by name
                 connectors.sort(function(a, b) {
                   return (a.name < b.name) ? -1 : (a.name === b.name) ? 0 : 1;
@@ -86,28 +89,24 @@ define([
                 success(connectors);
                 // Cache images
                 connectors.forEach(function(connector) {
-                  forge.logging.info(connector.image);
                   imageCache.cacheImage(
                     connector.image,
                     function(uri) {
-                      forge.logging.info("Success: " + uri);
                       connector.image = uri;
                       cacheConnectors(connectors);
                     },
-                    function() { forge.logging.info("Error"); }
+                    function() {}
                   );
                 });
               },
               error: function(content) {
-                forge.logging.info("Error while fetching uninstalled connectors");
-                forge.logging.info(content);
+                forge.logging.error("Error while fetching uninstalled connectors: " + JSON.stringify(content));
                 error(content);
               }
             });
           },
           error: function(content) {
-            forge.logging.info("Error while fetching installed connectors");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching installed connectors: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -120,6 +119,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/sync/" + connectorName,
+          timeout: 10000,
           data: {
             access_token: loginService.getAccessToken()
           },

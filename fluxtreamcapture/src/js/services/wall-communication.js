@@ -23,7 +23,6 @@ define([
         posts: {},
         persistPosts: function() {
           userPrefs.set("wall." + loginService.getUserId() + ".cache", JSON.stringify(this.posts));
-          forge.logging.info("Persisting posts: " + JSON.stringify(this.posts));
         },
         addPost: function(post) {
           this.posts["post" + post.id] = post;
@@ -37,16 +36,13 @@ define([
           }
           // Cache comments' sender image
           if (post.comments) {
-            forge.logging.info(post.comments.length + " comments for post " + post.id);
             post.comments.forEach(function(comment) {
-              forge.logging.info(comment);
               if (comment.from && comment.from.photoURL) {
-                forge.logging.info("Caching " + comment.from.photoURL);
                 imageCache.cacheImage(comment.from.photoURL, function(uri) {
                   comment.from.photoURL = uri;
                   posts.persistPosts();
                 });
-              } else forge.logging.info("No from on this comment");
+              }
             });
           }
         },
@@ -54,6 +50,17 @@ define([
           var post = this.posts["post" + postId];
           if (post) return post;
           return null;
+        },
+        deletePost: function(postId) {
+          delete this.posts["post" + postId];
+          posts.persistPosts();
+        },
+        updatePost: function(postId, newBody) {
+          var post = this.posts["post" + postId];
+          if (post) {
+            post.body = newBody;
+            posts.persistPosts();
+          }
         },
         getPostList: function() {
           var posts = [];
@@ -75,7 +82,7 @@ define([
             delete posts.posts[index].$$hashKey;
           }
         } else {
-          forge.logging.info("No cached wall data");
+          // No cached wall data
         }
       });
       
@@ -87,10 +94,10 @@ define([
        * @param {function} error        Called with error data on error
        */
       function getWallPosts(lastKnownPost, success, error) {
-        forge.logging.info("URL: " + loginService.getTargetServer() + "api/v1/posts/all");
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/posts/all",
+          timeout: 20000,
           data: {
             access_token: loginService.getAccessToken(),
             includeComments: true,
@@ -102,8 +109,6 @@ define([
           },
           dataType: "json",
           success: function(data, code) {
-            forge.logging.info("Post list received");
-            forge.logging.info(JSON.stringify(data));
             if (!lastKnownPost) {
               // Refresh list completely
               posts.clear();
@@ -113,12 +118,10 @@ define([
               posts.addPost(post);
               lastPostId = post.id;
             });
-            forge.logging.info("Posts: " + JSON.stringify(posts.getPostList()));
             success(posts.getPostList(), lastPostId);
           },
           error: function(content) {
-            forge.logging.info("Error while fetching post list");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching post list: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -140,19 +143,16 @@ define([
        * @param {type} error      Called with error data on error
        */
       function getWallPost(postId, preloaded, success, error) {
-        forge.logging.info("Getting wall post " + postId);
-        
         // Retrieve from cache to prepopulate wall post
         selectedPost = posts.getPost(postId);
         if (selectedPost) {
           preloaded(selectedPost);
         }
-        
         // Retrive from server
-        forge.logging.info(loginService.getTargetServer() + "api/v1/posts/" + postId);
         forge.request.ajax({
           type: "GET",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId,
+          timeout: 10000,
           data: {
             access_token: loginService.getAccessToken(),
             includeComments: true
@@ -162,13 +162,10 @@ define([
           },
           dataType: "json",
           success: function(data, code) {
-            forge.logging.info("Post received");
-            forge.logging.info(JSON.stringify(data));
             success(data);
           },
           error: function(content) {
-            forge.logging.info("Error while fetching post list");
-            forge.logging.info(content);
+            forge.logging.error("Error while fetching post list: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -181,6 +178,7 @@ define([
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           data: {
             message: messageBody
           },
@@ -189,25 +187,23 @@ define([
           },
           dataType: "json",
           success: function(data, code) {
-            forge.logging.info("Comment posted");
-            forge.logging.info(data);
             success(data);
           },
           error: function(content) {
-            forge.logging.info("Error while adding comment");
-            forge.logging.info(content);
+            forge.logging.error("Error while adding comment: " + JSON.stringify(content));
             error(content);
           }
         });
       }
       
       /**
-       * Adds a new comment to a post
+       * Changes the content of a post comment
        */
       function updateComment(postId, commentId, newMessageBody, success, error) {
         forge.request.ajax({
           type: "PUT",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments/" + commentId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           data: {
             message: newMessageBody
           },
@@ -216,13 +212,10 @@ define([
           },
           dataType: "json",
           success: function(data, code) {
-            forge.logging.info("Comment updated");
-            forge.logging.info(data);
             success(data);
           },
           error: function(content) {
-            forge.logging.info("Error while updating comment");
-            forge.logging.info(content);
+            forge.logging.error("Error while updating comment: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -232,22 +225,68 @@ define([
        * Deletes an existing comment from a post
        */
       function deleteComment(postId, commentId, success, error) {
-        forge.logging.info("Calling " + loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments/" + commentId + "?access_token=" + loginService.getAccessToken());
         forge.request.ajax({
           type: "DELETE",
           url: loginService.getTargetServer() + "api/v1/posts/" + postId + "/comments/" + commentId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
           dataType: "json",
           success: function(data, code) {
-            forge.logging.info("Comment deleted");
-            forge.logging.info(data);
             success(data);
           },
           error: function(content) {
-            forge.logging.info("Error while deleting comment");
-            forge.logging.info(content);
+            forge.logging.error("Error while deleting comment: " + JSON.stringify(content));
+            error(content);
+          }
+        });
+      }
+      
+      /**
+       * Changes the content of an existing post
+       */
+      function updatePost(postId, newMessageBody, success, error) {
+        forge.request.ajax({
+          type: "PUT",
+          url: loginService.getTargetServer() + "api/v1/posts/" + postId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
+          data: {
+            message: newMessageBody
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function(data, code) {
+            posts.updatePost(postId, newMessageBody);
+            success(data);
+          },
+          error: function(content) {
+            forge.logging.error("Error while updating post: " + JSON.stringify(content));
+            error(content);
+          }
+        });
+      }
+      
+      /**
+       * Deletes an existing post
+       */
+      function deletePost(postId, success, error) {
+        forge.request.ajax({
+          type: "DELETE",
+          url: loginService.getTargetServer() + "api/v1/posts/" + postId + "?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function(data, code) {
+            posts.deletePost(postId);
+            success(data);
+          },
+          error: function(content) {
+            forge.logging.error("Error while deleting post: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -257,10 +296,10 @@ define([
        * Sends a new wall post to a coach
        */
       function sendNewPost(body, username, success, error) {
-        forge.logging.info("Sending message to " + username);
         forge.request.ajax({
           type: "POST",
           url: loginService.getTargetServer() + "api/v1/posts/?access_token=" + loginService.getAccessToken(),
+          timeout: 10000,
           headers: {
             'Content-Type': 'application/json'
           },
@@ -269,12 +308,10 @@ define([
             message: body
           },
           success: function(data) {
-            forge.logging.info("New message was successfully sent");
             success();
           },
           error: function(content) {
-            forge.logging.info("Error while posting new message");
-            forge.logging.info(content);
+            forge.logging.error("Error while posting new message: " + JSON.stringify(content));
             error(content);
           }
         });
@@ -288,6 +325,8 @@ define([
         addComment: addComment,
         updateComment: updateComment,
         deleteComment: deleteComment,
+        updatePost: updatePost,
+        deletePost: deletePost,
         postCountPerQuery: postCountPerQuery,
         sendNewPost: sendNewPost
       };

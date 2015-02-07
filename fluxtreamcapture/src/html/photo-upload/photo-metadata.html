@@ -1,26 +1,34 @@
-<ion-view title="Metadata">
+<ion-view title="Photo Metadata">
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-    <a ui-sref="photoPreview({photoId: photoId})" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <a ui-sref="photoPreview({photoId: photoId})" class="button button-clear pull-left"><i class="ion-chevron-left"></i> {{ hasChanges ? "Cancel" : "Back" }}</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <div class="list">
-      <div class="item item-divider">
-        Tags
+    <div class="flx-reload-icon" ng-if="loading"></div>
+    <div class="padding" ng-if="!loading">
+      <div class="list photo-metadata-first-list">
+        <div class="item item-divider">
+          Comment
+        </div>
+        <div class="item">
+          <textarea ng-model="comment.value" ng-change="commentChanged()"></textarea>
+        </div>
       </div>
-      <div ng-repeat="tag in tags" class="item item-input-inset">
-        <label class="item-input-wrapper">
-          <input type="text" ng-model="tag.value" ng-change="tagChanged()">
-        </label>
-        <a class="ion-close photo-metadata-remove" ng-click="deleteTag(tag)" ng-if="tags.indexOf(tag) !== tags.length -1"></a>
-      </div>
-      <div class="item item-divider">
-        Comment
-      </div>
-      <div class="item">
-        <textarea ng-model="comment.value"></textarea>
+      <div class="list">
+        <div class="item item-divider">
+          Tags
+        </div>
+        <div ng-repeat="tag in tags" class="item item-input-inset">
+          <label class="item-input-wrapper">
+            <input type="text" ng-model="tag.value" ng-change="tagChanged()">
+          </label>
+          <a class="ion-close photo-metadata-remove" ng-click="deleteTag(tag)" ng-if="tags.indexOf(tag) !== tags.length -1"></a>
+        </div>
+        <button class="button button-block button-positive" ng-click="applyChanges()">
+          Save
+        </button>
       </div>
     </div>
   </ion-content>
