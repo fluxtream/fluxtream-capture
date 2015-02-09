@@ -30,6 +30,10 @@ define([
       // If true, the page will be replaced with the loading icon
       $scope.loading = false;
       
+      // Target default placeholder
+      $scope.targetPlaceholder = env["fluxtream.home.url"].replace('http://', '').replace('https://', '');
+      if ($scope.targetPlaceholder.slice("-1") == "/") $scope.targetPlaceholder = $scope.targetPlaceholder.substring(0, $scope.targetPlaceholder.length - 1);
+      
       // The current screen being displayed
       $scope.currentScreen = 'loading';
       
