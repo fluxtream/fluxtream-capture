@@ -23,7 +23,8 @@
 			"webview": "UIWebView"
 		},
 		"android": {
-			"minimum_version": "16"
+			"minimum_version": "16",
+			"package_name": "org.fluxtream.capture"
 		}
 	},
 	"modules": {
