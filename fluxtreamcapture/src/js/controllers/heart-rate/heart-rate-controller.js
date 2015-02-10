@@ -31,6 +31,12 @@ define([
       // Whether the currently connected device is locked to this app
       $scope.deviceLocked = heartRateService.deviceIsLocked();
       
+      // Whether data is currently being received
+      $scope.receivingData = false;
+      
+      // Whether the history is shown or not
+      $scope.showHistory = env['debug'] ? true : false;
+      
       // List of history logs
       $scope.historyLogs = [];
       
@@ -57,11 +63,13 @@ define([
         $scope.rr = data.rr;
         if ($scope.lastReceptionTimestamp < new Date().getTime() - 5000) {
           $scope.addHistoryLog("Receiving data");
+          $scope.receivingData = true;
         }
         $scope.lastReceptionTimestamp = new Date().getTime();
         $timeout.cancel($scope.noDataReceivedTimeout);
-        $scope.noDataReceivedTimeout = $imeout(function() {
+        $scope.noDataReceivedTimeout = $timeout(function() {
           $scope.addHistoryLog("Not receiving data anymore");
+          $scope.receivingData = false;
         }, 5000);
         $scope.deviceConnected = true;
         $scope.$$phase || $scope.$apply();
@@ -130,6 +138,25 @@ define([
         heartRateService.unlockDevice();
         $scope.deviceLocked = false;
         $scope.$$phase || $scope.$apply();
+      };
+      
+      /**
+       * Returns a string giving the current upload status
+       */
+      $scope.getUploadStatusInWords = function() {
+        if (!$scope.serviceEnabled) return "";
+        if (!$scope.deviceConnected && !$scope.receivingData) {
+          if (!$scope.deviceLocked) return "Searching for heart rate monitor";
+          else return "Searching for locked HR monitor";
+        }
+        if (!$scope.receivingData) return "Not receiving data";
+        switch ($scope.uploadStatus) {
+          case "none": return "Searching for heart rate monitor";
+          case "uploading": return "Synchronizing data...";
+          case "error": return forge.is.connection.connected() ? "Synchronization failed" : "Connect to the Internet to sync data";
+          case "synced": return "Last synchronization " + $scope.getLastSyncDistanceInWords();
+          default: return "";
+        }
       };
       
       /**
