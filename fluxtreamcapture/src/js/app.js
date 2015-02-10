@@ -2,6 +2,11 @@
  * Require.js entry point to load the Fluxtream Capture application
  */
 $(document).ready(function() {
+  
+  // Along with "viewport" metadata "height=device-height", this contributes to fixing an Ionic bug
+  // that makes the viewport scroll out of hand when a text field is focused and the keyboard is shown
+  ionic.Platform.isFullScreen = true;
+  
   // Configure
   require.config({
     paths: {
