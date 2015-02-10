@@ -14,11 +14,11 @@ define(function() {
   // Environment configuration
   return {
     // URL of the fluxtream server
-    "fluxtream.home.url" : "http://fluxtream.dev/",
+    "fluxtream.home.url" : "http://fluxtream.org/",
     // URL of the fluxtream couchDB server
-    "fluxtream.couch.login.url" : "@fluxtream.dev:5984/",
+    "fluxtream.couch.login.url" : "@fluxtream.org:5984/",
     // URL of the web app (for redirection after authentication)
-    "loggedIn.redirect_uri" : "http://fluxtream.dev:3000/",
+    "loggedIn.redirect_uri" : "",
     // Whether this app is using Parse.com for push notifications
     "using_parse": true,
     // Debug mode (true/false)
