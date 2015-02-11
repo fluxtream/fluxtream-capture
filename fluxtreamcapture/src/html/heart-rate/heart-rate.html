@@ -6,36 +6,53 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <div ng-if="serviceEnabled">
-      <div style="text-align: center; font-size: 2em; font-weight: bold; margin-top: 5px;">
-        <p>Heart rate : {{ heartRate }}</p>
-        <p>RR : {{ rr }}</p>
-      </div>
-      <p ng-if="!deviceConnected && !deviceLocked">Scanning for heart rate monitor</p>
-      <p ng-if="!deviceConnected && deviceLocked">Looking for locked device</p>
-      <a ng-click="lockDevice()" ng-if="deviceConnected && !deviceLocked" class="button button-positive">LOCK</a>
-      <a ng-click="unlockDevice()" ng-if="deviceLocked" class="button button-positive">UNLOCK</a>
-      <p>
-        Upload status:
-        {{ uploadStatus || "No data uploaded" }}
-        <span ng-if="uploadStatus == 'synced'">{{ getLastSyncDistanceInWords() }} </span>
-      </p>
-      <p style="height: 300px; background: #E5E5E; overflow: hidden;">
-        History:<br />
-        <span ng-repeat="log in historyLogs">
-          {{ log.message }} <br />
-        </span>
-      </p>
-      <button class="button button-block button-positive" ng-click="disableService()">Disable</button>
-    </div>
-    <div ng-if="!serviceEnabled">
-      <p>Enable this to connect your bluetooth heart rate monitor to this app.</p>
-      <button class="button button-block button-positive" ng-click="enableService()">Enable</button>
+    <div ng-if="!serviceEnabled" class="padding heart-rate-disabled">
+      <p>Enable monitoring to connect your bluetooth heart rate monitor to this app.</p>
+      <button class="button button-block button-positive" ng-click="enableService()">Enable monitoring</button>
     </div>
   </ion-content>
+  <div ng-if="serviceEnabled" class="heart-rate-enabled">
+    <div class="flx-reload-icon" ng-if="!deviceConnected"></div>
+    <div class="heart-rate-data">
+      <div ng-if="deviceConnected || heartRate || rr">
+        <p class="heart-rate-bpm">Heart rate : {{ heartRate }} bpm</p>
+        <p class="heart-rate-beat-spacing">Beat spacing : {{ rr }} ms</p>
+      </div>
+    </div>
+    <div class="padding heart-rate-locker">
+      <div ng-if="deviceConnected && !deviceLocked" ng-click="lockDevice()">
+        <div class="heart-rate-lock-icon">
+          <a><i class="ion-unlocked icon"></i></a>
+        </div>
+        <div class="heart-rate-lock-text">
+          <p>You can bind this HR monitor to make sure this app will only connect to it in the future.</p>
+        </div>
+      </div>
+      <div ng-if="deviceLocked" ng-click="unlockDevice()" >
+        <div class="heart-rate-lock-icon">
+          <a ng-if="deviceLocked"><i class="ion-locked icon""></i></a>
+        </div>
+        <div class="heart-rate-lock-text">
+          <p ng-if="deviceConnected">This HR monitor is bound to the app. Unbind it if you want to connect to another monitor.</p>
+          <p ng-if="!deviceConnected">This app is bound to a specific HR monitor. You must unbind it to connect to another monitor.</p>
+        </div>
+      </div>
+    </div>
+    <div ng-if="showHistory" class="heart-rate-history">
+      <p><strong>History (debug mode):</strong></p>
+      <p ng-repeat="log in historyLogs">
+        {{ log.message }} <br />
+      </p>
+    </div>
+  </div>
+  <div class="padding heart-rate-disable-button" ng-if="serviceEnabled">
+    <button class="button button-block button-assertive" ng-click="disableService()">
+      Disable monitoring
+    </button>
+  </div>
 </ion-view>
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
-  <a id="footer-right" ui-sref="heartRateSettings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
+  <h1 class='title heart-rate-status-bar'>{{ getUploadStatusInWords() }}</h1>
 </ion-footer-bar>

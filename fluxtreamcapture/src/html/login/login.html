@@ -50,7 +50,7 @@
                 <input type="password" placeholder="Password" ng-model="signin.password">
               </label>
               <label class="item item-input">
-                 <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="signin.target" ng-change="save('target')">
+                 <input autocapitalize="none" type="text" placeholder="{{ targetPlaceholder }}" ng-model="signin.target" ng-change="save('target')">
               </label>
               <button class="button button-block button-positive" ng-click="signIn()">
                 Sign in
@@ -84,7 +84,7 @@
                   <input type="password" placeholder="Repeat Password" ng-model="signup.password2">
                 </label>
                 <label class="item item-input">
-                   <input autocapitalize="none" type="text" placeholder="fluxtream.org" ng-model="signup.target" ng-change="save('target')">
+                   <input autocapitalize="none" type="text" placeholder="{{ targetPlaceholder }}" ng-model="signup.target" ng-change="save('target')">
                 </label>
                 <button class="button button-block button-positive" ng-click="signUp()">
                   Sign up now

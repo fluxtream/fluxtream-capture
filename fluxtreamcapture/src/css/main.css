@@ -597,6 +597,7 @@ button i {
 /*******************************************
  * CONNECTORS
  *******************************************/
+
 .connector-card {
   min-height: 127px;
   padding: 0;
@@ -687,4 +688,87 @@ button i {
 
 .edit-topics-caption {
   padding-left: 4em;
+}
+
+/*******************************************
+ * HEART RATE
+ *******************************************/
+
+.heart-rate-disabled {
+   margin-top: 150px;
+   text-align: center;
+}
+
+.heart-rate-enabled {
+   position: absolute;
+   top: 44px;
+   bottom: 44px;
+   left: 0px;
+   right: 0px;
+}
+
+.heart-rate-data {
+  position: absolute;
+  top: 70px;
+  left: 0px;
+  right: 0px;
+  text-align: center;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.heart-rate-bpm {
+  margin-bottom: 20px;
+}
+
+.heart-rate-beat-spacing {
+  font-size: 0.75em;
+}
+
+.heart-rate-locker {
+  position: absolute;
+  top: 180px;
+  bottom: 75px;
+  left: 0px;
+  right: 0px;
+}
+
+.heart-rate-lock-icon {
+  float: right;
+  padding-top: 3px;
+}
+
+.heart-rate-lock-icon a {
+  padding: 15px;
+  font-size: 2.2em;
+}
+
+.heart-rate-lock-text {
+  text-align: center;
+  margin-right: 50px;
+}
+
+.heart-rate-history {
+  position: absolute;
+  top: 260px;
+  bottom: 70px;
+  left: 10px;
+  right: 10px;
+  background: #E5E5E5;
+  overflow: scroll;
+}
+
+.heart-rate-history p {
+  margin: 0px;
+}
+
+.heart-rate-disable-button {
+  position: absolute;
+  bottom: 35px;
+  left: 0px;
+  right: 0px;
+}
+
+.heart-rate-status-bar {
+  line-height: 100%;
 }
