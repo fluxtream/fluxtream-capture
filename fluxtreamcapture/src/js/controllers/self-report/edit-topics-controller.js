@@ -87,21 +87,21 @@ define([
       }
 
       // show reorder button
-      $scope.showReorder = function (){
-        console.log("CURRENT VALUE: " + $("#topic-name").attr('class'));
-
-        if($(".topic-name").attr('class') === "topic-name"){
-          console.log("showReorder: show button");
-          $scope.showReordering = true;
-          $(".topic-name").attr('class', 'topic-name edit-topics-caption');
-        } else {
-          console.log("showReorder: delete button");
-          $scope.showReordering = false;
-          $(".topic-name").attr('class', 'topic-name');
-        }
-
-        $scope.$$phase || $scope.$apply();
-      }
+//      $scope.showReorder = function (){
+//        console.log("CURRENT VALUE: " + $("#topic-name").attr('class'));
+//
+//        if($(".topic-name").attr('class') === "topic-name"){
+//          console.log("showReorder: show button");
+//          $scope.showReordering = true;
+//          $(".topic-name").attr('class', 'topic-name edit-topics-caption');
+//        } else {
+//          console.log("showReorder: delete button");
+//          $scope.showReordering = false;
+//          $(".topic-name").attr('class', 'topic-name');
+//        }
+//
+//        $scope.$$phase || $scope.$apply();
+//      }
 
       // Reorder Topics
       $scope.moveItem = function (oTopic, fromIndex, toIndex) {
