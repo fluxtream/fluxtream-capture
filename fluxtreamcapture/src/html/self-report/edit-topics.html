@@ -10,9 +10,9 @@
   </ion-nav-bar>
 
   <ion-content>
-    <ion-list show-reorder="data.showReorder = true">
+    <ion-list show-reorder="showReordering">
       <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="editTopic({topicId: oTopic.id})">
-        <span class="edit-topics-caption">{{oTopic.name}}</span>
+        <span class="topic-name">{{oTopic.name}}</span>
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
         </ion-reorder-button>
@@ -25,6 +25,7 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
   <!-- <div class="title">Title</div> -->
+  <a class="button button-clear pull-left" ng-click="showReorder()">Reorder</a>
   <h1 class='title' id='edit-topics-footer-center' style='line-height: 100%; padding-top: 6px;'><i id='edit-topics-footer-center-icon'></i></h1>
-  <a id="footer-rigcreate" ui-sref="createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+  <a id="footer-create" ui-sref="createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
 </ion-footer-bar>
