@@ -56,26 +56,6 @@ body {
   padding: 10px;
 }
 
-textarea.noResize { resize:none; }
-
-.list-right-editing .item-right-editable .item-content,.item-right-editing.item-right-editable .item-content {
-  margin-left: 40px !important;
-  margin-right: 0px !important;
-}
-
-.item-right-edit {
-  left: 0 !important;
-  width: 40px !important;
-  right: initial !important;
-
-}
-
-.item-right-editable .item-content {
-  -webkit-transition-property: margin-left !important;
-  -moz-transition-property: margin-left !important;
-  transition-property: margin-left !important;
-}
-
 /*******************************************
  * Menu
  *******************************************/
@@ -239,6 +219,26 @@ div.photo-metadata {
   font-size: 32px;
   top: 5px;
 }
+
+.list .item-content .reorder-adjusted {
+  display: inline-block;
+  -webkit-transition-duration: 250ms;
+  transition-duration: 250ms;
+  -webkit-transition-timing-function: ease-in-out;
+  transition-timing-function: ease-in-out;
+  -webkit-transition-property: -webkit-transform;
+  -moz-transition-property: -moz-transform;
+  transition-property: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.list.list-right-editing .item-content .reorder-adjusted {
+  -webkit-transform: translate3d(50px, 0, 0);
+  transform: translate3d(50px, 0, 0);
+}
+
+textarea.noResize { resize:none; }
 
 /*******************************************
  * Login screen
@@ -684,10 +684,6 @@ button i {
 
 .connector-install-manually {
   color: #666666;
-}
-
-.edit-topics-caption {
-  padding-left: 4em;
 }
 
 /*******************************************

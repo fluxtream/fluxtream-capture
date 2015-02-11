@@ -11,6 +11,9 @@ define([
   appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService', '$rootScope',
     function ($scope, selfReportStorage, $rootScope) {
       $scope.$on('event:initialized', function() {
+        $scope.headerTitle = "Edit Topics";
+        $scope.showReordering = false;
+
         //TODO bug in reordering (if reorder long enough)
         //TODO save order to the DB
         // Delete status icon
@@ -87,21 +90,19 @@ define([
       }
 
       // show reorder button
-//      $scope.showReorder = function (){
-//        console.log("CURRENT VALUE: " + $("#topic-name").attr('class'));
-//
-//        if($(".topic-name").attr('class') === "topic-name"){
-//          console.log("showReorder: show button");
-//          $scope.showReordering = true;
-//          $(".topic-name").attr('class', 'topic-name edit-topics-caption');
-//        } else {
-//          console.log("showReorder: delete button");
-//          $scope.showReordering = false;
-//          $(".topic-name").attr('class', 'topic-name');
-//        }
-//
-//        $scope.$$phase || $scope.$apply();
-//      }
+      $scope.showReorder = function (){
+        if($scope.showReordering === false){
+          $scope.showReordering = true;
+          $scope.headerTitle = "Reorder Topics";
+          $("#footer-reorder").text("Done");
+        } else {
+          $scope.showReordering = false;
+          $scope.headerTitle = "Edit Topics";
+          $("#footer-reorder").text("Reorder");
+        }
+
+        $scope.$$phase || $scope.$apply();
+      }
 
       // Reorder Topics
       $scope.moveItem = function (oTopic, fromIndex, toIndex) {
