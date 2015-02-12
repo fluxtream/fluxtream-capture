@@ -12,6 +12,11 @@ define([
   appModules.controllers.controller('ListTopicsController', ['$scope', '$timeout', 'SelfReportStorageService', '$rootScope',
     function ($scope, $timeout, selfReportStorage, $rootScope) {
       document.title = "Self Report";
+
+      $scope.reconnectCouchDB = function () {
+        alert("Working");
+      };
+
       //showKeyboard
       $scope.$on('event:initialized', function() {
         // Delete status icon
@@ -27,7 +32,10 @@ define([
         // If can not reach couchDB
         $scope.$on('event:offline', function() {
           //TODO test continuous scrolling
-          $("#list-topics-footer-center-icon").attr('class', 'icon ion-alert self-report-footer-icon');
+          $("#list-topics-footer-center-link").append(
+            "<img src='./img/icons/offline.png' height='80%'/>"
+          );
+
           $scope.$$phase || $scope.$apply();
         });
 
@@ -58,7 +66,6 @@ define([
           selfReportStorage.pingCouch();
         }
       });
-
 
       // If can not reach fluxtream-app backend
       $scope.$on('event:initFailed', function() {
