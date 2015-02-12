@@ -94,7 +94,7 @@ define([
         if($scope.showReordering === false){
           $scope.showReordering = true;
           $scope.headerTitle = "Reorder Topics";
-          $("#footer-reorder").text("Done");
+          $("#footer-reorder").text("Edit");
         } else {
           $scope.showReordering = false;
           $scope.headerTitle = "Edit Topics";
