@@ -45,6 +45,7 @@ define([
                 document.getElementById('rangeStartItem').style.display = "";
                 document.getElementById('rangeEndItem').style.display = "";
                 document.getElementById('stepItem').style.display = "";
+                document.getElementById('topic.step').value = "1";
               }
             };
 
