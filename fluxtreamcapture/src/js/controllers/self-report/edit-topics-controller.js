@@ -10,6 +10,61 @@ define([
    */
   appModules.controllers.controller('EditTopicsController', ['$scope', 'SelfReportStorageService', '$rootScope',
     function ($scope, selfReportStorage, $rootScope) {
+      var bIsTopicsSyncFinished = 0;
+      var bIsObservationsSyncFinished = 0;
+      var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
+      var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
+
+      $scope.doPing = function (){
+        selfReportStorage.pingCouch(function (aoTopics) {
+          $scope.aoTopics = aoTopics;
+          bIsTopicsSyncFinished = 1;
+
+          if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
+            console.log("Sync of topics is the last (doPing)");
+            $("#edit-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.$$phase || $scope.$apply();
+            setTimeout(function(){
+              $("#edit-topics-footer-center-icon").attr('class', '');
+              $scope.$$phase || $scope.$apply();
+            },1000);
+          }
+
+          if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
+            console.log("Sync of topics finished and no need of sync detected (doPing)");
+            $("#edit-topics-footer-center-icon").attr('class', '');
+            $scope.$$phase || $scope.$apply();
+          }
+        }, function (aoObservations) {
+          $scope.aoObservations = aoObservations;
+          bIsObservationsSyncFinished = 1;
+
+          if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
+            console.log("Sync of observations is the last (doPing)");
+            $("#edit-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.$$phase || $scope.$apply();
+            setTimeout(function(){
+              $("#edit-topics-footer-center-icon").attr('class', '');
+              $scope.$$phase || $scope.$apply();
+            },1000);
+          }
+
+          if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
+            console.log("Sync of observations finished and no need of sync detected (doPing)");
+            $("#edit-topics-footer-center-icon").attr('class', '');
+            $scope.$$phase || $scope.$apply();
+          }
+        });
+      };
+
+      $scope.reconnectCouchDB = function () {
+        $("#edit-topics-footer-offline-img").remove();
+        $("#edit-topics-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+        $scope.$$phase || $scope.$apply();
+
+        $scope.doPing();
+      };
+      
       $scope.$on('event:initialized', function() {
         $scope.headerTitle = "Edit Topics";
         $scope.showReordering = false;
@@ -27,16 +82,17 @@ define([
 
         // If can not reach couchDB
         $scope.$on('event:offline', function() {
-          //TODO test continuous scrolling
-          $("#edit-topics-footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+          $("#edit-topics-footer-center-icon").attr('class', '');
           $scope.$$phase || $scope.$apply();
-        });
 
-        // If can not reach couchDB
-        $scope.$on('event:offline', function() {
-          //TODO test continuous scrolling
-          $("#edit-topics-footer-center-icon").attr('class', 'icon ion-alert self-report-footer-icon');
-          $scope.$$phase || $scope.$apply();
+
+          if ($('#edit-topics-footer-offline-img').length === 0) {
+            $("#edit-topics-footer-center-link").append(
+              "<img id='edit-topics-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
+            );
+
+            $scope.$$phase || $scope.$apply();
+          }
         });
 
         // Read data from DB if it is empty
@@ -47,32 +103,37 @@ define([
           $scope.$$phase || $scope.$apply();
 
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
-            // Delete status icon
-            $("#edit-topics-footer-center-icon").attr('class', '');
-            $scope.$$phase || $scope.$apply();
-
-            // Check if you are online
-            selfReportStorage.pingCouch();
+            //Delete spinning wheel
+            $("#history-footer-center-icon").attr('class', '');
 
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
           });
         } else {
-          // Check if you are online
-          selfReportStorage.pingCouch();
+          $scope.doPing();
         }
       });
 
       // If can not reach fluxtream-app backend
       $scope.$on('event:initFailed', function() {
-        //TODO test continuous scrolling
-        $("#edit-topics-footer-center-icon").attr('class', 'icon ion-alert-circled self-report-footer-icon');
+        console.log("Init failed (edit-topics-controller)");
+        $("#edit-topics-footer-center-icon").attr('class', '');
         $scope.$$phase || $scope.$apply();
+
+        if ($('#edit-topics-footer-offline-img').length === 0) {
+          $("#edit-topics-footer-center-link").append(
+            "<img id='edit-topics-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
+          );
+
+          $scope.$$phase || $scope.$apply();
+        }
 
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           $scope.$$phase || $scope.$apply();
         });
+
+        $rootScope.$broadcast('event:initialized');
       });
 
       if(!selfReportStorage.isInitialized()) {

@@ -54,6 +54,8 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
   <a id="footer-left" ui-sref="history" class="button button-clear pull-left">Cancel</a>
-  <h1 class='title' id='edit-observation-footer-center' style='line-height: 100%; padding-top: 6px;'><i id='edit-observation-footer-center-icon'></i></h1>
+  <h1 class='title' id='edit-observation-footer-center' style='line-height: 100%; padding-top: 6px;'>
+    <a id='edit-observation-footer-center-link' ng-click='reconnectCouchDB()'><i id='edit-observation-footer-center-icon'></i></a>
+  </h1>
   <a id="footer-right" class="button button-clear pull-right" ng-click="editObservation()">Save</a>
 </ion-footer-bar>

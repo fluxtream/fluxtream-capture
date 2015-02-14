@@ -40,6 +40,9 @@ define([
     var bIsInitialized = 0;
     var bIsTopicsSynced = 0;
     var bIsObservationsSynced = 0;
+    var bIsOffline = 0;
+    var bIsOfflineChangesForTopicsMade = 0;
+    var bIsOfflineChangesForObservationsMade = 0;
     // Client memory values
     var aoCachedTopics;
     var aoCachedObservations;
@@ -172,6 +175,10 @@ define([
      * (Public) Save Topic into storage
      */
     function createTopic(oTopic){
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForTopicsMade = 1;
+      }
+
       // Putting new topic to the end of the array
       oTopic.topicNumber = aoCachedTopics.length;
       aoCachedTopics.push(oTopic);
@@ -195,6 +202,7 @@ define([
           console.log('Successfully saved a Topic on client side (createTopic)');
         } else {
           console.log("Error while saving Topic on the client side (createTopic): " + err);
+          $rootScope.$broadcast('event:internalError');
         }
       });
 
@@ -205,8 +213,10 @@ define([
           // Successfully synced
           console.log("Successfully saved Topic on the server side (createTopic)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
           console.log("Error while saving Topic on the server side (createTopic): " + err);
+          $rootScope.$broadcast('event:offline');
         });
     }
 
@@ -358,6 +368,10 @@ define([
      * (Public) Delete specific Observation
      */
     function deleteObservation(oObservationToRemove) {
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForObservationsMade = 1;
+      }
+
       // Delete observation in memory
       var nObservationsArrayLength = aoCachedObservations.length;
       for (var i = 0; i < nObservationsArrayLength; i++) {
@@ -374,6 +388,7 @@ define([
             console.log('Successfully deleted Observation on client side (deleteObservation)');
           } else {
             console.log("Error while deleting Observation on the client side (deleteObservation): " + err);
+            $rootScope.$broadcast('event:internalError');
           }
         });
       });
@@ -385,8 +400,10 @@ define([
           // Successfully synced
           console.log("Successfully deleted Observation on the server side (deleteObservation)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForObservationsMade = 1;
           console.log("Error while deleting Observation on the server side (deleteObservation): " + err);
+          $rootScope.$broadcast('event:offline');
         });
 
       // Save observation to client delete database
@@ -409,6 +426,7 @@ define([
             console.log('Successfully saved a Observation on client side Delete DB (deleteObservation)');
           } else {
             console.log("Error while saving Observation on the client side Delete DB (deleteObservation): " + err);
+            $rootScope.$broadcast('event:internalError');
           }
         });
 
@@ -420,8 +438,10 @@ define([
           // Successfully synced
           console.log("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForObservationsMade = 1;
           console.log("Error while saving Deleted Observation on the server side Delete DB (deleteObservation): " + err);
+          $rootScope.$broadcast('event:offline');
         });
     }
 
@@ -429,6 +449,11 @@ define([
      * (Public) Delete specific Topic
      */
     function deleteTopic(oTopicToRemove) {
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForTopicsMade = 1;
+        bIsOfflineChangesForObservationsMade = 1;
+      }
+
       //TODO should be optimized to do most of the operations on the server side
       // Delete topic in memory
       var nTopicsArrayLength = aoCachedTopics.length;
@@ -446,6 +471,7 @@ define([
             console.log('Successfully deleted Topic on client side (deleteTopic)');
           } else {
             console.log("Error while deleting Topic on the client side (deleteTopic): " + err);
+            $rootScope.$broadcast('event:internalError');
           }
         });
       });
@@ -457,8 +483,10 @@ define([
           // Successfully synced
           console.log("Successfully deleted Topic on the server side (deleteTopic)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
           console.log("Error while deleting Topic on the server side (deleteTopic): " + err);
+          $rootScope.$broadcast('event:offline');
         });
 
       // Save topic to client delete database
@@ -480,6 +508,7 @@ define([
             console.log('Successfully saved a Topic on client side Delete DB (deleteTopic)');
           } else {
             console.log("Error while saving Topic on the client side Delete DB (deleteTopic): " + err);
+            $rootScope.$broadcast('event:internalError');
           }
         });
 
@@ -491,8 +520,10 @@ define([
           // Successfully synced
           console.log("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
           console.log("Error while saving Deleted Topic on the server side Delete DB (deleteTopic): " + err);
+          $rootScope.$broadcast('event:offline');
         });
 
       // Delete associated observations
@@ -515,6 +546,7 @@ define([
                   console.log('Successfully deleted Observation on client side (deleteTopic)');
                 } else {
                   console.log("Error while deleting Observation on the client side (deleteTopic): " + err);
+                  $rootScope.$broadcast('event:internalError');
                 }
               });
             });
@@ -541,6 +573,7 @@ define([
                   console.log('Successfully saved a Observation on client side Delete DB (deleteTopic)');
                 } else {
                   console.log("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
+                  $rootScope.$broadcast('event:internalError');
                 }
               });
           } else {
@@ -555,8 +588,10 @@ define([
             // Successfully synced
             console.log("Successfully deleted Observations on the server side (deleteTopic)");
           }).on('error', function (err) {
-            // Handle error
+            bIsOffline === 1;
+            bIsOfflineChangesForObservationsMade = 1;
             console.log("Error while deleting Observations on the server side (deleteTopic): " + err);
+            $rootScope.$broadcast('event:offline');
           });
 
         console.log("Saving Deleted Observations on the server side Delete DB (deleteTopic)");
@@ -567,8 +602,10 @@ define([
             // Successfully synced
             console.log("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
           }).on('error', function (err) {
-            // Handle error
+            bIsOffline === 1;
+            bIsOfflineChangesForObservationsMade = 1;
             console.log("Error while saving Deleted Observations on the server side Delete DB (deleteTopic): " + err);
+            $rootScope.$broadcast('event:offline');
           });
       });
     }
@@ -584,6 +621,10 @@ define([
      * (Public) Update Topic in storage
      */
     function updateTopic(oTopic) {
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForTopicsMade = 1;
+      }
+
       //Find Topic
 
       var nTopicsArrayLength = aoCachedTopics.length;
@@ -614,6 +655,7 @@ define([
               console.log('Successfully updated Topic on client side (readObservationsToSync)');
             } else {
               console.log('Error while updating Topic on client side (readObservationsToSync): ' + err);
+              $rootScope.$broadcast('event:internalError');
             }
           });
 
@@ -624,8 +666,10 @@ define([
               // Successfully synced
               console.log("Successfully updated Topic on the server side (readObservationsToSync)");
             }).on('error', function (err) {
-              // Handle error
+              bIsOffline === 1;
+              bIsOfflineChangesForTopicsMade = 1;
               console.log("Error while updating Topic on the server side (readObservationsToSync): " + err);
+              $rootScope.$broadcast('event:offline');
             });
           break;
         }
@@ -636,6 +680,10 @@ define([
     * (Public) Update topics numbers and Sync with a server
     * */
     function updateTopicNumbers(inputTopics) {
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForTopicsMade = 1;
+      }
+
       aoCachedTopics = inputTopics;
 
       var nTopicsArrayLength = aoCachedTopics.length;
@@ -664,6 +712,7 @@ define([
               console.log('Successfully updated Topic number on client side (updateTopicNumbers)');
             } else {
               console.log('Error while updating Topic number on client side (updateTopicNumbers): ' + err);
+              $rootScope.$broadcast('event:internalError');
             }
           });
         })(i);
@@ -677,8 +726,10 @@ define([
           // Successfully synced
           console.log("Successfully updated Topics on the server side (updateTopicNumbers)");
         }).on('error', function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
           console.log("Error while updating Topics on the server side (updateTopicNumbers): " + err);
+          $rootScope.$broadcast('event:offline');
         });
     }
 
@@ -795,6 +846,7 @@ define([
               aoCachedTopics.push(oNextTopic);
             });
             reorderTopics();
+            bIsOfflineChangesForTopicsMade = 0;
             fCallback(aoCachedTopics);
           });
 
@@ -830,6 +882,87 @@ define([
     }
 
     /**
+     * (Public) Sync Topics asynchronously
+     */
+    function syncTopicsAsyncDB(fCallback){
+      console.log("Saving Topic on the server side (syncTopicsAsyncDB)");
+      //Push Topic to the server
+      dbTopics.replicate.to(remoteCouchTopicsAddress)
+        .on('complete', function () {
+          // Successfully synced
+          console.log("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
+          // Get Topics from the server and save locally
+          dbTopics.replicate.from(remoteCouchTopicsAddress)
+            .on('complete', function () {
+              // Successfully synced
+              console.log("Successfully read Topics from the server side (syncTopicsAsyncDB)");
+
+              bIsTopicsSynced = 1;
+              aoCachedTopics = [];
+
+              // Read all docs into memory
+              dbTopics.allDocs({include_docs: true}, function(err, response) {
+                response.rows.forEach( function (row)
+                {
+                  //console.log(row.doc.name);
+                  var oNextTopic = new Topic(
+                    row.doc._id,
+                    row.doc.creationTime,
+                    row.doc.updateTime,
+                    row.doc.name,
+                    row.doc.type,
+                    row.doc.defaultValue,
+                    row.doc.rangeStart,
+                    row.doc.rangeEnd,
+                    row.doc.step,
+                    row.doc.topicNumber
+                  );
+
+                  aoCachedTopics.push(oNextTopic);
+                });
+                reorderTopics();
+                bIsOfflineChangesForTopicsMade = 0;
+                fCallback(aoCachedTopics);
+              });
+
+            }).on('error',  function (err) {
+              // Handle error
+              console.log("OFFLINE Error while reading Topics on the server side (syncTopicsAsyncDB): " + err);
+              aoCachedTopics = [];
+
+              // Read all docs into memory
+              dbTopics.allDocs({include_docs: true}, function(err, response) {
+                response.rows.forEach( function (row)
+                {
+                  //console.log(row.doc.name);
+                  var oNextTopic = new Topic(
+                    row.doc._id,
+                    row.doc.creationTime,
+                    row.doc.updateTime,
+                    row.doc.name,
+                    row.doc.type,
+                    row.doc.defaultValue,
+                    row.doc.rangeStart,
+                    row.doc.rangeEnd,
+                    row.doc.step,
+                    row.doc.topicNumber
+                  );
+
+                  aoCachedTopics.push(oNextTopic);
+                });
+                reorderTopics();
+                fCallback(aoCachedTopics);
+              });
+            });
+        }).on('error', function (err) {
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
+          console.log("Error while saving Topic on the server side (createTopic): " + err);
+          $rootScope.$broadcast('event:offline');
+        });
+    }
+
+    /**
      * (Public) Get Topics synchronously
      */
     function readTopicsSyncDB(){
@@ -842,8 +975,10 @@ define([
           // Successfully synced
           console.log("Successfully read Topics from the server side (readTopicsSyncDB)");
         }).on('error',  function (err) {
-          // Handle error
+          bIsOffline === 1;
+          bIsOfflineChangesForTopicsMade = 1;
           console.log("Error while reading Topics on the server side (readTopicsSyncDB): " + err);
+          $rootScope.$broadcast('event:offline');
         });
 
       // Read all docs into memory
@@ -887,6 +1022,7 @@ define([
 
           bIsObservationsSynced = 1;
           aoCachedObservations = [];
+          bIsOfflineChangesForObservationsMade = 0;
 
           // Read all docs into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
@@ -943,6 +1079,91 @@ define([
         });
     }
 
+      /**
+       * (Public) Sync Observations asynchronously
+       */
+      function syncObservationsAsyncDB(fCallback){
+
+        // Save observation to server side
+        console.log("Saving Observation on the server side (syncObservationsAsyncDB)");
+        //Push Observation to the server
+        dbObservations.replicate.to(remoteCouchObservationsAddress)
+          .on('complete', function () {
+            // Successfully synced
+            console.log("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
+
+            // Get Observations from the server and save locally
+            dbObservations.replicate.from(remoteCouchObservationsAddress)
+              .on('complete', function () {
+                // Successfully synced
+                console.log("Successfully read Observations on the server side (syncObservationsAsyncDB)");
+
+                bIsObservationsSynced = 1;
+                aoCachedObservations = [];
+                bIsOfflineChangesForObservationsMade = 0;
+
+                // Read all docs into memory
+                dbObservations.allDocs({include_docs: true}, function(err, response) {
+                  response.rows.forEach( function (row)
+                  {
+                    //console.log(row.doc.name);
+                    var oNextObservation = new Observation(
+                      row.doc._id,
+                      row.doc.topicId,
+                      row.doc.value,
+                      row.doc.creationDate,
+                      row.doc.creationTime,
+                      row.doc.observationDate,
+                      row.doc.observationTime,
+                      row.doc.updateTime,
+                      row.doc.timezone,
+                      row.doc.comment
+                    );
+
+                    aoCachedObservations.push(oNextObservation);
+                  });
+                  // Put pre-processing of data
+                  fCallback(aoCachedObservations);
+                });
+              }).on('error',  function (err) {
+                aoCachedObservations = [];
+
+                // Handle error
+                console.log("OFFLINE Error while reading Observations on the server side (syncObservationsAsyncDB): " + err);
+
+                // Read all docs into memory
+                dbObservations.allDocs({include_docs: true}, function(err, response) {
+                  response.rows.forEach( function (row)
+                  {
+                    //console.log(row.doc.name);
+                    var oNextObservation = new Observation(
+                      row.doc._id,
+                      row.doc.topicId,
+                      row.doc.value,
+                      row.doc.creationDate,
+                      row.doc.creationTime,
+                      row.doc.observationDate,
+                      row.doc.observationTime,
+                      row.doc.updateTime,
+                      row.doc.timezone,
+                      row.doc.comment
+                    );
+
+                    aoCachedObservations.push(oNextObservation);
+                  });
+                  // Put pre-processing of data
+                  fCallback(aoCachedObservations);
+                });
+              });
+
+          }).on('error', function (err) {
+            bIsOffline === 1;
+            bIsOfflineChangesForObservationsMade = 1;
+            console.log("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
+            $rootScope.$broadcast('event:offline');
+          });
+      }
+
 
     /**
      * (Public) Find unique dates in the array
@@ -979,6 +1200,10 @@ define([
      * (Public) Save Observation
      */
     function createObservation(oObservation) {
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForObservationsMade = 1;
+      }
+
       aoCachedObservations.push(oObservation);
 
       // Save observation to client database
@@ -1000,6 +1225,7 @@ define([
             console.log("Successfully saved Observation on client side (createObservation)");
           } else {
             console.log("Error while saving Observation on client side (createObservation)" + err);
+            $rootScope.$broadcast('event:internalError');
           }
         });
 
@@ -1011,8 +1237,10 @@ define([
             // Successfully synced
             console.log("Successfully saved Observation on the server side (createObservation)");
           }).on('error', function (err) {
-            // Handle error
+            bIsOffline === 1;
+            bIsOfflineChangesForObservationsMade = 1;
             console.log("Error while saving Observation on the server side (createObservation): " + err);
+            $rootScope.$broadcast('event:offline');
           });
     }
 
@@ -1072,7 +1300,6 @@ define([
           console.log("Successfully saved Observation on the server side (syncObservationsServer)");
           $rootScope.$broadcast('event:observations-synced-with-server');
         }).on('error', function (err) {
-          // Handle error
           console.log("Error while saving Observation on the server side (syncObservationsServer): " + err);
           $rootScope.$broadcast('event:observations-sync-server-problem');
         });
@@ -1107,7 +1334,7 @@ define([
     /*
     * (Public) Check if CouchDB is reachable
     * */
-    function pingCouch(){
+    function pingCouch(fCallbackTopics, fCallbackObservation){
       var sCouchAddress = env['fluxtream.couch.login.url'];
       sCouchAddress = sCouchAddress.slice( 1 );
 
@@ -1119,23 +1346,57 @@ define([
 
           if(result.couchdb === "Welcome"){
             console.log("You are online (pingCouch): ");
+            bIsOffline = 0;
+
+            // If there were changes in offline mode we need to sync them
+            if(bIsOfflineChangesForTopicsMade === 1){
+              syncTopicsAsyncDB(fCallbackTopics);
+            } else {
+              fCallbackTopics(aoCachedTopics);
+            }
+
+            if(bIsOfflineChangesForObservationsMade === 1){
+              syncObservationsAsyncDB(fCallbackObservation);
+            } else {
+              fCallbackObservation(aoCachedObservations);
+            }
           } else {
             console.log("You are offline (pingCouch): ");
+            bIsOffline = 1;
             $rootScope.$broadcast('event:offline');
           }
 
         },
         error: function(result) {
           console.log("You are offline (pingCouch): ");
+          bIsOffline = 1;
           $rootScope.$broadcast('event:offline');
         }
       });
     }
 
     /**
+     * (Public) Read bIsOfflineChangesForTopicsMade from memory
+     */
+    function getOfflineChangesForTopicsMade(){
+      return bIsOfflineChangesForTopicsMade;
+    }
+
+    /**
+     * (Public) Read bIsOfflineChangesForObservationsMade from memory
+     */
+    function getOfflineChangesForObservationsMade(){
+      return bIsOfflineChangesForObservationsMade;
+    }
+
+    /**
      * (Public) Update Observation
      */
     function updateObservation(sObservationId, oObservation){
+      if (bIsOffline === 1) {
+        bIsOfflineChangesForObservationsMade = 1;
+      }
+
       var nNumberOfObservations = aoCachedObservations.length;
       var sNextId;
       for(var i=0; i<nNumberOfObservations; i++) {
@@ -1166,6 +1427,7 @@ define([
               console.log('Successfully updated Observation on client side (updateObservation)');
             } else {
               console.log('Error while updating Observation on client side (updateObservation): ' + err);
+              $rootScope.$broadcast('event:internalError');
             }
           });
 
@@ -1176,8 +1438,10 @@ define([
               // Successfully synced
               console.log("Successfully updated Observation on the server side (updateObservation)");
             }).on('error', function (err) {
-              // Handle error
+              bIsOffline === 1;
+              bIsOfflineChangesForObservationsMade = 1;
               console.log("Error while updating Observation on the server side (updateObservation): " + err);
+              $rootScope.$broadcast('event:offline');
             });
           break;
         }
@@ -1191,8 +1455,10 @@ define([
       //TODO create delete operations for the Topics and Observations
       readTopicsAsync: readTopicsAsync,
       readTopicsAsyncDB: readTopicsAsyncDB,
+      syncTopicsAsyncDB: syncTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
       readObservationsAsyncDB: readObservationsAsyncDB,
+      syncObservationsAsyncDB: syncObservationsAsyncDB,
       readTopicsSyncDB: readTopicsSyncDB,
       readTopicAsync: readTopicAsync,
 
@@ -1225,8 +1491,9 @@ define([
       isTopicsSynced: isTopicsSynced,
       isObservationsSynced: isObservationsSynced,
 
-
-      pingCouch: pingCouch
+      pingCouch: pingCouch,
+      getOfflineChangesForObservationsMade: getOfflineChangesForObservationsMade,
+      getOfflineChangesForTopicsMade: getOfflineChangesForTopicsMade
     };
 
   }]);

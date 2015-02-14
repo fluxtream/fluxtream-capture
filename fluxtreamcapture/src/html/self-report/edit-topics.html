@@ -28,6 +28,8 @@
 <ion-footer-bar class="bar-dark">
   <!-- <div class="title">Title</div> -->
   <a id="footer-reorder" class="button button-clear pull-left" ng-click="showReorder()">Reorder</a>
-  <h1 class='title' id='edit-topics-footer-center' style='line-height: 100%; padding-top: 6px;'><i id='edit-topics-footer-center-icon'></i></h1>
+  <h1 class='title' id='edit-topics-footer-center' style='line-height: 100%; padding-top: 6px;'>
+    <a id='edit-topics-footer-center-link' ng-click='reconnectCouchDB()'><i id='edit-topics-footer-center-icon'></i></a>
+  </h1>
   <a id="footer-create" ui-sref="createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
 </ion-footer-bar>
