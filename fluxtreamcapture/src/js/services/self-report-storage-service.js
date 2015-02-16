@@ -823,7 +823,7 @@ define([
           forge.logging.info("Successfully read Topics from the server side (readTopicsAsyncDB)");
 
           bIsTopicsSynced = 1;
-          aoCachedTopics = [];
+          var newTopicList = [];
 
           // Read all docs into memory
           dbTopics.allDocs({include_docs: true}, function(err, response) {
@@ -843,10 +843,11 @@ define([
                 row.doc.topicNumber
               );
 
-              aoCachedTopics.push(oNextTopic);
+              newTopicList.push(oNextTopic);
             });
             reorderTopics();
             bIsOfflineChangesForTopicsMade = 0;
+            aoCachedTopics = newTopicList;
             fCallback(aoCachedTopics);
           });
 
