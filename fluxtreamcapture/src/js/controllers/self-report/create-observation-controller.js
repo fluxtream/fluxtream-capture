@@ -215,7 +215,6 @@ define([
           $scope.goBack = function () {
             //Hide Keyboard
             forge.internal.call('flx_toggle_keyboard.hideKeyboard');
-            $state.go("listTopics");
           };
 
         });
