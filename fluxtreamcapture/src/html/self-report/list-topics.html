@@ -1,20 +1,30 @@
 <ion-view title="Make Observation">
-
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
-
   </ion-nav-bar>
-
-  <ion-content>
-
-    <ion-list>
-      <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="createObservation({topicId: oTopic.id})" type="item-link">
-        {{oTopic.name}}
-      </ion-item>
-    </ion-list>
+  
+  <ion-content class="padding">
+    <div class="flx-reload-icon" ng-if="loading"></div>
+    <div ng-if="!loading && !aoTopics.length">
+      <div class="padding text-center">
+        Create a new topic and start making observations.
+      </div>
+      <button ui-sref="createTopic" class="button button-positive create-topic-button">
+        Create a new topic
+      </button>
+    </div>
+    <div ng-if="!loading && aoTopics.length">
+      <div class="text-center padding">
+        Tap a topic to make a new observation.
+      </div>
+      <ion-list>
+        <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="createObservation({topicId: oTopic.id})" type="item-link">
+          {{oTopic.name}}
+        </ion-item>
+      </ion-list>
+    </div>
   </ion-content>
 </ion-view>
 

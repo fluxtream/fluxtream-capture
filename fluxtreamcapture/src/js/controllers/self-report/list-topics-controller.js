@@ -12,7 +12,10 @@ define([
   appModules.controllers.controller('ListTopicsController', ['$scope', '$timeout', 'SelfReportStorageService', '$rootScope',
     function ($scope, $timeout, selfReportStorage, $rootScope) {
       document.title = "Self Report";
-
+      
+      // True as long as the topic list is loading
+      $scope.loading = true;
+      
       var bIsTopicsSyncFinished = 0;
       var bIsObservationsSyncFinished = 0;
       var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
@@ -22,6 +25,8 @@ define([
         selfReportStorage.pingCouch(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           bIsTopicsSyncFinished = 1;
+          $scope.loading = false;
+          $scope.$$phase || $scope.$apply();
 
           if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
             forge.logging.info("Sync of topics is the last");
@@ -97,10 +102,11 @@ define([
           // Set status icon to spinning wheel
           $("#list-topics-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
           $scope.$$phase || $scope.$apply();
-
+          
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             //Delete spinning wheel
             $("#list-topics-footer-center-icon").attr('class', '');
+            $scope.loading = false;
             $scope.$$phase || $scope.$apply();
 
             //If list is empty show add button
@@ -129,9 +135,10 @@ define([
 
           $scope.$$phase || $scope.$apply();
         }
-
+        
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
+          $scope.loading = false;
           $scope.$$phase || $scope.$apply();
         });
 
