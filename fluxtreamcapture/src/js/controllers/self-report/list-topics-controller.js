@@ -24,7 +24,7 @@ define([
           bIsTopicsSyncFinished = 1;
 
           if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
-            console.log("Sync of topics is the last");
+            forge.logging.info("Sync of topics is the last");
             $("#list-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
@@ -34,7 +34,7 @@ define([
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-            console.log("Sync of topics finished and no need of sync detected");
+            forge.logging.info("Sync of topics finished and no need of sync detected");
             $("#list-topics-footer-center-icon").attr('class', '');
             $scope.$$phase || $scope.$apply();
           }
@@ -43,7 +43,7 @@ define([
           bIsObservationsSyncFinished = 1;
 
           if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
-            console.log("Sync of observations is the last");
+            forge.logging.info("Sync of observations is the last");
             $("#list-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
@@ -53,7 +53,7 @@ define([
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-            console.log("Sync of observations finished and no need of sync detected");
+            forge.logging.info("Sync of observations finished and no need of sync detected");
             $("#list-topics-footer-center-icon").attr('class', '');
             $scope.$$phase || $scope.$apply();
           }
@@ -118,7 +118,7 @@ define([
 
       // If can not reach fluxtream-app backend
       $scope.$on('event:initFailed', function() {
-        console.log("Init failed (list-topics-controller)");
+        forge.logging.error("Init failed (list-topics-controller)");
         $("#list-topics-footer-center-icon").attr('class', '');
         $scope.$$phase || $scope.$apply();
 
@@ -140,7 +140,7 @@ define([
 
       // If can not save to PouchDB
       $scope.$on('event:internalError', function() {
-        console.log("Can not save to PouchDB");
+        forge.logging.error("Can not save to PouchDB");
         $("#list-topics-footer-center-icon").attr('class', 'icon ion-android-alert self-report-footer-icon');
         $scope.$$phase || $scope.$apply();
       });

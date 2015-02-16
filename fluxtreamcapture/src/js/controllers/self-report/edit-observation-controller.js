@@ -61,7 +61,7 @@ define([
             bIsTopicsSyncFinished = 1;
 
             if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
-              console.log("Sync of topics is the last");
+              forge.logging.info("Sync of topics is the last");
               $("#edit-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
               $scope.$$phase || $scope.$apply();
               setTimeout(function(){
@@ -71,7 +71,7 @@ define([
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of topics finished and no need of sync detected");
+              forge.logging.info("Sync of topics finished and no need of sync detected");
               $("#edit-observation-footer-center-icon").attr('class', '');
               $scope.$$phase || $scope.$apply();
             }
@@ -80,7 +80,7 @@ define([
             bIsObservationsSyncFinished = 1;
 
             if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of observations is the last");
+              forge.logging.info("Sync of observations is the last");
               $("#edit-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
               $scope.$$phase || $scope.$apply();
               setTimeout(function(){
@@ -90,7 +90,7 @@ define([
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of observations finished and no need of sync detected");
+              forge.logging.info("Sync of observations finished and no need of sync detected");
               $("#edit-observation-footer-center-icon").attr('class', '');
               $scope.$$phase || $scope.$apply();
             }
@@ -214,10 +214,10 @@ define([
             confirmPopup.then(function(res) {
               if(res) {
                 selfReportStorage.deleteObservation($scope.oObservation);
-                console.log("Observation deleted");
+                forge.logging.info("Observation deleted");
                 $state.go("history");
               } else {
-                console.log('Observation deletion canceled');
+                forge.logging.info('Observation deletion canceled');
               }
             });
           }
@@ -259,7 +259,7 @@ define([
 
         // If can not reach fluxtream-app backend
         $scope.$on('event:initFailed', function() {
-          console.log("Init failed (edit-observation-controller)");
+          forge.logging.error("Init failed (edit-observation-controller)");
           $("#edit-observation-footer-center-icon").attr('class', '');
           $scope.$$phase || $scope.$apply();
 

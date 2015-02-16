@@ -81,7 +81,7 @@ define([
             withCredentials: true
           },
           success: function(result) {
-            console.log("Successfully created CouchDB (initialize)");
+            forge.logging.info("Successfully created CouchDB (initialize)");
             // Get token and user name
             userLogin = result.user_login;
             userCouchDBToken = result.user_token;
@@ -96,14 +96,14 @@ define([
             $rootScope.$broadcast('event:initialized');
           },
           error: function(result) {
-            console.log("Error while creating CouchDB (initialize): ");
+            forge.logging.error("Error while creating CouchDB (initialize): ");
             console.dir(result);
             $rootScope.$broadcast('event:initFailed');
           }
         });
       } else {
         $rootScope.$broadcast('event:initialized');
-        console.log("Already initialized (initialize)");
+        forge.logging.info("Already initialized (initialize)");
       }
     }
 
@@ -184,7 +184,7 @@ define([
       aoCachedTopics.push(oTopic);
 
       // Save topic to client database
-      console.log("Saving Topic on the client side (createTopic)");
+      forge.logging.info("Saving Topic on the client side (createTopic)");
       dbTopics.put({
           _id: oTopic.id,
           creationTime: oTopic.creationTime.toISOString(),
@@ -199,23 +199,23 @@ define([
 
         function callback(err, result) {
         if (!err) {
-          console.log('Successfully saved a Topic on client side (createTopic)');
+          forge.logging.info('Successfully saved a Topic on client side (createTopic)');
         } else {
-          console.log("Error while saving Topic on the client side (createTopic): " + err);
+          forge.logging.error("Error while saving Topic on the client side (createTopic): " + err);
           $rootScope.$broadcast('event:internalError');
         }
       });
 
-      console.log("Saving Topic on the server side (createTopic)");
+      forge.logging.info("Saving Topic on the server side (createTopic)");
       //Push Topic to the server
       dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Topic on the server side (createTopic)");
+          forge.logging.info("Successfully saved Topic on the server side (createTopic)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while saving Topic on the server side (createTopic): " + err);
+          forge.logging.error("Error while saving Topic on the server side (createTopic): " + err);
           $rootScope.$broadcast('event:offline');
         });
     }
@@ -225,7 +225,7 @@ define([
      */
     function readTopic(sTopicId){
       if(!aoCachedTopics){
-        console.log("Reading from empty list of Topics (readTopic)");
+        forge.logging.info("Reading from empty list of Topics (readTopic)");
       }
 
       var oTopic = aoCachedTopics.filter(function(oEntry){
@@ -245,7 +245,7 @@ define([
         dbTopics.allDocs({include_docs: true}, function(err, response) {
           response.rows.forEach( function (row)
           {
-            //console.log(row.doc.name);
+            //forge.logging.info(row.doc.name);
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -266,7 +266,7 @@ define([
           // get data from the server
 
           if(aoCachedTopics.length === 0) {
-            console.log("Accessing wrong link (readTopicsDB)");
+            forge.logging.info("Accessing wrong link (readTopicsDB)");
           }
 
           reorderTopics();
@@ -290,7 +290,7 @@ define([
         dbTopics.allDocs({include_docs: true}, function(err, response) {
           response.rows.forEach( function (row)
           {
-            //console.log(row.doc.name);
+            //forge.logging.info(row.doc.name);
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -311,7 +311,7 @@ define([
           dbObservations.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //console.log(row.doc.name);
+              //forge.logging.info(row.doc.name);
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -332,7 +332,7 @@ define([
           });
 
           if((aoCachedTopics.length === 0) || (aoCachedObservations.length === 0)){
-            console.log("Accessing wrong link (readDBState)");
+            forge.logging.info("Accessing wrong link (readDBState)");
           }
         });
 
@@ -385,29 +385,29 @@ define([
       dbObservations.get(oObservationToRemove.id, function(err, oObservation) {
         dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
           if (!err) {
-            console.log('Successfully deleted Observation on client side (deleteObservation)');
+            forge.logging.info('Successfully deleted Observation on client side (deleteObservation)');
           } else {
-            console.log("Error while deleting Observation on the client side (deleteObservation): " + err);
+            forge.logging.error("Error while deleting Observation on the client side (deleteObservation): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
       });
 
-      console.log("Deleting Observation on the server side (deleteObservation)");
+      forge.logging.info("Deleting Observation on the server side (deleteObservation)");
       //Push Observation deletion to the server
       dbObservations.replicate.to(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully deleted Observation on the server side (deleteObservation)");
+          forge.logging.info("Successfully deleted Observation on the server side (deleteObservation)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
-          console.log("Error while deleting Observation on the server side (deleteObservation): " + err);
+          forge.logging.error("Error while deleting Observation on the server side (deleteObservation): " + err);
           $rootScope.$broadcast('event:offline');
         });
 
       // Save observation to client delete database
-      console.log("Saving Observation on the client side (deleteObservation)");
+      forge.logging.info("Saving Observation on the client side (deleteObservation)");
       dbDeleteObservations.put({
           _id: oObservationToRemove.id + oObservationToRemove.creationDate + oObservationToRemove.creationTime,
           _rev: oObservationToRemove._rev,
@@ -423,24 +423,24 @@ define([
 
         function callback(err, result) {
           if (!err) {
-            console.log('Successfully saved a Observation on client side Delete DB (deleteObservation)');
+            forge.logging.info('Successfully saved a Observation on client side Delete DB (deleteObservation)');
           } else {
-            console.log("Error while saving Observation on the client side Delete DB (deleteObservation): " + err);
+            forge.logging.error("Error while saving Observation on the client side Delete DB (deleteObservation): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
-      console.log("Saving Topic on the server side (deleteObservation)");
+      forge.logging.info("Saving Topic on the server side (deleteObservation)");
       //Push Topic to the server
       //TODO maybe not replication, but just push changes
       dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
+          forge.logging.info("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
-          console.log("Error while saving Deleted Observation on the server side Delete DB (deleteObservation): " + err);
+          forge.logging.error("Error while saving Deleted Observation on the server side Delete DB (deleteObservation): " + err);
           $rootScope.$broadcast('event:offline');
         });
     }
@@ -468,29 +468,29 @@ define([
       dbTopics.get(oTopicToRemove.id, function(err, oTopic) {
         dbTopics.remove(oTopic._id, oTopic._rev, function(err, response) {
           if (!err) {
-            console.log('Successfully deleted Topic on client side (deleteTopic)');
+            forge.logging.info('Successfully deleted Topic on client side (deleteTopic)');
           } else {
-            console.log("Error while deleting Topic on the client side (deleteTopic): " + err);
+            forge.logging.error("Error while deleting Topic on the client side (deleteTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
       });
 
-      console.log("Deleting Topic on the server side (deleteTopic)");
+      forge.logging.info("Deleting Topic on the server side (deleteTopic)");
       //Push Topic deletion to the server
       dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully deleted Topic on the server side (deleteTopic)");
+          forge.logging.info("Successfully deleted Topic on the server side (deleteTopic)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while deleting Topic on the server side (deleteTopic): " + err);
+          forge.logging.error("Error while deleting Topic on the server side (deleteTopic): " + err);
           $rootScope.$broadcast('event:offline');
         });
 
       // Save topic to client delete database
-      console.log("Saving Topic on the client side (deleteTopic)");
+      forge.logging.info("Saving Topic on the client side (deleteTopic)");
       dbDeleteTopics.put({
           _id: oTopicToRemove.id + oTopicToRemove.creationTime,
           creationTime: oTopicToRemove.creationTime,
@@ -505,24 +505,24 @@ define([
 
         function callback(err, result) {
           if (!err) {
-            console.log('Successfully saved a Topic on client side Delete DB (deleteTopic)');
+            forge.logging.info('Successfully saved a Topic on client side Delete DB (deleteTopic)');
           } else {
-            console.log("Error while saving Topic on the client side Delete DB (deleteTopic): " + err);
+            forge.logging.error("Error while saving Topic on the client side Delete DB (deleteTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
-      console.log("Saving Topic on the server side (deleteTopic)");
+      forge.logging.info("Saving Topic on the server side (deleteTopic)");
       //Push Topic to the server
       //TODO maybe not replication, but just push changes
       dbDeleteTopics.replicate.to(remoteCouchDeletedTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
+          forge.logging.info("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while saving Deleted Topic on the server side Delete DB (deleteTopic): " + err);
+          forge.logging.error("Error while saving Deleted Topic on the server side Delete DB (deleteTopic): " + err);
           $rootScope.$broadcast('event:offline');
         });
 
@@ -543,18 +543,18 @@ define([
             dbObservations.get(oNextObservationToDelete.id, function(err, oObservation) {
               dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
                 if (!err) {
-                  console.log('Successfully deleted Observation on client side (deleteTopic)');
+                  forge.logging.info('Successfully deleted Observation on client side (deleteTopic)');
                 } else {
-                  console.log("Error while deleting Observation on the client side (deleteTopic): " + err);
+                  forge.logging.error("Error while deleting Observation on the client side (deleteTopic): " + err);
                   $rootScope.$broadcast('event:internalError');
                 }
               });
             });
 
-            console.log("oNextObservationToDelete:");
-            console.log(oNextObservationToDelete);
+            forge.logging.info("oNextObservationToDelete:");
+            forge.logging.info(oNextObservationToDelete);
             // Add Observation for Deletion DB
-            console.log("Saving Observation on the client side (deleteTopic)");
+            forge.logging.info("Saving Observation on the client side (deleteTopic)");
             dbDeleteObservations.put({
               _id: oNextObservationToDelete.id + oNextObservationToDelete.creationDate + oNextObservationToDelete.creationTime,
               _rev: oNextObservationToDelete._rev,
@@ -570,9 +570,9 @@ define([
 
               function callback(err, result) {
                 if (!err) {
-                  console.log('Successfully saved a Observation on client side Delete DB (deleteTopic)');
+                  forge.logging.info('Successfully saved a Observation on client side Delete DB (deleteTopic)');
                 } else {
-                  console.log("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
+                  forge.logging.error("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
                   $rootScope.$broadcast('event:internalError');
                 }
               });
@@ -581,30 +581,30 @@ define([
           }
         }
 
-        console.log("Deleting Observations on the server side (deleteTopic)");
+        forge.logging.info("Deleting Observations on the server side (deleteTopic)");
         //Push Observations deletion to the server
         dbObservations.replicate.to(remoteCouchObservationsAddress)
           .on('complete', function () {
             // Successfully synced
-            console.log("Successfully deleted Observations on the server side (deleteTopic)");
+            forge.logging.info("Successfully deleted Observations on the server side (deleteTopic)");
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
-            console.log("Error while deleting Observations on the server side (deleteTopic): " + err);
+            forge.logging.error("Error while deleting Observations on the server side (deleteTopic): " + err);
             $rootScope.$broadcast('event:offline');
           });
 
-        console.log("Saving Deleted Observations on the server side Delete DB (deleteTopic)");
+        forge.logging.info("Saving Deleted Observations on the server side Delete DB (deleteTopic)");
         //Push deleted observations to the server
         //TODO maybe not replication, but just push changes
         dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
           .on('complete', function () {
             // Successfully synced
-            console.log("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
+            forge.logging.info("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
-            console.log("Error while saving Deleted Observations on the server side Delete DB (deleteTopic): " + err);
+            forge.logging.error("Error while saving Deleted Observations on the server side Delete DB (deleteTopic): " + err);
             $rootScope.$broadcast('event:offline');
           });
       });
@@ -633,7 +633,7 @@ define([
           aoCachedTopics[i] = oTopic;
 
           // Save topic to client database
-          console.log("Updating Topic on the client side (readObservationsToSync)");
+          forge.logging.info("Updating Topic on the client side (readObservationsToSync)");
           // TODO what kind of changes could happen???
 
           dbTopics.get(oTopic.id).then(function(oTopicDB) {
@@ -652,23 +652,23 @@ define([
             });
           }, function(err, response) {
             if (!err) {
-              console.log('Successfully updated Topic on client side (readObservationsToSync)');
+              forge.logging.info('Successfully updated Topic on client side (readObservationsToSync)');
             } else {
-              console.log('Error while updating Topic on client side (readObservationsToSync): ' + err);
+              forge.logging.error('Error while updating Topic on client side (readObservationsToSync): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
           });
 
-          console.log("Updating Topic on the server side (readObservationsToSync)");
+          forge.logging.info("Updating Topic on the server side (readObservationsToSync)");
           //Push Observation to the server
           dbTopics.replicate.to(remoteCouchTopicsAddress)
             .on('complete', function () {
               // Successfully synced
-              console.log("Successfully updated Topic on the server side (readObservationsToSync)");
+              forge.logging.info("Successfully updated Topic on the server side (readObservationsToSync)");
             }).on('error', function (err) {
               bIsOffline === 1;
               bIsOfflineChangesForTopicsMade = 1;
-              console.log("Error while updating Topic on the server side (readObservationsToSync): " + err);
+              forge.logging.error("Error while updating Topic on the server side (readObservationsToSync): " + err);
               $rootScope.$broadcast('event:offline');
             });
           break;
@@ -709,26 +709,26 @@ define([
             });
           }, function (err, response) {
             if (!err) {
-              console.log('Successfully updated Topic number on client side (updateTopicNumbers)');
+              forge.logging.info('Successfully updated Topic number on client side (updateTopicNumbers)');
             } else {
-              console.log('Error while updating Topic number on client side (updateTopicNumbers): ' + err);
+              forge.logging.error('Error while updating Topic number on client side (updateTopicNumbers): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
           });
         })(i);
       }
 
-      console.log('Successfully updated Topics numbers on client side (updateTopicNumbers)');
-      console.log("Updating Topic on the server side (updateTopicNumbers)");
+      forge.logging.info('Successfully updated Topics numbers on client side (updateTopicNumbers)');
+      forge.logging.info("Updating Topic on the server side (updateTopicNumbers)");
       //Push Observation to the server
       dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully updated Topics on the server side (updateTopicNumbers)");
+          forge.logging.info("Successfully updated Topics on the server side (updateTopicNumbers)");
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while updating Topics on the server side (updateTopicNumbers): " + err);
+          forge.logging.error("Error while updating Topics on the server side (updateTopicNumbers): " + err);
           $rootScope.$broadcast('event:offline');
         });
     }
@@ -800,15 +800,15 @@ define([
      * Actions on reading complete from server database
      */
     function onGetComplete(info) {
-      console.log("Successfully read Topics from the server (onGetComplete)");
+      forge.logging.info("Successfully read Topics from the server (onGetComplete)");
     }
 
     /**
      * Actions if failed to read Topics from server database
      */
     function onGetError(){
-      console.log("Error while reading Topics from the server (onGetError)");
-      console.log(err);
+      forge.logging.error("Error while reading Topics from the server (onGetError)");
+      forge.logging.error(err);
     }
 
     /**
@@ -820,7 +820,7 @@ define([
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Topics from the server side (readTopicsAsyncDB)");
+          forge.logging.info("Successfully read Topics from the server side (readTopicsAsyncDB)");
 
           bIsTopicsSynced = 1;
           aoCachedTopics = [];
@@ -829,7 +829,7 @@ define([
           dbTopics.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //console.log(row.doc.name);
+              //forge.logging.info(row.doc.name);
               var oNextTopic = new Topic(
                 row.doc._id,
                 row.doc.creationTime,
@@ -852,14 +852,14 @@ define([
 
         }).on('error',  function (err) {
           // Handle error
-          console.log("OFFLINE Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
+          forge.logging.error("OFFLINE Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
           aoCachedTopics = [];
 
           // Read all docs into memory
           dbTopics.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //console.log(row.doc.name);
+              //forge.logging.info(row.doc.name);
               var oNextTopic = new Topic(
                 row.doc._id,
                 row.doc.creationTime,
@@ -885,17 +885,17 @@ define([
      * (Public) Sync Topics asynchronously
      */
     function syncTopicsAsyncDB(fCallback){
-      console.log("Saving Topic on the server side (syncTopicsAsyncDB)");
+      forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
       //Push Topic to the server
       dbTopics.replicate.to(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
+          forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
           // Get Topics from the server and save locally
           dbTopics.replicate.from(remoteCouchTopicsAddress)
             .on('complete', function () {
               // Successfully synced
-              console.log("Successfully read Topics from the server side (syncTopicsAsyncDB)");
+              forge.logging.info("Successfully read Topics from the server side (syncTopicsAsyncDB)");
 
               bIsTopicsSynced = 1;
               aoCachedTopics = [];
@@ -904,7 +904,7 @@ define([
               dbTopics.allDocs({include_docs: true}, function(err, response) {
                 response.rows.forEach( function (row)
                 {
-                  //console.log(row.doc.name);
+                  //forge.logging.info(row.doc.name);
                   var oNextTopic = new Topic(
                     row.doc._id,
                     row.doc.creationTime,
@@ -927,14 +927,14 @@ define([
 
             }).on('error',  function (err) {
               // Handle error
-              console.log("OFFLINE Error while reading Topics on the server side (syncTopicsAsyncDB): " + err);
+              forge.logging.error("OFFLINE Error while reading Topics on the server side (syncTopicsAsyncDB): " + err);
               aoCachedTopics = [];
 
               // Read all docs into memory
               dbTopics.allDocs({include_docs: true}, function(err, response) {
                 response.rows.forEach( function (row)
                 {
-                  //console.log(row.doc.name);
+                  //forge.logging.info(row.doc.name);
                   var oNextTopic = new Topic(
                     row.doc._id,
                     row.doc.creationTime,
@@ -957,7 +957,7 @@ define([
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while saving Topic on the server side (createTopic): " + err);
+          forge.logging.error("Error while saving Topic on the server side (createTopic): " + err);
           $rootScope.$broadcast('event:offline');
         });
     }
@@ -973,11 +973,11 @@ define([
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Topics from the server side (readTopicsSyncDB)");
+          forge.logging.info("Successfully read Topics from the server side (readTopicsSyncDB)");
         }).on('error',  function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          console.log("Error while reading Topics on the server side (readTopicsSyncDB): " + err);
+          forge.logging.error("Error while reading Topics on the server side (readTopicsSyncDB): " + err);
           $rootScope.$broadcast('event:offline');
         });
 
@@ -986,7 +986,7 @@ define([
       dbTopics.allDocs({include_docs: true}, function(err, response) {
         response.rows.forEach( function (row)
         {
-          //console.log(row.doc.name);
+          //forge.logging.info(row.doc.name);
           var oNextTopic = new Topic(
             row.doc._id,
             row.doc.creationTime,
@@ -1018,7 +1018,7 @@ define([
       dbObservations.replicate.from(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully read Observations on the server side (readObservationsAsyncDB)");
+          forge.logging.info("Successfully read Observations on the server side (readObservationsAsyncDB)");
 
           bIsObservationsSynced = 1;
           aoCachedObservations = [];
@@ -1028,7 +1028,7 @@ define([
           dbObservations.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //console.log(row.doc.name);
+              //forge.logging.info(row.doc.name);
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -1051,13 +1051,13 @@ define([
           aoCachedObservations = [];
 
           // Handle error
-          console.log("OFFLINE Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
+          forge.logging.error("OFFLINE Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
 
           // Read all docs into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //console.log(row.doc.name);
+              //forge.logging.info(row.doc.name);
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -1085,18 +1085,18 @@ define([
       function syncObservationsAsyncDB(fCallback){
 
         // Save observation to server side
-        console.log("Saving Observation on the server side (syncObservationsAsyncDB)");
+        forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
         //Push Observation to the server
         dbObservations.replicate.to(remoteCouchObservationsAddress)
           .on('complete', function () {
             // Successfully synced
-            console.log("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
+            forge.logging.info("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
 
             // Get Observations from the server and save locally
             dbObservations.replicate.from(remoteCouchObservationsAddress)
               .on('complete', function () {
                 // Successfully synced
-                console.log("Successfully read Observations on the server side (syncObservationsAsyncDB)");
+                forge.logging.info("Successfully read Observations on the server side (syncObservationsAsyncDB)");
 
                 bIsObservationsSynced = 1;
                 aoCachedObservations = [];
@@ -1106,7 +1106,7 @@ define([
                 dbObservations.allDocs({include_docs: true}, function(err, response) {
                   response.rows.forEach( function (row)
                   {
-                    //console.log(row.doc.name);
+                    //forge.logging.info(row.doc.name);
                     var oNextObservation = new Observation(
                       row.doc._id,
                       row.doc.topicId,
@@ -1129,13 +1129,13 @@ define([
                 aoCachedObservations = [];
 
                 // Handle error
-                console.log("OFFLINE Error while reading Observations on the server side (syncObservationsAsyncDB): " + err);
+                forge.logging.error("OFFLINE Error while reading Observations on the server side (syncObservationsAsyncDB): " + err);
 
                 // Read all docs into memory
                 dbObservations.allDocs({include_docs: true}, function(err, response) {
                   response.rows.forEach( function (row)
                   {
-                    //console.log(row.doc.name);
+                    //forge.logging.info(row.doc.name);
                     var oNextObservation = new Observation(
                       row.doc._id,
                       row.doc.topicId,
@@ -1159,7 +1159,7 @@ define([
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
-            console.log("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
+            forge.logging.error("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
             $rootScope.$broadcast('event:offline');
           });
       }
@@ -1207,7 +1207,7 @@ define([
       aoCachedObservations.push(oObservation);
 
       // Save observation to client database
-      console.log("Saving Observation on the client side (createObservation)");
+      forge.logging.info("Saving Observation on the client side (createObservation)");
       dbObservations.put({
           _id: oObservation.id,
           topicId: oObservation.topicId,
@@ -1222,24 +1222,24 @@ define([
 
         function callback(err, result) {
           if (!err) {
-            console.log("Successfully saved Observation on client side (createObservation)");
+            forge.logging.info("Successfully saved Observation on client side (createObservation)");
           } else {
-            console.log("Error while saving Observation on client side (createObservation)" + err);
+            forge.logging.error("Error while saving Observation on client side (createObservation)" + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
         // Save observation to server side
-        console.log("Saving Observation on the server side (createObservation)");
+        forge.logging.info("Saving Observation on the server side (createObservation)");
         //Push Observation to the server
         dbObservations.replicate.to(remoteCouchObservationsAddress)
           .on('complete', function () {
             // Successfully synced
-            console.log("Successfully saved Observation on the server side (createObservation)");
+            forge.logging.info("Successfully saved Observation on the server side (createObservation)");
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
-            console.log("Error while saving Observation on the server side (createObservation): " + err);
+            forge.logging.error("Error while saving Observation on the server side (createObservation): " + err);
             $rootScope.$broadcast('event:offline');
           });
     }
@@ -1253,14 +1253,14 @@ define([
       var len = aoObservationsToSync.length;
 
       if (len === 0) {
-        console.log("No local observations to sync (syncObservationsDB)");
+        forge.logging.info("No local observations to sync (syncObservationsDB)");
         $rootScope.$broadcast('event:observations-synced-with-db');
       }
 
       for (var i=0; i<len; i++) {
         var oObservation = aoObservationsToSync[i];
         // Save observation to client database
-        console.log("Saving Observation on the client side (syncObservationsDB)");
+        forge.logging.info("Saving Observation on the client side (syncObservationsDB)");
         dbObservations.put({
             _id: oObservation.id,
             topicId: oObservation.topicId,
@@ -1275,10 +1275,10 @@ define([
 
           function callback(err, result) {
             if (!err) {
-              console.log("Successfully saved Observation on client side (syncObservationsDB)");
+              forge.logging.info("Successfully saved Observation on client side (syncObservationsDB)");
               $rootScope.$broadcast('event:observations-synced-with-db');
             } else {
-              console.log("Error while saving Observation on client side (syncObservationsDB)" + err);
+              forge.logging.error("Error while saving Observation on client side (syncObservationsDB)" + err);
               $rootScope.$broadcast('event:observations-sync-db-problem');
             }
           });
@@ -1292,15 +1292,15 @@ define([
      * (Public) Save Observation on server-side
      */
     function syncObservationsServer() {
-      console.log("Saving Observation on the server side (syncObservationsServer)");
+      forge.logging.info("Saving Observation on the server side (syncObservationsServer)");
       //Push Observation to the server
       dbObservations.replicate.to(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          console.log("Successfully saved Observation on the server side (syncObservationsServer)");
+          forge.logging.info("Successfully saved Observation on the server side (syncObservationsServer)");
           $rootScope.$broadcast('event:observations-synced-with-server');
         }).on('error', function (err) {
-          console.log("Error while saving Observation on the server side (syncObservationsServer): " + err);
+          forge.logging.error("Error while saving Observation on the server side (syncObservationsServer): " + err);
           $rootScope.$broadcast('event:observations-sync-server-problem');
         });
     }
@@ -1310,7 +1310,7 @@ define([
      */
     function readObservation(sObservationId) {
       if(!aoCachedObservations){
-        console.log("Reading from empty list of Observations (readObservation)");
+        forge.logging.info("Reading from empty list of Observations (readObservation)");
       }
 
       var oCachedObservation = aoCachedObservations.filter(function(entry){
@@ -1345,7 +1345,7 @@ define([
           var result = $.parseJSON(response);
 
           if(result.couchdb === "Welcome"){
-            console.log("You are online (pingCouch): ");
+            forge.logging.info("You are online (pingCouch): ");
             bIsOffline = 0;
 
             // If there were changes in offline mode we need to sync them
@@ -1361,14 +1361,14 @@ define([
               fCallbackObservation(aoCachedObservations);
             }
           } else {
-            console.log("You are offline (pingCouch): ");
+            forge.logging.info("You are offline (pingCouch): ");
             bIsOffline = 1;
             $rootScope.$broadcast('event:offline');
           }
 
         },
         error: function(result) {
-          console.log("You are offline (pingCouch): ");
+          forge.logging.info("You are offline (pingCouch): ");
           bIsOffline = 1;
           $rootScope.$broadcast('event:offline');
         }
@@ -1406,7 +1406,7 @@ define([
           aoCachedObservations[i] = oObservation;
 
           // Save observation to client database
-          console.log("Updating Observation on the client side (updateObservation)");
+          forge.logging.info("Updating Observation on the client side (updateObservation)");
 
           dbObservations.get(oObservation.id).then(function(oObservationDB) {
             return dbObservations.put({
@@ -1424,23 +1424,23 @@ define([
             });
           }, function(err, response) {
             if (!err) {
-              console.log('Successfully updated Observation on client side (updateObservation)');
+              forge.logging.info('Successfully updated Observation on client side (updateObservation)');
             } else {
-              console.log('Error while updating Observation on client side (updateObservation): ' + err);
+              forge.logging.error('Error while updating Observation on client side (updateObservation): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
           });
 
-          console.log("Updating Observation on the server side (updateObservation)");
+          forge.logging.info("Updating Observation on the server side (updateObservation)");
           //Push Observation to the server
           dbObservations.replicate.to(remoteCouchObservationsAddress)
             .on('complete', function () {
               // Successfully synced
-              console.log("Successfully updated Observation on the server side (updateObservation)");
+              forge.logging.info("Successfully updated Observation on the server side (updateObservation)");
             }).on('error', function (err) {
               bIsOffline === 1;
               bIsOfflineChangesForObservationsMade = 1;
-              console.log("Error while updating Observation on the server side (updateObservation): " + err);
+              forge.logging.error("Error while updating Observation on the server side (updateObservation): " + err);
               $rootScope.$broadcast('event:offline');
             });
           break;

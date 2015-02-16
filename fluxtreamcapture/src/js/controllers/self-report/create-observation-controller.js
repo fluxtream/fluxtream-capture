@@ -29,7 +29,7 @@ define([
             bIsTopicsSyncFinished = 1;
 
             if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
-              console.log("Sync of topics is the last");
+              forge.logging.info("Sync of topics is the last");
               $("#create-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
               $scope.$$phase || $scope.$apply();
               setTimeout(function(){
@@ -39,7 +39,7 @@ define([
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of topics finished and no need of sync detected");
+              forge.logging.info("Sync of topics finished and no need of sync detected");
               $("#create-observation-footer-center-icon").attr('class', '');
               $scope.$$phase || $scope.$apply();
             }
@@ -48,7 +48,7 @@ define([
             bIsObservationsSyncFinished = 1;
 
             if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of observations is the last");
+              forge.logging.info("Sync of observations is the last");
               $("#create-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
               $scope.$$phase || $scope.$apply();
               setTimeout(function(){
@@ -58,7 +58,7 @@ define([
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              console.log("Sync of observations finished and no need of sync detected");
+              forge.logging.info("Sync of observations finished and no need of sync detected");
               $("#create-observation-footer-center-icon").attr('class', '');
               $scope.$$phase || $scope.$apply();
             }
@@ -222,7 +222,7 @@ define([
 
         // If can not reach fluxtream-app backend
         $scope.$on('event:initFailed', function() {
-          console.log("Init failed (create-observation-controller)");
+          forge.logging.error("Init failed (create-observation-controller)");
           $("#create-observation-footer-center-icon").attr('class', '');
           $scope.$$phase || $scope.$apply();
 
