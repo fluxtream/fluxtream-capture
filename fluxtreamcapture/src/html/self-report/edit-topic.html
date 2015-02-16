@@ -10,7 +10,7 @@
 
   </ion-nav-bar>
 
-  <ion-content>
+  <ion-content class="padding">
     <div class="list">
       <label class="item item-input">
         <span class="input-label">Topic Name</span>
@@ -55,7 +55,10 @@
         </div>
         <input type="number" id="topic.step" >
       </label>
-
+      
+      <button class="button button-positive button-block" ng-click="editTopic()">
+        Save changes
+      </button>
       <button class="button button-block button-assertive" ng-click="deleteTopic()">
         Delete
       </button>

@@ -8,7 +8,7 @@
     </ion-nav-buttons>
   </ion-nav-bar>
 
-  <ion-content>
+  <ion-content class="padding">
 
     <div class="list">
       <label class="item item-input" id="valueItem">
@@ -48,12 +48,14 @@
 
       <label class="item item-input item-stacked-label">
         <span class="input-label">Comment</span>
-        <textarea rows="10" class="noResize" id="observation.comment"></textarea>
+        <textarea rows="4" class="noResize" id="observation.comment"></textarea>
       </label>
-
       <!-- Workaround to have a border for comment <label class="item item-input"></label>  -->
+      
+      <button class="button button-positive button-block" ng-click="createObservation()">
+        Save
+      </button>
     </div>
-
 
   </ion-content>
 

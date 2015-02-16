@@ -175,19 +175,19 @@ define([
               var tCurrentTime = new Date();
 
               if(document.getElementById('topic.name').value == 0){
-                alert("Please specify Topic name");
+                alert("Please specify topic name.");
               }
               else if(document.getElementById('topic.type').value === "Range" &&
                 (document.getElementById('topic.rangeStart').value == 0 ||
                   document.getElementById('topic.rangeEnd').value == 0 ||
                   document.getElementById('topic.rangeEnd').value <=
                   document.getElementById('topic.rangeStart').value)){
-                alert("Range defined incorrectly");
+                alert("Range defined incorrectly.");
               }
               else if(document.getElementById('topic.type').value === "Range" &&
                 (document.getElementById('topic.step').value == 0 ||
                   document.getElementById('topic.step').value <= 0)){
-                alert("Step can not be less than 0 for Range type");
+                alert("Step can not be less than 1.");
               }
               else {
                 //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none

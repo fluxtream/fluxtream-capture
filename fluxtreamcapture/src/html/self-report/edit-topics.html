@@ -1,35 +1,37 @@
 <ion-view title="{{headerTitle}}">
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
-
     <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
-
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
     </ion-nav-buttons>
-
   </ion-nav-bar>
-
-  <ion-content>
+  
+  <ion-content class="padding edit-topic-content">
+    <div class="text-center padding" ng-if="aoTopics.length">
+      <div ng-if="!showReordering">Tap a topic to change it.</div>
+      <div ng-if="showReordering">Slide topics to reorder them.</div>
+    </div>
     <ion-list show-reorder="showReordering">
       <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="editTopic({topicId: oTopic.id})">
-
         <span class="reorder-adjusted">{{oTopic.name}}</span>
-
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
         </ion-reorder-button>
-
       </ion-item>
     </ion-list>
+    <button ui-sref="createTopic" class="button button-positive button-block">
+      Create a new topic
+    </button>
   </ion-content>
 </ion-view>
 
 <!-- Footer -->
 <ion-footer-bar class="bar-dark">
   <!-- <div class="title">Title</div> -->
-  <a id="footer-reorder" class="button button-clear pull-left" ng-click="showReorder()">Reorder</a>
+  <a id="footer-reorder" class="button button-clear pull-left" ng-if="aoTopics.length >= 2 && !showReordering" ng-click="showReorder()">Reorder topics</a>
+  <a id="footer-reorder" class="button button-clear pull-left" ng-if="aoTopics.length >= 2 && showReordering" ng-click="showReorder()">Stop reordering</a>
   <h1 class='title' id='edit-topics-footer-center' style='line-height: 100%; padding-top: 6px;'>
     <a id='edit-topics-footer-center-link' ng-click='reconnectCouchDB()'><i id='edit-topics-footer-center-icon'></i></a>
   </h1>
-  <a id="footer-create" ui-sref="createTopic" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+  <a id="footer-create" ui-sref="createTopic" class="button button-clear pull-right">New topic</a>
 </ion-footer-bar>

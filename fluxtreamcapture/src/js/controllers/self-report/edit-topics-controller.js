@@ -155,11 +155,9 @@ define([
         if($scope.showReordering === false){
           $scope.showReordering = true;
           $scope.headerTitle = "Reorder Topics";
-          $("#footer-reorder").text("Edit");
         } else {
           $scope.showReordering = false;
           $scope.headerTitle = "Edit Topics";
-          $("#footer-reorder").text("Reorder");
         }
 
         $scope.$$phase || $scope.$apply();
