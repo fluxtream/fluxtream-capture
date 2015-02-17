@@ -98,7 +98,7 @@ define([
               document.getElementById('observation.comment').focus();
 
               //Show Keyboard
-              forge.internal.call('flx_toggle_keyboard.showKeyboard');
+//              forge.internal.call('flx_toggle_keyboard.showKeyboard');
             }
             else if (sTypeOfTopic == "Numeric") {
               document.getElementById('valueItem').style.display = "";
@@ -111,7 +111,7 @@ define([
               //TODO make numeric keyboard
               document.getElementById('observation.value').focus();
               //Show Keyboard
-              forge.internal.call('flx_toggle_keyboard.showKeyboard');
+//              forge.internal.call('flx_toggle_keyboard.showKeyboard');
             }
             else if (sTypeOfTopic == "Range") {
               document.getElementById('valueItem').style.display = "";
@@ -207,14 +207,14 @@ define([
             selfReportStorage.createObservation($scope.oNewObservation);
 
             //Hide Keyboard
-            forge.internal.call('flx_toggle_keyboard.hideKeyboard');
+//            forge.internal.call('flx_toggle_keyboard.hideKeyboard');
             $state.go("listTopics");
           };
 
           // Go back to ListTopics
           $scope.goBack = function () {
             //Hide Keyboard
-            forge.internal.call('flx_toggle_keyboard.hideKeyboard');
+//            forge.internal.call('flx_toggle_keyboard.hideKeyboard');
           };
 
         });
