@@ -177,6 +177,9 @@ define([
               if(document.getElementById('topic.name').value == 0){
                 alert("Please specify topic name.");
               }
+              else if (selfReportStorage.getTopicWithName(document.getElementById('topic.name').value, $scope.oTopic.id)) {
+                alert("You can't have two topics with the same name. Please enter another name.");
+              }
               else if(document.getElementById('topic.type').value === "Range" &&
                 (document.getElementById('topic.rangeStart').value == 0 ||
                   document.getElementById('topic.rangeEnd').value == 0 ||

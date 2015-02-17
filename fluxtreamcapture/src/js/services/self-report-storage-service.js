@@ -743,7 +743,20 @@ define([
 
       return oTopic;
     }
-
+    
+    /**
+     * (Public) Returns the first Topic from aoCachedTopics that has the given name, or null if none match
+     * If skipTopicId is set, this specific topic won't be returned
+     */
+    function getTopicWithName(topicName, skipTopicId) {
+      var matchingTopics = aoCachedTopics.filter(function(topic) {
+        return topic.name.toLowerCase() == topicName.toLowerCase() && topic.id != skipTopicId;
+      });
+      if (matchingTopics.length) return matchingTopics[0];
+      // There is not topic with this name, return null
+      return null;
+    }
+    
     /**
      * (Public) Get Observations from the file asynchronously
      */
@@ -1472,6 +1485,7 @@ define([
       updateTopic: updateTopic,
       updateTopicNumbers: updateTopicNumbers,
       deleteTopic: deleteTopic,
+      getTopicWithName: getTopicWithName,
 
       Observation : Observation,
       createObservation: createObservation,
