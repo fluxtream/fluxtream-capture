@@ -6,9 +6,13 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content>
-    <div ng-if="!serviceEnabled" class="padding heart-rate-disabled">
+    <div class="flx-reload-icon" ng-if="loading"></div>
+    <div ng-if="!serviceEnabled && !loading && bluetoothLESupported" class="padding heart-rate-disabled">
       <p>Enable monitoring to connect your bluetooth heart rate monitor to this app.</p>
       <button class="button button-block button-positive" ng-click="enableService()">Enable monitoring</button>
+    </div>
+    <div ng-if="!serviceEnabled && !loading && !bluetoothLESupported" class="padding heart-rate-disabled">
+      <p>Sorry. Bluetooth Low Energy is not supported on this device.</p>
     </div>
   </ion-content>
   <div ng-if="serviceEnabled" class="heart-rate-enabled">

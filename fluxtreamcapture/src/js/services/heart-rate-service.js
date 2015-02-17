@@ -19,6 +19,30 @@ define([
       var uploadStatus = 'none';
       var lastSyncTime;
       
+      /**
+       * Checks whether BLE is supported on the current device
+       */
+      function serviceIsSupported(callback) {
+        if (!forge.is.android()) {
+          if (forge.is.ios()) {
+            callback(true); // Assume true for now on iOS
+          } else {
+            callback(false); // Assume false on other devices
+          }
+          return;
+        }
+        forge.flx_polar_h7.isBLESupported(
+          // Success
+          function(response) {
+            callback(response);
+          },
+          // Error
+          function() {
+            callback(false);
+          }
+        )
+      }
+      
       function enableService() {
         // Initiate native background service
         forge.flx_polar_h7.startService(
@@ -131,6 +155,7 @@ define([
       
       // Public API
       return {
+        serviceIsSupported: serviceIsSupported,
         setHeartRateServiceEnabled: setHeartRateServiceEnabled,
         getUploadStatus: function() { return uploadStatus; },
         getLastSyncTime: function() { return lastSyncTime; },

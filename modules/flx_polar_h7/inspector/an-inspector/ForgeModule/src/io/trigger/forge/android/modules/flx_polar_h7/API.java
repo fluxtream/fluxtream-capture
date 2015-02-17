@@ -7,12 +7,36 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.util.Log;
 
 /**
  * @author Julien Dupuis
  */
 public class API {
+	
+	public static void isBLESupported(final ForgeTask task) {
+		Log.d(PolarH7Service.LOG_TAG, "API: isBLESupported");
+		task.performAsync(new Runnable() {
+			@Override
+			public void run() {
+				boolean supported = true;
+				try {
+					if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR2) {
+						// Android API version < 18, BLE does not exist
+						supported = false;
+					} else if (!ForgeApp.getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+						// BLE not supported on this device
+						supported = false;
+					}
+				} catch (Exception e) {
+					supported = false;
+				}
+				task.success(supported);
+			}
+		});
+	}
 	
 	/**
 	 * Starts the heart rate monitoring service

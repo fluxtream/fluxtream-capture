@@ -25,6 +25,12 @@ define([
       // Whether the service is currently enabled
       $scope.serviceEnabled = userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled");
       
+      // True while determining whether BLE is supported on the device
+      $scope.loading = true;
+      
+      // Whether BLE is supported on the device
+      $scope.bluetoothLESupported = false;
+      
       // Whether a heartrate monitor is currently connected to this app
       $scope.deviceConnected = false;
       
@@ -55,6 +61,13 @@ define([
       // Upload status
       $scope.uploadStatus = heartRateService.getUploadStatus();
       $scope.lastSyncTime = heartRateService.getLastSyncTime();
+      
+      // Determine whether BLE is supported
+      heartRateService.serviceIsSupported(function(supported) {
+        $scope.loading = false;
+        $scope.bluetoothLESupported = supported;
+        $scope.$$phase || $scope.$apply();
+      });
       
       // Listen to broadcasted heart-rate data
       $rootScope.$on("heart-rate-data-received", function(event, data) {
