@@ -46,7 +46,7 @@ define([
             function(connectors) {
               connectors.forEach(function(connector) {
                 if (connector.connectorName == "fluxtream_capture") {
-                  connector.prettyName = "Data gathered by this app";
+                  connector.prettyName = "Fluxtream Capture (this app)";
                 }
               });
               $scope.connectors = connectors;
