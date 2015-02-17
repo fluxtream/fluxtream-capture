@@ -53,7 +53,7 @@ define([
       $scope.removeCoach = function(coach) {
         var hideActionSheet = $ionicActionSheet.show({
           destructiveText: 'Yes, Remove',
-          titleText: 'Remove ' + coach.fullname + ' from your trusted buddies?',
+          titleText: 'Remove ' + coach.fullname + ' from your buddies?',
           cancelText: 'Cancel',
           destructiveButtonClicked: function(index) {
             if (!forge.is.connection.connected()) {
@@ -69,7 +69,7 @@ define([
               },
               // Error
               function() {
-                alert("An error has occurred while removing " + coach.fullname + " from your trusted buddies.");
+                alert("An error has occurred while removing " + coach.fullname + " from your buddies.");
               }
             );
             return true;

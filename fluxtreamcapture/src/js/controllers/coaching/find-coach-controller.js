@@ -97,7 +97,7 @@ define([
       $scope.addCoach = function(coach) {
         var hideActionSheet = $ionicActionSheet.show({
           buttons: [{text: 'Yes, Add'}],
-          titleText: 'Do you want to add ' + coach.fullname + ' to your trusted buddies?',
+          titleText: 'Do you want to add ' + coach.fullname + ' to your buddies?',
           cancelText: 'Cancel',
           buttonClicked: function(index) {
             coachingCom.addCoach(coach.username,

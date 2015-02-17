@@ -1,4 +1,4 @@
-<ion-view title="Trusted Buddies">
+<ion-view title="Buddies">
   
   <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
     <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
@@ -12,7 +12,7 @@
     <div ng-if="loading && isOffline" class="padding">You are offline. Please connect to the Internet.</div>
     <div class="list padding" ng-if="!loading">
       <div ng-if="!coaches.length">
-        No trusted buddy. Add one with the "+" button at the bottom of the screen.
+        No buddy. Add one with the "+" button at the bottom of the screen.
       </div>
       <div ng-repeat="coach in coaches" class="coach-card">
         <div class="coach-photo">
