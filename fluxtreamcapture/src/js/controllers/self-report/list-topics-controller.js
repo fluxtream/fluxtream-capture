@@ -86,6 +86,7 @@ define([
         // If can not reach couchDB
         $scope.$on('event:offline', function() {
           $("#list-topics-footer-center-icon").attr('class', '');
+          $scope.loading = false;
           $scope.$$phase || $scope.$apply();
 
           if ($('#list-topics-footer-offline-img').length === 0) {
