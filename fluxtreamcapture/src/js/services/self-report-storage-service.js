@@ -47,6 +47,18 @@ define([
     var aoCachedTopics;
     var aoCachedObservations;
     var aoObservationsToSync;
+	
+    function notifyFluxtreamCaptureUpdater(){
+      var updateNotificationURL = loginService.getTargetServer() + "fluxtream_capture/notify";
+      forge.request.ajax({
+        type: "POST",
+        data: { access_token: loginService.getAccessToken() },
+        url: updateNotificationURL,
+        success: function() {forge.logging.info("FluxtreamCapture updater was notified");},
+        error: function() {forge.logging.info("Could not notify the FluxtreamCapture updater");}
+	    });
+	    forge.logging.info("sent sync notification to Fluxtream Capture updater @ " + updateNotificationURL );
+	  };
 
     function initialize(){
       if(!bIsInitialized){
@@ -212,6 +224,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully saved Topic on the server side (createTopic)");
+		  notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
@@ -399,6 +412,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully deleted Observation on the server side (deleteObservation)");
+		  notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
@@ -437,6 +451,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
+		  notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
@@ -482,6 +497,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully deleted Topic on the server side (deleteTopic)");
+          notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
@@ -519,6 +535,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
+          notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
@@ -587,6 +604,7 @@ define([
           .on('complete', function () {
             // Successfully synced
             forge.logging.info("Successfully deleted Observations on the server side (deleteTopic)");
+            notifyFluxtreamCaptureUpdater();
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
@@ -601,6 +619,7 @@ define([
           .on('complete', function () {
             // Successfully synced
             forge.logging.info("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
+            notifyFluxtreamCaptureUpdater();
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
@@ -665,6 +684,7 @@ define([
             .on('complete', function () {
               // Successfully synced
               forge.logging.info("Successfully updated Topic on the server side (readObservationsToSync)");
+              notifyFluxtreamCaptureUpdater();
             }).on('error', function (err) {
               bIsOffline === 1;
               bIsOfflineChangesForTopicsMade = 1;
@@ -725,6 +745,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully updated Topics on the server side (updateTopicNumbers)");
+          notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
@@ -1105,6 +1126,7 @@ define([
           .on('complete', function () {
             // Successfully synced
             forge.logging.info("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
+            notifyFluxtreamCaptureUpdater();
 
             // Get Observations from the server and save locally
             dbObservations.replicate.from(remoteCouchObservationsAddress)
@@ -1250,6 +1272,7 @@ define([
           .on('complete', function () {
             // Successfully synced
             forge.logging.info("Successfully saved Observation on the server side (createObservation)");
+            notifyFluxtreamCaptureUpdater();
           }).on('error', function (err) {
             bIsOffline === 1;
             bIsOfflineChangesForObservationsMade = 1;
@@ -1312,6 +1335,7 @@ define([
         .on('complete', function () {
           // Successfully synced
           forge.logging.info("Successfully saved Observation on the server side (syncObservationsServer)");
+          notifyFluxtreamCaptureUpdater();
           $rootScope.$broadcast('event:observations-synced-with-server');
         }).on('error', function (err) {
           forge.logging.error("Error while saving Observation on the server side (syncObservationsServer): " + err);
@@ -1451,6 +1475,7 @@ define([
             .on('complete', function () {
               // Successfully synced
               forge.logging.info("Successfully updated Observation on the server side (updateObservation)");
+              notifyFluxtreamCaptureUpdater();
             }).on('error', function (err) {
               bIsOffline === 1;
               bIsOfflineChangesForObservationsMade = 1;
