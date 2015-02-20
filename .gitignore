@@ -1,5 +1,6 @@
 .idea
 
+fluxtreamcapture/fluxtream.keystore
 fluxtreamcapture/IOS_certificates/development/
 
 fluxtreamcapture/src/js/config/env.js
