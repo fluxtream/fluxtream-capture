@@ -1,6 +1,6 @@
 <ion-view title="Fluxtream Capture">
   
-  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
     <div ng-if="currentScreen != 'loading' && currentScreen != 'home'">
       <a class="button button-clear pull-left" ng-click="backToHome()">
         <i class="ion-chevron-left"></i> Back
@@ -97,7 +97,7 @@
   </ion-content>
   
   <!-- Footer -->
-  <div class="bar bar-footer bar-dark bar-balanced" ng-if="formErrorMessage">
+  <div class="bar bar-footer bar-positive bar-balanced" ng-if="formErrorMessage">
     <div class="title">
       <div class="alert-danger">
         <strong>

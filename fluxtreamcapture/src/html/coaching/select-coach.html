@@ -1,6 +1,6 @@
 <ion-view title="Buddies">
   
-  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
     <a ui-sref="listTopics" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -12,7 +12,7 @@
     <div ng-if="loading && isOffline" class="padding">You are offline. Please connect to the Internet.</div>
     <div class="list padding" ng-if="!loading">
       <div ng-if="!coaches.length">
-        No buddy. Add one with the "+" button at the bottom of the screen.
+        No buddy. Add one with the "Add Buddy" button at the bottom of the screen.
       </div>
       <div ng-repeat="coach in coaches" class="coach-card">
         <div class="coach-photo">
@@ -36,8 +36,8 @@
   </ion-content>
   
   <!-- Footer -->
-  <div class="bar bar-footer bar-dark">
-    <a id="footer-rigcreate" ui-sref="findCoach" class="button button-clear pull-right"><i class="ion-plus-round"></i></a>
+  <div class="bar bar-footer bar-positive">
+    <a id="footer-rigcreate" ui-sref="findCoach" class="button button-clear pull-right">Add Buddy</a>
   </div>
   
 </ion-view>

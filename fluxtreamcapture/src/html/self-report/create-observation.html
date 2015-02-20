@@ -1,7 +1,7 @@
 
 <ion-view title={{oTopic.name}}>
 
-  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
     <a ui-sref="listTopics" ng-click="goBack()" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -60,7 +60,7 @@
   </ion-content>
 
   <!-- Footer -->
-  <div class="bar bar-footer bar-dark">
+  <div class="bar bar-footer bar-positive">
     <button id="footer-left" class="button button-clear pull-left" ng-click="goBack()">Cancel</button>
     <h1 class='title' id='create-observation-footer-center' style='line-height: 100%; padding-top: 6px;'>
       <a id='create-observation-footer-center-link' ng-click='reconnectCouchDB()'><i id='create-observation-footer-center-icon'></i></a>

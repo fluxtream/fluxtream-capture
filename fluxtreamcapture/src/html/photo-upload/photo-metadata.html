@@ -1,5 +1,5 @@
 <ion-view title="Photo Metadata">
-  <ion-nav-bar class="nav-title-slide-ios7 bar-dark">
+  <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
     <a ui-sref="photoPreview({photoId: photoId})" class="button button-clear pull-left"><i class="ion-chevron-left"></i> {{ hasChanges ? "Cancel" : "Back" }}</a>
     <ion-nav-buttons side="right">
       <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
@@ -35,6 +35,6 @@
 </ion-view>
 
 <!-- Footer -->
-<ion-footer-bar class="bar-dark">
+<ion-footer-bar class="bar-positive">
   <button id="footer-right" class="button button-clear pull-right" ng-click="applyChanges()">Save</button>
 </ion-footer-bar>

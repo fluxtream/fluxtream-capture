@@ -61,11 +61,16 @@ body {
  *******************************************/
 
 ion-side-menu.menu, ion-side-menu .list ion-item, ion-side-menu .list ion-item.activated {
-  background: #444444;
+  background: #444;
+  /*background: #0f3f5e;*/
 }
 
 ion-side-menu .list ion-item, ion-side-menu .list ion-item.activated {
   border: 1px solid #333;
+  padding-left: 1em;
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+  /*border: 1px solid #0a283c;*/
 }
 
 ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .list ion-item.activated {

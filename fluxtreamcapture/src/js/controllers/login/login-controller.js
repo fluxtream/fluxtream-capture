@@ -61,6 +61,7 @@ define([
       
       // Load initial settings
       userPrefs.onReady(function() {
+        $scope.signin.password = env["test.password"];
         $scope.signin.username = userPrefs.get("login.username");
         $scope.signin.target = userPrefs.get("login.target");
         $scope.signup.target = userPrefs.get("login.target");
