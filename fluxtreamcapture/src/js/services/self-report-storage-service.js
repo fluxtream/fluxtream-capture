@@ -119,6 +119,39 @@ define([
       }
     }
     
+    function listenToServerChanges(db, seqNumber) {
+      if (!forge.is.connection.connected()) {
+        setTimeout(function() {
+          listenToServerChanges(db, seqNumber);
+        }, 3000);
+        return;
+      }
+      forge.logging.info("Listening to changes (listenToServerChanges): seqNumber = " + seqNumber);
+      var changeListener = db.changes({
+        since: seqNumber ? seqNumber : 'now',
+        live: true
+      }).on('change', function(change) {
+        forge.logging.info("There was a change on the pouchdb server (listenToServerChanges)");
+        seqNumber = change.seq;
+        syncTopicsAsyncDB();
+      }).on('error', function(err) {
+        forge.logging.error("Error while listening to changes (listenToServerChanges)");
+        // Try again in 30 seconds
+        setTimeout(function() {
+          listenToServerChanges(db, seqNumber);
+        }, 3000);
+      }).on('complete', function(resp) {
+        forge.logging.info("Listening to changes complete (listenToServerChanges)");
+        forge.logging.info(resp);
+      }).on('paused', function(resp) {
+        forge.logging.info("Listening to changes paused (listenToServerChanges)");
+        forge.logging.info(resp);
+      });
+      $rootScope.$on('user-logged-out', function() {
+        if (changeListener) changeListener.cancel();
+      });
+    }
+    
     // If the topics were synced with a server
     function isTopicsSynced(){
       return bIsTopicsSynced;
@@ -142,6 +175,8 @@ define([
       if ((userLogin != '') && (userCouchDBToken != '')) {
         remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
         remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
+        // Long poll remote server to get updates
+        listenToServerChanges(new PouchDB(remoteCouchTopicsAddress));
       }
     }
 
@@ -860,8 +895,6 @@ define([
               reorderTopics();
               bIsOfflineChangesForTopicsMade = 0;
               if (fCallback) fCallback(aoCachedTopics);
-              forge.logging.info(JSON.stringify(aoCachedTopics));
-              forge.logging.info("Broadcasting event:topic-list-changed (syncTopicsAsyncDB)");
               $rootScope.$broadcast('event:topic-list-changed');
               // Push Topic to the server
               forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
@@ -941,7 +974,6 @@ define([
           }
         }
         // No duplicates
-        forge.logging.info("There are no Topic duplicates (fixTopicDuplicateErrors)");
         callback(changesMade);
       });
     }
