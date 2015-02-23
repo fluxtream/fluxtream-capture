@@ -37,7 +37,7 @@
         <ion-item ng-if="!isWeb" ng-click="navigateTo('heartRate')"><button class="button icon-left ion-heart button-clear button-dark">&nbsp;&nbsp;Heart Rate</button></ion-item>
         <ion-item ng-if="!isWeb" ng-click="navigateTo('photoUpload')"><button class="button icon-left ion-camera button-clear button-dark">&nbsp;&nbsp;Photo Upload</button></ion-item>
         <ion-item ng-if="!isWeb" ng-click="navigateTo('settings')"><button class="button icon-left ion-settings button-clear button-dark">&nbsp;&nbsp;Settings</button></ion-item>
-        <ion-item><button class="button icon-left ion-log-out button-clear button-dark" ng-click="logout()">&nbsp;&nbsp;Log out</button></ion-item>
+        <ion-item ng-click="logout()"><button class="button icon-left ion-log-out button-clear button-dark">&nbsp;&nbsp;Log out</button></ion-item>
       </ion-list>
     </ion-side-menu>
   </ion-side-menus>
