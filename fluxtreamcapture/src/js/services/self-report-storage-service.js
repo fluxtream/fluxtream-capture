@@ -85,7 +85,7 @@ define([
         dbObservations = new PouchDB(dbNameObservations);
         dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
         dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
-
+        
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
@@ -118,7 +118,7 @@ define([
         forge.logging.info("Already initialized (initialize)");
       }
     }
-
+    
     // If the topics were synced with a server
     function isTopicsSynced(){
       return bIsTopicsSynced;
@@ -186,7 +186,7 @@ define([
     /**
      * (Public) Save Topic into storage
      */
-    function createTopic(oTopic){
+    function createTopic(oTopic) {
       if (bIsOffline === 1) {
         bIsOfflineChangesForTopicsMade = 1;
       }
@@ -219,18 +219,8 @@ define([
       });
 
       forge.logging.info("Saving Topic on the server side (createTopic)");
-      //Push Topic to the server
-      dbTopics.replicate.to(remoteCouchTopicsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully saved Topic on the server side (createTopic)");
-		  notifyFluxtreamCaptureUpdater();
-        }).on('error', function (err) {
-          bIsOffline === 1;
-          bIsOfflineChangesForTopicsMade = 1;
-          forge.logging.error("Error while saving Topic on the server side (createTopic): " + err);
-          $rootScope.$broadcast('event:offline');
-        });
+      // Synchronize with the server
+      syncTopicsAsyncDB();
     }
 
     /**
@@ -492,18 +482,8 @@ define([
       });
 
       forge.logging.info("Deleting Topic on the server side (deleteTopic)");
-      //Push Topic deletion to the server
-      dbTopics.replicate.to(remoteCouchTopicsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully deleted Topic on the server side (deleteTopic)");
-          notifyFluxtreamCaptureUpdater();
-        }).on('error', function (err) {
-          bIsOffline === 1;
-          bIsOfflineChangesForTopicsMade = 1;
-          forge.logging.error("Error while deleting Topic on the server side (deleteTopic): " + err);
-          $rootScope.$broadcast('event:offline');
-        });
+      // Push Topic deletion to the server
+      syncTopicsAsyncDB();
 
       // Save topic to client delete database
       forge.logging.info("Saving Topic on the client side (deleteTopic)");
@@ -680,24 +660,14 @@ define([
 
           forge.logging.info("Updating Topic on the server side (readObservationsToSync)");
           //Push Observation to the server
-          dbTopics.replicate.to(remoteCouchTopicsAddress)
-            .on('complete', function () {
-              // Successfully synced
-              forge.logging.info("Successfully updated Topic on the server side (readObservationsToSync)");
-              notifyFluxtreamCaptureUpdater();
-            }).on('error', function (err) {
-              bIsOffline === 1;
-              bIsOfflineChangesForTopicsMade = 1;
-              forge.logging.error("Error while updating Topic on the server side (readObservationsToSync): " + err);
-              $rootScope.$broadcast('event:offline');
-            });
+          syncTopicsAsyncDB();
           break;
         }
       }
     }
 
     /*
-    * (Public) Update topics numbers and Sync with a server
+    * (Public) Update topics numbers (i.e. ordering) and Sync with a server
     * */
     function updateTopicNumbers(inputTopics) {
       if (bIsOffline === 1) {
@@ -740,18 +710,8 @@ define([
 
       forge.logging.info('Successfully updated Topics numbers on client side (updateTopicNumbers)');
       forge.logging.info("Updating Topic on the server side (updateTopicNumbers)");
-      //Push Observation to the server
-      dbTopics.replicate.to(remoteCouchTopicsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully updated Topics on the server side (updateTopicNumbers)");
-          notifyFluxtreamCaptureUpdater();
-        }).on('error', function (err) {
-          bIsOffline === 1;
-          bIsOfflineChangesForTopicsMade = 1;
-          forge.logging.error("Error while updating Topics on the server side (updateTopicNumbers): " + err);
-          $rootScope.$broadcast('event:offline');
-        });
+      // Synchronize topics with the server
+      syncTopicsAsyncDB();
     }
 
     /**
@@ -790,59 +750,10 @@ define([
     }
 
     /**
-     * (Public) Get Observations asynchronously
-     */
-    function readTopicsAsync(fCallback){
-      // TODO this check should be changed
-      if(aoCachedTopics.length != 0){
-        fCallback(aoCachedTopics);
-      } else {
-        $http.get('../../html/testing_data/topics.json').success(function(aoData){
-          var nTopicsArrayLength = aoData.length;
-          aoCachedTopics = [];
-
-          for (var i = 0; i < nTopicsArrayLength; i++) {
-            var oNextTopic = new Topic(
-              aoData[i].id,
-              aoData[i].creationTime,
-              aoData[i].updateTime,
-              aoData[i].name,
-              aoData[i].type,
-              aoData[i].defaultValue,
-              aoData[i].rangeStart,
-              aoData[i].rangeEnd,
-              aoData[i].step,
-              aoData[i].topicNumber
-            );
-            aoCachedTopics.push(oNextTopic);
-          }
-          //Put preprocessing of data
-          reorderTopics();
-          fCallback(aoCachedTopics);
-        });
-      }
-    }
-
-    /**
      * (Private) Reorder Topics according their numbers
      */
     function reorderTopics() {
       aoCachedTopics.sort(function(a, b){return a.topicNumber - b.topicNumber});
-    }
-
-    /**
-     * Actions on reading complete from server database
-     */
-    function onGetComplete(info) {
-      forge.logging.info("Successfully read Topics from the server (onGetComplete)");
-    }
-
-    /**
-     * Actions if failed to read Topics from server database
-     */
-    function onGetError(){
-      forge.logging.error("Error while reading Topics from the server (onGetError)");
-      forge.logging.error(err);
     }
 
     /**
@@ -919,130 +830,122 @@ define([
     /**
      * (Public) Sync Topics asynchronously
      */
-    function syncTopicsAsyncDB(fCallback){
-      forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
-      //Push Topic to the server
-      dbTopics.replicate.to(remoteCouchTopicsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
-          // Get Topics from the server and save locally
-          dbTopics.replicate.from(remoteCouchTopicsAddress)
-            .on('complete', function () {
-              // Successfully synced
-              forge.logging.info("Successfully read Topics from the server side (syncTopicsAsyncDB)");
-
-              bIsTopicsSynced = 1;
-              aoCachedTopics = [];
-
-              // Read all docs into memory
-              dbTopics.allDocs({include_docs: true}, function(err, response) {
-                response.rows.forEach( function (row)
-                {
-                  //forge.logging.info(row.doc.name);
-                  var oNextTopic = new Topic(
-                    row.doc._id,
-                    row.doc.creationTime,
-                    row.doc.updateTime,
-                    row.doc.name,
-                    row.doc.type,
-                    row.doc.defaultValue,
-                    row.doc.rangeStart,
-                    row.doc.rangeEnd,
-                    row.doc.step,
-                    row.doc.topicNumber
-                  );
-
-                  aoCachedTopics.push(oNextTopic);
-                });
-                reorderTopics();
-                bIsOfflineChangesForTopicsMade = 0;
-                fCallback(aoCachedTopics);
-              });
-
-            }).on('error',  function (err) {
-              // Handle error
-              forge.logging.error("OFFLINE Error while reading Topics on the server side (syncTopicsAsyncDB): " + err);
-              aoCachedTopics = [];
-
-              // Read all docs into memory
-              dbTopics.allDocs({include_docs: true}, function(err, response) {
-                response.rows.forEach( function (row)
-                {
-                  //forge.logging.info(row.doc.name);
-                  var oNextTopic = new Topic(
-                    row.doc._id,
-                    row.doc.creationTime,
-                    row.doc.updateTime,
-                    row.doc.name,
-                    row.doc.type,
-                    row.doc.defaultValue,
-                    row.doc.rangeStart,
-                    row.doc.rangeEnd,
-                    row.doc.step,
-                    row.doc.topicNumber
-                  );
-
-                  aoCachedTopics.push(oNextTopic);
-                });
-                reorderTopics();
-                fCallback(aoCachedTopics);
-              });
-            });
-        }).on('error', function (err) {
-          bIsOffline === 1;
-          bIsOfflineChangesForTopicsMade = 1;
-          forge.logging.error("Error while saving Topic on the server side (createTopic): " + err);
-          $rootScope.$broadcast('event:offline');
-        });
-    }
-
-    /**
-     * (Public) Get Topics synchronously
-     */
-    function readTopicsSyncDB(){
-      // TODO should be fetching gradually
-      aoCachedTopics = [];
-
+    function syncTopicsAsyncDB(fCallback) {
+      forge.logging.info("Reading Topics from the server side (syncTopicsAsyncDB");
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          forge.logging.info("Successfully read Topics from the server side (readTopicsSyncDB)");
+          forge.logging.info("Successfully read Topics from the server side (syncTopicsAsyncDB)");
+          bIsTopicsSynced = 1;
+          fixTopicDuplicateErrors(function(changesMade) {
+            // Read all docs into memory
+            dbTopics.allDocs({include_docs: true}, function(err, response) {
+              aoCachedTopics = [];
+              response.rows.forEach( function (row) {
+                var oNextTopic = new Topic(
+                  row.doc._id,
+                  row.doc.creationTime,
+                  row.doc.updateTime,
+                  row.doc.name,
+                  row.doc.type,
+                  row.doc.defaultValue,
+                  row.doc.rangeStart,
+                  row.doc.rangeEnd,
+                  row.doc.step,
+                  row.doc.topicNumber
+                );
+                aoCachedTopics.push(oNextTopic);
+              });
+              reorderTopics();
+              bIsOfflineChangesForTopicsMade = 0;
+              if (fCallback) fCallback(aoCachedTopics);
+              forge.logging.info(JSON.stringify(aoCachedTopics));
+              forge.logging.info("Broadcasting event:topic-list-changed (syncTopicsAsyncDB)");
+              $rootScope.$broadcast('event:topic-list-changed');
+              // Push Topic to the server
+              forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
+              dbTopics.replicate.to(remoteCouchTopicsAddress)
+                .on('complete', function () {
+                  // Successfully synced
+                  forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
+                  notifyFluxtreamCaptureUpdater();
+                }).on('error', function (err) {
+                  bIsOffline === 1;
+                  bIsOfflineChangesForTopicsMade = 1;
+                  forge.logging.error("Error while saving Topic on the server side (syncTopicsAsyncDB): " + err);
+                  $rootScope.$broadcast('event:offline');
+                });
+            });
+          });
         }).on('error',  function (err) {
+          // Handle error
+          forge.logging.error("OFFLINE Error while reading Topics on the server side (syncTopicsAsyncDB): " + err);
+          // Read all docs into memory
+          dbTopics.allDocs({include_docs: true}, function(err, response) {
+            aoCachedTopics = [];
+            response.rows.forEach(function(row) {
+              var oNextTopic = new Topic(
+                row.doc._id,
+                row.doc.creationTime,
+                row.doc.updateTime,
+                row.doc.name,
+                row.doc.type,
+                row.doc.defaultValue,
+                row.doc.rangeStart,
+                row.doc.rangeEnd,
+                row.doc.step,
+                row.doc.topicNumber
+              );
+              aoCachedTopics.push(oNextTopic);
+            });
+            reorderTopics();
+            if (fCallback) fCallback(aoCachedTopics);
+          });
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
-          forge.logging.error("Error while reading Topics on the server side (readTopicsSyncDB): " + err);
           $rootScope.$broadcast('event:offline');
         });
-
-      // Read all docs into memory
-
+    }
+    
+    /**
+     * Automatically merges or renames topics in case of duplicate names.
+     * Calls the callback function with a boolean parameter telling if changes have been made.
+     * changesMade is an internal parameter for recursive calls
+     */
+    function fixTopicDuplicateErrors(callback, changesMade) {
+      // Check for duplicates (topics with the same name)
+      forge.logging.info("Searching for topic duplicates in " + JSON.stringify(aoCachedTopics));
       dbTopics.allDocs({include_docs: true}, function(err, response) {
-        response.rows.forEach( function (row)
-        {
-          //forge.logging.info(row.doc.name);
-          var oNextTopic = new Topic(
-            row.doc._id,
-            row.doc.creationTime,
-            row.doc.updateTime,
-            row.doc.name,
-            row.doc.type,
-            row.doc.defaultValue,
-            row.doc.rangeStart,
-            row.doc.rangeEnd,
-            row.doc.step,
-            row.doc.topicNumber
-          );
-
-          aoCachedTopics.push(oNextTopic);
-        });
-        // Put pre-processing of data
-        reorderTopics();
-        return(aoCachedTopics);
+        for (var i = 0; i < response.rows.length; i++) {
+          for (var j = i + 1; j < response.rows.length; j++) {
+            var topic1 = response.rows[i].doc;
+            var topic2 = response.rows[j].doc;
+            if (topic1._id != topic2._id && topic1.name.toLowerCase() == topic2.name.toLowerCase()) {
+              forge.logging.info("There are two topics with the same name: " + topic1.name.toLowerCase());
+              // Rename topic2
+              topic2.name = topic2.name + " 2";
+              topic2.updateTime = new Date().toISOString();
+              dbTopics.put(topic2, function(err, response) {
+                if (err) {
+                  forge.logging.error("Error while putting topic (fixTopicDuplicateErrors): " + err);
+                  callback(true);
+                } else {
+                  forge.logging.info("dbTopics.put response (fixTopicDuplicateErrors) : " + JSON.stringify(response));
+                  // Duplicate fixed, check for other duplicates
+                  fixTopicDuplicateErrors(callback, true);
+                }
+              });
+              return;
+            }
+          }
+        }
+        // No duplicates
+        forge.logging.info("There are no Topic duplicates (fixTopicDuplicateErrors)");
+        callback(changesMade);
       });
     }
-
+    
     /**
      * (Public) Get Observations asynchronously
      */
@@ -1218,18 +1121,6 @@ define([
       }
 
       return aResultingDates;
-    }
-
-    /**
-     * (Public) Read Topic asynchronously
-     */
-    function readTopicAsync(topicId, fCallback){
-      readTopicsAsync(function(data){
-        var oTopic = data.filter(function(entry){
-          return entry.id == topicId;
-        })[0];
-        fCallback(oTopic);
-      });
     }
 
     /**
@@ -1492,14 +1383,11 @@ define([
      */
     return {
       //TODO create delete operations for the Topics and Observations
-      readTopicsAsync: readTopicsAsync,
       readTopicsAsyncDB: readTopicsAsyncDB,
       syncTopicsAsyncDB: syncTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
       readObservationsAsyncDB: readObservationsAsyncDB,
       syncObservationsAsyncDB: syncObservationsAsyncDB,
-      readTopicsSyncDB: readTopicsSyncDB,
-      readTopicAsync: readTopicAsync,
 
       Topic : Topic,
       createTopic: createTopic,

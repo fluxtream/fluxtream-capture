@@ -152,6 +152,12 @@ define([
         $("#list-topics-footer-center-icon").attr('class', 'icon ion-android-alert self-report-footer-icon');
         $scope.$$phase || $scope.$apply();
       });
+      
+      // Update topic list when it changes
+      $scope.$on('event:topic-list-changed', function() {
+        $scope.aoTopics = selfReportStorage.readTopics();
+        $scope.$$phase || $scope.$apply();
+      });
 
       $scope.$$phase || $scope.$apply();
       // Get token from backend and initialize local variables

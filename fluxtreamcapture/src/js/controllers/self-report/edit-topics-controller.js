@@ -135,6 +135,12 @@ define([
 
         $rootScope.$broadcast('event:initialized');
       });
+      
+      // Update topic list when it changes
+      $scope.$on('event:topic-list-changed', function() {
+        $scope.aoTopics = selfReportStorage.readTopics();
+        $scope.$$phase || $scope.$apply();
+      });
 
       if(!selfReportStorage.isInitialized()) {
         // Set status icon to spinning wheel
