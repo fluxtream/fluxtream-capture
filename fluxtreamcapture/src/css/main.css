@@ -704,11 +704,6 @@ button i {
  * HEART RATE
  *******************************************/
 
-.heart-rate-disabled {
-   margin-top: 150px;
-   text-align: center;
-}
-
 .heart-rate-enabled {
    position: absolute;
    top: 44px;
