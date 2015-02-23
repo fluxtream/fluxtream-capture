@@ -107,7 +107,6 @@ define([
         remoteCouchDeletedObservationsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedObservations;
         backendLink = env['fluxtream.home.url'];
 
-
         // Creating in case of the offline for fluxtream backend
         dbTopics = new PouchDB(dbNameTopics);
         dbObservations = new PouchDB(dbNameObservations);
@@ -271,20 +270,19 @@ define([
           rangeStart: oTopic.rangeStart,
           rangeEnd: oTopic.rangeEnd,
           step: oTopic.step,
-          topicNumber: oTopic.topicNumber},
-
-        function callback(err, result) {
-        if (!err) {
-          forge.logging.info('Successfully saved a Topic on client side (createTopic)');
-        } else {
-          forge.logging.error("Error while saving Topic on the client side (createTopic): " + err);
-          $rootScope.$broadcast('event:internalError');
+          topicNumber: oTopic.topicNumber
+        },
+        function (err, result) {
+          if (!err) {
+            forge.logging.info('Successfully saved a Topic on client side (createTopic)');
+          } else {
+            forge.logging.error("Error while saving Topic on the client side (createTopic): " + err);
+            $rootScope.$broadcast('event:internalError');
+          }
+          // Synchronize with the server
+          syncTopicsAsyncDB();
         }
-      });
-
-      forge.logging.info("Saving Topic on the server side (createTopic)");
-      // Synchronize with the server
-      syncTopicsAsyncDB();
+      );
     }
 
     /**
