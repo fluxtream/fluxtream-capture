@@ -7,10 +7,10 @@
   
   <ion-content class="padding">
     <div class="flx-reload-icon" ng-if="loading"></div>
-    <div ng-if="!loading && !aoTopics.length">
-      <div class="padding text-center">
+    <div ng-if="!loading && !aoTopics.length" class="empty-list">
+      <p>
         Create a new topic and start making observations.
-      </div>
+      </p>
       <button ui-sref="createTopic" class="button button-positive button-block">
         Create a new topic
       </button>

@@ -51,26 +51,19 @@
         </div>
       </div>
       <!-- List is empty -->
-      <div ng-if="!postList.length && !loading && !refreshing">
-        <div class="list card padding" ng-if="hasCoach == 'no'">
-          <div class="wall-post-message-body item item-body">
-            <div>
-              You don't have any messages. Share your data with buddies and start the conversation.
-            </div>
-            <div class="card-actions connector-installing">
-              <div class="action padding" ui-sref="findCoach">
-                Add buddies
-                <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i>
-              </div>
-            </div>
-          </div>
+      <div ng-if="!postList.length && !loading && !refreshing" class="empty-list padding">
+        <div ng-if="hasCoach == 'no'">
+          <p>
+            You don't have any messages. Share your data with buddies and start the conversation.
+          </p>
+          <button class="button button-block button-positive" ui-sref="findCoach">
+            Add buddies
+          </button>
         </div>
-        <div class="list card padding" ng-if="hasCoach == 'yes' && !coachFilter">
-          <div class="wall-post-message-body item item-body">
-            <div style="text-align:center">
-              No messages yet
-            </div>
-          </div>
+        <div ng-if="hasCoach == 'yes' && !coachFilter">
+          <p>
+            No messages yet
+          </p>
         </div>
       </div>
       <!-- List of posts -->

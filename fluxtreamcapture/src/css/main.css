@@ -56,8 +56,17 @@ body {
   padding: 10px;
 }
 
+.empty-list {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.empty-list p {
+  padding-bottom: 10px;
+}
+
 /*******************************************
- * Menu
+ * MENU
  *******************************************/
 
 ion-side-menu.menu, ion-side-menu .list ion-item, ion-side-menu .list ion-item.activated {
@@ -78,7 +87,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 }
 
 /*******************************************
- * Loading screens
+ * LOADING SCREENS
  *******************************************/
 
 .flx-reload-icon {
@@ -93,7 +102,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 }
 
 /*******************************************
- * Photo upload screen
+ * PHOTO UPLOAD SCREEN
  *******************************************/
 
 .photo-wrapper {
@@ -171,7 +180,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
 }
 
 /*******************************************
- * Photo preview screen
+ * PHOTO PREVIEW SCREEN
  *******************************************/
 
 .photo-preview {
@@ -205,7 +214,7 @@ div.photo-metadata {
 }
 
 /*******************************************
- * Photo metadata screen
+ * PHOTO METADATA SCREEN
  *******************************************/
 
 .photo-metadata-remove {
@@ -217,7 +226,7 @@ div.photo-metadata {
 }
 
 /*******************************************
- * Self report styles
+ * SELF REPORT
  *******************************************/
 
 .self-report-footer-icon {
@@ -246,7 +255,7 @@ div.photo-metadata {
 textarea.noResize { resize:none; }
 
 /*******************************************
- * Login screen
+ * LOGIN SCREEN
  *******************************************/
 
 .login-screen {
