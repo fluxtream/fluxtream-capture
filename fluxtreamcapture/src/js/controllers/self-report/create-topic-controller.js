@@ -168,7 +168,7 @@ define([
             }
             else {
               $scope.oNewTopic = new selfReportStorage.Topic(
-                nLength,
+                nLength + "." + new Date().getTime(),
                 tCurrentTime,
                 tCurrentTime,
                 document.getElementById('topic.name').value,
