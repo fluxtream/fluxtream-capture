@@ -59,7 +59,35 @@ define([
 	    });
 	    forge.logging.info("sent sync notification to Fluxtream Capture updater @ " + updateNotificationURL );
 	  };
-
+    
+    $rootScope.$on("user-logged-out", function() {
+      // Reset everything
+      dbTopics = null;
+      dbObservations = null;
+      dbDeleteTopics = null;
+      dbDeleteObservations = null;
+      dbNameTopics = null;
+      dbNameObservations = null;
+      dbNameDeletedTopics = null;
+      dbNameDeletedObservations = null;
+      remoteCouchTopicsAddress = null;
+      remoteCouchObservationsAddress = null;
+      remoteCouchDeletedTopicsAddress = null;
+      remoteCouchDeletedObservationsAddress = null;
+      backendLink = null;
+      userLogin = null;
+      userCouchDBToken = null;
+      bIsInitialized = 0;
+      bIsTopicsSynced = 0;
+      bIsObservationsSynced = 0;
+      bIsOffline = 0;
+      bIsOfflineChangesForTopicsMade = 0;
+      bIsOfflineChangesForObservationsMade = 0;
+      aoCachedTopics = null;
+      aoCachedObservations = null;
+      aoObservationsToSync = null;
+    });
+    
     function initialize(){
       if(!bIsInitialized){
         aoCachedTopics = [];
@@ -120,6 +148,7 @@ define([
     }
     
     function listenToServerChanges(db, seqNumber) {
+      if (!bIsInitialized) return; // Happens in case of logout while offline
       if (!forge.is.connection.connected()) {
         setTimeout(function() {
           listenToServerChanges(db, seqNumber);
