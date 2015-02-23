@@ -9,14 +9,14 @@
   </ion-nav-bar>
   
   <!-- Body -->
-  <ion-content class="has-footer">
+  <ion-content class="has-footer padding">
     <ion-list>
-      <ion-item ui-sref="settingsConnectors">
+      <ion-item ui-sref="settingsConnectors" class="item-icon-right">
+        <i class="icon ion-ios7-arrow-right"></i>
         Connectors
       </ion-item>
-    </ion-list>
-    <ion-list>
-      <ion-item ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb">
+      <ion-item ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb" class="item-icon-right">
+        <i class="icon ion-ios7-arrow-right"></i>
         Photo Upload Settings
       </ion-item>
     </ion-list>

@@ -7,20 +7,25 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   
-  <ion-content class="has-footer">
+  <ion-content class="has-footer padding">
     <div class="flx-reload-icon" ng-if="loading && !isOffline"></div>
     <div ng-if="loading && isOffline" class="padding">You are offline. Please connect to the Internet.</div>
-    <div class="list">
-      <div ng-repeat="connector in connectors" class="item" ng-click="toggleConnector(connector)">
-        <div class="coach-connector-selected" ng-if="connector.shared && !connector.updating">
-          <span class="ion-ios7-checkmark-outline"></span>
+    <div ng-if="!loading">
+      <div class="text-center padding">
+        Select the connectors you want to share with {{ coachName }}.
+      </div>
+      <div class="list">
+        <div ng-repeat="connector in connectors" class="item" ng-click="toggleConnector(connector)">
+          <div class="coach-connector-selected" ng-if="connector.shared && !connector.updating">
+            <span class="ion-ios7-checkmark-outline"></span>
+          </div>
+          <div class="coach-connector-selected coach-connector-loading" ng-if="connector.updating">
+          </div>
+          <div class="coach-connector-to-come" ng-if="!connector.shared && !connector.updating">
+            <span></span>
+          </div> 
+          {{ connector.prettyName }}
         </div>
-        <div class="coach-connector-selected coach-connector-loading" ng-if="connector.updating">
-        </div>
-        <div class="coach-connector-to-come" ng-if="!connector.shared && !connector.updating">
-          <span></span>
-        </div> 
-        {{ connector.prettyName }}
       </div>
     </div>
   </ion-content>
