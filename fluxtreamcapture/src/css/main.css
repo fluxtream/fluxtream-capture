@@ -306,6 +306,23 @@ textarea.noResize { resize:none; }
   font-size: 40px;
 }
 
+.wall-post-comments, div.wall-post-comments.card {
+  border: #E5E5E5 solid 1px;
+  margin-top: 10px;
+  margin-left: 0px;
+  margin-right: 0px;
+  padding-top: 0px;
+}
+
+div.card.wall-post-comments h2 {
+  padding: 10px 5px 6px 5px;
+  margin: 0px;
+}
+
+.wall-comment {
+  margin-top: 4px;
+}
+
 .float-right { float: right; }
 
 .wall-comment-action, .wall-post-action {
@@ -350,15 +367,12 @@ textarea.noResize { resize:none; }
   margin-right: 0;
 }
 .card .card {
-  margin: 20px 0 0;
+  margin: 20px 0 0 0;
 }
 .card .card .item {
   border:none;
 }
 .card .card .item-body {
-  border-bottom-width: 4px;
-  border-bottom-color: #fff;
-  border-bottom-style: solid;
 }
 .item-body .item-body, .item-body .item-avatar {
   background-color: #E6F0F4;

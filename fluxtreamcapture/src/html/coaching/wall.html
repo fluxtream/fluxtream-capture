@@ -23,7 +23,7 @@
           New message
         </button>
       </div>
-      <div class="list card padding" ng-if="editNewMessage">
+      <div class="list card" ng-if="editNewMessage">
         <!-- Post header -->
         <div class="item item-avatar" ng-click="loadPost(post)">
           <!-- Avatar -->
@@ -67,7 +67,7 @@
         </div>
       </div>
       <!-- List of posts -->
-      <div class="list card padding" ng-repeat="post in postList" ng-if="!coachFilter || post.from.username == coachFilter || post.to.username == coachFilter">
+      <div class="list card " ng-repeat="post in postList" ng-if="!coachFilter || post.from.username == coachFilter || post.to.username == coachFilter">
         <!-- Post header -->
         <div class="item item-avatar" ng-click="loadPost(post)">
           <!-- Avatar -->
@@ -104,9 +104,9 @@
             </textarea>
           </div>
           <!-- List of comments -->
-          <div class="list card" ng-if="post.comments.length">
+          <div class="wall-post-comments card" ng-if="post.comments.length">
             <h2>Comments</h2>
-            <div ng-repeat="comment in post.comments">
+            <div ng-repeat="comment in post.comments" class="wall-comment">
               <div class="item item-avatar">
                 <img src="{{ (comment.from ? comment.from.photoURL : localUserPhotoURL) || 'img/avatar-dummy.png' }}">
                 <h3 class="wall-comment-author-name">
