@@ -497,17 +497,17 @@ textarea.noResize { resize:none; }
 }
 
 .card-actions {
-  display: flex;
+  /*display: flex;*/
   clear: both;
 }
 
 .card-actions div {
-  -webkit-box-flex: 0;
-  -webkit-flex: 0 0 50%;
+/*  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 30%;
   -moz-box-flex: 0;
-  -moz-flex: 0 0 50%;
-  -ms-flex: 0 0 50%;
-  flex: 0 0 50%;
+  -moz-flex: 0 0 30%;
+  -ms-flex: 0 0 30%;
+  flex: 0 0 30%;*/
   max-width: 50%;
   text-align: center;
   margin: 0;
@@ -515,6 +515,16 @@ textarea.noResize { resize:none; }
   border-width: 1px 0 0;
   border-style: solid;
   color: #3399CC;
+}
+
+.card-actions div.action-right {
+  float: right;
+  width: 50%;
+}
+
+.card-actions div.action-left {
+  float: left;
+  width: 50%;
 }
 
 .card-actions div i {

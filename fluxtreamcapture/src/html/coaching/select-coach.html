@@ -28,8 +28,12 @@
           {{ coach.fullname }}
         </div>
         <div class="card-actions">
-          <div class="action card-contact-coach padding" ng-click="loadCoachMessaging(coach)">Messages <i class="ion-compose" style="margin-top:1px;"></i></div>
-          <div class="action card-contact-coach padding" ng-click="loadCoachConnectorSharing(coach)">Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i></div>
+          <div class="action-left padding" ng-click="loadCoachMessaging(coach)">
+            Messages <i class="ion-compose" style="margin-top:1px;"></i>
+          </div>
+          <div class="action-right padding" ng-click="loadCoachConnectorSharing(coach)">
+            Shared data <i class="ion-ios7-arrow-right" style="margin-top:1px;"></i>
+          </div>
         </div>
       </div>      
     </div>

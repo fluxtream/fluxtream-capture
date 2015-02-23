@@ -33,16 +33,16 @@
             <!-- Installed -->
             <div class="card-actions" ng-if="connector.installed">
               <!-- Installed -->
-              <div class="action padding connector-remove" ng-click="uninstallConnector(connector); $event.stopPropagation();">
+              <div class="action-left padding connector-remove" ng-click="uninstallConnector(connector); $event.stopPropagation();">
                 <i class="ion-ios7-close-empty"></i> Remove
               </div>
               <!-- Installed and synchronizing -->
-              <div class="action padding connector-sync" ng-if="!connector.syncing">
+              <div class="action-right padding connector-sync" ng-if="!connector.syncing">
                 <i class="ion-ios7-reload"></i> 
                 <button class="btn-no-style" ng-click="synchronizeNow(connector); $event.stopPropagation();"> Sync now</button>
               </div>
               <!-- Installed and not synchronizing -->
-              <div class="action padding connector-sync" ng-if="connector.syncing">
+              <div class="action-right padding connector-sync" ng-if="connector.syncing">
                 <span class="connector-loading"></span>
               </div>
             </div>
