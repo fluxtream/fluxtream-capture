@@ -313,8 +313,9 @@ div.card.wall-post-comments h2 {
   margin: 0px;
 }
 
-.wall-comment {
-  margin-top: 4px;
+.wall-comment:not(:last-child) {
+  margin-bottom: 1px;
+  border-bottom: 2px solid #E5E5E5;
 }
 
 .float-right { float: right; }
