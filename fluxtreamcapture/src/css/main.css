@@ -283,6 +283,7 @@ textarea.noResize { resize:none; }
   width: 100%;
   display: block;
   padding: 0;
+  padding-right: 60px;
 }
 
 .wall-post-time {
@@ -316,6 +317,10 @@ div.card.wall-post-comments h2 {
 .wall-comment:not(:last-child) {
   margin-bottom: 1px;
   border-bottom: 2px solid #E5E5E5;
+}
+
+.wall-comment-author-name {
+  padding-right: 60px;
 }
 
 .float-right { float: right; }
@@ -459,9 +464,9 @@ div.card.wall-post-comments h2 {
 
 .coach-remove {
   float: right;
-  font-size: 1.8em;
-  padding: 10px 10px 15px 15px;
-  color: #ef4e3a;
+  font-size: 1.6em;
+  padding: 12px 13px 15px 15px;
+  color: #3399CC;
 }
 
 .coach-photo {
