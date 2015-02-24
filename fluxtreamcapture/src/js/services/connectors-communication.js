@@ -71,9 +71,9 @@ define([
                     i--;
                   }
                 }
-                // Set as installable/uninstallable (Beddit is not installable)
+                // Set as installable/uninstallable (they are now all installable, but uninstallable can be added here)
                 connectors.forEach(function(connector) {
-                  connector.installable = connector.connectorName != "beddit";
+                  connector.installable = true;
                 });
                 // Sort connectors by name
                 connectors.sort(function(a, b) {
