@@ -651,18 +651,32 @@ button i {
 
 .connector-status-icon {
   float: left;
-  margin: 15px;
+  margin: 10px 15px 15px 0px;
   height: 50px;
   color: #3399cc;
   font-size: 1.4em;
   line-height: 1.2em;
   width: 22px;
 }
+
 .connector-status-icon span {
   display: inline-block;
   height: 22px;
   width: 22px;
 }
+
+.connector-status-up {
+  color: #76d323;
+}
+
+.connector-status-down {
+  color: #ff3030;
+}
+
+.connector-status-temporarily-down {
+  color: #ff9226;
+}
+
 .connector-name, .connector-status {
   overflow: hidden;
   height: 100%;

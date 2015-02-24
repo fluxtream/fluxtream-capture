@@ -16,10 +16,14 @@
             <!-- Connector status icon -->
             <div class="connector-status-icon">
               <!-- Installed -->
-              <span class="ion-checkmark-circled" ng-if="connector.installed && !connector.loading"></span>
+              <span class="ion-record connector-status-up" ng-if="connector.installed && !connector.loading && connector.status == 'STATUS_UP'"></span>
+              <span class="ion-record connector-status-down" ng-if="connector.installed && !connector.loading && connector.status == 'STATUS_PERMANENT_FAILURE'"></span>
+              <span class="ion-record connector-status-temporarily-down" ng-if="connector.installed && !connector.loading && connector.status == 'STATUS_TRANSIENT_FAILURE'"></span>
+              <span class="ion-clock connector-status-temporarily-down" ng-if="connector.installed && !connector.loading && connector.status == 'STATUS_OVER_RATE_LIMIT'"></span>
+              <span class="ion-record connector-status-up" ng-if="connector.installed && !connector.loading && connector.status == 'SYNCHING'"></span>
               <!-- Installing -->
               <span class="connector-loading" ng-if="connector.installed && connector.loading"></span>
-              <!-- Non installed -->
+              <!-- Not installed -->
               <span ng-if="!connector.installed"></span>
             </div>
             <!-- Connector image -->
@@ -28,8 +32,6 @@
             </div>
             <!-- Connector name -->
             <p class="connector-name">{{ connector.name }}</p>
-            <!-- Status -->
-            <p class="connector-status" ng-if="connector.installed">Status: {{ connector.status }}</p>
             <!-- Installed -->
             <div class="card-actions" ng-if="connector.installed">
               <!-- Installed -->
