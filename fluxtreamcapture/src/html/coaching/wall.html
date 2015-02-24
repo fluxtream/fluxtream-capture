@@ -46,7 +46,7 @@
             Send
           </button>
           <span ng-if="sendingMessage" class="sending-new-message"></span>
-          <textarea class="wall-new-message-input" ng-model="newMessage.body" placeholder="New message">
+          <textarea class="wall-input" ng-model="newMessage.body" placeholder="New message">
           </textarea>
         </div>
       </div>
@@ -100,7 +100,7 @@
               Save
             </button>
             <span ng-if="post.sendingUpdate" class="sending-new-message"></span>
-            <textarea class="wall-new-comment-input" ng-model="post.newBody">
+            <textarea class="wall-input" ng-model="post.newBody">
             </textarea>
           </div>
           <!-- List of comments -->
@@ -133,7 +133,7 @@
                     Save
                   </button>
                   <span ng-if="comment.sendingUpdate" class="sending-new-message"></span>
-                  <textarea class="wall-new-comment-input" ng-model="comment.newBody">
+                  <textarea class="wall-input" ng-model="comment.newBody">
                   </textarea>
                 </div>
               </div>

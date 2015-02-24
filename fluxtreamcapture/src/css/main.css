@@ -293,12 +293,6 @@ textarea.noResize { resize:none; }
   white-space: normal;
 }
 
-.wall-new-comment-input {
-  border: #E5E5E5 solid 1px;
-  height: 100px;
-  width: 80%;
-}
-
 .wall-submit-button {
 }
 
@@ -413,14 +407,15 @@ div.card.wall-post-comments h2 {
   float: right;
 }
 
-.wall-new-comment-input {
-  margin-top: 10px;
-}
-
-.wall-new-message-input {
+.wall-input, .wall-new-comment-input {
   border: #E5E5E5 solid 1px;
   height: 100px;
   width: 80%;
+  padding: 4px;
+}
+
+.wall-new-comment-input {
+  margin-top: 10px;
 }
 
 .sending-new-message {
