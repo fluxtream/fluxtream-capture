@@ -80,7 +80,7 @@
           </div>
           <!-- Author -->
           <h2 class="wall-post-author-name">
-            {{ post.from ? post.from.fullname : "You" }}
+            {{ post.from ? post.from.fullname : "You" + (coachFilter ? "" : " to " + post.to.fullname) }}
           </h2>
           <!-- Time -->
           <p class="wall-post-time">
