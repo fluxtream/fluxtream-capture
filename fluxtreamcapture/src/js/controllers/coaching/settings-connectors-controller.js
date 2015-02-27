@@ -104,8 +104,8 @@ define([
             // Load modal view to authorize connector
             forge.tabs.openWithOptions(
               {
-                url: loginService.getTargetServer() + "proxy/connectors/add/" + connector.connectorName,
-                pattern: "*://*/proxy/connectors/added*",
+                url: loginService.getTargetServer() + connector.connectUrl,
+                pattern: "*://*/app/from/*",
                 buttonText: "Cancel",
                 title: "Connect device"
               },
