@@ -143,12 +143,20 @@ define([
             // Remove connector now
             connector.loading = true;
             $scope.$$phase || $scope.$apply();
-            // TODO call server API to uninstall connector
-            setTimeout(function() { // TODO Remove this timeout that simulates an API call
-              connector.loading = false;
-              connector.installed = false;
-              $scope.$$phase || $scope.$apply();
-            }, 2000);
+            connectorsCom.uninstallConnector(connector.connectorName,
+              // Success
+              function() {
+                connector.loading = false;
+                connector.installed = false;
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function() {
+                alert("An error has occurred. The connector was not removed.");
+                connector.loading = false;
+                $scope.$$phase || $scope.$apply();
+              }
+            );
             return true;
           }
         });

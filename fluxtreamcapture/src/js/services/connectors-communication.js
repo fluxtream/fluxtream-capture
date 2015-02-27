@@ -113,6 +113,30 @@ define([
       }
       
       /**
+       * Removes a connector from the user's connectors
+       */
+      function uninstallConnector(connectorName, success, error) {
+        forge.request.ajax({
+          type: "DELETE",
+          url: loginService.getTargetServer() + "api/v1/connectors/" + connectorName,
+          timeout: 10000,
+          data: {
+            access_token: loginService.getAccessToken()
+          },
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          dataType: "json",
+          success: function() {
+            if (success) success();
+            // Reload connector list
+            getFullConnectorList(function() {}, function() {});
+          },
+          error: error
+        });
+      }
+      
+      /**
        * Forces the resynchronization of a connector
        */
       function synchronizeNow(connectorName, success, error) {
@@ -136,6 +160,7 @@ define([
       return {
         getFullConnectorList: getFullConnectorList,
         getCachedConnectors: getCachedConnectors,
+        uninstallConnector: uninstallConnector,
         synchronizeNow: synchronizeNow
       };
       
