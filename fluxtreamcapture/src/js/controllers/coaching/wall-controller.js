@@ -70,6 +70,13 @@ define([
         body: ""
       };
       
+      // Reload single post when a push notification is received
+      if ($scope.singlePost) {
+        $scope.$on('push-notification-for-post-' + $stateParams.postId, function() {
+          $scope.loadSinglePost();
+        });
+      }
+      
       // Check whether the user has a coach
       coachingCom.getCoachList(
         // Success

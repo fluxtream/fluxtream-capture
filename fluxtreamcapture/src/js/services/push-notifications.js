@@ -20,7 +20,8 @@ define([
     "UserPrefsService",
     "DeviceIdService",
     '$state',
-    function(loginService, userPrefs, deviceIdService, $state) {
+    '$rootScope',
+    function(loginService, userPrefs, deviceIdService, $state, $rootScope) {
       
       // Wall post id associated with the latest push notification
       var postToLoad = null;
@@ -84,6 +85,8 @@ define([
           if (!appActiveOnNotification) {
             // Notification was pressed from OS, show the page now
             $state.go("wallPost", {postId: postToLoad});
+            // If the page was already active, let it know that it must reload
+            $rootScope.$broadcast('push-notification-for-post-' + postToLoad);
           } else {
             // App was active on notification, ask the user if they want to see the page now
             // TODO Manage in-app notifications
