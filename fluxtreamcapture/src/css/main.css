@@ -379,10 +379,7 @@ div.card.wall-post-comments h2 {
 
 .card {
   box-shadow: none;
-  margin-bottom: 5px;
-  margin-top: 5px;
-  margin-left: 0;
-  margin-right: 0;
+  margin: 5px 0 15px 0;
 }
 .card .card {
   margin: 20px 0 0 0;
