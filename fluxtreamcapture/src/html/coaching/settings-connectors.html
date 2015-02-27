@@ -31,7 +31,7 @@
               <img src="{{ connector.image }}" />
             </div>
             <!-- Connector name -->
-            <p class="connector-name">{{ connector.name }}</p>
+            <p class="connector-name">{{ connector.name.split("_").join(" ") }}</p>
             <!-- Installed -->
             <div class="card-actions" ng-if="connector.installed">
               <!-- Installed -->

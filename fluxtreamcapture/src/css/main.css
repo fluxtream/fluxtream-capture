@@ -667,6 +667,7 @@ button i {
 .connector-status-icon {
   float: left;
   margin: 10px 15px 15px 0px;
+  padding-left: 10px;
   height: 50px;
   color: #3399cc;
   font-size: 1.4em;
@@ -709,7 +710,6 @@ button i {
  float:right;
  margin: 15px;
  width: 100px;
- border: 1px solid #ddd;
 }
 .connector-image img {
   width: 100%;
