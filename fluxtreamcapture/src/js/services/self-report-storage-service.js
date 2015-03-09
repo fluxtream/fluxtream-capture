@@ -108,7 +108,13 @@ define([
         backendLink = env['fluxtream.home.url'];
 
         // Creating in case of the offline for fluxtream backend
-        dbTopics = new PouchDB(dbNameTopics);
+        dbTopics = new PouchDB(dbNameTopics, {adapter: 'websql'});
+        if (dbTopics == null) {
+          forge.logging.error("Didn't create PouchDB (initialize)");
+        } else {
+          forge.logging.info("Successfully created PouchDB (initialize) " + dbTopics.adapter);
+        }
+
         dbObservations = new PouchDB(dbNameObservations);
         dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
         dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
