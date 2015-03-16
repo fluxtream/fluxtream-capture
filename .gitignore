@@ -62,3 +62,4 @@ tasks.xml
 
 # iOS build files
 *.build
+fluxtreamcapture/IOS_certificates
