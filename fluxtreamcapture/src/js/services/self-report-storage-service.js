@@ -115,10 +115,25 @@ define([
           forge.logging.info("Successfully created PouchDB (initialize) " + dbTopics.adapter);
         }
 
-        dbObservations = new PouchDB(dbNameObservations);
-        dbDeleteTopics = new PouchDB(dbNameDeletedTopics);
-        dbDeleteObservations = new PouchDB(dbNameDeletedObservations);
-        
+        dbObservations = new PouchDB(dbNameObservations, {adapter: 'websql'})
+        if (dbObservations == null) {
+          forge.logging.error("Didn't create observations PouchDB (initialize)");
+        } else {
+          forge.logging.info("Successfully created observations PouchDB (initialize) " + dbTopics.adapter);
+        }
+        dbDeleteTopics = new PouchDB(dbNameDeletedTopics, {adapter: 'websql'});
+        if (dbDeleteTopics == null) {
+          forge.logging.error("Didn't create PouchDB (initialize)");
+        } else {
+          forge.logging.info("Successfully deletedTopics created PouchDB (initialize) " + dbTopics.adapter);
+        }
+        dbDeleteObservations = new PouchDB(dbNameDeletedObservations, {adapter: 'websql'});
+        if (dbDeleteObservations == null) {
+          forge.logging.error("Didn't create deleted observations PouchDB (initialize)");
+        } else {
+          forge.logging.info("Successfully created deleted observations PouchDB (initialize) " + dbTopics.adapter);
+        }
+
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
