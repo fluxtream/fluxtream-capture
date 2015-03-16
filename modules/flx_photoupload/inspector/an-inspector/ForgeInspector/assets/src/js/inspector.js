@@ -23,7 +23,6 @@ $(function () {
 		}
 		for (module in modules) {
 			$('#_module').append('<option>'+module+'</option>');
-			$('#_module').val('flx_photoupload');
 		}
 		$('#_module').change(function () {
 			var methods = modules[$(this).val()]; 
@@ -42,21 +41,15 @@ $(function () {
 			for (param in params) {
 				$('#_actions').before('<div class="control-group api_input"><label class="control-label" for="'+param+'">'+param+'</label><div class="controls"><input type="text" class="input-xlarge" id="'+param+'"></div></div>');
 			}
-		});
+		})
 		$('#_method').change();
 		$('#_run').click(function () {
 			var module = $('#_module').val();
 			var method = $('#_method').val();
-	    var paramTypes = modules[module][method];
 			var params = {};
 			
 			$('.api_input input').each(function (i, x) {
-        switch (paramTypes[$(x).attr('id')].type) {
-          case 'int': params[$(x).attr('id')] = parseInt($(x).val()); break;
-          case 'long': params[$(x).attr('id')] = parseInt($(x).val()); break;
-          case 'double': params[$(x).attr('id')] = parseFloat($(x).val()); break;
-          default: params[$(x).attr('id')] = $(x).val();
-        }
+				params[$(x).attr('id')] = $(x).val();
 			});
 			
 			$('#_output').prepend('<pre class="alert alert-info">Called "'+module+'.'+method+'" with "'+JSON.stringify(params, null, '')+'"</pre>');

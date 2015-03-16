@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-sdk android:minSdkVersion="16" android:targetSdkVersion="19" />
+    <uses-sdk android:minSdkVersion="5" android:targetSdkVersion="19" />
     
     <application android:icon="@drawable/icon" android:label="ForgeInspector" android:name="io.trigger.forge.android.core.ForgeApp">
         <activity android:configChanges="mcc|mnc|locale|touchscreen|keyboardHidden|navigation|orientation|screenLayout|uiMode|fontScale|screenSize" android:launchMode="singleTask" android:name="io.trigger.forge.android.core.ForgeActivity" android:stateNotNeeded="true" android:theme="@android:style/Theme.Black.NoTitleBar">
@@ -14,15 +14,5 @@
         </activity>
         
         <provider android:authorities="io.trigger.forge.android.inspector" android:exported="true" android:name="io.trigger.forge.android.core.ForgeContentProvider" tools:ignore="ExportedContentProvider" />
-    	<service android:name="io.trigger.forge.android.modules.flx_photoupload.UploadService" />
-    	<!-- Declaring broadcast receiver for BOOT_COMPLETED event -->
-		<receiver android:name="io.trigger.forge.android.modules.flx_photoupload.SystemBootBroadcastReceiver" android:enabled="true" android:exported="false">
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED"/>
-			</intent-filter>
-		</receiver>
-    </application>
-	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-</manifest>
+    <service android:name="io.trigger.forge.android.modules.flx_photoupload.UploadService" /><receiver android:enabled="true" android:exported="false" android:name="io.trigger.forge.android.modules.flx_photoupload.SystemBootBroadcastReceiver"><intent-filter><action android:name="android.intent.action.BOOT_COMPLETED" /></intent-filter></receiver></application>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /></manifest>
