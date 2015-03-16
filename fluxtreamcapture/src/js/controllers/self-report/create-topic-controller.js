@@ -155,9 +155,7 @@ define([
               alert("You can't have two topics with the same name. Please enter another name.");
             }
             else if(document.getElementById('topic.type').value === "Range" &&
-              (document.getElementById('topic.rangeStart').value == 0 ||
-                document.getElementById('topic.rangeEnd').value == 0 ||
-                document.getElementById('topic.rangeEnd').value <=
+              (document.getElementById('topic.rangeEnd').value <=
                 document.getElementById('topic.rangeStart').value)){
               alert("Range defined incorrectly.");
             }
