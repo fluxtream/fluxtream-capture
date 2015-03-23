@@ -57,6 +57,19 @@ define([
         $scope.initialScrollDone = true;
       };
       
+      // Returns the height of the photo items depending on the screen width
+      $scope.getCollectionItemHeight = function() {
+        var height = 50 + 62 + 10;
+        if ($('body').width() >= 320) height = 74 + 62 + 10;
+        if ($('body').width() >= 360) height = 87 + 62 + 10;
+        if ($('body').width() >= 375) height = 92 + 62 + 10;
+        if ($('body').width() >= 414) height = 105 + 62 + 10;
+        if ($('body').width() >= 480) height = 127 + 62 + 10;
+        if ($('body').width() >= 600) height = 167 + 62 + 10;
+        if ($('body').width() >= 768) height = 223 + 62 + 10;
+        return height;
+      };
+      
       /**
        * (Private) Adds a photo from to raw list to the photo list
        */

@@ -9,12 +9,11 @@
     <div class="flx-reload-icon" ng-if="!loaded"></div>
     <div ng-if="loaded">
       <!-- Photo list -->
-      <div class="list padding">
+      <div class="list photo-list">
         <div class="photo-wrapper"
              collection-repeat="photo in photos"
              collection-item-width="'33.3333%'"
-             collection-item-height="165"
-             ng-style="{height: 165}">
+             collection-item-height="getCollectionItemHeight()">
           <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})"
             style='background-image:url("{{ photo.src }}"); -webkit-transform: rotate({{ photo.orientation_tag }}deg)'>
           </div>

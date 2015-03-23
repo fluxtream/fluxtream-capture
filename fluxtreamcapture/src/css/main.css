@@ -159,7 +159,7 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   text-align: center;
 }
 
-.photo-info p button {
+.photo-info p button, .delete-photo-button-wrapper button {
   width: 80%;
 }
 .photo-status-uploading, .photo-status-pending, .photo-status-uploaded, .photo-status-failed {
@@ -196,6 +196,145 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   font-size: 25px;
   vertical-align: middle;
 }
+
+// Beginning sizes depending on screen width
+
+// Default values (for screen size 240)
+.photo-list {
+  padding: 5px;
+}
+.photo-image {
+  width: 50px;
+  height: 50px;
+}
+.photo-image img {
+  min-width: 50px;
+  min-height: 50px;
+}
+.photo-wrapper {
+  height: 114px;
+}
+
+@media (min-width: 320px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 74px;
+    height: 74px;
+  }
+  .photo-image img {
+    min-width: 74px;
+    min-height: 74px;
+  }
+  .photo-wrapper {
+    height: 138px;
+  }
+}
+
+@media (min-width: 360px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 87px;
+    height: 87px;
+  }
+  .photo-image img {
+    min-width: 87px;
+    min-height: 87px;
+  }
+  .photo-wrapper {
+    height: 151px;
+  }
+}
+
+@media (min-width: 375px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 92px;
+    height: 92px;
+  }
+  .photo-image img {
+    min-width: 92px;
+    min-height: 92px;
+  }
+  .photo-wrapper {
+    height: 156px;
+  }
+}
+
+@media (min-width: 414px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 105px;
+    height: 105px;
+  }
+  .photo-image img {
+    min-width: 105px;
+    min-height: 105px;
+  }
+  .photo-wrapper {
+    height: 169px;
+  }
+}
+
+@media (min-width: 480px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 127px;
+    height: 127px;
+  }
+  .photo-image img {
+    min-width:127px;
+    min-height: 127px;
+  }
+  .photo-wrapper {
+    height: 191px;
+  }
+}
+
+@media (min-width: 600px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 167px;
+    height: 167px;
+  }
+  .photo-image img {
+    min-width:167px;
+    min-height: 167px;
+  }
+  .photo-wrapper {
+    height: 231px;
+  }
+}
+
+@media (min-width: 768px) {
+  .photo-list {
+    padding: 8px;
+  }
+  .photo-image {
+    width: 223px;
+    height: 223px;
+  }
+  .photo-image img {
+    min-width:223px;
+    min-height: 223px;
+  }
+  .photo-wrapper {
+    height: 287px;
+  }
+}
+
+// Ending sizes depending on screen width
 
 /*******************************************
  * PHOTO PREVIEW SCREEN
