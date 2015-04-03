@@ -212,7 +212,7 @@
     NSData *body = [[NSString stringWithFormat:@"access_token=%@&dev_nickname=%@&channel_names=%@&data=%@",
                      [self.accessToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                      @"PolarStrap",
-                     [@"[\"HeartBeat\",\"BeatSpacing\"]" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
+                     [@"[\"HeartRate\",\"BeatSpacing\"]" stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],
                      [dataString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]
                     dataUsingEncoding:NSUTF8StringEncoding];
     NSString *bodyLength = [NSString stringWithFormat:@"%ld", (long)[body length]];

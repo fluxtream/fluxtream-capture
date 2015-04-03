@@ -85,7 +85,7 @@
         // Lock current device
         if (self.peripheral) {
             // A device is connected, lock it
-            self.lockedDeviceName = @"AnotherDevice";//self.peripheral.name;
+            self.lockedDeviceName = self.peripheral.name;
             [[NSUserDefaults standardUserDefaults] setValue:self.lockedDeviceName forKey:DEFAULTS_LOCKED_HEART_DEVICE_NICKNAME];
             [[NSUserDefaults standardUserDefaults] synchronize];
             [[ForgeApp sharedApp] event:@"heartrate.lockSuccess" withParam:nil];
