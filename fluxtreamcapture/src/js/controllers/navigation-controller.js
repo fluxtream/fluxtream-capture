@@ -11,7 +11,8 @@ define([
     '$ionicSideMenuDelegate',
     '$state',
     'LoginService',
-    function($scope, $ionicSideMenuDelegate, $state, loginService) {
+    '$rootScope',
+    function($scope, $ionicSideMenuDelegate, $state, loginService, $rootScope) {
       
       $scope.navigateTo = function(route, params) {
         $state.go(route, params);
@@ -24,6 +25,13 @@ define([
       };
       
       $scope.isWeb = forge.is.web();
+      
+      // Name of the user
+      $scope.userName = "";
+      
+      $rootScope.$on('user-logged-in', function() {
+        $scope.userName = loginService.getUserFirstname() + " " + loginService.getUserLastname();
+      });
       
       // Enable back button navigation on Android
       if (forge.is.android()) {

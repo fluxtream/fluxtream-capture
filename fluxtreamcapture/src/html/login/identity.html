@@ -1,4 +1,4 @@
-<ion-view title="Settings">
+<ion-view title="Your identity">
   
   <!-- Header -->
   <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
@@ -10,16 +10,12 @@
   
   <!-- Body -->
   <ion-content class="has-footer padding">
-    <ion-list>
-      <ion-item ui-sref="settingsConnectors" class="item-icon-right">
-        <i class="icon ion-ios7-arrow-right"></i>
-        Connectors
-      </ion-item>
-      <ion-item ui-sref="photoUploadSettings({from: 'from-settings'})" ng-if="!isWeb" class="item-icon-right">
-        <i class="icon ion-ios7-arrow-right"></i>
-        Photo Upload Settings
-      </ion-item>
-    </ion-list>
+    <img src='{{ photoURL }}' class='identity-photo'>
+    <div class='identity-data'>
+      <p><span class='identity-data-name'>Username :</span> <span class='identity-data-value'>{{ username }}</span></p>
+      <p><span class='identity-data-name'>First name :</span> <span class='identity-data-value'>{{ firstname }}</span></p>
+      <p><span class='identity-data-name'>Last name :</span> <span class='identity-data-value'>{{ lastname }}</span></p>
+    </div>
   </ion-content>
   
   <!-- Footer -->

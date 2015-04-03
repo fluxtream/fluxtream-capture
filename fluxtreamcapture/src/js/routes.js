@@ -5,6 +5,7 @@ define([
   'app-modules',
   'controllers/navigation-controller',
   'controllers/login/login-controller',
+  'controllers/login/identity-controller',
   'controllers/settings/settings-controller',
   'controllers/self-report/list-topics-controller',
   'controllers/self-report/history-controller',
@@ -142,6 +143,11 @@ define([
         url: "/settings",
         templateUrl: "html/settings/settings.html",
         controller: "SettingsController"
+      })
+      .state('identity', {
+        url: "/identity",
+        templateUrl: "html/login/identity.html",
+        controller: "IdentityController"
       });
     // Default route
     $urlRouterProvider.otherwise("/init");

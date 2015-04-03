@@ -172,6 +172,8 @@ define([
       function handleAuthSuccessResponse(guestModel, textStatus) {
         userPrefs.set('login.username', guestModel.username);
         userPrefs.set('login.userId', guestModel.id + "");
+        userPrefs.set('login.firstname', guestModel.firstname);
+        userPrefs.set('login.lastname', guestModel.lastname);
         userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
         userPrefs.set('login.isAuthenticated', true);
         userPrefs.set('login.photoURL', guestModel.photoURL);
@@ -190,6 +192,8 @@ define([
       function logout() {
         userPrefs.set('login.isAuthenticated', false);
         userPrefs.set('login.userId', null);
+        userPrefs.set('login.firstname', null);
+        userPrefs.set('login.lastname', null);
         $rootScope.$broadcast('user-logged-out');
         $state.go('login');
         
@@ -217,6 +221,27 @@ define([
        */
       function getUserName() {
         return userPrefs.get('login.username');
+      }
+      
+      /**
+       * (Public) Returns user's first name
+       */
+      function getUserFirstname() {
+        return userPrefs.get('login.firstname');
+      }
+      
+      /**
+       * (Public) Returns user's last name
+       */
+      function getUserLastname() {
+        return userPrefs.get('login.lastname');
+      }
+      
+      /**
+       * (Public) Returns user's photo URL
+       */
+      function getUserPhotoURL() {
+        return userPrefs.get('login.photoURL');
       }
       
       /**
@@ -255,6 +280,9 @@ define([
         isAuthenticated: isAuthenticated,
         ajax: ajax,
         getUserName: getUserName,
+        getUserFirstname: getUserFirstname,
+        getUserLastname: getUserLastname,
+        getUserPhotoURL: getUserPhotoURL,
         getUserId: getUserId,
         getAccessToken: getAccessToken,
         getTargetServer: getTargetServer,

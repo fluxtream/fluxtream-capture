@@ -970,3 +970,30 @@ button i {
 .heart-rate-status-bar {
   line-height: 100%;
 }
+
+/*******************************************
+ * IDENTITY PAGE
+ *******************************************/
+
+.identity-photo {
+  display: block;
+  margin: auto;
+  width: 40%;
+  margin-top: 30px;
+  margin-bottom: 40px;
+}
+
+.identity-data {
+  font-size: 1.2em;
+  border: #E5E5E5 solid 1px;
+  padding: 20px;
+  margin: 10px;
+}
+
+.identity-data .identity-data-name {
+  display: inline-block;
+  text-align: right;
+  font-weight: bold;
+  width: 50%;
+  padding-right: 20px;
+}
