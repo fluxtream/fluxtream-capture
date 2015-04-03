@@ -18,6 +18,8 @@ define([
       $scope.lastname = loginService.getUserLastname();
       $scope.username = loginService.getUserName();
       $scope.photoURL = loginService.getUserPhotoURL();
+      $scope.email = loginService.getUserEmailAddress();
+      $scope.server = loginService.getTargetServer();
       
     }
     

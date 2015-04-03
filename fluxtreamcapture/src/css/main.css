@@ -984,9 +984,8 @@ button i {
 }
 
 .identity-data {
-  font-size: 1.2em;
   border: #E5E5E5 solid 1px;
-  padding: 20px;
+  padding: 10px;
   margin: 10px;
 }
 
@@ -994,6 +993,6 @@ button i {
   display: inline-block;
   text-align: right;
   font-weight: bold;
-  width: 50%;
-  padding-right: 20px;
+  width: 120px;
+  padding-right: 10px;
 }

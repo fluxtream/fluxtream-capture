@@ -172,8 +172,10 @@ define([
       function handleAuthSuccessResponse(guestModel, textStatus) {
         userPrefs.set('login.username', guestModel.username);
         userPrefs.set('login.userId', guestModel.id + "");
+        userPrefs.set('login.fullname', guestModel.fullname);
         userPrefs.set('login.firstname', guestModel.firstname);
         userPrefs.set('login.lastname', guestModel.lastname);
+        userPrefs.set('login.email', guestModel.email);
         userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
         userPrefs.set('login.isAuthenticated', true);
         userPrefs.set('login.photoURL', guestModel.photoURL);
@@ -224,6 +226,13 @@ define([
       }
       
       /**
+       * (Public) Returns user's full name
+       */
+      function getUserFullName() {
+        return userPrefs.get('login.fullname');
+      }
+      
+      /**
        * (Public) Returns user's first name
        */
       function getUserFirstname() {
@@ -235,6 +244,13 @@ define([
        */
       function getUserLastname() {
         return userPrefs.get('login.lastname');
+      }
+      
+      /**
+       * (Public) Returns user's e-mail address
+       */
+      function getUserEmailAddress() {
+        return userPrefs.get('login.email');
       }
       
       /**
@@ -282,6 +298,8 @@ define([
         getUserName: getUserName,
         getUserFirstname: getUserFirstname,
         getUserLastname: getUserLastname,
+        getUserFullName: getUserFullName,
+        getUserEmailAddress: getUserEmailAddress,
         getUserPhotoURL: getUserPhotoURL,
         getUserId: getUserId,
         getAccessToken: getAccessToken,

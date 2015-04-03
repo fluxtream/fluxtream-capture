@@ -30,7 +30,7 @@ define([
       $scope.userName = "";
       
       $rootScope.$on('user-logged-in', function() {
-        $scope.userName = loginService.getUserFirstname() + " " + loginService.getUserLastname();
+        $scope.userName = loginService.getUserFullName();
       });
       
       // Enable back button navigation on Android
