@@ -35,6 +35,9 @@ define([
       // Device
       $scope.isAndroid = forge.is.android();
       
+      // On iOS, true if the user has not allowed the app to access photos
+      $scope.photoAccessDenied = photoListService.photoAccessDenied();
+      
       // Options for the user
       $scope.settings = {};
       $scope.unuploadedCount = {};
@@ -50,6 +53,13 @@ define([
       $scope.countUnuploadedPhotos = function() {
         photoListService.reloadPhotos();
         photoListService.onReady(function() {
+          if (forge.is.ios() && photoListService.photoAccessDenied()) {
+            // Access to photos denied on iOS
+            $scope.photoAccessDenied = true;
+            $scope.$$phase || $scope.$apply();
+            return;
+          }
+          $scope.photoAccessDenied = false;
           // Get raw photo list
           $scope.rawPhotoList = photoListService.getPhotoList();
           var photoIdsPerOrientation = {};

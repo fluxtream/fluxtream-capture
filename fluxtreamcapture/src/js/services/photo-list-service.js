@@ -25,6 +25,9 @@ define([
     // If true, the photo list will be reloaded again once the reload has finished (useful if photos are deleted in the meantime)
     var reloadAgain = false;
     
+    // On iOS, true if the user has not allowed the app to access photos
+    var photoAccessDenied = false;
+    
     /**
      * (Private) Loads all photos from the device image gallery
      */
@@ -43,6 +46,7 @@ define([
           }
           cachedPhotoList = photoList;
           initialized = true;
+          photoAccessDenied = false;
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
           });
@@ -54,6 +58,14 @@ define([
         // Error
         function(error) {
           forge.logging.error("Error while calling getPhotoList: " + JSON.stringify(error));
+          if (forge.is.ios() && error.message.indexOf("User denied access") > -1) {
+            // Access denied on iOS
+            photoAccessDenied = true;
+            initialized = true;
+          }
+          functionsToExecute.forEach(function(functionToExecute) {
+            functionToExecute();
+          });
         }
       );
     };
@@ -114,7 +126,8 @@ define([
       getPhotoList: function() { return photoList; },
       getCachedPhotoList: function() { return cachedPhotoList; },
       reloadPhotos: reloadPhotos,
-      onReady: onReady
+      onReady: onReady,
+      photoAccessDenied: function() { return photoAccessDenied; }
     };
     
   }]);

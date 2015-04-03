@@ -8,49 +8,54 @@
   </ion-nav-bar>
   
   <ion-content class="padding">
-    <div class="padding text-center">
-      Select which photos will be automatically uploaded.
+    <div ng-if="photoAccessDenied" class="empty-list padding">
+      You have not allowed this app to access your photos. Change your device's privacy settings to automatically upload photos.
     </div>
-    <ul class="list" ng-if="isAndroid">
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
-        </label>
-        Portrait photos
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save('landscape')">
-        </label>
-        Landscape photos
-      </li>
-    </ul>
-    <ul class="list" ng-if="!isAndroid">
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
-        </label>
-        Portrait photos
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_upside_down" ng-change="save('upside_down')">
-        </label>
-        Upside-down photos
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_landscape_left" ng-change="save('landscape_left')">
-        </label>
-        Landscape left photos
-      </li>
-      <li class="item item-checkbox">
-        <label class="checkbox">
-          <input type="checkbox" ng-model="settings.upload_landscape_right" ng-change="save('landscape_right')">
-        </label>
-        Landscape right photos
-      </li>
-    </ul>
+    <div ng-if='!photoAccessDenied'>
+      <div class="padding text-center">
+        Select which photos will be automatically uploaded.
+      </div>
+      <ul class="list" ng-if="isAndroid">
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
+          </label>
+          Portrait photos
+        </li>
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_landscape" ng-change="save('landscape')">
+          </label>
+          Landscape photos
+        </li>
+      </ul>
+      <ul class="list" ng-if="!isAndroid">
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_portrait" ng-change="save('portrait')">
+          </label>
+          Portrait photos
+        </li>
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_upside_down" ng-change="save('upside_down')">
+          </label>
+          Upside-down photos
+        </li>
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_landscape_left" ng-change="save('landscape_left')">
+          </label>
+          Landscape left photos
+        </li>
+        <li class="item item-checkbox">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="settings.upload_landscape_right" ng-change="save('landscape_right')">
+          </label>
+          Landscape right photos
+        </li>
+      </ul>
+    </div>
   </ion-content>
 </ion-view>
 

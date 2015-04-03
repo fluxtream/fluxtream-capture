@@ -6,8 +6,11 @@
     </ion-nav-buttons>
   </ion-nav-bar>
   <ion-content flx-scroll="onScroll()">
-    <div class="flx-reload-icon" ng-if="!loaded"></div>
-    <div ng-if="loaded">
+    <div class="flx-reload-icon" ng-if="!loaded && !photoAccessDenied"></div>
+    <div ng-if="photoAccessDenied" class="empty-list padding">
+      You have not allowed this app to access your photos. Change your device's privacy settings to see your photos here.
+    </div>
+    <div ng-if="loaded && !photoAccessDenied">
       <!-- Photo list -->
       <div class="list photo-list">
         <div class="photo-wrapper"

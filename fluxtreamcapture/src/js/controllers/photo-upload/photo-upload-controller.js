@@ -44,6 +44,9 @@ define([
       // True once the initial scroll position has been applied and the new scroll positions can be saved
       $scope.initialScrollDone = false;
       
+      // On iOS, true if the user has not allowed the app to access photos
+      $scope.photoAccessDenied = false;
+      
       // Saves the current scroll position to be re-established on the next visit
       $scope.onScroll = function() {
         if (!$scope.initialScrollDone) return;
@@ -144,7 +147,15 @@ define([
         // Make sure the photo list is fresh
         photoListService.reloadPhotos();
         // When the photo list has been fetched, load it
+        $scope.photoAccessDenied = false;
         photoListService.onReady(function() {
+          if (forge.is.ios() && photoListService.photoAccessDenied()) {
+            // Access denied on iOS
+            $scope.photoAccessDenied = true;
+            $scope.$$phase || $scope.$apply();
+            return;
+          }
+          $scope.photoAccessDenied = false;
           $scope.setPhotoList(photoListService.getPhotoList());
         });
       };
