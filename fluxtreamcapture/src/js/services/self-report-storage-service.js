@@ -392,6 +392,7 @@ define([
 
             aoCachedTopics.push(oNextTopic);
           });
+          reorderTopics();
 
           // Read all observations into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
@@ -873,9 +874,9 @@ define([
 
               newTopicList.push(oNextTopic);
             });
-            reorderTopics();
             bIsOfflineChangesForTopicsMade = 0;
             aoCachedTopics = newTopicList;
+            reorderTopics();
             fCallback(aoCachedTopics);
           });
 
