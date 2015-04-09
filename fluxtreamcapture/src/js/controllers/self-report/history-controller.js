@@ -14,7 +14,13 @@ define([
       var bIsObservationsSyncFinished = 0;
       var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
       var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
-
+      
+      $scope.isObservationOutOfSync = function(oObservation) {
+        var timestamp = new Date(oObservation.updateTime).getTime();
+        var lastSync = selfReportStorage.getObservationLastSyncTime();
+        return timestamp >= lastSync;
+      };
+      
       $scope.doPing = function(atStart) {
         $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
@@ -177,6 +183,11 @@ define([
       // Update observation list when it changes
       $scope.$on('event:observation-list-changed', function() {
         $scope.aoObservations = selfReportStorage.readObservations();
+        $scope.$$phase || $scope.$apply();
+      });
+      
+      // Listen to sync completed event to update view to show topics as synced
+      $scope.$on('event:syncCompleted', function() {
         $scope.$$phase || $scope.$apply();
       });
       

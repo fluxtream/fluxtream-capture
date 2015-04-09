@@ -17,12 +17,15 @@
           {{ tDate | date:"EEEE, MMMM d " }}
         </div>
 
-        <a ui-sref="editObservation({observationId: oObservation.id})" data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true" class="item">
+        <a ui-sref="editObservation({observationId: oObservation.id})"
+           data-ng-repeat="oObservation in aoObservations | filter:tDate | orderByTimestamp:'observationTime':true"
+           class="item item-icon-right">
           <i style="font-size:8pt;">{{oObservation.observationTime | date : 'h:mm a'}}</i>
           {{getNameById(oObservation.topicId)}}
           <span class="item-note">
             {{oObservation.value}}
           </span>
+          <i class="icon ion-record out-of-sync-icon" ng-if="isObservationOutOfSync(oObservation)"></i>
         </a>
       </div>
     </div>
