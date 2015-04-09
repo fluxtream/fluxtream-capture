@@ -12,11 +12,12 @@
       <div ng-if="showReordering">Slide topics to reorder them.</div>
     </div>
     <ion-list show-reorder="showReordering">
-      <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="editTopic({topicId: oTopic.id})">
+      <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="editTopic({topicId: oTopic.id})" class="item-icon-right">
         <span class="reorder-adjusted">{{oTopic.name}}</span>
         <ion-reorder-button class="ion-ios7-drag"
           on-reorder="moveItem(oTopic, $fromIndex, $toIndex)">
         </ion-reorder-button>
+        <i class="icon ion-record out-of-sync-icon" ng-if="isTopicOutOfSync(oTopic)"></i>
       </ion-item>
     </ion-list>
     <button ui-sref="createTopic" class="button button-positive button-block">

@@ -411,6 +411,12 @@ div.photo-metadata {
 
 textarea.noResize { resize:none; }
 
+.item-icon-right .icon.out-of-sync-icon {
+  color: red;
+  font-size: 0.2em;
+  margin-right: -15px;
+}
+
 /*******************************************
  * LOGIN SCREEN
  *******************************************/

@@ -14,7 +14,14 @@ define([
       var bIsObservationsSyncFinished = 0;
       var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
       var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
-
+      
+      // Returns true if the topic's latest version has not been synced to the server yet
+      $scope.isTopicOutOfSync = function(oTopic) {
+        var timestamp = new Date(oTopic.updateTime).getTime();
+        var lastSync = selfReportStorage.getTopicLastSyncTime();
+        return timestamp >= lastSync;
+      };
+      
       $scope.doPing = function(atStart) {
         selfReportStorage.pingCouch(function (aoTopics) {
           $scope.aoTopics = aoTopics;
@@ -123,7 +130,12 @@ define([
         $scope.aoTopics = selfReportStorage.readTopics();
         $scope.$$phase || $scope.$apply();
       });
-
+      
+      // Listen to sync completed event to update view to show topics as synced
+      $scope.$on('event:syncCompleted', function() {
+        $scope.$$phase || $scope.$apply();
+      });
+      
       if(!selfReportStorage.isInitialized()) {
         // Set status icon to spinning wheel
         $scope.status = 'loading';

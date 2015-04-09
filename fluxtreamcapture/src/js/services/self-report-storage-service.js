@@ -950,11 +950,15 @@ define([
               $rootScope.$broadcast('event:topic-list-changed');
               // Push Topic to the server
               forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
+              var timeBeforeSync = new Date().getTime();
               dbTopics.replicate.to(remoteCouchTopicsAddress)
                 .on('complete', function () {
                   // Successfully synced
                   forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
                   notifyFluxtreamCaptureUpdater();
+                  // Update last sync time and broadcast sync event
+                  userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
+                  $rootScope.$broadcast('event:syncCompleted');
                 }).on('error', function (err) {
                   bIsOffline === 1;
                   bIsOfflineChangesForTopicsMade = 1;
@@ -1506,7 +1510,10 @@ define([
       pingCouch: pingCouch,
       getOfflineChangesForObservationsMade: getOfflineChangesForObservationsMade,
       getOfflineChangesForTopicsMade: getOfflineChangesForTopicsMade,
-      isOffline: function() { return bIsOffline; }
+      isOffline: function() { return bIsOffline; },
+      
+      getTopicLastSyncTime: function() { return userPrefs.get('self-report-last-topic-sync', 0); },
+      getObservationLastSyncTime: function() { return userPrefs.get('self-report-last-observation-sync', 0); }
     };
 
   }]);

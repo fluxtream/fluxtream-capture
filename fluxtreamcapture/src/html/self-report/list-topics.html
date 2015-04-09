@@ -20,8 +20,9 @@
         Tap a topic to make a new observation.
       </div>
       <ion-list>
-        <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="createObservation({topicId: oTopic.id})" type="item-link">
+        <ion-item ng-repeat="oTopic in aoTopics track by $index" ui-sref="createObservation({topicId: oTopic.id})" type="item-link" class="item-icon-right">
           {{oTopic.name}}
+          <i class="icon ion-record out-of-sync-icon" ng-if="isTopicOutOfSync(oTopic)"></i>
         </ion-item>
       </ion-list>
     </div>
