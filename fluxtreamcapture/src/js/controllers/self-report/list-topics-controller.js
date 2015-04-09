@@ -29,6 +29,9 @@ define([
       };
       
       $scope.doPing = function(atStart) {
+        $scope.status = 'loading';
+        $scope.$$phase || $scope.$apply();
+
         selfReportStorage.pingCouch(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           bIsTopicsSyncFinished = 1;
@@ -73,9 +76,6 @@ define([
       };
 
       $scope.reconnectCouchDB = function () {
-        $scope.status = 'loading';
-        $scope.$$phase || $scope.$apply();
-
         $scope.doPing(false);
       };
 

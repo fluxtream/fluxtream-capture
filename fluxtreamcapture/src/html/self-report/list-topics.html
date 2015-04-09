@@ -6,16 +6,18 @@
   </ion-nav-bar>
   
   <ion-content class="padding">
-    <div class="flx-reload-icon" ng-if="loading"></div>
-    <div ng-if="!loading && !aoTopics.length" class="empty-list">
-      <p>
-        Create a new topic and start making observations.
-      </p>
-      <button ui-sref="createTopic" class="button button-positive button-block">
-        Create a new topic
-      </button>
+    <div ng-if="!aoTopics.length">
+      <div class="flx-reload-icon" ng-if="loading"></div>
+      <div ng-if="!loading" class="empty-list">
+        <p>
+          Create a new topic and start making observations.
+        </p>
+        <button ui-sref="createTopic" class="button button-positive button-block">
+          Create a new topic
+        </button>
+      </div>
     </div>
-    <div ng-if="!loading && aoTopics.length">
+    <div ng-if="aoTopics.length">
       <div class="text-center padding">
         Tap a topic to make a new observation.
       </div>
