@@ -167,7 +167,19 @@ define([
 
         $rootScope.$broadcast('event:initialized');
       });
-
+      
+      // Update topic list when it changes
+      $scope.$on('event:topic-list-changed', function() {
+        $scope.aoTopics = selfReportStorage.readTopics();
+        $scope.$$phase || $scope.$apply();
+      });
+      
+      // Update observation list when it changes
+      $scope.$on('event:observation-list-changed', function() {
+        $scope.aoObservations = selfReportStorage.readObservations();
+        $scope.$$phase || $scope.$apply();
+      });
+      
       // Get token from backend and initialize local variables
       if(!selfReportStorage.isInitialized()) {
         // Set status icon to spinning wheel

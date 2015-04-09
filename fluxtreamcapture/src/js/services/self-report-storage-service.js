@@ -155,6 +155,10 @@ define([
 
             bIsInitialized = 1;
             $rootScope.$broadcast('event:initialized');
+            
+            // Long poll remote server to get updates
+            listenToServerChanges(new PouchDB(remoteCouchTopicsAddress));
+            listenToServerChanges(new PouchDB(remoteCouchObservationsAddress));
           },
           error: function(result) {
             forge.logging.error("Error while creating CouchDB (initialize): ");
@@ -171,7 +175,11 @@ define([
     }
     
     function listenToServerChanges(db, seqNumber) {
-      if (!bIsInitialized) return; // Happens in case of logout while offline
+      forge.logging.info("calling listenToServerChanges")
+      if (!bIsInitialized) {
+        forge.logging.info("Not initialized");
+        return;
+      } // Happens in case of logout while offline
       if (!forge.is.connection.connected()) {
         setTimeout(function() {
           listenToServerChanges(db, seqNumber);
@@ -186,6 +194,7 @@ define([
         forge.logging.info("There was a change on the pouchdb server (listenToServerChanges)");
         seqNumber = change.seq;
         syncTopicsAsyncDB();
+        syncObservationsAsyncDB();
       }).on('error', function(err) {
         forge.logging.error("Error while listening to changes (listenToServerChanges)");
         // Try again in 30 seconds
@@ -227,8 +236,6 @@ define([
       if ((userLogin != '') && (userCouchDBToken != '')) {
         remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
         remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
-        // Long poll remote server to get updates
-        listenToServerChanges(new PouchDB(remoteCouchTopicsAddress));
       }
     }
 
@@ -1115,6 +1122,7 @@ define([
               aoCachedObservations.push(oNextObservation);
             });
             if (fCallback) fCallback(aoCachedObservations);
+            $rootScope.$broadcast("event:observation-list-changed");
             // Save observation to server side
             forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
             //Push Observation to the server
