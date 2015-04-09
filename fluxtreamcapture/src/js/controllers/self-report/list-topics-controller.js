@@ -21,7 +21,7 @@ define([
       var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
       var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
 
-      $scope.doPing = function (){
+      $scope.doPing = function(atStart) {
         selfReportStorage.pingCouch(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           bIsTopicsSyncFinished = 1;
@@ -30,17 +30,17 @@ define([
 
           if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
             forge.logging.info("Sync of topics is the last");
-            $("#list-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
-              $("#list-topics-footer-center-icon").attr('class', '');
+              if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
               $scope.$$phase || $scope.$apply();
             },1000);
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of topics finished and no need of sync detected");
-            $("#list-topics-footer-center-icon").attr('class', '');
+            if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }
         }, function (aoObservations) {
@@ -49,34 +49,33 @@ define([
 
           if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of observations is the last");
-            $("#list-topics-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
-              $("#list-topics-footer-center-icon").attr('class', '');
+              if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
               $scope.$$phase || $scope.$apply();
             },1000);
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of observations finished and no need of sync detected");
-            $("#list-topics-footer-center-icon").attr('class', '');
+            if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }
         });
       };
 
       $scope.reconnectCouchDB = function () {
-        $("#list-topics-footer-offline-img").remove();
-        $("#list-topics-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+        $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
 
-        $scope.doPing();
+        $scope.doPing(false);
       };
 
       //showKeyboard
       $scope.$on('event:initialized', function() {
         // Delete status icon
-        $("#list-topics-footer-center-icon").attr('class', '');
+        if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
         $scope.$$phase || $scope.$apply();
 
         // Read memory values
@@ -85,28 +84,20 @@ define([
 
         // If can not reach couchDB
         $scope.$on('event:offline', function() {
-          $("#list-topics-footer-center-icon").attr('class', '');
           $scope.loading = false;
+          $scope.status = 'offline';
           $scope.$$phase || $scope.$apply();
-
-          if ($('#list-topics-footer-offline-img').length === 0) {
-            $("#list-topics-footer-center-link").append(
-              "<img id='list-topics-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-            );
-
-            $scope.$$phase || $scope.$apply();
-          }
         });
 
         // TODO isTopicsSynced is not used properly
         if(selfReportStorage.isTopicsSynced() === 0) {
           // Set status icon to spinning wheel
-          $("#list-topics-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
           
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             //Delete spinning wheel
-            $("#list-topics-footer-center-icon").attr('class', '');
+            if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.loading = false;
             $scope.$$phase || $scope.$apply();
 
@@ -119,23 +110,15 @@ define([
             $scope.$$phase || $scope.$apply();
           });
         } else {
-          $scope.doPing();
+          $scope.doPing(true);
         }
       });
 
       // If can not reach fluxtream-app backend
       $scope.$on('event:initFailed', function() {
         forge.logging.error("Init failed (list-topics-controller)");
-        $("#list-topics-footer-center-icon").attr('class', '');
+        $scope.status = 'offline';
         $scope.$$phase || $scope.$apply();
-
-        if ($('#list-topics-footer-offline-img').length === 0) {
-          $("#list-topics-footer-center-link").append(
-            "<img id='list-topics-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-          );
-
-          $scope.$$phase || $scope.$apply();
-        }
         
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
@@ -149,7 +132,7 @@ define([
       // If can not save to PouchDB
       $scope.$on('event:internalError', function() {
         forge.logging.error("Can not save to PouchDB");
-        $("#list-topics-footer-center-icon").attr('class', 'icon ion-android-alert self-report-footer-icon');
+        $scope.status = 'alert';
         $scope.$$phase || $scope.$apply();
       });
       
@@ -163,13 +146,13 @@ define([
       // Get token from backend and initialize local variables
       if(!selfReportStorage.isInitialized()) {
         // Set status icon to spinning wheel
-        $("#list-topics-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+        $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
 
         selfReportStorage.initialize();
       } else {
         // Delete status icon
-        $("#list-topics-footer-center-icon").attr('class', '');
+        if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
         $scope.$$phase || $scope.$apply();
 
         $rootScope.$broadcast('event:initialized');

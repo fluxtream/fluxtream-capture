@@ -47,7 +47,7 @@ define([
     var aoCachedTopics;
     var aoCachedObservations;
     var aoObservationsToSync;
-	
+    
     function notifyFluxtreamCaptureUpdater(){
       var updateNotificationURL = loginService.getTargetServer() + "fluxtream_capture/notify";
       forge.request.ajax({
@@ -133,10 +133,11 @@ define([
         } else {
           forge.logging.info("Successfully created deleted observations PouchDB (initialize) " + dbTopics.adapter);
         }
-
+        
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
+          timeout: 20000, // 20 seconds
           xhrFields: {
             withCredentials: true
           },
@@ -158,7 +159,9 @@ define([
           error: function(result) {
             forge.logging.error("Error while creating CouchDB (initialize): ");
             console.dir(result);
+            bIsOffline = 1;
             $rootScope.$broadcast('event:initFailed');
+            $rootScope.$broadcast('event:offline');
           }
         });
       } else {
@@ -1502,7 +1505,8 @@ define([
 
       pingCouch: pingCouch,
       getOfflineChangesForObservationsMade: getOfflineChangesForObservationsMade,
-      getOfflineChangesForTopicsMade: getOfflineChangesForTopicsMade
+      getOfflineChangesForTopicsMade: getOfflineChangesForTopicsMade,
+      isOffline: function() { return bIsOffline; }
     };
 
   }]);

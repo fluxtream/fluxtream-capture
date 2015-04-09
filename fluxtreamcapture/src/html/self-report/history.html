@@ -33,6 +33,11 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-positive">
   <h1 class='title' id='history-footer-center' style='line-height: 100%; padding-top: 6px;'>
-    <a id='history-footer-center-link' ng-click='reconnectCouchDB()'><i id='history-footer-center-icon'></i></a>
+    <i class="icon ion-checkmark self-report-footer-icon" ng-if="status =='done'"></i>
+    <i class="icon ion-looping self-report-footer-icon" ng-if="status =='loading'"></i>
+    <a ng-click='reconnectCouchDB()'>
+      <i class="icon ion-alert-circled self-report-footer-icon" ng-if="status =='alert'" ></i>
+      <img src='./img/icons/offline.png' height='80%' ng-if="status == 'offline'"/>
+    </a>
   </h1>
 </ion-footer-bar>

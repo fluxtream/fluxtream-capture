@@ -65,8 +65,13 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-positive">
   <a id="footer-left" ui-sref="editTopics" class="button button-clear pull-left">Cancel</a>
-  <h1 class='title' id='create-topic-footer-center' style='line-height: 100%; padding-top: 6px;'>
-    <a id='create-topic-footer-center-link' ng-click='reconnectCouchDB()'><i id='create-topic-footer-center-icon'></i></a>
+  <h1 class='title' style='line-height: 100%; padding-top: 6px;'>
+    <i class="icon ion-checkmark self-report-footer-icon" ng-if="status =='done'"></i>
+    <i class="icon ion-looping self-report-footer-icon" ng-if="status =='loading'"></i>
+    <a ng-click='reconnectCouchDB()'>
+      <i class="icon ion-alert-circled self-report-footer-icon" ng-if="status =='alert'" ></i>
+      <img src='./img/icons/offline.png' height='80%' ng-if="status == 'offline'"/>
+    </a>
   </h1>
   <button id="footer-right" class="button button-clear pull-right" ng-click="createTopic()">Save</button>
 </ion-footer-bar>

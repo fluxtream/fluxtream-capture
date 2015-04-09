@@ -30,8 +30,13 @@
   <!-- <div class="title">Title</div> -->
   <a id="footer-reorder" class="button button-clear pull-left" ng-if="aoTopics.length >= 2 && !showReordering" ng-click="showReorder()">Reorder topics</a>
   <a id="footer-reorder" class="button button-clear pull-left" ng-if="aoTopics.length >= 2 && showReordering" ng-click="showReorder()">Stop reordering</a>
-  <h1 class='title' id='edit-topics-footer-center' style='line-height: 100%; padding-top: 6px;'>
-    <a id='edit-topics-footer-center-link' ng-click='reconnectCouchDB()'><i id='edit-topics-footer-center-icon'></i></a>
+  <h1 class='title' style='line-height: 100%; padding-top: 6px;'>
+    <i class="icon ion-checkmark self-report-footer-icon" ng-if="status =='done'"></i>
+    <i class="icon ion-looping self-report-footer-icon" ng-if="status =='loading'"></i>
+    <a ng-click='reconnectCouchDB()'>
+      <i class="icon ion-alert-circled self-report-footer-icon" ng-if="status =='alert'" ></i>
+      <img src='./img/icons/offline.png' height='80%' ng-if="status == 'offline'"/>
+    </a>
   </h1>
   <a id="footer-create" ui-sref="createTopic" class="button button-clear pull-right">New topic</a>
 </ion-footer-bar>

@@ -55,8 +55,13 @@
 <!-- Footer -->
 <ion-footer-bar class="bar-positive">
   <a id="footer-left" ui-sref="history" class="button button-clear pull-left">Cancel</a>
-  <h1 class='title' id='edit-observation-footer-center' style='line-height: 100%; padding-top: 6px;'>
-    <a id='edit-observation-footer-center-link' ng-click='reconnectCouchDB()'><i id='edit-observation-footer-center-icon'></i></a>
+  <h1 class='title' style='line-height: 100%; padding-top: 6px;'>
+    <i class="icon ion-checkmark self-report-footer-icon" ng-if="status =='done'"></i>
+    <i class="icon ion-looping self-report-footer-icon" ng-if="status =='loading'"></i>
+    <a ng-click='reconnectCouchDB()'>
+      <i class="icon ion-alert-circled self-report-footer-icon" ng-if="status =='alert'" ></i>
+      <img src='./img/icons/offline.png' height='80%' ng-if="status == 'offline'"/>
+    </a>
   </h1>
   <a id="footer-right" class="button button-clear pull-right" ng-click="editObservation()">Save</a>
 </ion-footer-bar>

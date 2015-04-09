@@ -15,24 +15,24 @@ define([
       var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
       var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
 
-      $scope.doPing = function (){
+      $scope.doPing = function(atStart) {
         selfReportStorage.pingCouch(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           bIsTopicsSyncFinished = 1;
 
           if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
             forge.logging.info("Sync of topics is the last (doPing)");
-            $("#history-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
-              $("#history-footer-center-icon").attr('class', '');
+              if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
               $scope.$$phase || $scope.$apply();
             },1000);
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of topics finished and no need of sync detected (doPing)");
-            $("#history-footer-center-icon").attr('class', '');
+            if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }
         }, function (aoObservations) {
@@ -41,27 +41,26 @@ define([
 
           if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of observations is the last (doPing)");
-            $("#history-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
+            $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
-              $("#history-footer-center-icon").attr('class', '');
+              if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
               $scope.$$phase || $scope.$apply();
             },1000);
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
             forge.logging.info("Sync of observations finished and no need of sync detected (doPing)");
-            $("#history-footer-center-icon").attr('class', '');
+            if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }
         });
       };
 
       $scope.reconnectCouchDB = function () {
-        $("#history-footer-offline-img").remove();
-        $("#history-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+        $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
-
+        
         $scope.doPing();
       };
 
@@ -70,7 +69,7 @@ define([
         //TODO check that dates are sorted correctly
 
         // Delete status icon
-        $("#history-footer-center-icon").attr('class', '');
+        if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
         $scope.$$phase || $scope.$apply();
 
         document.title = "History";
@@ -82,30 +81,21 @@ define([
 
         // If can not reach couchDB
         $scope.$on('event:offline', function() {
-          $("#history-footer-center-icon").attr('class', '');
+          $scope.status = 'offline';
           $scope.$$phase || $scope.$apply();
-
-
-          if ($('#history-footer-offline-img').length === 0) {
-            $("#history-footer-center-link").append(
-              "<img id='history-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-            );
-
-            $scope.$$phase || $scope.$apply();
-          }
         });
 
         // Read data from DB if it is epmty
         // TODO should be done periodically not only if reload was done
         if(selfReportStorage.isTopicsSynced() === 0) {
           // Set status icon to spinning wheel
-          $("#history-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
 
           selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
             if(selfReportStorage.isObservationsSynced() === 1) {
               //Delete spinning wheel
-              $("#history-footer-center-icon").attr('class', '');
+              if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
               $scope.$$phase || $scope.$apply();
             }
 
@@ -113,20 +103,20 @@ define([
             $scope.$$phase || $scope.$apply();
           });
         } else if (selfReportStorage.isObservationsSynced() === 1) {
-          $scope.doPing();
+          $scope.doPing(true);
         }
 
         // Read data from DB if it is epmty
         // TODO should be done periodically not only if reload was done
         if(selfReportStorage.isObservationsSynced() === 0) {
           // Set status icon to spinning wheel
-          $("#history-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+          $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
 
           selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
             //Delete spinning wheel
-            $("#history-footer-center-icon").attr('class', '');
-
+            if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+            
             $scope.aoObservations = aoObservations;
             $scope.$$phase || $scope.$apply();
 
@@ -137,7 +127,7 @@ define([
             }
           });
         } else {
-          $scope.doPing();
+          $scope.doPing(true);
         }
 
         // Group observations if there are some
@@ -150,17 +140,9 @@ define([
       // If can not reach fluxtream-app backend
       $scope.$on('event:initFailed', function() {
         forge.logging.error("Init failed (history-controller)");
-        $("#history-footer-center-icon").attr('class', '');
+        $scope.status = 'offline';
         $scope.$$phase || $scope.$apply();
-
-        if ($('#history-footer-offline-img').length === 0) {
-          $("#history-footer-center-link").append(
-            "<img id='history-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-          );
-
-          $scope.$$phase || $scope.$apply();
-        }
-
+        
         selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           $scope.$$phase || $scope.$apply();
@@ -173,7 +155,7 @@ define([
           // Group observations if there are some
           if ($scope.aoObservations != null) {
             // Delete status icon
-            $("#history-footer-center-icon").attr('class', '');
+            if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
 
             // Check if you are online
@@ -190,13 +172,13 @@ define([
       // Get token from backend and initialize local variables
       if(!selfReportStorage.isInitialized()) {
         // Set status icon to spinning wheel
-        $("#history-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
+        $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
 
         selfReportStorage.initialize();
       } else {
         // Delete status icon
-        $("#history-footer-center-icon").attr('class', '');
+        if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
         $scope.$$phase || $scope.$apply();
 
         $rootScope.$broadcast('event:initialized');

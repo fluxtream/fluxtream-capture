@@ -23,25 +23,25 @@ define([
         var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
         var bIsOfflineChangesForObservationMade = selfReportStorage.getOfflineChangesForObservationsMade();
 
-        $scope.doPing = function (){
+        $scope.doPing = function(atStart) {
           selfReportStorage.pingCouch(function (aoTopics) {
             $scope.aoTopics = aoTopics;
             bIsTopicsSyncFinished = 1;
 
             if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
               forge.logging.info("Sync of topics is the last");
-              $("#create-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
-              $scope.$$phase || $scope.$apply();
+              $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
+              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
               setTimeout(function(){
-                $("#create-observation-footer-center-icon").attr('class', '');
-                $scope.$$phase || $scope.$apply();
+                if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+                $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
               },1000);
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
               forge.logging.info("Sync of topics finished and no need of sync detected");
-              $("#create-observation-footer-center-icon").attr('class', '');
-              $scope.$$phase || $scope.$apply();
+              if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
             }
           }, function (aoObservations) {
             $scope.aoObservations = aoObservations;
@@ -49,34 +49,33 @@ define([
 
             if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
               forge.logging.info("Sync of observations is the last");
-              $("#create-observation-footer-center-icon").attr('class', 'icon ion-checkmark self-report-footer-icon');
-              $scope.$$phase || $scope.$apply();
+              $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
+              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
               setTimeout(function(){
-                $("#create-observation-footer-center-icon").attr('class', '');
-                $scope.$$phase || $scope.$apply();
+                if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+                $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
               },1000);
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
               forge.logging.info("Sync of observations finished and no need of sync detected");
-              $("#create-observation-footer-center-icon").attr('class', '');
-              $scope.$$phase || $scope.$apply();
+              if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
             }
           });
         };
 
         $scope.reconnectCouchDB = function () {
-          $("#create-observation-footer-offline-img").remove();
-          $("#create-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
-          $scope.$$phase || $scope.$apply();
-
-          $scope.doPing();
+          $scope.status = 'loading';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          
+          $scope.doPing(false);
         };
         
         $scope.$on('event:initialized', function() {
           // Delete status icon
-          $("#create-observation-footer-center-icon").attr('class', '');
-          $scope.$$phase || $scope.$apply();
+          if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
           //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
@@ -87,7 +86,7 @@ define([
           var timezone = jstz.determine();
           document.getElementById('observation.timezone').value  = timezone.name();
 
-          $scope.$$phase || $scope.$apply();
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
           //TODO is the type is range check that default value is in range
           //Arrange DOM
@@ -146,34 +145,25 @@ define([
           // required in case the page was reloaded
           $scope.$on('event:topics-read-finished', function () {
             // Delete status icon
-            $("#create-observation-footer-center-icon").attr('class', '');
-            $scope.$$phase || $scope.$apply();
+            if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
             $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
             document.title = $scope.oTopic.name;
             $scope.readType();
-            $scope.$$phase || $scope.$apply();
+            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
           });
 
           // Set status icon to spinning wheel
-          $("#create-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
-          $scope.$$phase || $scope.$apply();
+          $scope.status = 'loading';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
           // If can not reach couchDB
           $scope.$on('event:offline', function() {
-            $("#create-observation-footer-center-icon").attr('class', '');
-            $scope.$$phase || $scope.$apply();
-
-
-            if ($('#create-observation-footer-offline-img').length === 0) {
-              $("#create-observation-footer-center-link").append(
-                "<img id='create-observation-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-              );
-
-              $scope.$$phase || $scope.$apply();
-            }
+            $scope.status = 'offline';
+            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
           });
           
-          $scope.doPing();
+          $scope.doPing(true);
           selfReportStorage.readTopicsDB();
 
           // Called when the form is submitted
@@ -222,30 +212,22 @@ define([
         // If can not reach fluxtream-app backend
         $scope.$on('event:initFailed', function() {
           forge.logging.error("Init failed (create-observation-controller)");
-          $("#create-observation-footer-center-icon").attr('class', '');
-          $scope.$$phase || $scope.$apply();
-
-          if ($('#create-observation-footer-offline-img').length === 0) {
-            $("#create-observation-footer-center-link").append(
-              "<img id='create-observation-footer-offline-img' src='./img/icons/offline.png' height='80%'/>"
-            );
-
-            $scope.$$phase || $scope.$apply();
-          }
-
+          $scope.status = 'offline';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          
           $rootScope.$broadcast('event:initialized');
         });
 
         if(!selfReportStorage.isInitialized()) {
           // Set status icon to spinning wheel
-          $("#create-observation-footer-center-icon").attr('class', 'icon ion-looping self-report-footer-icon');
-          $scope.$$phase || $scope.$apply();
+          $scope.status = 'loading';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
           selfReportStorage.initialize();
         } else {
           // Delete status icon
-          $("#create-observation-footer-center-icon").attr('class', '');
-          $scope.$$phase || $scope.$apply();
+          if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
+          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
           $rootScope.$broadcast('event:initialized');
         }

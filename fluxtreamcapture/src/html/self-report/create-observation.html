@@ -62,8 +62,13 @@
   <!-- Footer -->
   <div class="bar bar-footer bar-positive">
     <button id="footer-left" class="button button-clear pull-left" ng-click="goBack()" ui-sref="listTopics">Cancel</button>
-    <h1 class='title' id='create-observation-footer-center' style='line-height: 100%; padding-top: 6px;'>
-      <a id='create-observation-footer-center-link' ng-click='reconnectCouchDB()'><i id='create-observation-footer-center-icon'></i></a>
+    <h1 class='title' style='line-height: 100%; padding-top: 6px;'>
+      <i class="icon ion-checkmark self-report-footer-icon" ng-if="status =='done'"></i>
+      <span ng-if="status != 'offline'"><i class="icon ion-looping self-report-footer-icon" ng-if="status =='loading'"></i></span>
+      <a ng-click='reconnectCouchDB()'>
+        <i class="icon ion-alert-circled self-report-footer-icon" ng-if="status =='alert'" ></i>
+        <img src='./img/icons/offline.png' height='80%' ng-if="status == 'offline'"/>
+      </a>
     </h1>
     <button id="footer-right" class="button button-clear pull-right" ng-click="createObservation()">Save</button>
   </div>
