@@ -5,7 +5,8 @@ define([
   'app-modules',
   'config/env',
   'services/user-prefs-service',
-  'services/device-id-service'
+  'services/device-id-service',
+  'services/image-cache'
 ], function(appModules, env) {
   
   appModules.services.factory('LoginService', [
@@ -13,7 +14,8 @@ define([
     "$state",
     "$rootScope",
     'DeviceIdService',
-    function(userPrefs, $state, $rootScope, deviceIdService) {
+    'ImageCacheService',
+    function(userPrefs, $state, $rootScope, deviceIdService, imageCache) {
       
       /**
        * The callback function after a successful authentication
@@ -178,7 +180,12 @@ define([
         userPrefs.set('login.email', guestModel.email);
         userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
         userPrefs.set('login.isAuthenticated', true);
-        userPrefs.set('login.photoURL', guestModel.photoURL);
+        if (!userPrefs.get('login.photoURL')) userPrefs.set('login.photoURL', guestModel.photoURL);
+        if (guestModel.photoURL) {
+          imageCache.cacheImage(guestModel.photoURL, function(uri) {
+            userPrefs.set('login.photoURL', uri);
+          });
+        }
         if (typeof (guestModel.username) !== "undefined") {
           if (typeof onSuccessFunction === 'function') onSuccessFunction();
         } else {
@@ -196,6 +203,7 @@ define([
         userPrefs.set('login.userId', null);
         userPrefs.set('login.firstname', null);
         userPrefs.set('login.lastname', null);
+        userPrefs.set('login.photoURL', null);
         $rootScope.$broadcast('user-logged-out');
         $state.go('login');
         
