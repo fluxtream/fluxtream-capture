@@ -52,6 +52,7 @@ define([
           });
           functionsToExecute = [];
           if (reloadAgain) {
+            reloadAgain = false;
             reloadPhotos();
           }
         },

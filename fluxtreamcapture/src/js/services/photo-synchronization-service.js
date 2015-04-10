@@ -47,7 +47,8 @@ define([
             authentication: '', // Authentication replaced with token
             access_token: userPrefs.get('login.fluxtream_access_token'),
             access_token_expiration: 99999999999999, // No expiration
-            access_token_update_url: "..." // No renewal needed
+            access_token_update_url: "...", // No renewal needed
+            upload_on_data_connection: userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', false) ? true : false
           };
           var orientation = [];
           if (forge.is.android()) {
@@ -86,7 +87,8 @@ define([
               authentication: '', // Authentication replaced with token
               access_token: userPrefs.get('login.fluxtream_access_token'),
               access_token_expiration: 99999999999999, // No expiration
-              access_token_update_url: "..." // No renewal needed
+              access_token_update_url: "...", // No renewal needed
+              upload_on_data_connection: userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', false) ? true : false
             },
             // Success
             function() {

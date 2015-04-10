@@ -159,10 +159,13 @@ public class API {
 							if (param.getValue().getAsJsonPrimitive().isString()) {
 								put(param.getKey(), param.getValue().getAsString());
 								Log.i("flx_photoupload", "Set string " + param.getKey() + " = " + param.getValue());
+							} else if (param.getValue().getAsJsonPrimitive().isBoolean()) {
+								put(param.getKey(), param.getValue().getAsBoolean());
+								Log.i("flx_photoupload", "Set long " + param.getKey() + " = " + param.getValue());
 							} else if (param.getValue().getAsJsonPrimitive().isNumber()) {
 								put(param.getKey(), param.getValue().getAsLong());
 								Log.i("flx_photoupload", "Set long " + param.getKey() + " = " + param.getValue());
-							} 
+							}
 						}
 					}
 				}};

@@ -40,6 +40,9 @@ import android.webkit.WebView;
 public class UploadService extends Service {
 
 	private static ContentResolver contentResolver;
+	
+	// The running instance of the service
+	public static UploadService singleton;
 
 	// The userId of the currently connected user
 	private String userId;
@@ -53,6 +56,9 @@ public class UploadService extends Service {
 	// Only photos after this timestamp will be uploaded automatically
 	private int landscapeMinimumTimestamp = 0;
 	private int portraitMinimumTimestamp = 0;
+	
+	// Whether photos should be uploaded on data connection
+	private boolean uploadOnDataConnection = false;
 
 	// Fluxtream server URL at which the photos will be uploaded
 	private String uploadURL = "";
@@ -85,18 +91,12 @@ public class UploadService extends Service {
 
 	@Override
 	public void onCreate() {
-		Log.i("flx_photoupload", "Checking build version: "
-				+ Build.VERSION.SDK_INT + " (Kitkat is "
-				+ Build.VERSION_CODES.KITKAT + ")");
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			Log.i("flx_photoupload",
-					"setting webcontentsdebuggingenabled to true");
-			WebView.setWebContentsDebuggingEnabled(true);
-		}
+		
+		singleton = this;
+		
 		Log.i("flx_photoupload", "Creating autoupload service");
 		// Load preferences
-		prefs = getApplicationContext().getSharedPreferences(
-				"flxAutoUploadPreferences", Activity.MODE_PRIVATE);
+		prefs = getApplicationContext().getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
 		readAutouploadParameters();
 
 		// Start photo checker thread thread
@@ -106,17 +106,16 @@ public class UploadService extends Service {
 		// Subscribe to new photo event
 		contentResolver = getContentResolver();
 		Log.i("flx_photoupload", "contentResolver is created now");
-		contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI,
-				true, new ContentObserver(new Handler()) {
-					@Override
-					public void onChange(boolean selfChange, Uri uri) {
-						Log.i("flx_photoupload", "A new photo was taken");
-						ParseLog.logEvent("A new photo was taken");
-						mAutoUploadThread.interrupt();
-					}
-				});
+		contentResolver.registerContentObserver(Media.EXTERNAL_CONTENT_URI, true, new ContentObserver(new Handler()) {
+			@Override
+			public void onChange(boolean selfChange, Uri uri) {
+				Log.i("flx_photoupload", "A new photo was taken");
+				ParseLog.logEvent("A new photo was taken");
+				mAutoUploadThread.interrupt();
+			}
+		});
 
-		// // DEBUG��CODE
+		// // DEBUG CODE
 		// new Thread() {
 		// public void run() {
 		// Log.i("flx_test",
@@ -169,30 +168,20 @@ public class UploadService extends Service {
 		// Read parameters from preferences
 		this.userId = prefs.getString("autoupload.current_user_id", null);
 		Log.i("flx_photoupload", "Autoupload user id = " + this.userId);
-		this.uploadLandscape = prefs.getBoolean("user." + userId
-				+ ".autoupload." + "upload_landscape", false);
-		this.uploadPortrait = prefs.getBoolean("user." + userId
-				+ ".autoupload." + "upload_portrait", false);
+		this.uploadLandscape = prefs.getBoolean("user." + userId + ".autoupload." + "upload_landscape", false);
+		this.uploadPortrait = prefs.getBoolean("user." + userId + ".autoupload." + "upload_portrait", false);
 		Log.i("flx_photoupload", "UploadPortrait is now " + this.uploadPortrait);
-		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId
-				+ ".autoupload." + "landscape_minimum_timestamp", 0);
-		this.portraitMinimumTimestamp = prefs.getInt("user." + userId
-				+ ".autoupload." + "portrait_minimum_timestamp", 0);
-		this.uploadURL = prefs.getString("user." + userId + ".autoupload."
-				+ "upload_url", "");
-		final String authentication = prefs.getString("user." + userId
-				+ ".autoupload." + "authentication", "");
-		final String accessToken = prefs.getString("user." + userId
-				+ ".autoupload." + "access_token", "");
-		final long accessTokenExpiration = prefs.getLong("user." + userId
-				+ ".autoupload." + "access_token_expiration", 0);
-		final String accessTokenUpdateURL = prefs.getString("user." + userId
-				+ ".autoupload." + "access_token_update_url", null);
-		final String deviceId = prefs.getString("user." + userId
-				+ ".autoupload." + "device_id", null);
+		this.landscapeMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "landscape_minimum_timestamp", 0);
+		this.portraitMinimumTimestamp = prefs.getInt("user." + userId + ".autoupload." + "portrait_minimum_timestamp", 0);
+		this.uploadURL = prefs.getString("user." + userId + ".autoupload." + "upload_url", "");
+		final String authentication = prefs.getString("user." + userId + ".autoupload." + "authentication", "");
+		final String accessToken = prefs.getString("user." + userId + ".autoupload." + "access_token", "");
+		final long accessTokenExpiration = prefs.getLong("user." + userId + ".autoupload." + "access_token_expiration", 0);
+		final String accessTokenUpdateURL = prefs.getString("user." + userId + ".autoupload." + "access_token_update_url", null);
+		final String deviceId = prefs.getString("user." + userId + ".autoupload." + "device_id", null);
+		this.uploadOnDataConnection = prefs.getBoolean("user." + userId + ".autoupload.upload_on_data_connection", false);
 		// Send parameters to PhotoUploader
-		Log.i("flx_photoupload",
-				"Sending parameters from upload service to photo uploader");
+		Log.i("flx_photoupload", "Sending parameters from upload service to photo uploader");
 		PhotoUploader.initialize(prefs, new HashMap<String, Object>() {
 			{
 				put("userId", UploadService.this.userId);
@@ -202,6 +191,7 @@ public class UploadService extends Service {
 				put("access_token_expiration", accessTokenExpiration);
 				put("access_token_update_url", accessTokenUpdateURL);
 				put("device_id", deviceId);
+				put("upload_on_data_connection", uploadOnDataConnection);
 			}
 		});
 	}
@@ -232,45 +222,35 @@ public class UploadService extends Service {
 			prefEditor.putString("autoupload.current_user_id", userId);
 
 			// Save boolean parameters
-			for (String paramName : new String[] { "upload_landscape",
-					"upload_portrait" }) {
+			for (String paramName : new String[] { "upload_landscape", "upload_portrait", "upload_on_data_connection" }) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null) {
-					prefEditor.putBoolean("user." + userId + ".autoupload."
-							+ paramName, (Boolean) paramValue);
+					prefEditor.putBoolean("user." + userId + ".autoupload." + paramName, (Boolean) paramValue);
 				}
 			}
 
 			// Save integer parameters
-			for (String paramName : new String[] {
-					"landscape_minimum_timestamp", "portrait_minimum_timestamp" }) {
+			for (String paramName : new String[] { "landscape_minimum_timestamp", "portrait_minimum_timestamp" }) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null)
-					prefEditor.putInt("user." + userId + ".autoupload."
-							+ paramName, (Integer) paramValue);
+					prefEditor.putInt("user." + userId + ".autoupload." + paramName, (Integer) paramValue);
 			}
 
 			// Save long parameters
 			for (String paramName : new String[] { "access_token_expiration" }) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null)
-					prefEditor.putLong("user." + userId + ".autoupload."
-							+ paramName, (Long) paramValue);
+					prefEditor.putLong("user." + userId + ".autoupload." + paramName, (Long) paramValue);
 			}
 
 			// Save string parameters
-			for (String paramName : new String[] { "upload_url",
-					"authentication", "access_token",
-					"access_token_update_url", "device_id" }) {
+			for (String paramName : new String[] { "upload_url", "authentication", "access_token", "access_token_update_url", "device_id" }) {
 				Object paramValue = intent.getExtras().get(paramName);
 				if (paramValue != null) {
-					prefEditor.putString("user." + userId + ".autoupload."
-							+ paramName, (String) paramValue);
-					Log.i("flx_photoupload", "Save to prefs: " + paramName
-							+ " = " + paramValue);
+					prefEditor.putString("user." + userId + ".autoupload." + paramName, (String) paramValue);
+					Log.i("flx_photoupload", "Save to prefs: " + paramName + " = " + paramValue);
 				} else {
-					Log.i("flx_photoupload",
-							"Not saving to prefs because null: " + paramName);
+					Log.i("flx_photoupload", "Not saving to prefs because null: " + paramName);
 				}
 			}
 
@@ -290,11 +270,8 @@ public class UploadService extends Service {
 	 * Removes the current user id from prefs
 	 */
 	public static void forgetCurrentUser() {
-		SharedPreferences prefs = ForgeApp
-				.getActivity()
-				.getApplicationContext()
-				.getSharedPreferences("flxAutoUploadPreferences",
-						Activity.MODE_PRIVATE);
+		SharedPreferences prefs = ForgeApp.getActivity().getApplicationContext()
+				.getSharedPreferences("flxAutoUploadPreferences", Activity.MODE_PRIVATE);
 		Editor prefEditor = prefs.edit();
 		prefEditor.putString("autoupload.current_user_id", null);
 		prefEditor.apply();
@@ -324,22 +301,12 @@ public class UploadService extends Service {
 			try {
 				while (cursor != null && cursor.moveToNext()) {
 					// Get photo info
-					int photoId = cursor
-							.getInt(cursor
-									.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
-					int width = cursor
-							.getInt(cursor
-									.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
-					int height = cursor.getInt(cursor
-							.getColumnIndex(MediaStore.Images.Media.HEIGHT));
-					long dateTaken = cursor
-							.getLong(cursor
-									.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
-					int orientationTag = cursor
-							.getInt(cursor
-									.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
-					// Swap width and height if orientationTag is set to 90 or
-					// 270
+					int photoId = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+					int width = cursor.getInt(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
+					int height = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT));
+					long dateTaken = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_TAKEN)) / 1000;
+					int orientationTag = cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION));
+					// Swap width and height if orientationTag is set to 90 or 270
 					if (orientationTag == 90 || orientationTag == 270) {
 						int tmp = width;
 						width = height;
@@ -360,15 +327,12 @@ public class UploadService extends Service {
 						if (dateTaken < this.portraitMinimumTimestamp)
 							mustBeUploaded = false;
 					}
-					if (PhotoUploader.getPhotoStatus(photoId)
-							.equals("uploaded"))
+					if (PhotoUploader.getPhotoStatus(photoId).equals("uploaded"))
 						mustBeUploaded = false;
 					// Enqueue photo for upload if needed
 					if (mustBeUploaded) {
-						Log.i("flx_photoupload", "Found a photo to upload: "
-								+ photoId);
-						ParseLog.logEvent("Found a photo to upload", "photo "
-								+ photoId);
+						Log.i("flx_photoupload", "Found a photo to upload: " + photoId);
+						ParseLog.logEvent("Found a photo to upload", "photo " + photoId);
 						PhotoUploader.uploadPhoto(photoId);
 					}
 				}
@@ -399,19 +363,15 @@ public class UploadService extends Service {
 				try {
 					waitTime = checkForNewPhotos();
 				} catch (Exception e) {
-					Log.e("flx_photoupload",
-							"Error while running autoupload thread", e);
-					ParseLog.logEvent("Error while running autoupload thread",
-							e.getMessage());
+					Log.e("flx_photoupload", "Error while running autoupload thread", e);
+					ParseLog.logEvent("Error while running autoupload thread", e.getMessage());
 					waitTime = WAIT_ON_ERROR; // 1 minute
 				}
 				// Sleep for 10 minutes
 				synchronized (this) {
 					try {
-						Log.i("flx_photoupload", "Sleeping for " + waitTime
-								/ 1000.0 + " seconds now");
-						ParseLog.logEvent("Autoupload thread sleeping",
-								waitTime / 1000.0 + " seconds");
+						Log.i("flx_photoupload", "Sleeping for " + waitTime / 1000.0 + " seconds now");
+						ParseLog.logEvent("Autoupload thread sleeping", waitTime / 1000.0 + " seconds");
 						wait(waitTime);
 					} catch (InterruptedException e) {
 					}

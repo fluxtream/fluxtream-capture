@@ -42,10 +42,11 @@ define([
       $scope.settings = {};
       $scope.unuploadedCount = {};
       $scope.orientations.forEach(function(orientation) {
-        $scope.settings['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
-        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
+        $scope.settings['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() + '.photos.autoupload_' + orientation, false);
+        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('user.' + loginService.getUserId() + '.photos.' + orientation + "_minimum_timestamp", 0);
         $scope.unuploadedCount[orientation] = 0;
       });
+      $scope.settings.upload_on_data_connection = userPrefs.get('user.' + loginService.getUserId() + '.photos.upload_on_data_connection', false);
       
       /**
        * Updates the unuploaded photo count for each orientation
@@ -160,15 +161,9 @@ define([
           userPrefs.set('user.' + loginService.getUserId() +  '.photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
           if ($scope.settings['upload_' + orientation]) start = true;
         });
-        // Start or stop service
-        
-//        if (start) {
-//          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', true);
-          $scope.startPhotoUploadService();
-//        } else {
-//          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_enabled', false);
-//          $scope.stopPhotoUploadService();
-//        }
+        userPrefs.set('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', $scope.settings.upload_on_data_connection);
+        // Update service
+        $scope.startPhotoUploadService();
       };
       
     }

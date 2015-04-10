@@ -1,5 +1,6 @@
 package io.trigger.forge.android.modules.flx_photoupload;
 
+import io.trigger.forge.android.core.ForgeActivity;
 import io.trigger.forge.android.core.ForgeApp;
 
 import java.io.BufferedReader;
@@ -24,10 +25,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.database.CursorIndexOutOfBoundsException;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -69,6 +73,9 @@ public class PhotoUploader {
 	// URL at which a new access token can be fetched
 	private static String accessTokenUpdateURL;
 	
+	// Whether photos should be uploaded on data connection
+	private static boolean uploadOnDataConnection = false;
+	
 	/* Photo upload */
 	
 	// List of photo ids in the waiting queue
@@ -101,19 +108,22 @@ public class PhotoUploader {
 			PhotoUploader.prefs = prefs;
 			// User id
 			Object userId = params.get("userId");
-			if (userId != null && userId instanceof String)
+			if (userId != null && userId instanceof String) {
 				PhotoUploader.userId = (String)userId;
+			}
 			// Upload URL
 			Object uploadURL = params.get("upload_url");
 			if (uploadURL != null && uploadURL instanceof String) {
 				Log.i("flx_photoupload", "Setting photo url: '" + uploadURL + "'");
 				PhotoUploader.uploadURL = (String)uploadURL;
-			} else
+			} else {
 				Log.i("flx_photoupload", "Upload url is not a string: " + uploadURL);
+			}
 			// Authentication
 			Object authentication = params.get("authentication");
-			if (authentication != null && authentication instanceof String)
+			if (authentication != null && authentication instanceof String) {
 				PhotoUploader.authentication = (String)authentication;
+			}
 			// Access token
 			Object accessToken = params.get("access_token");
 			PhotoUploader.accessToken = null;
@@ -123,17 +133,25 @@ public class PhotoUploader {
 			}
 			// Access token expiration date
 			Object accessTokenExpiration = params.get("access_token_expiration");
-			if (accessTokenExpiration != null && accessTokenExpiration instanceof Long)
+			if (accessTokenExpiration != null && accessTokenExpiration instanceof Long) {
 				PhotoUploader.accessTokenExpiration = (Long)accessTokenExpiration;
+			}
 			// Access token update URL
 			Object accessTokenUpdateURL = params.get("access_token_update_url");
 			PhotoUploader.accessTokenUpdateURL = null;
-			if (accessTokenUpdateURL != null && accessTokenUpdateURL instanceof String)
+			if (accessTokenUpdateURL != null && accessTokenUpdateURL instanceof String) {
 				PhotoUploader.accessTokenUpdateURL = (String)accessTokenUpdateURL;
+			}
 			// Device id
 			Object deviceId = params.get("device_id");
-			if (deviceId != null && deviceId instanceof String)
+			if (deviceId != null && deviceId instanceof String) {
 				ParseLog.setDeviceId((String)deviceId);
+			}
+			// Upload on data connection
+			Object uploadOnDataConnection = params.get("upload_on_data_connection");
+			if (uploadOnDataConnection != null && uploadOnDataConnection instanceof Boolean) {
+				PhotoUploader.uploadOnDataConnection = (Boolean)uploadOnDataConnection;
+			}
 			
 			// Initialize with pending photos
 			String prefix = "user." + userId + ".photo.";
@@ -333,6 +351,25 @@ public class PhotoUploader {
 	private static String uploadPhotoNow(int photoId) throws Exception {
 		// Generate 'started' event
 		ForgeApp.event("photoupload.started", eventDataForPhotoId(photoId));
+		
+		// Check if connected over wifi or if uploading on data connection is allowed
+		if (!uploadOnDataConnection) {
+			ForgeActivity forgeActivity = ForgeApp.getActivity();
+			ConnectivityManager connectivityManager;
+			if (forgeActivity != null) {
+				// Current context is the Forge application
+				connectivityManager = (ConnectivityManager)ForgeApp.getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+			} else if (UploadService.singleton != null) {
+				// Current context is the background service
+				connectivityManager = (ConnectivityManager)UploadService.singleton.getSystemService(Context.CONNECTIVITY_SERVICE);
+			} else {
+				throw new Exception("App not running and background service not running");
+			}
+			NetworkInfo mWifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+			if (!mWifi.isConnected()) {
+				throw new Exception("Not connected to wifi and data connection upload not activated");
+			}
+		}
 		
 		// If using an access token, make sure it is up-to-date
 		updateAccessTokenIfNeeded();
