@@ -32,4 +32,7 @@
 
 - (NSString *)thumbnailURI;
 
+// Updates photo status but does not persist the photo array now
+- (void)setUploadStatusWithoutPersisting:(NSString *)uploadStatus;
+
 @end

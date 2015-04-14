@@ -53,7 +53,6 @@
 
 - (id)init {
     if (self = [super init]) {
-        NSLog(@"Initiation AutouploadService singleton");
         // Subscribe to the library change event
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(assetsLibraryChanged:) name:ALAssetsLibraryChangedNotification object:nil];
         // Create interrupt condition for the thread
@@ -68,7 +67,6 @@
 }
 
 - (void)startAutouploadService:(NSDictionary *)options {
-    NSLog(@"Setting autoupload options");
     [self saveOptions:options];
 }
 
@@ -85,10 +83,8 @@
 - (void)readAutouploadParameters {
     @synchronized (self) {
         if (!self.userId) return;
-        NSLog(@"Apply autoupload parameters");
         NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
         self.uploadPortrait = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT]];
-        NSLog(@"Upload portrait = %d", self.uploadPortrait);
         self.uploadUpsiteDown = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN]];
         self.uploadLandscapeLeft = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT]];
         self.uploadLandscapeRight = [defaults boolForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT]];
@@ -119,7 +115,6 @@
     for (NSString* key in options) {
         if ([key isEqualToString:@"upload_portrait"]) {
             [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT]];
-            NSLog(@"Setting %@ to %d", [NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_PORTRAIT], [options[key] boolValue]);
         } else if ([key isEqualToString:@"upload_upside_down"]) {
             [defaults setBool:[options[key] boolValue] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN]];
         } else if ([key isEqualToString:@"upload_landscape_left"]) {
@@ -162,7 +157,6 @@
 
 // Runs the autoupload thread. The autoupload thread never ends.
 - (void)runAutouploadThread {
-    NSLog(@"Starting autoupload thread");
     while (true) {
         // Look for a new picture to upload, and get the time interval to wait
         double waitTime = [self checkForNewPhotos];
@@ -176,24 +170,19 @@
 // Browse the photo list to find a photo to upload next
 - (double)checkForNewPhotos {
     @synchronized (self) {
-        NSLog(@"Check for new photos");
         if (!self.userId) {
             // No user connected, wait
-            NSLog(@"Autoupload thread: no user connected");
             return 0.5;
         }
         if ([[PhotoUploader singleton] isCurrentlyUploading]) {
             // Don't make simultaneous requests to the photo uploader
-            NSLog(@"A photo upload is already in progress, wait");
             return WAIT_ON_ACTIVE;
         }
         // Look for photos only if autoupload is active
         if (self.uploadPortrait || self.uploadUpsiteDown || self.uploadLandscapeLeft || self.uploadLandscapeRight) {
-            NSLog(@"Checking for new photos");
             NSCondition *photoListLoadedCondition = [NSCondition new];
             [photoListLoadedCondition lock];
             [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
-                NSLog(@"Photo library reloaded");
                 [photoListLoadedCondition lock];
                 [photoListLoadedCondition signal];
                 [photoListLoadedCondition unlock];
@@ -203,9 +192,7 @@
                 [photoListLoadedCondition signal];
                 [photoListLoadedCondition unlock];
             }];
-            NSLog(@"Waiting for photo list reload");
             [photoListLoadedCondition wait];
-            NSLog(@"End waiting for photo list reload");
             [photoListLoadedCondition unlock];
             // Look through photos
             NSArray *photos = [[PhotoLibrary singleton] photos];
@@ -216,7 +203,6 @@
                 }
                 if ([photo.uploadStatus isEqualToString:@"uploaded"]) {
                     // The photo has already been uploaded
-                    NSLog(@"Photo already uploaded: %@", photo);
                     continue;
                 }
                 // This will be set to false if the photo must not be uploaded
@@ -259,18 +245,15 @@
                 }
                 if (mustBeUploaded) {
                     // Send photo for upload
-                    NSLog(@"Found a photo to upload");
                     [[PhotoUploader singleton] uploadPhoto:photo.identifier];
                     // Stop looking for another photo, only one photo is being uploaded at a time
                     return WAIT_ON_UPLOAD;
                 }
             }
             // No photo needs to be uploaded
-            NSLog(@"No photo to upload");
             return WAIT_ON_NO_PHOTO;
         }
         // Autoupload is currently disabled
-        NSLog(@"Service is disabled: %d %d %d %d", self.uploadPortrait, self.uploadLandscapeLeft, self.uploadLandscapeRight, self.uploadUpsiteDown);
         return WAIT_ON_DISABLED;
     }
 }
@@ -279,7 +262,6 @@
 
 // This is called when the photo library is uploaded
 - (void)assetsLibraryChanged:(NSNotification *)notification {
-    NSLog(@"The photo library has changed");
     // Interrupt the thread to look again for a photo to upload
     [self.unpauseCondition lock];
     [self.unpauseCondition signal];

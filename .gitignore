@@ -20,6 +20,8 @@ modules/*/inspector/an-inspector/ForgeModule/trigger-gen
 modules/*/inspector/an-inspector/ForgeInspector/bin
 modules/*/inspector/an-inspector/ForgeInspector/gen
 modules/*/inspector/ios-inspector.*
+modules/*/inspector/ios-inspector/ForgeInspector.xcodeproj/project.xcworkspace/xcuserdata
+modules/*/inspector/ios-inspector/ForgeInspector.xcodeproj/xcuserdata
 
 # Numerous always-ignore extensions
 *.diff

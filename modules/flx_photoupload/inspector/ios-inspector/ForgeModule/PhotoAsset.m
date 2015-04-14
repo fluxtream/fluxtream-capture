@@ -17,6 +17,11 @@
     [[PhotoLibrary singleton] persistPhotoArray];
 }
 
+// Updates photo status but does not persist the photo array now
+- (void)setUploadStatusWithoutPersisting:(NSString *)uploadStatus {
+    _uploadStatus = uploadStatus;
+}
+
 // Returns a string representation of this photo (for debugging purposes)
 - (NSString *)description {
     return [NSString stringWithFormat:@"[Photo Asset: %@, %@, (%@), %@, %@]", self.identifier, self.assetURL, self.actualAsset, self.uploadStatus, self.facetId];

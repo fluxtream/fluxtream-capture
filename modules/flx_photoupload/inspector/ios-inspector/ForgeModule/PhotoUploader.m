@@ -54,7 +54,6 @@
 
 - (void)setParams:(NSDictionary *)params {
     self.userId = [params objectForKey:@"userId"];
-    NSLog(@"Set user id: %@", self.userId);
     self.uploadURL = [params objectForKey:@"upload_url"];
     self.authentication = [params objectForKey:@"authentication"];
     self.accessToken = [params objectForKey:@"access_token"];
@@ -65,7 +64,6 @@
 }
 
 - (void)logoutUser {
-    NSLog(@"Call to logoutUser");
     @synchronized (self.mutex) {
         self.userId = nil;
         self.uploadURL = nil;
@@ -83,29 +81,24 @@
 }
 
 - (void)uploadPhoto:(NSNumber *)photoId {
-    NSLog(@"Received request to upload photo %@", photoId);
     @synchronized (self.mutex) {
         // Check if photo is currently being uploaded
         if (self.currentPhoto == photoId) {
-            NSLog(@"Upload of photo %@ is already in progress", photoId);
             [[ForgeApp sharedApp] event:@"photoupload.started" withParam:[self eventDataForId:photoId]];
             return;
         }
         // Check if photo is already in the queue
         if ([self.pendingPhotos containsObject:photoId]) {
-            NSLog(@"Photo %@ already in upload queue", photoId);
             return;
         }
         // Find photo
         PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
         // Check if photo exists
         if (!photo) {
-            NSLog(@"Photo %@ does not exist", photoId);
             return;
         }
         // Check if photo is already uploaded
         if ([photo.uploadStatus isEqualToString:@"uploaded"]) {
-            NSLog(@"Photo %@ is already uploaded", photoId);
             [[ForgeApp sharedApp] event:@"photoupload.uploaded" withParam:[self eventDataForId:photoId]];
             return;
         }
@@ -122,7 +115,6 @@
 }
 
 - (void)cancelUpload:(NSNumber *)photoId {
-    NSLog(@"Call to PhotoUploader.cancelUpload(%@)", photoId);
     @synchronized (self.mutex) {
         // Remove from pending upload queue
         [self.pendingPhotos removeObject:photoId];
@@ -146,7 +138,6 @@
 
 // Starts the upload thread if it is not running yet
 - (void)startUploading {
-    NSLog(@"Starting upload thread");
     @synchronized (self.mutex) {
         // Check if upload thread already exists
         if (self.isUploading) {
@@ -171,28 +162,22 @@
 
 // Runs a loop to upload all the pending photos
 - (void)runUploadThread {
-    NSLog(@"Upload thread started");
     while (true) {
         // Check that there is a user connected
         if (!self.userId) {
-            NSLog(@"User disconnected, stopping upload thread (1)");
             @synchronized (self.mutex) {
                 self.isUploading = false;
             }
             return;
         }
         // Check that the photo list is initialized
-        NSLog(@"Checking that the list is initialized");
         while (![[PhotoLibrary singleton] isInitialized]) {
-            NSLog(@"Photo array not ready yet");
             [NSThread sleepForTimeInterval:0.1];
         }
-        NSLog(@"The list is initialized");
         // Get photo id
         NSNumber *photoId;
         @synchronized (self.mutex) {
             if (self.pendingPhotos.count == 0) {
-                NSLog(@"No more photos to upload, closing upload thread");
                 // No more photo to upload, close thread
                 @synchronized (self.mutex) {
                     self.isUploading = false;
@@ -207,16 +192,13 @@
         @try {
             NSLog(@"Uploading photo %@", photoId);
             NSString *facetId = [self uploadPhotoNow:photoId];
-            NSLog(@"uploadPhotoNow returned without any error");
             // Mark photo as uploaded
             @synchronized (self.mutex) {
                 if (!self.userId) {
-                    NSLog(@"User disconnected, stopping upload thread (2)");
                     self.isUploading = false;
                     return;
                 }
                 if (facetId) {
-                    NSLog(@"mark photo %@ as uploaded", photoId);
                     [self setPhotoUploaded:photoId withFacetId:facetId];
                 } else {
                     // The photo does not exist anymore
@@ -227,7 +209,6 @@
         } @catch (NSException *exception) {
             // Check if the thread should end
             if (!self.userId) {
-                NSLog(@"User disconnected, stopping upload thread (3)");
                 @synchronized (self.mutex) {
                     self.isUploading = false;
                 }
@@ -260,14 +241,12 @@
     if (!photoAsset) return nil;
     ALAsset *asset = photoAsset.actualAsset;
     if (!asset) {
-        NSLog(@"Photo asset for id %@: %@", photoId, photoAsset);
         @throw [NSException exceptionWithName:@"An error has occurred"
                                        reason:@"Photo asset not found"
                                      userInfo:nil];
     }
     
     // Create request
-    NSLog(@"Starting request to %@", self.uploadURL);
     NSURLRequest *request = [PhotoUploadRequest uploadRequestForAsset:asset
                                                             uploadURL:self.uploadURL
                                                        authentication:self.authentication
@@ -292,18 +271,9 @@
                                            reason:[NSString stringWithFormat:@"Received wrong response code: %d, %@", error.code, error.description]
                                          userInfo:nil];
         }
-        NSLog(@"photo uploader got %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         NSLog(@"photo upload success: status %d", statusCode);
         
         NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&error];
-        
-        // Make sure that the result we receive is "OK"
-//        NSString *resultField = [json objectForKey:@"result"];
-//        if (![resultField isEqualToString:@"OK"]) {
-//            @throw [NSException exceptionWithName:@"An error occurred while uploading the photo"
-//                                           reason:[NSString stringWithFormat:@"Result is %@", resultField]
-//                                         userInfo:nil];
-//        }
         
         // Get facetId
         NSString *facetId = [NSString stringWithFormat:@"%@", [json objectForKey:@"id"]];

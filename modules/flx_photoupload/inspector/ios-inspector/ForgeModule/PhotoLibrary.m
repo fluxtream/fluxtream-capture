@@ -136,20 +136,18 @@
     void (^assetGroupEnumerator)(ALAssetsGroup *, BOOL *) = ^(ALAssetsGroup * group, BOOL *stop) {
         if (group != nil) {
             if ([[group valueForProperty:@"ALAssetsGroupPropertyType"] intValue] == ALAssetsGroupSavedPhotos) {
-                NSLog(@"Visiting camera photo group");
                 // Filter only photos
                 [group setAssetsFilter:[ALAssetsFilter allPhotos]];
                 // Enumerate assets in the group
                 [group enumerateAssetsUsingBlock:assetEnumerator];
-            } else {
-                NSLog(@"Visiting non-camera photo group, skipping");
             }
         } else {
             // All groups have been visited
             // Save raw asset list
-            NSLog(@"Saving raw photo asset list");
             self.rawPhotoArray = rawAssets;
             self.libraryReady = true;
+            // Persist photo array to disk
+            [[PhotoLibrary singleton] persistPhotoArray];
             // Return asset array
             successBlock(assets);
             self.initializing = false;
@@ -158,7 +156,6 @@
     
     // Enumerate all asset groups
     ALAssetsLibrary * library = [self.class getAssetsLibrary];
-    NSLog(@"Loading raw photo list");
     self.initializing = true;
     [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                            usingBlock:assetGroupEnumerator
@@ -174,7 +171,6 @@
 // this list is fetched from local storage.
 - (NSMutableArray *)getPersistedPhotoArray {
     if (!self.photoArray) {
-        NSLog(@"Loading photo array from path %@", [self archivePath]);
         // Reset maps
         self.urlToPhotoMap = [NSMutableDictionary new];
         self.idToPhotoMap = [NSMutableDictionary new];
@@ -197,12 +193,11 @@
                 }
             }
         }
-        NSLog(@"%@", self.rawPhotoArray);
-        NSLog(@"%@", self.photoArray);
+        // Persist photo array
+        [[PhotoLibrary singleton] persistPhotoArray];
         // Look for unuploaded photos
         for (PhotoAsset *photo in self.photoArray) {
             if ([photo.uploadStatus isEqualToString:@"pending"]) {
-                NSLog(@"Found an unuploaded photo to upload");
                 [[PhotoUploader singleton] uploadPhoto:photo.identifier];
             }
         }
@@ -211,7 +206,6 @@
 }
 
 - (void)clearPhotoList {
-    NSLog(@"Clearing photo array");
     // Clear photo array to make sure it will be reloaded
     self.photoArray = nil;
     self.idToPhotoMap = nil;
@@ -262,7 +256,6 @@
 
 // Saves the photo list to local storage
 - (void)persistPhotoArray {
-    NSLog(@"Persisting the photo list to path %@", [self archivePath]);
     [NSKeyedArchiver archiveRootObject:[self getPersistedPhotoArray]
                                 toFile:[self archivePath]];
 }
@@ -277,22 +270,18 @@
     // Find asset in the list
     PhotoAsset *photo = [self photoWithURL:asset.defaultRepresentation.url.absoluteURL.description];
     if (photo) {
-        NSLog(@"Found an existing photo asset for: %@", asset.defaultRepresentation.url.absoluteURL.description);
         // An instance of this photo is already in the list, assign it its asset
         photo.actualAsset = asset;
         return photo;
     }
     // This asset is not in the list yet, create a new one
-    NSLog(@"Creating a new photo asset for: %@", asset.defaultRepresentation.url.absoluteURL.description);
     photo = [PhotoAsset new];
     [self.photoArray addObject:photo];
     photo.actualAsset = asset;
     photo.assetURL = asset.defaultRepresentation.url.absoluteURL.description;
     photo.identifier = [self newIdentifier];
-    NSLog(@"Adding photo %@ to photo array", photo.assetURL);
-//    NSLog(@"Photo array is now %@", self.photoArray);
     // Set upload status, this will persist the photo list
-    photo.uploadStatus = @"none";
+    [photo setUploadStatusWithoutPersisting:@"none"];
     // Update maps
     [self.idToPhotoMap setObject:photo forKey:photo.identifier];
     [self.urlToPhotoMap setObject:photo forKey:photo.assetURL];
@@ -300,7 +289,6 @@
 }
 
 - (PhotoAsset *)photoWithId:(NSNumber *)photoId {
-    NSLog(@"Get photo with id %@ for user %@", photoId, [PhotoUploader singleton].userId);
     // Make sure list of photos is initialized
     [self getPersistedPhotoArray];
     // Return photo corresponding to id
@@ -320,10 +308,7 @@
     BOOL result = self.libraryReady && self.photoArray;
     if (!result) {
         if (!self.initializing) {
-            [self getPhotoListWithSuccess:^(NSArray *assets) {
-                NSLog(@"Initialization done");
-            } error:^(NSError *error) {
-            }];
+            [self getPhotoListWithSuccess:^(NSArray *assets) {} error:^(NSError *error) {}];
         }
     }
     return result;

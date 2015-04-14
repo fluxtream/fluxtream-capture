@@ -19,11 +19,17 @@
  */
 + (void)getPhotoList:(ForgeTask *)task {
     NSLog(@"API: getPhotoList()");
-    [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
-        [task success:assets];
-    } error:^(NSError *error) {
-        [task errorString:error.description];
-    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [task success:assets];
+            });
+        } error:^(NSError *error) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [task errorString:error.description];
+            });
+        }];
+    });
 }
 
 /**
@@ -31,12 +37,16 @@
  */
 + (void)getThumbnail:(ForgeTask *)task photoId:(NSNumber *)photoId {
     NSLog(@"API: getPhotoThumbnail(%@)", photoId);
-    NSString *thumbnailURI = [[[PhotoLibrary singleton] photoWithId:photoId] thumbnailURI];
-    if (thumbnailURI && [thumbnailURI length]) {
-        [task success:thumbnailURI];
-    } else {
-        [task errorString:@"Image not found"];
-    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *thumbnailURI = [[[PhotoLibrary singleton] photoWithId:photoId] thumbnailURI];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (thumbnailURI && [thumbnailURI length]) {
+                [task success:thumbnailURI];
+            } else {
+                [task errorString:@"Image not found"];
+            }
+        });
+    });
 }
 
 /**
@@ -110,13 +120,19 @@
  */
 + (void)getPhotoStatuses:(ForgeTask *)task photoIds:(NSArray *)photoIds {
     NSLog(@"API: arePhotosUploaded");
-    int count = (int)photoIds.count;
-    NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
-    for (NSNumber *photoId in photoIds) {
-        PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
-        [array addObject:photo.uploadStatus];
-    }
-    [task success:array];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        int count = (int)photoIds.count;
+        NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
+        for (NSNumber *photoId in photoIds) {
+            PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
+            NSString *status = photo.uploadStatus;
+            if (!status) status = @"none";
+            [array addObject:status];
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [task success:array];
+        });
+    });
 }
 
 /**
