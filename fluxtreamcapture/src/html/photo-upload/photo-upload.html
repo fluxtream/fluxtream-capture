@@ -50,5 +50,10 @@
 
 <!-- Footer -->
 <ion-footer-bar class="bar-positive">
+  <h1 class='title' style='line-height: 100%; padding-top: 6px;'>
+    <a ng-click='showConnectionStatus()'>
+      <img src='./img/icons/offline.png' height='80%' ng-if="!internetReachable"/>
+    </a>
+  </h1>
   <a id="footer-right" ui-sref="photoUploadSettings" class="button button-clear pull-right"><i class="icon ion-gear-b"></i></a>
 </ion-footer-bar>

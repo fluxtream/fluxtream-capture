@@ -175,7 +175,6 @@ define([
     }
     
     function listenToServerChanges(db, seqNumber) {
-      forge.logging.info("calling listenToServerChanges")
       if (!bIsInitialized) {
         forge.logging.info("Not initialized");
         return;

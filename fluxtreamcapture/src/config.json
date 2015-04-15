@@ -131,6 +131,9 @@
 		},
 		"flx_toggle_keyboard": {
 			"version": "0.1.6"
+		},
+		"notification": {
+			"version": "2.7"
 		}
 	}
 }

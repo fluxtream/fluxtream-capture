@@ -18,7 +18,8 @@ define([
     "$ionicScrollDelegate",
     "$ionicActionSheet",
     "$timeout",
-    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout) {
+    "$interval",
+    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout, $interval) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -46,6 +47,9 @@ define([
       
       // On iOS, true if the user has not allowed the app to access photos
       $scope.photoAccessDenied = false;
+      
+      // Whether internet is currently reachable (through wifi, or through cellular data with cellular upload enabled)
+      $scope.internetReachable = true;
       
       // Saves the current scroll position to be re-established on the next visit
       $scope.onScroll = function() {
@@ -380,6 +384,26 @@ define([
           forge.logging.warning("Upload failed for unknown photo: " + data.photoId);
         }
       });
+      
+      // Periodically check for internet connection
+      $scope.updateConnectionStatus = function() {
+        $scope.internetReachable = forge.is.connection.wifi() ||
+              (forge.is.connection.connected() && userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection'));
+        $scope.$$phase || $scope.$apply();
+      };
+      $scope.updateConnectionStatus();
+      $scope.updateConnectionStatusInverval = $interval($scope.updateConnectionStatus, 1000);
+      $scope.$on("$destroy", function() {
+        $interval.cancel($scope.updateConnectionStatusInverval);
+      });
+      
+      // Show an alert telling why internet is not reachable
+      $scope.showConnectionStatus = function() {
+        if (!forge.is.connection.connected()) forge.notification.alert("Connection status", "You are currently offline.");
+        else if (!forge.is.connection.wifi() && !userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection'))
+          forge.notification.alert("Connection status", "You are not connected over wifi. You can enable the upload using cellular data in the settings.");
+        else $scope.updateConnectionStatus();
+      };
       
     }
   ]);
