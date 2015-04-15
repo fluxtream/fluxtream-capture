@@ -40,6 +40,9 @@ define([
       // Whether data is currently being received
       $scope.receivingData = false;
       
+      // Name of the last connected device
+      $scope.deviceName = heartRateService.getDeviceName();
+      
       // Whether the history is shown or not
       $scope.showHistory = env['debug'] ? true : false;
       
@@ -85,6 +88,7 @@ define([
           $scope.receivingData = false;
         }, 5000);
         $scope.deviceConnected = true;
+        $scope.deviceName = heartRateService.getDeviceName();
         $scope.$$phase || $scope.$apply();
       });
       
@@ -123,6 +127,7 @@ define([
       forge.internal.addEventListener("heartrate.deviceConnected", function (data) {
         // Broadcast received data
         $scope.deviceConnected = true;
+        $scope.deviceName = data.device_name;
         $scope.$$phase || $scope.$apply();
       });
       forge.internal.addEventListener("heartrate.deviceDisconnected", function (data) {
