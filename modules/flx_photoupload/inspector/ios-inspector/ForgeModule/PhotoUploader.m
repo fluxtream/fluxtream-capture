@@ -20,6 +20,7 @@
 @property (nonatomic, strong) NSString *accessToken;
 @property (nonatomic, strong) NSNumber *accessTokenExpiration;
 @property (nonatomic, strong) NSString *accessTokenUpdateURL;
+@property (nonatomic, strong) NSNumber *uploadOnDataConnection;
 
 // True if the upload thread is running
 @property (nonatomic) BOOL isUploading;
@@ -59,6 +60,7 @@
     self.accessToken = [params objectForKey:@"access_token"];
     self.accessTokenExpiration = [params objectForKey:@"access_token_expiration"];
     self.accessTokenUpdateURL = [params objectForKey:@"access_token_update_url"];
+    self.uploadOnDataConnection = [params objectForKey:@"upload_on_data_connection"];
     
     [[PhotoLibrary singleton] clearPhotoList];
 }
@@ -235,6 +237,17 @@
 - (NSString *)uploadPhotoNow:(NSNumber *)photoId {
     // Generate 'started' event
     [[ForgeApp sharedApp] event:@"photoupload.started" withParam:[self eventDataForId:photoId]];
+    
+    // Only upload on wifi or if upload on data connection is enabled
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [reachability startNotifier];
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if (status == NotReachable) {
+        @throw [NSException exceptionWithName:@"No connection" reason:@"Internet not reachable" userInfo:nil];
+    } else if (status == ReachableViaWWAN) {
+        @throw [NSException exceptionWithName:@"No wifi connection" reason:@"Only cellular connection and cellular upload disabled" userInfo:nil];
+    }
+    [reachability stopNotifier];
     
     // Get asset for photoId
     PhotoAsset *photoAsset = [[PhotoLibrary singleton] photoWithId:photoId];

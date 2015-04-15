@@ -42,7 +42,6 @@ $(function () {
 				$('#_actions').before('<div class="control-group api_input"><label class="control-label" for="'+param+'">'+param+'</label><div class="controls"><input type="text" class="input-xlarge" id="'+param+'"></div></div>');
 			}
 		})
-                        $('#_method').val('getPhotoList');
 		$('#_method').change();
 		$('#_run').click(function () {
 			var module = $('#_module').val();

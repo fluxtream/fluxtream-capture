@@ -24,6 +24,9 @@
 // The userId of the currently connected user
 @property (nonatomic, strong) NSString *userId;
 
+// Whether photos are uploaded on cellular data connection
+@property (nonatomic) BOOL uploadOnDataConnection;
+
 // Whether photos in these orientations are being automatically uploaded
 @property (nonatomic) BOOL uploadPortrait;
 @property (nonatomic) BOOL uploadUpsiteDown;
@@ -92,10 +95,12 @@
         self.upsideDownMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_UPSIDE_DOWN_MIN_TIMESTAMP] ] intValue];
         self.landscapeLeftMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_LEFT_MIN_TIMESTAMP]] intValue];
         self.landscapeRightMinimumTimestamp = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_PHOTO_ORIENTATION_LANDSCAPE_RIGHT_MIN_TIMESTAMP]] intValue];
+        self.uploadOnDataConnection = [[defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_ON_DATA_CONNECTION]] boolValue];
         // Apply upload url and authentication parameters to PhotoUploader
         NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:@{
                                                                                       @"userId": self.userId,
                                                                                       @"upload_url": [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_URL]],
+                                                                                      @"upload_on_data_connection": @(self.uploadOnDataConnection),
                                                                                       }];
         NSString *accessToken = [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN]];
         NSString *accessTokenExpiration = [defaults objectForKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_EXPIRATION]];
@@ -139,6 +144,8 @@
             [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_EXPIRATION]];
         } else if ([key isEqualToString:@"access_token_update_url"]) {
             [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_ACCESS_TOKEN_UPDATE_URL]];
+        } else  if ([key isEqualToString:@"upload_on_data_connection"]) {
+            [defaults setObject:options[key] forKey:[NSString stringWithFormat:@"user.%@.autoupload.%@", self.userId, DEFAULTS_UPLOAD_ON_DATA_CONNECTION]];
         } else if ([key isEqualToString:@"userId"]) {
             // Don't record user id, just keep it in memory
         } else {
