@@ -340,7 +340,7 @@
         NSLog(@"Disconnecting from unexpected device %@", peripheral.name);
         [self disconnectPeripheral:peripheral];
     } else {
-        [[ForgeApp sharedApp] event:@"heartrate.deviceConnected" withParam:nil];
+        [[ForgeApp sharedApp] event:@"heartrate.deviceConnected" withParam:@{@"device_name": peripheral.name}];
         [peripheral discoverServices:nil];
     }
     [self stopScan];
