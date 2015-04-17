@@ -40,7 +40,7 @@ define([
       $scope.loaded = false;
       
       // Saved scroll position
-      $scope.lastScrollPosition = userPrefs.get('photos.scrollPosition', 500);
+      $scope.lastScrollPosition = userPrefs.get('photos.scrollPosition', 0);
       
       // True once the initial scroll position has been applied and the new scroll positions can be saved
       $scope.initialScrollDone = false;
