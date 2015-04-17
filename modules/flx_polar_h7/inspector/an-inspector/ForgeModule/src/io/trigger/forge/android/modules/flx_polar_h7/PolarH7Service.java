@@ -42,6 +42,7 @@ public class PolarH7Service extends Service {
 	private BluetoothAdapter bluetoothAdapter;
 	private BluetoothGatt bluetoothGatt;
 	private BluetoothDevice bluetoothDevice;
+	private String bluetoothName;
 	
 	// Runnable that uploads the data
 	private DataUploader dataUploader;
@@ -251,6 +252,7 @@ public class PolarH7Service extends Service {
 		// Connect to device
 		Log.d(LOG_TAG, "Connecting to device " + address);
 		bluetoothGatt = bluetoothDevice.connectGatt(this, false, gattCallback);
+		bluetoothName = bluetoothDevice.getName();
 		boolean success = bluetoothGatt.connect();
 		if (success) {
 			// Start looking for services provided by the device
@@ -266,13 +268,19 @@ public class PolarH7Service extends Service {
 		public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
 			if (newState == BluetoothProfile.STATE_CONNECTED) {
 				// Device is now connected
-				Log.d(LOG_TAG, "State is connected");
-				ForgeApp.event("heartrate.deviceConnected");
+				Log.d(LOG_TAG, "State is connected : " + bluetoothName);
+				JsonObject eventData = new JsonObject();
+				eventData.addProperty("device_name", bluetoothName);
+				ForgeApp.event("heartrate.deviceConnected", eventData);
 				bluetoothGatt.discoverServices();
 			} else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
 				// Attempt to reconnect to the device
 				Log.d(LOG_TAG, "State is disconnected");
 				ForgeApp.event("heartrate.deviceDisconnected");
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+				}
 				bluetoothGatt.connect();
 			} else {
 				Log.d(LOG_TAG, "State is " + newState);

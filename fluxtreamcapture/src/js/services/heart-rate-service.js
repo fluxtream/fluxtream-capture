@@ -109,6 +109,11 @@ define([
         userPrefs.set('heartRate.deviceLocked', false);
       }
       
+      function saveDeviceName(name) {
+        forge.logging.info("Device name is " + name);
+        userPrefs.set('heartRate.deviceName', name);
+      }
+      
       // Listen to internal event 'heartrate.data' and broadcast incoming data
       forge.internal.addEventListener("heartrate.data", function (data) {
         // Broadcast received data
@@ -126,6 +131,7 @@ define([
       });
       forge.internal.addEventListener("heartrate.deviceConnected", function (data) {
         // Broadcast received data
+        saveDeviceName(data.device_name);
         $rootScope.$broadcast('heart-rate-info-received', {message: "A heart rate monitor has been found"});
       });
       forge.internal.addEventListener("heartrate.heartrateServiceFound", function (data) {
@@ -161,7 +167,8 @@ define([
         getLastSyncTime: function() { return lastSyncTime; },
         lockDevice: lockDevice,
         unlockDevice: unlockDevice,
-        deviceIsLocked: function() { return userPrefs.get('heartRate.deviceLocked', false); }
+        deviceIsLocked: function() { return userPrefs.get('heartRate.deviceLocked', false); },
+        getDeviceName: function() { return userPrefs.get('heartRate.deviceName', ""); }
       };
       
     }
