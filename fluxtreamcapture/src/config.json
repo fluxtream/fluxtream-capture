@@ -3,7 +3,7 @@
 	"name": "Fluxtream Capture",
 	"author": "julien.dupuis@gmail.com",
 	"version": "0.1",
-	"platform_version": "v2.2.10",
+	"platform_version": "v2.2.11",
 	"description": "An empty app created by default",
 	"core": {
 		"general": {
@@ -29,7 +29,7 @@
 	},
 	"modules": {
 		"request": {
-			"version": "2.6",
+			"version": "2.7",
 			"config": {
 				"permissions": [
 					"*",
