@@ -2,9 +2,9 @@
 	"config_version": "4",
 	"name": "Fluxtream Capture",
 	"author": "julien.dupuis@gmail.com",
-	"version": "0.1",
+	"version": "1.0.0",
 	"platform_version": "v2.2.10",
-	"description": "An empty app created by default",
+	"description": "Fluxtream Capture Mobile App",
 	"core": {
 		"general": {
 			"logging": {
@@ -19,7 +19,7 @@
 		"ios": {
 			"minimum_version": "6.0",
 			"device_family": "any",
-			"package_name": "org.fluxtream.capture.*",
+			"package_name": "org.fluxtream.app",
 			"webview": "UIWebView"
 		},
 		"android": {
@@ -135,5 +135,6 @@
 		"notification": {
 			"version": "2.7"
 		}
-	}
+	},
+	"homepage": "https://fluxtream.org/"
 }
