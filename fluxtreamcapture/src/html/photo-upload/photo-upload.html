@@ -37,7 +37,7 @@
             </p>
           </div>
           <div class="delete-photo-button-wrapper">
-            <button class="button button-stable button-fair button-small" ng-click="deletePhoto(photo)">
+            <button class="button button-stable button-fair button-small" ng-click="deletePhoto(photo)" ng-if="showDeleteButton(photo)">
               <i class="ion-ios7-trash-outline"></i>
             </button>
           </div>

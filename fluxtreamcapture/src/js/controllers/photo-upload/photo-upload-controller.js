@@ -79,6 +79,12 @@ define([
         return height;
       };
       
+      // Returns whether the delete button must be shown for a photo
+      $scope.showDeleteButton = function(photo) {
+        if (!forge.is.ios()) return true;
+        return photo.upload_status == 'uploaded';
+      };
+      
       /**
        * (Private) Adds a photo from to raw list to the photo list
        */
@@ -259,10 +265,10 @@ define([
        */
       $scope.deletePhoto = function(photo) {
         $ionicActionSheet.show({
-          buttons: photo.upload_status == 'uploaded' ? [{text: "No, only delete online photo"}] : [],
-          titleText: 'Delete photo from this device?',
+          buttons: photo.upload_status == 'uploaded' && !forge.is.ios() ? [{text: "No, only delete online photo"}] : [],
+          titleText: forge.is.ios() ? 'Delete photo from the server?' : 'Delete photo from this device?',
           cancelText: 'Cancel',
-          destructiveText: photo.upload_status == 'uploaded' ? 'Yes, also delete on this device' : 'Yes, delete photo',
+          destructiveText: forge.is.ios() ? "Yes, delete photo from server" : (photo.upload_status == 'uploaded' ? 'Yes, also delete on this device' : 'Yes, delete photo'),
           cancel: function() {
             // Do nothing
           },
@@ -301,12 +307,11 @@ define([
               alert("You are offline. Please connect to the Internet to delete this photo.");
               return;
             }
-            photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, true,
+            photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, !forge.is.ios(),
               // Success
               function() {
                 // Set status to 'none'
                 $scope.photos.splice($scope.photos.indexOf(photo), 1);
-                $scope.$$phase || $scope.$apply();
                 $scope.$$phase || $scope.$apply();
               },
               // Error

@@ -158,4 +158,9 @@
     }
 }
 
++ (void)markPhotoAsUnuploaded:(ForgeTask *)task photoId:(NSNumber *)photoId delete:(BOOL)deletePhoto {
+    [[PhotoUploader singleton] markPhotoAsUnuploaded:photoId delete:deletePhoto];
+    [task success:nil];
+}
+
 @end

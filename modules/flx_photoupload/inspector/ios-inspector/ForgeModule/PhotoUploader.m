@@ -135,6 +135,12 @@
     return self.isUploading;
 }
 
+- (void)markPhotoAsUnuploaded:(NSNumber *)photoId delete:(BOOL)deletePhoto {
+    // Update photo status
+    PhotoAsset *photo = [[PhotoLibrary singleton] photoWithId:photoId];
+    if (photo) photo.uploadStatus = @"none";
+    // Delete photo not supported
+}
 
 // Private methods
 
