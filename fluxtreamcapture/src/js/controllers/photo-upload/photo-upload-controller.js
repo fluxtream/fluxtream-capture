@@ -4,6 +4,7 @@
 define([
   'config/env',
   'app-modules',
+  'services/login-service',
   'services/photo-list-service',
   'services/user-prefs-service',
   'services/photo-synchronization-service'
@@ -13,13 +14,14 @@ define([
   appModules.controllers.controller('PhotoUploadController', [
     "$scope",
     "PhotoListService",
+    "LoginService",
     'UserPrefsService',
     "PhotoSynchronizationService",
     "$ionicScrollDelegate",
     "$ionicActionSheet",
     "$timeout",
     "$interval",
-    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout, $interval) {
+    function($scope, photoListService, loginService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout, $interval) {
       
       // No photos on web
       if (forge.is.web()) return;
