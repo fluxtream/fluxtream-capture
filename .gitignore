@@ -65,3 +65,4 @@ tasks.xml
 # iOS build files
 *.build
 fluxtreamcapture/IOS_certificates
+modules/*/inspector/ios-inspector/ForgeInspector.xcodeproj/project.xcworkspace/xcuserdata/
