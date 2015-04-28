@@ -60,14 +60,14 @@
 					"144": "img/icons/f-144x144.png"
 				},
 				"ios": {
-					"57": "img/icons/f-57x57.png",
-					"72": "img/icons/f-72x72.png",
-					"76": "img/icons/f-76x76.png",
-					"114": "img/icons/f-114x114.png",
-					"120": "img/icons/f-120x120.png",
-					"144": "img/icons/f-144x144.png",
-					"152": "img/icons/f-152x152.png",
-					"180": "img/icons/f-152x152.png"
+					"57": "img/icons/f-ios-57x57.png",
+					"72": "img/icons/f-ios-72x72.png",
+					"76": "img/icons/f-ios-76x76.png",
+					"114": "img/icons/f-ios-114x114.png",
+					"120": "img/icons/f-ios-120x120.png",
+					"144": "img/icons/f-ios-144x144.png",
+					"152": "img/icons/f-ios-152x152.png",
+					"180": "img/icons/f-ios-180x180.png"
 				}
 			}
 		},
