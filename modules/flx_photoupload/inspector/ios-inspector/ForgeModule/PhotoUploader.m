@@ -244,7 +244,7 @@
     NetworkStatus status = [reachability currentReachabilityStatus];
     if (status == NotReachable) {
         @throw [NSException exceptionWithName:@"No connection" reason:@"Internet not reachable" userInfo:nil];
-    } else if (status == ReachableViaWWAN) {
+    } else if (status == ReachableViaWWAN && !self.uploadOnDataConnection) {
         @throw [NSException exceptionWithName:@"No wifi connection" reason:@"Only cellular connection and cellular upload disabled" userInfo:nil];
     }
     [reachability stopNotifier];

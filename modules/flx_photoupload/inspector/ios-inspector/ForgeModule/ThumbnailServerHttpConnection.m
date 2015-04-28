@@ -13,6 +13,7 @@
 //#import "DDNumber.h"
 //#import "HTTPLogging.h"
 #import "PhotoLibrary.h"
+#import "ThumbnailServerHttpResponse.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 #import <QuartzCore/QuartzCore.h>
@@ -45,7 +46,7 @@
         // Get thumbnail data
         NSData *data = UIImageJPEGRepresentation([UIImage imageWithCGImage:[photo.actualAsset thumbnail]], .95);
         // Make http response
-        HTTPDataResponse *photoResponse = [[HTTPDataResponse alloc] initWithData:data];
+        HTTPDataResponse *photoResponse = [[ThumbnailServerHttpResponse alloc] initWithData:data];
         return photoResponse;
     }
     // Unknown request, ignore
