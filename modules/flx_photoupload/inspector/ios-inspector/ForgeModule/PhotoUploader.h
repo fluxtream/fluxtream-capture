@@ -39,4 +39,7 @@
 // Returns whether an upload is in progress
 - (BOOL)isCurrentlyUploading;
 
+// Marks a photo as unuploaded and optionally delete it
+- (void)markPhotoAsUnuploaded:(NSNumber *)photoId delete:(BOOL)deletePhoto;
+
 @end
