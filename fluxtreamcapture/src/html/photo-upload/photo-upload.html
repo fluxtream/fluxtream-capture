@@ -16,7 +16,7 @@
         <div class="photo-wrapper"
              collection-repeat="photo in photos"
              collection-item-width="'33.3333%'"
-             collection-item-height="getCollectionItemHeight()">
+             collection-item-height="collectionItemHeight">
           <div class="photo-image" ui-sref="photoPreview({photoId: photo.id})"
             style='background-image:url("{{ photo.src }}"); -webkit-transform: rotate({{ photo.orientation_tag }}deg)'>
           </div>
