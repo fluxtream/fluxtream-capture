@@ -22,6 +22,7 @@
 		F924C32719AB3FFD005881EB /* AutouploadService.m in Sources */ = {isa = PBXBuildFile; fileRef = F924C32619AB3FFD005881EB /* AutouploadService.m */; };
 		F966650B19DC51BF00DC9A28 /* libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = F9FE6EB619D41A510053534A /* libxml2.dylib */; };
 		F966651019DC526500DC9A28 /* ThumbnailServerHttpConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = F966650F19DC526500DC9A28 /* ThumbnailServerHttpConnection.m */; };
+		F981D03D1AE1364B004441AC /* ThumbnailServerHttpResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = F981D03C1AE1364B004441AC /* ThumbnailServerHttpResponse.m */; };
 		F98A0F7919D55A24004EBF8C /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F98A0F0319D55A24004EBF8C /* .gitignore */; };
 		F98A0F7A19D55A24004EBF8C /* .hgignore in Resources */ = {isa = PBXBuildFile; fileRef = F98A0F0419D55A24004EBF8C /* .hgignore */; };
 		F98A0F7B19D55A24004EBF8C /* DDData.m in Sources */ = {isa = PBXBuildFile; fileRef = F98A0F0819D55A24004EBF8C /* DDData.m */; };
@@ -89,6 +90,8 @@
 		F924C32619AB3FFD005881EB /* AutouploadService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutouploadService.m; sourceTree = "<group>"; };
 		F966650E19DC526500DC9A28 /* ThumbnailServerHttpConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailServerHttpConnection.h; sourceTree = "<group>"; };
 		F966650F19DC526500DC9A28 /* ThumbnailServerHttpConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailServerHttpConnection.m; sourceTree = "<group>"; };
+		F981D03B1AE1364B004441AC /* ThumbnailServerHttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailServerHttpResponse.h; sourceTree = "<group>"; };
+		F981D03C1AE1364B004441AC /* ThumbnailServerHttpResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailServerHttpResponse.m; sourceTree = "<group>"; };
 		F98A0F0319D55A24004EBF8C /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		F98A0F0419D55A24004EBF8C /* .hgignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .hgignore; sourceTree = "<group>"; };
 		F98A0F0719D55A24004EBF8C /* DDData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DDData.h; sourceTree = "<group>"; };
@@ -213,6 +216,8 @@
 				F90B97B519A6323D00076B52 /* PhotoUploadRequest.m */,
 				F966650E19DC526500DC9A28 /* ThumbnailServerHttpConnection.h */,
 				F966650F19DC526500DC9A28 /* ThumbnailServerHttpConnection.m */,
+				F981D03B1AE1364B004441AC /* ThumbnailServerHttpResponse.h */,
+				F981D03C1AE1364B004441AC /* ThumbnailServerHttpResponse.m */,
 				F90CE9CD19A23B7300FEC70F /* Constants.h */,
 				B31B6D4F15C13D5200854074 /* Products */,
 			);
@@ -506,6 +511,7 @@
 				F98A0FAF19D55A24004EBF8C /* DDFileLogger.m in Sources */,
 				F98A0F9319D55A24004EBF8C /* HTTPDynamicFileResponse.m in Sources */,
 				F98A0F7B19D55A24004EBF8C /* DDData.m in Sources */,
+				F981D03D1AE1364B004441AC /* ThumbnailServerHttpResponse.m in Sources */,
 				F98A0FA819D55A24004EBF8C /* GCDAsyncSocket.m in Sources */,
 				F98A0FB319D55A24004EBF8C /* DDTTYLogger.m in Sources */,
 				F98A0FA119D55A24004EBF8C /* DELETEResponse.m in Sources */,

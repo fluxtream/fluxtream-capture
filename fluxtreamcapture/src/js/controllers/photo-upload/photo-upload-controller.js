@@ -4,6 +4,7 @@
 define([
   'config/env',
   'app-modules',
+  'services/login-service',
   'services/photo-list-service',
   'services/user-prefs-service',
   'services/photo-synchronization-service'
@@ -13,13 +14,14 @@ define([
   appModules.controllers.controller('PhotoUploadController', [
     "$scope",
     "PhotoListService",
+    "LoginService",
     'UserPrefsService',
     "PhotoSynchronizationService",
     "$ionicScrollDelegate",
     "$ionicActionSheet",
     "$timeout",
     "$interval",
-    function($scope, photoListService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout, $interval) {
+    function($scope, photoListService, loginService, userPrefs, photoSync, $ionicScrollDelegate, $ionicActionSheet, $timeout, $interval) {
       
       // No photos on web
       if (forge.is.web()) return;
@@ -75,6 +77,12 @@ define([
         if ($('body').width() >= 600) height = 167 + 62 + 10;
         if ($('body').width() >= 768) height = 223 + 62 + 10;
         return height;
+      };
+      
+      // Returns whether the delete button must be shown for a photo
+      $scope.showDeleteButton = function(photo) {
+        if (!forge.is.ios()) return true;
+        return photo.upload_status == 'uploaded';
       };
       
       /**
@@ -257,10 +265,10 @@ define([
        */
       $scope.deletePhoto = function(photo) {
         $ionicActionSheet.show({
-          buttons: photo.upload_status == 'uploaded' ? [{text: "No, only delete online photo"}] : [],
-          titleText: 'Delete photo from this device?',
+          buttons: photo.upload_status == 'uploaded' && !forge.is.ios() ? [{text: "No, only delete online photo"}] : [],
+          titleText: forge.is.ios() ? 'Delete photo from the server?' : 'Delete photo from this device?',
           cancelText: 'Cancel',
-          destructiveText: photo.upload_status == 'uploaded' ? 'Yes, also delete on this device' : 'Yes, delete photo',
+          destructiveText: forge.is.ios() ? "Yes, delete photo from server" : (photo.upload_status == 'uploaded' ? 'Yes, also delete on this device' : 'Yes, delete photo'),
           cancel: function() {
             // Do nothing
           },
@@ -299,12 +307,11 @@ define([
               alert("You are offline. Please connect to the Internet to delete this photo.");
               return;
             }
-            photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, true,
+            photoSync.removePhotoFromServerAndDevice(photo.id, removeFromServer, !forge.is.ios(),
               // Success
               function() {
                 // Set status to 'none'
                 $scope.photos.splice($scope.photos.indexOf(photo), 1);
-                $scope.$$phase || $scope.$apply();
                 $scope.$$phase || $scope.$apply();
               },
               // Error

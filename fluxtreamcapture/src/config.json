@@ -2,9 +2,9 @@
 	"config_version": "4",
 	"name": "Fluxtream Capture",
 	"author": "julien.dupuis@gmail.com",
-	"version": "0.1",
+	"version": "1.0.0",
 	"platform_version": "v2.2.11",
-	"description": "An empty app created by default",
+	"description": "Fluxtream Capture Mobile App",
 	"core": {
 		"general": {
 			"logging": {
@@ -19,7 +19,7 @@
 		"ios": {
 			"minimum_version": "6.0",
 			"device_family": "any",
-			"package_name": "org.fluxtream.capture.*",
+			"package_name": "org.fluxtream.app",
 			"webview": "UIWebView"
 		},
 		"android": {
@@ -60,14 +60,14 @@
 					"144": "img/icons/f-144x144.png"
 				},
 				"ios": {
-					"57": "img/icons/f-57x57.png",
-					"72": "img/icons/f-72x72.png",
-					"76": "img/icons/f-76x76.png",
-					"114": "img/icons/f-114x114.png",
-					"120": "img/icons/f-120x120.png",
-					"144": "img/icons/f-144x144.png",
-					"152": "img/icons/f-152x152.png",
-					"180": "img/icons/f-152x152.png"
+					"57": "img/icons/f-ios-57x57.png",
+					"72": "img/icons/f-ios-72x72.png",
+					"76": "img/icons/f-ios-76x76.png",
+					"114": "img/icons/f-ios-114x114.png",
+					"120": "img/icons/f-ios-120x120.png",
+					"144": "img/icons/f-ios-144x144.png",
+					"152": "img/icons/f-ios-152x152.png",
+					"180": "img/icons/f-ios-180x180.png"
 				}
 			}
 		},
@@ -97,7 +97,7 @@
 			}
 		},
 		"flx_photoupload": {
-			"version": "0.6.15"
+			"version": "0.6.20"
 		},
 		"flx_polar_h7": {
 			"version": "0.1.21"
@@ -135,5 +135,6 @@
 		"notification": {
 			"version": "2.7"
 		}
-	}
+	},
+	"homepage": "https://fluxtream.org/"
 }
