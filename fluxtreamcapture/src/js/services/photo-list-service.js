@@ -13,9 +13,6 @@ define([
     // Whether the photo list has been initialized
     var initialized = false;
     
-    // The list of photos
-    var photoList;
-    
     // A cached list of photos for preloading the photo view
     var cachedPhotoList = [];
     
@@ -37,6 +34,7 @@ define([
         // Success
         function(jsonArray) {
           // Data can either be json-encoded string or an actual array
+          var photoList;
           if (typeof jsonArray === 'string') {
             // Json string, convert to array
             photoList = JSON.parse(jsonArray);
@@ -44,6 +42,21 @@ define([
             // Acual array
             photoList = jsonArray;
           }
+          // Determine if photo list has changed
+          var somethingChanged = false;
+          if (photoList.length != cachedPhotoList.length) {
+            somethingChanged = true;
+          } else {
+            for (var i = 0; i < photoList.length; i++) {
+              cachedPhoto = cachedPhotoList[i];
+              newPhoto = photoList[i];
+              if (cachedPhoto.id != newPhoto.id) {
+                somethingChanged = true;
+                break;
+              }
+            }
+          }
+          // Update photo list
           cachedPhotoList = photoList;
           initialized = true;
           photoAccessDenied = false;
@@ -55,6 +68,9 @@ define([
             reloadAgain = false;
             reloadPhotos();
           }
+          if (somethingChanged) {
+            $rootScope.$broadcast('photo-list-changed');
+          }
         },
         // Error
         function(error) {
@@ -63,6 +79,10 @@ define([
             // Access denied on iOS
             photoAccessDenied = true;
             initialized = true;
+            if (cachedPhotoList.length) {
+              cachedPhotoList = [];
+              $rootScope.$broadcast('photo-list-changed');
+            }
           }
           functionsToExecute.forEach(function(functionToExecute) {
             functionToExecute();
@@ -82,7 +102,6 @@ define([
       }
       // Reset initialization status
       initialized = false;
-      photoList = null;
       // Reload photos
       loadPhotos();
     }
@@ -108,7 +127,6 @@ define([
       $rootScope.$on("user-logged-out", function() {
         // Reset everything
         initialized = false;
-        photoList = null;
         functionsToExecute = [];
       });
     }
@@ -124,8 +142,7 @@ define([
     // Public API
     return {
       isInitialized: function() { return initialized; },
-      getPhotoList: function() { return photoList; },
-      getCachedPhotoList: function() { return cachedPhotoList; },
+      getPhotoList: function() { return cachedPhotoList; },
       reloadPhotos: reloadPhotos,
       onReady: onReady,
       photoAccessDenied: function() { return photoAccessDenied; }

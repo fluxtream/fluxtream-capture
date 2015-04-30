@@ -46,7 +46,7 @@ define([
       
       // Retrieve photo on initialization
       // Get list of photos
-      var photoList = photoListService.getCachedPhotoList();
+      var photoList = photoListService.getPhotoList();
       // Find photo
       photoList.forEach(function(rawPhotoData) {
         if (rawPhotoData.id == $scope.photoId) {

@@ -152,26 +152,24 @@ define([
       };
       
       /**
-       * Loads all photos from the device image gallery
+       * Update access denied status on iOS
        */
-      $scope.addAllPhotosFromGallery = function() {
-        // Preload cached photos
-        $scope.setPhotoList(photoListService.getCachedPhotoList());
-        // Make sure the photo list is fresh
-        photoListService.reloadPhotos();
-        // When the photo list has been fetched, load it
-        $scope.photoAccessDenied = false;
-        photoListService.onReady(function() {
-          if (forge.is.ios() && photoListService.photoAccessDenied()) {
-            // Access denied on iOS
-            $scope.photoAccessDenied = true;
-            $scope.$$phase || $scope.$apply();
-            return;
-          }
+      $scope.updateAccessDeniedStatus = function() {
+        if (forge.is.ios()) {
           $scope.photoAccessDenied = false;
-          $scope.setPhotoList(photoListService.getPhotoList());
-        });
+          photoListService.onReady(function() {
+            $scope.photoAccessDenied = photoListService.photoAccessDenied();
+            $scope.$$phase || $scope.$apply();
+          });
+        }
       };
+      
+      // Update the photo list when it changes
+      $scope.$on('photo-list-changed', function() {
+        forge.logging.info("Photo list changed");
+        $scope.setPhotoList(photoListService.getPhotoList());
+        $scope.updateAccessDeniedStatus();
+      }),
       
       /**
        * Get the photos' upload status from the native module 
@@ -234,15 +232,13 @@ define([
       
       // Initially load photos
       photoSync.onReady(function() {
-        // Initially load photos
-        userPrefs.onReady(function() {
-          if (!forge.is.web()) {
-            $scope.addAllPhotosFromGallery();
-          } else {
-            // Web app, no photo library
-            $scope.loaded = true;
-          }
-        });
+        if (!forge.is.web()) {
+          $scope.setPhotoList(photoListService.getPhotoList());
+          $scope.updateAccessDeniedStatus();
+        } else {
+          // Web app, no photo library
+          $scope.loaded = true;
+        }
       });
       
       /**
@@ -336,8 +332,8 @@ define([
         function() {
           if (!forge.is.web()) {
             userPrefs.onReady(function() {
+              // Request a photo reload to make sure the photo list is up to date
               photoListService.reloadPhotos();
-              $scope.addAllPhotosFromGallery();
             });
           }
         },
