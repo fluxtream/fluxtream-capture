@@ -1113,11 +1113,23 @@ define([
           });
         });
     }
-
-      /**
-       * (Public) Sync Observations asynchronously
-       */
-      function syncObservationsAsyncDB(fCallback){
+    
+    /**
+     * (Public) Sync Observations asynchronously
+     */
+    var syncObservationsAsyncDBMutex = false; // Prevents two simultaneous calls to syncObservationsAsyncDB
+    var syncObservationsAsyncDBCallbacks = []; // List of callbacks to call after the next sync
+    function syncObservationsAsyncDB(fCallback) {
+      // Add callback to the list of pending callbacks
+      if (fCallback) syncObservationsAsyncDBCallbacks.push(fCallback);
+      else syncObservationsAsyncDBCallbacks.push(function() {});
+      // Make sur there is not another sync running
+      if (syncObservationsAsyncDBMutex) return;
+      // Move callback list to a local variable
+      var callbackList = syncObservationsAsyncDBCallbacks;
+      syncObservationsAsyncDBCallbacks = [];
+      // Activate mutex to prevent other calls
+      syncObservationsAsyncDBMutex = true;
       // Get Observations from the server and save locally
       dbObservations.replicate.from(remoteCouchObservationsAddress)
         .on('complete', function () {
@@ -1143,7 +1155,7 @@ define([
               );
               aoCachedObservations.push(oNextObservation);
             });
-            if (fCallback) fCallback(aoCachedObservations);
+            callbackList.forEach(function(callback) { callback(aoCachedObservations); });
             $rootScope.$broadcast("event:observation-list-changed");
             // Save observation to server side
             forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
@@ -1157,11 +1169,19 @@ define([
                 // Update last sync time and broadcast sync event
                 userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
                 $rootScope.$broadcast('event:syncCompleted');
+                // Release mutex
+                syncObservationsAsyncDBMutex = false;
+                // If pending sync, sync again now
+                if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
               }).on('error', function (err) {
                 bIsOffline === 1;
                 bIsOfflineChangesForObservationsMade = 1;
                 forge.logging.error("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
                 $rootScope.$broadcast('event:offline');
+                // Release mutex
+                syncObservationsAsyncDBMutex = false;
+                // If pending sync, sync again now
+                if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
               });
           });
         }).on('error',  function (err) {
@@ -1194,8 +1214,12 @@ define([
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
           $rootScope.$broadcast('event:offline');
+          // Release mutex
+          syncObservationsAsyncDBMutex = false;
+          // If pending sync, sync again now
+          if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
         });
-      }
+    }
 
 
     /**
