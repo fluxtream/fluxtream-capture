@@ -1,21 +1,56 @@
 module("flx_photoupload");
 
-asyncTest("Enable autoupload for dev", 1, function() {
-  askQuestion("Enable autoupload?", {
+asyncTest("Load photo list", 1, function() {
+  askQuestion("Load photo list ?", {
     Yes: function() {
-      forge.flx_photoupload.setAutouploadOptions({
-        upload_landscape_left: false,
-        upload_portrait: true,
-        upload_landscape_right: false,
-        upload_upside_down: false,
-        landscape_left_minimum_timestamp: Math.round(new Date().getTime() / 1000),
-        landscape_right_minimum_timestamp: Math.round(new Date().getTime() / 1000),
-        upside_down_minimum_timestamp: Math.round(new Date().getTime() / 1000),
-        portrait_minimum_timestamp: 1409645385, //Math.round(new Date().getTime() / 1000),
-        userId: "1",
-        upload_url: "http://dev.fluxtream.org/api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
-        authentication: btoa("dev:foobarfoobar")
-      });
+      forge.flx_photoupload.getPhotoList(
+        // Success
+        function(jsonArray) {
+          // Data can either be json-encoded string or an actual array
+          var photoList;
+          if (typeof jsonArray === 'string') {
+            // Json string, convert to array
+            photoList = JSON.parse(jsonArray);
+          } else {
+            // Acual array
+            photoList = jsonArray;
+          }
+          // Create photo list
+          var photos = [];
+          photoList.forEach(function(rawPhotoData) {
+            var photoObject = {
+              src: rawPhotoData.thumb_uri,
+              orientation: rawPhotoData.orientation,
+              id: rawPhotoData.id,
+              upload_status: 'unknown',
+              uri: rawPhotoData.uri,
+              date_taken: rawPhotoData.date_taken,
+              orientation_tag: rawPhotoData.orientation_tag
+            };
+            // Add it to the photo list
+            photos.unshift(photoObject);
+          });
+          // Load statuses
+          var photoIds = [];
+          photos.forEach(function(photo) {
+            photoIds.push(photo.id);
+          });
+          forge.flx_photoupload.getPhotoStatuses(photoIds,
+            // Success
+            function(photoStatuses) {
+              forge.logging.info("Photo statuses loaded");
+            },
+            // Error
+            function(error) {
+              forge.logging.error("Error while getting photo statuses: " + JSON.stringify(error));
+            }
+          );
+          // Load thumbnails
+          photos.forEach(function(photo) {
+            forge.flx_photoupload.getThumbnail(photo.id);
+          });
+        }
+      );
       ok(true, "User claims success");
       start();
     },
@@ -25,6 +60,33 @@ asyncTest("Enable autoupload for dev", 1, function() {
     }
   });
 });
+
+
+//asyncTest("Enable autoupload for dev", 1, function() {
+//  askQuestion("Enable autoupload?", {
+//    Yes: function() {
+//      forge.flx_photoupload.setAutouploadOptions({
+//        upload_landscape_left: false,
+//        upload_portrait: true,
+//        upload_landscape_right: false,
+//        upload_upside_down: false,
+//        landscape_left_minimum_timestamp: Math.round(new Date().getTime() / 1000),
+//        landscape_right_minimum_timestamp: Math.round(new Date().getTime() / 1000),
+//        upside_down_minimum_timestamp: Math.round(new Date().getTime() / 1000),
+//        portrait_minimum_timestamp: 1409645385, //Math.round(new Date().getTime() / 1000),
+//        userId: "1",
+//        upload_url: "http://dev.fluxtream.org/api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
+//        authentication: btoa("dev:foobarfoobar")
+//      });
+//      ok(true, "User claims success");
+//      start();
+//    },
+//    No: function() {
+//      ok(true, "User canceled");
+//      start();
+//    }
+//  });
+//});
 
 //asyncTest("Set upload parameters", 1, function() {
 //	askQuestion("Set upload parameters?", {
