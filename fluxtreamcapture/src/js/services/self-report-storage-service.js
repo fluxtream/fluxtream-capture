@@ -311,8 +311,6 @@ define([
           }
           // Reorder topics so that the new one is at the top of the list
           updateTopicNumbers(aoCachedTopics);
-          // Synchronize with the server
-          syncTopicsAsyncDB();
         }
       );
     }
@@ -905,7 +903,19 @@ define([
     /**
      * (Public) Sync Topics asynchronously
      */
+    var syncTopicsAsyncDBMutex = false; // Prevents two simultaneous calls to syncTopicsAsyncDB
+    var syncTopicsAsyncDBCallbacks = []; // List of callbacks to call after the next sync
     function syncTopicsAsyncDB(fCallback) {
+      // Add callback to the list of pending callbacks
+      if (fCallback) syncTopicsAsyncDBCallbacks.push(fCallback);
+      else syncTopicsAsyncDBCallbacks.push(function() {});
+      // Make sur there is not another sync running
+      if (syncTopicsAsyncDBMutex) return;
+      // Move callback list to a local variable
+      var callbackList = syncTopicsAsyncDBCallbacks;
+      syncTopicsAsyncDBCallbacks = [];
+      // Activate mutex to prevent other calls
+      syncTopicsAsyncDBMutex = true;
       forge.logging.info("Reading Topics from the server side (syncTopicsAsyncDB");
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopicsAddress)
@@ -934,7 +944,7 @@ define([
               });
               reorderTopics();
               bIsOfflineChangesForTopicsMade = 0;
-              if (fCallback) fCallback(aoCachedTopics);
+              callbackList.forEach(function(callback) { callback(aoCachedTopics); });
               $rootScope.$broadcast('event:topic-list-changed');
               // Push Topic to the server
               forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
@@ -947,11 +957,19 @@ define([
                   // Update last sync time and broadcast sync event
                   userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
                   $rootScope.$broadcast('event:syncCompleted');
+                  // Release mutex
+                  syncTopicsAsyncDBMutex = false;
+                  // If pending sync, sync again now
+                  if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
                 }).on('error', function (err) {
                   bIsOffline === 1;
                   bIsOfflineChangesForTopicsMade = 1;
                   forge.logging.error("Error while saving Topic on the server side (syncTopicsAsyncDB): " + err);
                   $rootScope.$broadcast('event:offline');
+                  // Release mutex
+                  syncTopicsAsyncDBMutex = false;
+                  // If pending sync, sync again now
+                  if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
                 });
             });
           });
@@ -982,6 +1000,10 @@ define([
           bIsOffline === 1;
           bIsOfflineChangesForTopicsMade = 1;
           $rootScope.$broadcast('event:offline');
+          // Release mutex
+          syncTopicsAsyncDBMutex = false;
+          // If pending sync, sync again now
+          if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
         });
     }
     
@@ -992,7 +1014,6 @@ define([
      */
     function fixTopicDuplicateErrors(callback, changesMade) {
       // Check for duplicates (topics with the same name)
-      forge.logging.info("Searching for topic duplicates in " + JSON.stringify(aoCachedTopics));
       dbTopics.allDocs({include_docs: true}, function(err, response) {
         for (var i = 0; i < response.rows.length; i++) {
           for (var j = i + 1; j < response.rows.length; j++) {
