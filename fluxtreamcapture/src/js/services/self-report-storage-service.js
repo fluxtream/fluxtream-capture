@@ -286,7 +286,7 @@ define([
 
       // Putting new topic to the end of the array
       oTopic.topicNumber = aoCachedTopics.length;
-      aoCachedTopics.push(oTopic);
+      aoCachedTopics.unshift(oTopic);
 
       // Save topic to client database
       forge.logging.info("Saving Topic on the client side (createTopic)");
@@ -309,6 +309,8 @@ define([
             forge.logging.error("Error while saving Topic on the client side (createTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
+          // Reorder topics so that the new one is at the top of the list
+          updateTopicNumbers(aoCachedTopics);
           // Synchronize with the server
           syncTopicsAsyncDB();
         }
