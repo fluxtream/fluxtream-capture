@@ -10,7 +10,10 @@
     <div ng-if="photoAccessDenied" class="empty-list padding">
       You have not allowed this app to access your photos. Change your device's privacy settings to see your photos here.
     </div>
-    <div ng-if="loaded && !photoAccessDenied">
+    <div ng-if="loaded && !photos.length && !photoAccessDenied" class="empty-list padding">
+      There are no photos in your photo library.
+    </div>
+    <div ng-if="loaded && photos.length && !photoAccessDenied">
       <!-- Photo list -->
       <div class="list photo-list">
         <div class="photo-wrapper"

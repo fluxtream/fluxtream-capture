@@ -19,7 +19,7 @@
  */
 + (void)getPhotoList:(ForgeTask *)task {
     NSLog(@"API: getPhotoList()");
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
         [[PhotoLibrary singleton] getPhotoListWithSuccess:^(NSArray *assets) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [task success:assets];
@@ -120,7 +120,7 @@
  */
 + (void)getPhotoStatuses:(ForgeTask *)task photoIds:(NSArray *)photoIds {
     NSLog(@"API: arePhotosUploaded");
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         int count = (int)photoIds.count;
         NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
         for (NSNumber *photoId in photoIds) {

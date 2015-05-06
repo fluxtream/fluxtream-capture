@@ -147,7 +147,6 @@ define([
           $scope.addPhoto(rawPhotoData);
         });
         $scope.loadPhotoStatuses();
-        $scope.loadPhotoThumbnails();
         $scope.$$phase || $scope.$apply();
       };
       
@@ -205,30 +204,6 @@ define([
       $scope.$on("$destroy", function() {
         $timeout.cancel($scope.loadNextTimeout);
       });
-      
-      // Load photo thumbnails one by one
-      $scope.loadPhotoThumbnails = function() {
-        var photos = [];
-        $scope.photos.forEach(function(photo) {
-          if (!photo.src) photos.push(photo);
-        });
-        function loadNext() {
-          if (photos.length) {
-            var photo = photos.pop();
-            forge.flx_photoupload.getThumbnail(photo.id,
-              function(thumb) {
-                photo.src = thumb;
-                $scope.$$phase || $scope.$apply();
-                $timeout(loadNext, 1);
-              },
-              function() {
-                forge.logging.error("Error while getting thumbnail");
-              }
-            );
-          }
-        }
-        loadNext();
-      };
       
       // Initially load photos
       photoSync.onReady(function() {

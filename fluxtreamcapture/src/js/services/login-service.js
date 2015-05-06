@@ -101,18 +101,22 @@ define([
               device_id: deviceId
             },
             success: function(guestModel, textStatus) {
-              handleAuthSuccessResponse(guestModel, textStatus);
-              if (success) success();
+              if (guestModel && guestModel.id && guestModel.access_token) {
+                handleAuthSuccessResponse(guestModel, textStatus);
+                if (success) success();
+              } else {
+                if (error) error("An error has occurred");
+              }
             },
             error: function(response) {
               // Credentials are set, but an error occured
               if (response.statusCode === 401 || response.statusCode === "401") {
                 // Credentials are incorrect
-                error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
+                if (error) error("Wrong username or password for " + getTargetServer() + "\nPlease check.");
               } else {
                 // Another error happened
                 forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest: " + response.statusCode);
-                error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
+                if (error) error("Error accessing " + getTargetServer() + "\nError code: " + response.statusCode);
               }
             }
           });
@@ -137,8 +141,12 @@ define([
               device_id: deviceId
             },
             success: function(guestModel, textStatus) {
-              handleAuthSuccessResponse(guestModel, textStatus);
-              if (success) success();
+              if (guestModel && guestModel.id && guestModel.access_token) {
+                handleAuthSuccessResponse(guestModel, textStatus);
+                if (success) success();
+              } else {
+                if (error) error("An error has occurred");
+              }
             },
             error: function(response) {
               // Credentials are set, but an error occured
@@ -146,7 +154,7 @@ define([
               try {
                 errorMessage = response.content;
               } catch (e) {}
-              error(errorMessage);
+              if (error) error(errorMessage);
             }
           });
         });
