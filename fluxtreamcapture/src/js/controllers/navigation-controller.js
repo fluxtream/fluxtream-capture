@@ -51,7 +51,7 @@ define([
                 });
               } else {
                 // There is no back button, quit the app
-                if (confirm("Leave this app?")) closeMe();
+//                if (confirm("Leave this app?")) closeMe();
               }
             }
           }
