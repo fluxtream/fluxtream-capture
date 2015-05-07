@@ -37,17 +37,19 @@ define([
       
       // Subscribe to the channel of this device
       userPrefs.onReady(function() {
-        if (!forge.is.web()) {
-          deviceIdService.getDeviceIdAsync(function(deviceId) {
-            forge.parse.push.subscribe("channel_" + deviceId,
-              // Success
-              function() {},
-              // Error
-              function(content) {
-                forge.logging.error("Subscription to push notification channel failed: " + JSON.stringify(content));
-              }
-            );
-          });
+        if (env["using_parse"]) {
+          if (!forge.is.web()) {
+            deviceIdService.getDeviceIdAsync(function(deviceId) {
+              forge.parse.push.subscribe("channel_" + deviceId,
+                // Success
+                function() {},
+                // Error
+                function(content) {
+                  forge.logging.error("Subscription to push notification channel failed: " + JSON.stringify(content));
+                }
+              );
+            });
+          }
         }
       });
       
