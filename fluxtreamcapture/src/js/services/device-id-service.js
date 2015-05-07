@@ -80,12 +80,14 @@ define([
                 callbacks.forEach(function(callback) {
                   callback(info.id);
                 });
+                pendingRequest = false;
               },
               // Error
               function(content) {
                 forge.logging.error("Getting parse information failed: " + JSON.stringify(content));
                 // Try again
-                setTimeout(fetchDeviceId, 500);
+                pendingRequest = false;
+                setTimeout(fetchDeviceId, 1000);
               }
             );
           } else {
