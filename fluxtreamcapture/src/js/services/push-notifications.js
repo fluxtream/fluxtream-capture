@@ -10,10 +10,11 @@
  */
 define([
   'app-modules',
+  'config/env',
   'services/login-service',
   'services/user-prefs-service',
   'services/device-id-service'
-], function(appModules) {
+], function(appModules, env) {
   
   appModules.services.factory("PushNotificationService", [
     "LoginService",
