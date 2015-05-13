@@ -33,8 +33,8 @@
       <ion-list>
         <ion-item ng-click="navigateTo('identity')"><button class="button icon-left ion-person button-clear button-dark">&nbsp;&nbsp;{{ userName }}</button></ion-item>
         <ion-item ng-click="navigateTo('listTopics')"><button class="button icon-left ion-clipboard button-clear button-dark">&nbsp;&nbsp;Self Report</button></ion-item>
-        <ion-item ng-click="navigateTo('selectCoach')"><button class="button icon-left ion-person-stalker button-clear button-dark">&nbsp;&nbsp;Buddies</button></ion-item>
-        <ion-item ng-click="navigateTo('wall')"><button class="button icon-left ion-chatbubbles button-clear button-dark">&nbsp;&nbsp;Messages</button></ion-item>
+        <!--<ion-item ng-click="navigateTo('selectCoach')"><button class="button icon-left ion-person-stalker button-clear button-dark">&nbsp;&nbsp;Buddies</button></ion-item>-->
+        <!--<ion-item ng-click="navigateTo('wall')"><button class="button icon-left ion-chatbubbles button-clear button-dark">&nbsp;&nbsp;Messages</button></ion-item>-->
         <ion-item ng-if="!isWeb" ng-click="navigateTo('heartRate')"><button class="button icon-left ion-heart button-clear button-dark">&nbsp;&nbsp;Heart Rate</button></ion-item>
         <ion-item ng-if="!isWeb" ng-click="navigateTo('photoUpload')"><button class="button icon-left ion-camera button-clear button-dark">&nbsp;&nbsp;Photo Upload</button></ion-item>
         <ion-item ng-if="!isWeb" ng-click="navigateTo('settings')"><button class="button icon-left ion-settings button-clear button-dark">&nbsp;&nbsp;Settings</button></ion-item>
