@@ -63,6 +63,7 @@ define([
       userPrefs.onReady(function() {
         $scope.signin.password = env["test.password"];
         $scope.signin.username = userPrefs.get("login.username");
+        if (!$scope.signin.username) $scope.signin.username = env["test.username"];
         $scope.signin.target = userPrefs.get("login.target");
         $scope.signup.target = userPrefs.get("login.target");
         $scope.currentScreen = 'home';

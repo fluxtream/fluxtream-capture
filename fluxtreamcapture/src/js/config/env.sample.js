@@ -22,6 +22,9 @@ define(function() {
     // Whether this app is using Parse.com for push notifications
     "using_parse": true,
     // Debug mode (true/false)
-    "debug": false
+    "debug": false,
+    // Username and password for automatic authentication (useful for debugging)
+    "test.username" : "",
+    "test.password" : ""
   };
 });
