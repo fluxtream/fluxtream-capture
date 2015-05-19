@@ -30,7 +30,9 @@ asyncTest("Load photo list", 1, function() {
             // Add it to the photo list
             photos.unshift(photoObject);
           });
-          $("body").prepend("<img src='" + photos[0].src + "'>");
+          photos.forEach(function(photo) {
+            $("body").prepend("<img src='" + photo.src + "' style='width: 20px; height: 20px'>");
+          });
           // Load statuses
 //          var photoIds = [];
 //          photos.forEach(function(photo) {

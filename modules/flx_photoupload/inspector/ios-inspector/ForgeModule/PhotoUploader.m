@@ -54,27 +54,33 @@
 }
 
 - (void)setParams:(NSDictionary *)params {
-    self.userId = [params objectForKey:@"userId"];
-    self.uploadURL = [params objectForKey:@"upload_url"];
-    self.authentication = [params objectForKey:@"authentication"];
-    self.accessToken = [params objectForKey:@"access_token"];
-    self.accessTokenExpiration = [params objectForKey:@"access_token_expiration"];
-    self.accessTokenUpdateURL = [params objectForKey:@"access_token_update_url"];
-    self.uploadOnDataConnection = [params objectForKey:@"upload_on_data_connection"];
-    
-    [[PhotoLibrary singleton] clearPhotoList];
+    @synchronized ([PhotoLibrary singleton]) {
+        [[PhotoLibrary singleton] clearPhotoList];
+        
+        NSLog(@"THUMB_SERVER Setting parameters");
+        self.userId = [params objectForKey:@"userId"];
+        self.uploadURL = [params objectForKey:@"upload_url"];
+        self.authentication = [params objectForKey:@"authentication"];
+        self.accessToken = [params objectForKey:@"access_token"];
+        self.accessTokenExpiration = [params objectForKey:@"access_token_expiration"];
+        self.accessTokenUpdateURL = [params objectForKey:@"access_token_update_url"];
+        self.uploadOnDataConnection = [params objectForKey:@"upload_on_data_connection"];
+    }
 }
 
 - (void)logoutUser {
     @synchronized (self.mutex) {
-        self.userId = nil;
-        self.uploadURL = nil;
-        self.authentication = nil;
-        self.currentPhoto = nil;
-        [self.pendingPhotos removeAllObjects];
-        [[PhotoLibrary singleton] clearPhotoList];
-        
-        // TODO interrupt upload thread
+        @synchronized ([PhotoLibrary singleton]) {
+            [[PhotoLibrary singleton] clearPhotoList];
+            
+            self.userId = nil;
+            self.uploadURL = nil;
+            self.authentication = nil;
+            self.currentPhoto = nil;
+            [self.pendingPhotos removeAllObjects];
+            
+            // TODO interrupt upload thread
+        }
     }
 }
 

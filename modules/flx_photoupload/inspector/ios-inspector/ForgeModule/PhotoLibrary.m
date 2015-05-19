@@ -127,7 +127,9 @@
 //            NSString *encodedString = [imageData base64Encoding];
 //            NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
 //            [data setValue:dataUrl forKey:@"thumb_uri"];
-            [data setValue:[NSString stringWithFormat:@"http://127.0.0.1:%d/thumbnail/%@", THUMBNAIL_SERVER_PORT, [photo.identifier description]] forKey:@"thumb_uri"];
+            // Generate uri for the thumbnail through local thumbnail server
+            [data setValue:[NSString stringWithFormat:@"http://127.0.0.1:%d/thumbnail/%@/%@", THUMBNAIL_SERVER_PORT, [photo.identifier description], [PhotoUploader singleton].userId]
+                    forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
         }
@@ -148,7 +150,7 @@
             self.rawPhotoArray = rawAssets;
             self.libraryReady = true;
             // Persist photo array to disk
-            [[PhotoLibrary singleton] persistPhotoArray];
+            [self persistPhotoArray];
             // Return asset array
             successBlock(assets);
             self.initializing = false;
@@ -171,46 +173,61 @@
 // Returns a mutable array containing the list of photos. On the first time,
 // this list is fetched from local storage.
 - (NSMutableArray *)getPersistedPhotoArray {
-    if (!self.photoArray) {
-        // Reset maps
-        self.urlToPhotoMap = [NSMutableDictionary new];
-        self.idToPhotoMap = [NSMutableDictionary new];
-        // Read photo array from local storage
-        self.photoArray = [NSKeyedUnarchiver unarchiveObjectWithFile:[self archivePath]];
+    @synchronized (self) {
         if (!self.photoArray) {
-            self.photoArray = [NSMutableArray new];
-        }
-        // Init maps
-        for (PhotoAsset *photo in self.photoArray) {
-            [self.urlToPhotoMap setObject:photo forKey:photo.assetURL];
-            [self.idToPhotoMap setObject:photo forKey:photo.identifier];
-        }
-        // Synchronize with raw assets
-        for (ALAsset *asset in self.rawPhotoArray) {
-            for (PhotoAsset *photo in [self.photoArray copy]) {
-                if ([asset.defaultRepresentation.url.absoluteURL.description isEqualToString:photo.assetURL]) {
-                    // Associate asset to photo
-                    [self photoWithAsset:asset];
+            NSLog(@"THUMB_SERVER Creating photo array");
+            // Reset maps
+            self.urlToPhotoMap = [NSMutableDictionary new];
+            self.idToPhotoMap = [NSMutableDictionary new];
+            // Read photo array from local storage
+            NSString *archivePath = [self archivePath];
+            NSLog(@"Reading from archive path %@", archivePath);
+            self.photoArray = [NSKeyedUnarchiver unarchiveObjectWithFile:archivePath];
+            if (!self.photoArray) {
+                self.photoArray = [NSMutableArray new];
+            }
+            // Init maps
+            for (PhotoAsset *photo in self.photoArray) {
+                [self.urlToPhotoMap setObject:photo forKey:photo.assetURL];
+                [self.idToPhotoMap setObject:photo forKey:photo.identifier];
+            }
+            // Synchronize with raw assets
+            for (ALAsset *asset in self.rawPhotoArray) {
+                for (PhotoAsset *photo in [self.photoArray copy]) {
+                    if ([asset.defaultRepresentation.url.absoluteURL.description isEqualToString:photo.assetURL]) {
+                        // Associate asset to photo
+                        [self photoWithAsset:asset];
+                    }
                 }
             }
-        }
-        // Persist photo array
-        [[PhotoLibrary singleton] persistPhotoArray];
-        // Look for unuploaded photos
-        for (PhotoAsset *photo in self.photoArray) {
-            if ([photo.uploadStatus isEqualToString:@"pending"]) {
-                [[PhotoUploader singleton] uploadPhoto:photo.identifier];
+            // Persist photo array
+            NSLog(@"THUMB_SERVER photoLibrary singleton (%@) vs. this (%@)", [PhotoLibrary singleton], self);
+            [self persistPhotoArray];
+            // Look for unuploaded photos
+            for (PhotoAsset *photo in self.photoArray) {
+                if ([photo.uploadStatus isEqualToString:@"pending"]) {
+                    [[PhotoUploader singleton] uploadPhoto:photo.identifier];
+                }
             }
+            NSString *keys = @"";
+            for(id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
+            NSLog(@"THUMB_SERVER Initialized idToPhotoMap [%@]", keys);
         }
+        return self.photoArray;
     }
-    return self.photoArray;
 }
 
 - (void)clearPhotoList {
-    // Clear photo array to make sure it will be reloaded
-    self.photoArray = nil;
-    self.idToPhotoMap = nil;
-    self.urlToPhotoMap = nil;
+    @synchronized (self) {
+        // Make sure photo array is persisted
+        [self persistPhotoArray];
+        // Clear photo array to make sure it will be reloaded
+        NSLog(@"THUMB_SERVER Clearing idToPhotoMap");
+        self.photoArray = nil;
+        self.idToPhotoMap = nil;
+        self.urlToPhotoMap = nil;
+        NSLog(@"THUMB_SERVER Cleared idToPhotoMap");
+    }
 }
 
 // Returns the path on the local storage to the file containing the archived list of photos
@@ -257,55 +274,76 @@
 
 // Saves the photo list to local storage
 - (void)persistPhotoArray {
-    [NSKeyedArchiver archiveRootObject:[self getPersistedPhotoArray]
-                                toFile:[self archivePath]];
+    @synchronized (self) {
+        NSString *archivePath = [self archivePath];
+        NSLog(@"THUMB_SERVER Synchronizing persisted photo array to %@", archivePath);
+        [NSKeyedArchiver archiveRootObject:[self getPersistedPhotoArray]
+                                    toFile:archivePath];
+    }
 }
 
 - (NSArray *)photos {
-    return [self getPersistedPhotoArray];
+    @synchronized (self) {
+        return [self getPersistedPhotoArray];
+    }
 }
 
 - (PhotoAsset *)photoWithAsset:(ALAsset *)asset {
-    // Make sure list of photos is initialized
-    [self getPersistedPhotoArray];
-    // Find asset in the list
-    PhotoAsset *photo = [self photoWithURL:asset.defaultRepresentation.url.absoluteURL.description];
-    if (photo) {
-        // An instance of this photo is already in the list, assign it its asset
+    @synchronized (self) {
+        NSLog(@"THUMB_SERVER Calling photoWithAsset");
+        // Make sure list of photos is initialized
+        [self getPersistedPhotoArray];
+        // Find asset in the list
+        PhotoAsset *photo = [self photoWithURL:asset.defaultRepresentation.url.absoluteURL.description];
+        if (photo) {
+            // An instance of this photo is already in the list, assign it its asset
+            photo.actualAsset = asset;
+            return photo;
+        }
+        // This asset is not in the list yet, create a new one
+        photo = [PhotoAsset new];
+        [self.photoArray addObject:photo];
         photo.actualAsset = asset;
+        photo.assetURL = asset.defaultRepresentation.url.absoluteURL.description;
+        photo.identifier = [self newIdentifier];
+        // Set upload status, this will persist the photo list
+        [photo setUploadStatusWithoutPersisting:@"none"];
+        // Update maps
+        [self.idToPhotoMap setObject:photo forKey:photo.identifier];
+        NSLog(@"THUMB_SERVER Adding photo in idToPhotoMap: %@", photo.identifier);
+        if (!self.idToPhotoMap) NSLog(@"THUMB_SERVER But idToPhotoMap is null");
+        [self.urlToPhotoMap setObject:photo forKey:photo.assetURL];
         return photo;
     }
-    // This asset is not in the list yet, create a new one
-    photo = [PhotoAsset new];
-    [self.photoArray addObject:photo];
-    photo.actualAsset = asset;
-    photo.assetURL = asset.defaultRepresentation.url.absoluteURL.description;
-    photo.identifier = [self newIdentifier];
-    // Set upload status, this will persist the photo list
-    [photo setUploadStatusWithoutPersisting:@"none"];
-    // Update maps
-    [self.idToPhotoMap setObject:photo forKey:photo.identifier];
-    [self.urlToPhotoMap setObject:photo forKey:photo.assetURL];
-    return photo;
 }
 
 - (PhotoAsset *)photoWithId:(NSNumber *)photoId {
+    @synchronized (self) {
     // Make sure list of photos is initialized
     [self getPersistedPhotoArray];
     // Return photo corresponding to id
     PhotoAsset *result = [self.idToPhotoMap objectForKey:photoId];
+    if (!result) {
+        NSString *keys = @"";
+        for(id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
+        NSLog(@"THUMB_SERVER Didn't find photo with id %@ in idToPhotoMap [%@]", photoId, keys);
+    }
     return result;
+    }
 }
 
 - (PhotoAsset *)photoWithURL:(NSString *)url {
-    // Make sure list of photos is initialized
-    [self getPersistedPhotoArray];
-    // Return photo corresponding nto url
-    return [self.urlToPhotoMap objectForKey:url];
+    @synchronized (self) {
+        // Make sure list of photos is initialized
+        [self getPersistedPhotoArray];
+        // Return photo corresponding nto url
+        return [self.urlToPhotoMap objectForKey:url];
+    }
 }
 
 
 - (BOOL)isInitialized {
+    @synchronized (self) {
     BOOL result = self.libraryReady && self.photoArray;
     if (!result) {
         if (!self.initializing) {
@@ -313,6 +351,7 @@
         }
     }
     return result;
+    }
 }
 
 @end
