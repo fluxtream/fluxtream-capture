@@ -44,6 +44,9 @@
 + (NSNumber*)canBecomeFirstResponder;
 + (NSNumber*)canResignFirstResponder;
 + (void)remoteControlReceivedWithEvent:(UIEvent *) receivedEvent;
++ (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings;
++ (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler;
++ (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forLocalNotification:(UILocalNotification *)notification completionHandler:(void (^)())completionHandler;
 + (NSNumber*)prefersStatusBarHidden;
 + (NSNumber*)preferredStatusBarStyle;
 + (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;

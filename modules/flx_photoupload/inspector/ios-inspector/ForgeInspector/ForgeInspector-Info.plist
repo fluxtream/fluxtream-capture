@@ -10,10 +10,6 @@
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFiles</key>
 	<array>
-		<string>normal.png</string>
-		<string>retina.png</string>
-		<string>ipad.png</string>
-		<string>ipad-retina.png</string>
 	</array>
 	<key>CFBundleIcons</key>
 	<dict>
@@ -21,11 +17,6 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>120</string>
-				<string>ipad.png</string>
-				<string>ipad-retina.png</string>
-				<string>normal.png</string>
-				<string>retina.png</string>
 			</array>
 		</dict>
 	</dict>
@@ -35,13 +26,6 @@
 		<dict>
 			<key>CFBundleIconFiles</key>
 			<array>
-				<string>152</string>
-				<string>76</string>
-				<string>120</string>
-				<string>ipad.png</string>
-				<string>ipad-retina.png</string>
-				<string>normal.png</string>
-				<string>retina.png</string>
 			</array>
 		</dict>
 	</dict>

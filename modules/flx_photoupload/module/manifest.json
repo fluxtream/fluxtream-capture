@@ -1,7 +1,7 @@
 {
 	"description": "Photo upolad module",
-	"min_platform_version": "v2.1.8",
+	"min_platform_version": "v2.2.11",
 	"namespace": "flx_photoupload",
-	"platform_version": "v2.1.8",
-	"version": "0.6.24"
+	"platform_version": "v2.2.11",
+	"version": "0.6.27"
 }

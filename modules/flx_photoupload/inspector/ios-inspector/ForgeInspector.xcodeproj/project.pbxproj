@@ -21,7 +21,11 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		"60972823-37b1-45b7-9268-0fa60b8bdeb0build" /* usr/lib/libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = "60972823-37b1-45b7-9268-0fa60b8bdeb0file" /* usr/lib/libxml2.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		"40ff098c-103f-4a24-8a62-00e3599941cabuild" /* usr/lib/libxml2.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = "40ff098c-103f-4a24-8a62-00e3599941cafile" /* usr/lib/libxml2.dylib */; settings = {ATTRIBUTES = (Weak, ); }; };
+		"54e9ce7c-2b6c-4db5-87f2-b6a68bb825dbbuild" /* System/Library/Frameworks/CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "54e9ce7c-2b6c-4db5-87f2-b6a68bb825dbfile" /* System/Library/Frameworks/CFNetwork.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		712CBAF419C2212900FAD744 /* Default-667h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 712CBAF219C2212900FAD744 /* Default-667h@2x~iphone.png */; };
+		712CBAF519C2212900FAD744 /* Default-736h@3x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = 712CBAF319C2212900FAD744 /* Default-736h@3x~iphone.png */; };
+		71F71CE919A622FE00B3D370 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 71F71CE819A622FE00B3D370 /* WebKit.framework */; };
 		B307826415C2A393006798D7 /* AssetsLibrary.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B307826315C2A393006798D7 /* AssetsLibrary.framework */; };
 		B307826C15C2A44F006798D7 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B307826B15C2A44F006798D7 /* SystemConfiguration.framework */; };
 		B307826E15C2A47B006798D7 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = B307826D15C2A47B006798D7 /* assets */; };
@@ -50,8 +54,7 @@
 		B3FC518815C14B2A003574D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B3FC518715C14B2A003574D9 /* main.m */; };
 		B3FC519315C14B35003574D9 /* ForgeCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3FC519215C14B35003574D9 /* ForgeCore.framework */; };
 		B3FC519515C14B3C003574D9 /* ForgeCore.bundle in Resources */ = {isa = PBXBuildFile; fileRef = B3FC519415C14B3C003574D9 /* ForgeCore.bundle */; };
-		"e1e7c34d-10ff-4524-b96c-41cee1ab197ebuild" /* System/Library/Frameworks/Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "e1e7c34d-10ff-4524-b96c-41cee1ab197efile" /* System/Library/Frameworks/Security.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		"e3bf1b77-0206-4c4c-95ae-c86d43a4fa38build" /* System/Library/Frameworks/CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "e3bf1b77-0206-4c4c-95ae-c86d43a4fa38file" /* System/Library/Frameworks/CFNetwork.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		"ad3a40ed-66cc-4506-940e-cd5713dff51fbuild" /* System/Library/Frameworks/Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = "ad3a40ed-66cc-4506-940e-cd5713dff51ffile" /* System/Library/Frameworks/Security.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -86,7 +89,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		"60972823-37b1-45b7-9268-0fa60b8bdeb0file" /* usr/lib/libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		"40ff098c-103f-4a24-8a62-00e3599941cafile" /* usr/lib/libxml2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = usr/lib/libxml2.dylib; sourceTree = SDKROOT; };
+		"54e9ce7c-2b6c-4db5-87f2-b6a68bb825dbfile" /* System/Library/Frameworks/CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		712CBAF219C2212900FAD744 /* Default-667h@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-667h@2x~iphone.png"; sourceTree = "<group>"; };
+		712CBAF319C2212900FAD744 /* Default-736h@3x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-736h@3x~iphone.png"; sourceTree = "<group>"; };
+		71F71CE819A622FE00B3D370 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		B307826315C2A393006798D7 /* AssetsLibrary.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AssetsLibrary.framework; path = System/Library/Frameworks/AssetsLibrary.framework; sourceTree = SDKROOT; };
 		B307826B15C2A44F006798D7 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B307826D15C2A47B006798D7 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
@@ -118,8 +125,7 @@
 		B3FC518915C14B2A003574D9 /* ForgeInspector-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ForgeInspector-Prefix.pch"; sourceTree = "<group>"; };
 		B3FC519215C14B35003574D9 /* ForgeCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ForgeCore.framework; sourceTree = "<group>"; };
 		B3FC519415C14B3C003574D9 /* ForgeCore.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ForgeCore.bundle; sourceTree = "<group>"; };
-		"e1e7c34d-10ff-4524-b96c-41cee1ab197efile" /* System/Library/Frameworks/Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		"e3bf1b77-0206-4c4c-95ae-c86d43a4fa38file" /* System/Library/Frameworks/CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		"ad3a40ed-66cc-4506-940e-cd5713dff51ffile" /* System/Library/Frameworks/Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -127,6 +133,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				71F71CE919A622FE00B3D370 /* WebKit.framework in Frameworks */,
 				B3F0CB92163AD60B005E099F /* libForgeModule.a in Frameworks */,
 				B307826C15C2A44F006798D7 /* SystemConfiguration.framework in Frameworks */,
 				B307826415C2A393006798D7 /* AssetsLibrary.framework in Frameworks */,
@@ -134,9 +141,9 @@
 				B3FC517E15C14B2A003574D9 /* Foundation.framework in Frameworks */,
 				B3FC518015C14B2A003574D9 /* CoreGraphics.framework in Frameworks */,
 				B3FC519315C14B35003574D9 /* ForgeCore.framework in Frameworks */,
-				"e3bf1b77-0206-4c4c-95ae-c86d43a4fa38build" /* System/Library/Frameworks/CFNetwork.framework in Frameworks */,
-				"60972823-37b1-45b7-9268-0fa60b8bdeb0build" /* usr/lib/libxml2.dylib in Frameworks */,
-				"e1e7c34d-10ff-4524-b96c-41cee1ab197ebuild" /* System/Library/Frameworks/Security.framework in Frameworks */,
+				"54e9ce7c-2b6c-4db5-87f2-b6a68bb825dbbuild" /* System/Library/Frameworks/CFNetwork.framework in Frameworks */,
+				"40ff098c-103f-4a24-8a62-00e3599941cabuild" /* usr/lib/libxml2.dylib in Frameworks */,
+				"ad3a40ed-66cc-4506-940e-cd5713dff51fbuild" /* System/Library/Frameworks/Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +180,7 @@
 		B3FC517A15C14B2A003574D9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				71F71CE819A622FE00B3D370 /* WebKit.framework */,
 				B307826B15C2A44F006798D7 /* SystemConfiguration.framework */,
 				B307826315C2A393006798D7 /* AssetsLibrary.framework */,
 				B3FC519415C14B3C003574D9 /* ForgeCore.bundle */,
@@ -180,9 +188,9 @@
 				B3FC517B15C14B2A003574D9 /* UIKit.framework */,
 				B3FC517D15C14B2A003574D9 /* Foundation.framework */,
 				B3FC517F15C14B2A003574D9 /* CoreGraphics.framework */,
-				"e3bf1b77-0206-4c4c-95ae-c86d43a4fa38file" /* System/Library/Frameworks/CFNetwork.framework */,
-				"60972823-37b1-45b7-9268-0fa60b8bdeb0file" /* usr/lib/libxml2.dylib */,
-				"e1e7c34d-10ff-4524-b96c-41cee1ab197efile" /* System/Library/Frameworks/Security.framework */,
+				"54e9ce7c-2b6c-4db5-87f2-b6a68bb825dbfile" /* System/Library/Frameworks/CFNetwork.framework */,
+				"40ff098c-103f-4a24-8a62-00e3599941cafile" /* usr/lib/libxml2.dylib */,
+				"ad3a40ed-66cc-4506-940e-cd5713dff51ffile" /* System/Library/Frameworks/Security.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -199,6 +207,8 @@
 		B3FC518215C14B2A003574D9 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				712CBAF219C2212900FAD744 /* Default-667h@2x~iphone.png */,
+				712CBAF319C2212900FAD744 /* Default-736h@3x~iphone.png */,
 				B3F641C917D7670500614D30 /* Default-700-Portrait@2x~ipad.png */,
 				B3F641CA17D7670500614D30 /* Default-700-Portrait~ipad.png */,
 				B3F641BE17D765B300614D30 /* Default-700-Landscape@2x~ipad.png */,
@@ -306,6 +316,7 @@
 				B36DDE4A17D4D8DF00C56210 /* 152.png in Resources */,
 				B33F897B171479080050FB45 /* Default-568h@2x~iphone.png in Resources */,
 				B33F897C171479080050FB45 /* Default-Landscape@2x~ipad.png in Resources */,
+				712CBAF419C2212900FAD744 /* Default-667h@2x~iphone.png in Resources */,
 				B3F641CB17D7670500614D30 /* Default-700-Portrait@2x~ipad.png in Resources */,
 				B3F641C017D765B300614D30 /* Default-700-Landscape@2x~ipad.png in Resources */,
 				B3F641CC17D7670500614D30 /* Default-700-Portrait~ipad.png in Resources */,
@@ -313,6 +324,7 @@
 				B33F897D171479080050FB45 /* Default-Landscape~ipad.png in Resources */,
 				B33F897E171479080050FB45 /* Default-Portrait@2x~ipad.png in Resources */,
 				B33F897F171479080050FB45 /* Default-Portrait~ipad.png in Resources */,
+				712CBAF519C2212900FAD744 /* Default-736h@3x~iphone.png in Resources */,
 				B33F8980171479080050FB45 /* Default@2x~iphone.png in Resources */,
 				B33F8981171479080050FB45 /* Default~iphone.png in Resources */,
 				B33F8982171479080050FB45 /* ipad-retina.png in Resources */,
@@ -338,7 +350,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# Building both architectures.\ncd ForgeModule\nxcodebuild VALID_ARCHS=\"armv7 armv7s\" ONLY_ACTIVE_ARCH=NO ARCHS=\"armv7 armv7s\" -configuration \"Release\" -target ForgeModule -sdk iphoneos\nxcodebuild -configuration \"Release\" -target ForgeModuleResources -sdk iphoneos\nxcodebuild -configuration \"Release\" -target ForgeModule -sdk iphonesimulator\n\nrm -rf ../build\nmkdir ../build\n\n# Uses the Lipo Tool to merge both binary files (i386 + armv7/armv7s) into one Universal final product.\nlipo -create \"build/Release-iphoneos/libForgeModule.a\" \"build/Release-iphonesimulator/libForgeModule.a\" -output \"../build/module.a\"\nmv build/Release-iphoneos/*.bundle ../build 2>>/dev/null || echo \"No bundle file.\"\n";
+			shellScript = "# Building both architectures.\ncd ForgeModule\nxcodebuild VALID_ARCHS=\"i386 x86_64 armv7 armv7s arm64\" ONLY_ACTIVE_ARCH=NO ARCHS=\"i386 x86_64 armv7 armv7s arm64\" -configuration \"Release\" -target ForgeModule -sdk iphoneos\nxcodebuild -configuration \"Release\" -target ForgeModuleResources -sdk iphoneos\nxcodebuild -configuration \"Release\" -target ForgeModule -sdk iphonesimulator\n\nrm -rf ../build\nmkdir ../build\n\n# Uses the Lipo Tool to merge both binary files (i386/x86_64 + armv7/armv7s/arm64) into one Universal final product.\nlipo -create \"build/Release-iphoneos/libForgeModule.a\" \"build/Release-iphonesimulator/libForgeModule.a\" -output \"../build/module.a\"\nmv build/Release-iphoneos/*.bundle ../build 2>>/dev/null || echo \"No bundle file.\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -413,7 +425,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -445,7 +457,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

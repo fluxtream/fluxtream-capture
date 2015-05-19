@@ -20,3 +20,5 @@
 #define DEFAULTS_ACCESS_TOKEN_EXPIRATION @"bodytrack_photo_access_token_expiration"
 #define DEFAULTS_ACCESS_TOKEN_UPDATE_URL @"bodytrack_photo_access_token_update_url"
 #define DEFAULTS_UPLOAD_ON_DATA_CONNECTION @"bodytrack_upload_on_data_connection"
+
+#define THUMBNAIL_SERVER_PORT 9157

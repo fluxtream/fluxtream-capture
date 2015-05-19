@@ -14,7 +14,7 @@
 			"trusted_urls": [
 				"http://fluxtream.dev/*",
 				"http://fluxtream.org/*",
-			    "https://fluxtream.org/*"
+				"https://fluxtream.org/*"
 			]
 		},
 		"ios": {
@@ -98,7 +98,7 @@
 			}
 		},
 		"flx_photoupload": {
-			"version": "0.6.24"
+			"version": "0.6.27"
 		},
 		"flx_polar_h7": {
 			"version": "0.1.21"

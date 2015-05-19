@@ -13,6 +13,7 @@
 #import "PhotoUploader.h"
 #import "HTTPServer.h"
 #import "ThumbnailServerHttpConnection.h"
+#import "Constants.h"
 
 @interface PhotoLibrary()
 
@@ -54,7 +55,7 @@
         // Create and start small local http server to deliver photo thumbnails
         self.httpServer = [HTTPServer new];
         [self.httpServer setType:@"_http."];
-        [self.httpServer setPort:9157];
+        [self.httpServer setPort:THUMBNAIL_SERVER_PORT];
         [self.httpServer setConnectionClass:[ThumbnailServerHttpConnection class]];
         NSError *error;
         if (![self.httpServer start:&error]) {
@@ -126,7 +127,7 @@
 //            NSString *encodedString = [imageData base64Encoding];
 //            NSString *dataUrl = [NSString stringWithFormat:@"data:image/png;base64,%@", encodedString];
 //            [data setValue:dataUrl forKey:@"thumb_uri"];
-            [data setValue:[@"http://127.0.0.1:9157/thumbnail/" stringByAppendingString:[photo.identifier description]] forKey:@"thumb_uri"];
+            [data setValue:[NSString stringWithFormat:@"http://127.0.0.1:%d/thumbnail/%@", THUMBNAIL_SERVER_PORT, [photo.identifier description]] forKey:@"thumb_uri"];
             // Add asset to list
             [assets addObject:[NSDictionary dictionaryWithDictionary:data]];
         }

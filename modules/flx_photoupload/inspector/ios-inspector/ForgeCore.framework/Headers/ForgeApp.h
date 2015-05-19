@@ -15,7 +15,7 @@
 }
 
 /// Main webView used for Forge
-@property UIWebView* webView;
+@property UIView* webView;
 /// appConfig dictionary
 @property NSDictionary* appConfig;
 @property NSDictionary* moduleMapping;
@@ -30,6 +30,8 @@
 @property int webviewTop;
 /// The fake status bar element used to create the translucent glass effect on iOS 7
 @property UINavigationBar *statusBarBox;
+// Whether we're using WKWebView
+@property BOOL useWKWebView;
 
 + (ForgeApp*)sharedApp;
 - (id)nativeEvent:(SEL)selector withArgs:(NSArray*)args;
