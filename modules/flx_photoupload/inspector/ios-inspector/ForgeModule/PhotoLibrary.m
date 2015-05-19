@@ -148,7 +148,12 @@
             // All groups have been visited
             // Save raw asset list
             self.rawPhotoArray = rawAssets;
+            NSLog(@"THUMB_SERVER Raw photos fetched");
             self.libraryReady = true;
+            // Make sure actual assets are loaded
+            for (ALAsset *asset in rawAssets) {
+                [self photoWithAsset:asset];
+            }
             // Persist photo array to disk
             [self persistPhotoArray];
             // Return asset array
@@ -192,16 +197,21 @@
                 [self.idToPhotoMap setObject:photo forKey:photo.identifier];
             }
             // Synchronize with raw assets
-            for (ALAsset *asset in self.rawPhotoArray) {
-                for (PhotoAsset *photo in [self.photoArray copy]) {
+            for (PhotoAsset *photo in [self.photoArray copy]) {
+                BOOL found = false;
+                for (ALAsset *asset in self.rawPhotoArray) {
                     if ([asset.defaultRepresentation.url.absoluteURL.description isEqualToString:photo.assetURL]) {
                         // Associate asset to photo
                         [self photoWithAsset:asset];
+                        found = true;
+                        break;
                     }
+                }
+                if (!found) {
+                    NSLog(@"THUMB_SERVER Native photo not found for photo %@", photo.identifier);
                 }
             }
             // Persist photo array
-            NSLog(@"THUMB_SERVER photoLibrary singleton (%@) vs. this (%@)", [PhotoLibrary singleton], self);
             [self persistPhotoArray];
             // Look for unuploaded photos
             for (PhotoAsset *photo in self.photoArray) {
@@ -210,7 +220,7 @@
                 }
             }
             NSString *keys = @"";
-            for(id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
+            for (id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
             NSLog(@"THUMB_SERVER Initialized idToPhotoMap [%@]", keys);
         }
         return self.photoArray;
@@ -298,6 +308,7 @@
         if (photo) {
             // An instance of this photo is already in the list, assign it its asset
             photo.actualAsset = asset;
+            NSLog(@"THUMB_SERVER Setting native asset for photo %@", photo.identifier);
             return photo;
         }
         // This asset is not in the list yet, create a new one
@@ -325,7 +336,7 @@
     PhotoAsset *result = [self.idToPhotoMap objectForKey:photoId];
     if (!result) {
         NSString *keys = @"";
-        for(id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
+        for (id key in self.idToPhotoMap) keys = [keys stringByAppendingFormat:@"%@ ", key];
         NSLog(@"THUMB_SERVER Didn't find photo with id %@ in idToPhotoMap [%@]", photoId, keys);
     }
     return result;
