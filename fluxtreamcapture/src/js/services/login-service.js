@@ -94,6 +94,7 @@ define([
             headers: {
               'Content-Type': 'application/json'
             },
+            timeout: 20000,
             dataType: "json",
             data: {
               username: username,
@@ -131,6 +132,7 @@ define([
             headers: {
               'Content-Type': 'application/json'
             },
+            timeout: 20000,
             dataType: "json",
             data: {
               username: username,
