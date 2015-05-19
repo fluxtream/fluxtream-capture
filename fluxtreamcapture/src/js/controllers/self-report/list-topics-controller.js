@@ -106,13 +106,6 @@ define([
             //Delete spinning wheel
             if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.loading = false;
-            $scope.$$phase || $scope.$apply();
-
-            //If list is empty show add button
-            if(aoTopics.length === 0){
-              $("#footer-right").text('Add Topic');
-            }
-
             $scope.aoTopics = aoTopics;
             $scope.$$phase || $scope.$apply();
           });
