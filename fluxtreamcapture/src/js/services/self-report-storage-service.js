@@ -888,7 +888,7 @@ define([
                     notifyFluxtreamCaptureUpdater();
                     // Update last sync time and broadcast sync event
                     userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
-                    $rootScope.$broadcast('event:syncCompleted');
+                    $rootScope.$broadcast('event:topicSyncCompleted');
                     // Release mutex
                     syncTopicsAsyncDBMutex = false;
                     // If pending sync, sync again now
@@ -909,7 +909,7 @@ define([
                 forge.logging.info("Not saving Topics on the server side, no changes made (syncTopicsAsyncDB)");
                 // Update last sync time and broadcast sync event
                 userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
-                $rootScope.$broadcast('event:syncCompleted');
+                $rootScope.$broadcast('event:topicSyncCompleted');
                 // Release mutex
                 syncTopicsAsyncDBMutex = false;
                 // If pending sync, sync again now
@@ -1043,7 +1043,7 @@ define([
                   notifyFluxtreamCaptureUpdater();
                   // Update last sync time and broadcast sync event
                   userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
-                  $rootScope.$broadcast('event:syncCompleted');
+                  $rootScope.$broadcast('event:observationSyncCompleted');
                   // Release mutex
                   syncObservationsAsyncDBMutex = false;
                   // If pending sync, sync again now
@@ -1063,7 +1063,7 @@ define([
               forge.logging.info("Not saving Observations on the server side, no changes made (syncObservationsAsyncDB)");
               // Update last sync time and broadcast sync event
               userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
-              $rootScope.$broadcast('event:syncCompleted');
+              $rootScope.$broadcast('event:observationSyncCompleted');
               // Release mutex
               syncObservationsAsyncDBMutex = false;
               // If pending sync, sync again now

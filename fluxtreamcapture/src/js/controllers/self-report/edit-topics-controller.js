@@ -132,7 +132,7 @@ define([
       });
       
       // Listen to sync completed event to update view to show topics as synced
-      $scope.$on('event:syncCompleted', function() {
+      $scope.$on('event:topicSyncCompleted', function() {
         $scope.$$phase || $scope.$apply();
       });
       
