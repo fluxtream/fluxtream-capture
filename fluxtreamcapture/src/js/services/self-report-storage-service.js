@@ -44,6 +44,7 @@ define([
     var bIsOfflineChangesForTopicsMade = 0;
     var bIsOfflineChangesForObservationsMade = 0;
     var bUncommittedTopicChanges = true; // True if some changes in the topic list have not been uploaded yet (initially true to force syncing)
+    var bUncommittedObservationChanges = true; // True if some changes in the observation list have not been uploaded yet (initially true to force syncing)
     // Client memory values
     var aoCachedTopics;
     var aoCachedObservations;
@@ -85,6 +86,7 @@ define([
       bIsOfflineChangesForTopicsMade = 0;
       bIsOfflineChangesForObservationsMade = 0;
       bUncommittedTopicChanges = true;
+      bUncommittedObservationChanges = true;
       aoCachedTopics = null;
       aoCachedObservations = null;
       aoObservationsToSync = null;
@@ -493,6 +495,7 @@ define([
 
       forge.logging.info("Deleting Observation on the server side (deleteObservation)");
       // Push Observation deletion to the server
+      bUncommittedObservationChanges = true;
       syncObservationsAsyncDB();
       
       // Save observation to client delete database
@@ -612,7 +615,7 @@ define([
 
       // Delete associated observations
       //TODO maybe change to variant without upgrading whole array
-      readObservationsAsyncDB(function(aoCachedObservations){
+      syncObservationsAsyncDB(function(aoCachedObservations){
         var nNumberOfObservations = aoCachedObservations.length;
         var oNextObservationToDelete;
         var i = 0;
@@ -818,17 +821,6 @@ define([
       // There is not topic with this name, return null
       return null;
     }
-    
-    /**
-     * (Public) Get Observations from the file asynchronously
-     */
-    function readObservationsAsync(fCallback){
-      if(aoCachedObservations){
-        fCallback(aoCachedObservations);
-      } else {
-        fCallback([]);
-      }
-    }
 
     /**
      * (Private) Reorder Topics according their numbers
@@ -996,77 +988,6 @@ define([
     }
     
     /**
-     * (Public) Get Observations asynchronously
-     */
-    function readObservationsAsyncDB(fCallback){
-      // TODO should be fetching gradually
-
-      // Get Observations from the server and save locally
-      dbObservations.replicate.from(remoteCouchObservationsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully read Observations on the server side (readObservationsAsyncDB)");
-
-          bIsObservationsSynced = 1;
-          bIsOfflineChangesForObservationsMade = 0;
-
-          // Read all docs into memory
-          dbObservations.allDocs({include_docs: true}, function(err, response) {
-            aoCachedObservations = [];
-            response.rows.forEach( function (row)
-            {
-              //forge.logging.info(row.doc.name);
-              var oNextObservation = new Observation(
-                row.doc._id,
-                row.doc.topicId,
-                row.doc.value,
-                row.doc.creationDate,
-                row.doc.creationTime,
-                row.doc.observationDate,
-                row.doc.observationTime,
-                row.doc.updateTime,
-                row.doc.timezone,
-                row.doc.comment
-              );
-
-              aoCachedObservations.push(oNextObservation);
-            });
-            // Put pre-processing of data
-            fCallback(aoCachedObservations);
-          });
-        }).on('error',  function (err) {
-          aoCachedObservations = [];
-
-          // Handle error
-          forge.logging.error("OFFLINE Error while reading Observations on the server side (readObservationsAsyncDB): " + err);
-
-          // Read all docs into memory
-          dbObservations.allDocs({include_docs: true}, function(err, response) {
-            response.rows.forEach( function (row)
-            {
-              //forge.logging.info(row.doc.name);
-              var oNextObservation = new Observation(
-                row.doc._id,
-                row.doc.topicId,
-                row.doc.value,
-                row.doc.creationDate,
-                row.doc.creationTime,
-                row.doc.observationDate,
-                row.doc.observationTime,
-                row.doc.updateTime,
-                row.doc.timezone,
-                row.doc.comment
-              );
-
-              aoCachedObservations.push(oNextObservation);
-            });
-            // Put pre-processing of data
-            fCallback(aoCachedObservations);
-          });
-        });
-    }
-    
-    /**
      * (Public) Sync Observations asynchronously
      */
     var syncObservationsAsyncDBMutex = false; // Prevents two simultaneous calls to syncObservationsAsyncDB
@@ -1110,31 +1031,44 @@ define([
             callbackList.forEach(function(callback) { callback(aoCachedObservations); });
             $rootScope.$broadcast("event:observation-list-changed");
             // Save observation to server side
-            forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
             //Push Observation to the server
             var timeBeforeSync = new Date().getTime();
-            dbObservations.replicate.to(remoteCouchObservationsAddress)
-              .on('complete', function () {
-                // Successfully synced
-                forge.logging.info("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
-                notifyFluxtreamCaptureUpdater();
-                // Update last sync time and broadcast sync event
-                userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
-                $rootScope.$broadcast('event:syncCompleted');
-                // Release mutex
-                syncObservationsAsyncDBMutex = false;
-                // If pending sync, sync again now
-                if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
-              }).on('error', function (err) {
-                bIsOffline === 1;
-                bIsOfflineChangesForObservationsMade = 1;
-                forge.logging.error("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
-                $rootScope.$broadcast('event:offline');
-                // Release mutex
-                syncObservationsAsyncDBMutex = false;
-                // If pending sync, sync again now
-                if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
-              });
+            if (bUncommittedObservationChanges) {
+              forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
+              bUncommittedObservationChanges = false;
+              dbObservations.replicate.to(remoteCouchObservationsAddress)
+                .on('complete', function () {
+                  // Successfully synced
+                  forge.logging.info("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
+                  notifyFluxtreamCaptureUpdater();
+                  // Update last sync time and broadcast sync event
+                  userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
+                  $rootScope.$broadcast('event:syncCompleted');
+                  // Release mutex
+                  syncObservationsAsyncDBMutex = false;
+                  // If pending sync, sync again now
+                  if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
+                }).on('error', function (err) {
+                  bIsOffline === 1;
+                  bIsOfflineChangesForObservationsMade = 1;
+                  bUncommittedObservationChanges = true;
+                  forge.logging.error("Error while saving Observation on the server side (syncObservationsAsyncDB): " + err);
+                  $rootScope.$broadcast('event:offline');
+                  // Release mutex
+                  syncObservationsAsyncDBMutex = false;
+                  // If pending sync, sync again now
+                  if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
+                });
+            } else {
+              forge.logging.info("Not saving Observations on the server side, no changes made (syncObservationsAsyncDB)");
+              // Update last sync time and broadcast sync event
+              userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
+              $rootScope.$broadcast('event:syncCompleted');
+              // Release mutex
+              syncObservationsAsyncDBMutex = false;
+              // If pending sync, sync again now
+              if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
+            }
           });
         }).on('error',  function (err) {
           
@@ -1228,6 +1162,7 @@ define([
 
         // Save observation to server side
         forge.logging.info("Saving Observation on the server side (createObservation)");
+        bUncommittedObservationChanges = true;
         syncObservationsAsyncDB();
     }
 
@@ -1393,6 +1328,7 @@ define([
 
           forge.logging.info("Updating Observation on the server side (updateObservation)");
           // Push Observation to the server
+          bUncommittedObservationChanges = true;
           syncObservationsAsyncDB();
           break;
         }
@@ -1405,8 +1341,6 @@ define([
     return {
       //TODO create delete operations for the Topics and Observations
       syncTopicsAsyncDB: syncTopicsAsyncDB,
-      readObservationsAsync: readObservationsAsync,
-      readObservationsAsyncDB: syncObservationsAsyncDB,
       syncObservationsAsyncDB: syncObservationsAsyncDB,
 
       Topic : Topic,

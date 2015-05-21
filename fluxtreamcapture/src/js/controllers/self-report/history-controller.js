@@ -118,7 +118,7 @@ define([
           $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
 
-          selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
+          selfReportStorage.syncObservationsAsyncDB(function (aoObservations) {
             //Delete spinning wheel
             if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             
@@ -153,7 +153,7 @@ define([
           $scope.$$phase || $scope.$apply();
         });
 
-        selfReportStorage.readObservationsAsyncDB(function (aoObservations) {
+        selfReportStorage.syncObservationsAsyncDB(function (aoObservations) {
           $scope.aoObservations = aoObservations;
           $scope.$$phase || $scope.$apply();
 
