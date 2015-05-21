@@ -97,7 +97,11 @@ define([
         aoCachedTopics = [];
         aoCachedObservations = [];
         aoObservationsToSync = [];
-
+        
+        // Initialize last sync time
+        if (!userPrefs.get('self-report-last-topic-sync')) userPrefs.set('self-report-last-topic-sync', new Date().getTime());
+        if (!userPrefs.get('self-report-last-observation-sync')) userPrefs.set('self-report-last-observation-sync', new Date().getTime());
+        
         // Main topics and observations names/links
         dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
         dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
