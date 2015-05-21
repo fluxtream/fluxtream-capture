@@ -99,7 +99,7 @@ define([
           $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
 
-          selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          selfReportStorage.syncTopicsAsyncDB(function (aoTopics) {
             //Delete spinning wheel
             if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
 
@@ -117,7 +117,7 @@ define([
         $scope.status = 'offline';
         $scope.$$phase || $scope.$apply();
         
-        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+        selfReportStorage.syncTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           $scope.$$phase || $scope.$apply();
         });

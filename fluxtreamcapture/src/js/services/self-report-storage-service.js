@@ -43,6 +43,7 @@ define([
     var bIsOffline = 0;
     var bIsOfflineChangesForTopicsMade = 0;
     var bIsOfflineChangesForObservationsMade = 0;
+    var bUncommittedTopicChanges = true; // True if some changes in the topic list have not been uploaded yet (initially true to force syncing)
     // Client memory values
     var aoCachedTopics;
     var aoCachedObservations;
@@ -55,7 +56,7 @@ define([
         data: { access_token: loginService.getAccessToken() },
         url: updateNotificationURL,
         success: function() {forge.logging.info("FluxtreamCapture updater was notified");},
-        error: function() {forge.logging.info("Could not notify the FluxtreamCapture updater");}
+        error: function(error) {forge.logging.info("Could not notify the FluxtreamCapture updater: " + JSON.stringify(error));}
 	    });
 	    forge.logging.info("sent sync notification to Fluxtream Capture updater @ " + updateNotificationURL );
 	  };
@@ -83,6 +84,7 @@ define([
       bIsOffline = 0;
       bIsOfflineChangesForTopicsMade = 0;
       bIsOfflineChangesForObservationsMade = 0;
+      bUncommittedTopicChanges = true;
       aoCachedTopics = null;
       aoCachedObservations = null;
       aoObservationsToSync = null;
@@ -565,6 +567,8 @@ define([
       });
 
       forge.logging.info("Deleting Topic on the server side (deleteTopic)");
+      // Mark need for uploading topic changes to the server
+      bUncommittedTopicChanges = true;
       // Push Topic deletion to the server
       syncTopicsAsyncDB();
 
@@ -732,6 +736,8 @@ define([
           });
 
           forge.logging.info("Updating Topic on the server side (readObservationsToSync)");
+          // Mark need for uploading topic changes to the server
+          bUncommittedTopicChanges = true;
           //Push Observation to the server
           syncTopicsAsyncDB();
           break;
@@ -783,6 +789,8 @@ define([
 
       forge.logging.info('Successfully updated Topics numbers on client side (updateTopicNumbers)');
       forge.logging.info("Updating Topic on the server side (updateTopicNumbers)");
+      // Mark need for uploading topic changes to the server
+      bUncommittedTopicChanges = true;
       // Synchronize topics with the server
       syncTopicsAsyncDB();
     }
@@ -830,77 +838,6 @@ define([
     }
 
     /**
-     * (Public) Get Topics asynchronously
-     */
-    function readTopicsAsyncDB(fCallback){
-      // TODO should be fetching gradually
-      // Get Topics from the server and save locally
-      dbTopics.replicate.from(remoteCouchTopicsAddress)
-        .on('complete', function () {
-          // Successfully synced
-          forge.logging.info("Successfully read Topics from the server side (readTopicsAsyncDB)");
-
-          bIsTopicsSynced = 1;
-          var newTopicList = [];
-
-          // Read all docs into memory
-          dbTopics.allDocs({include_docs: true}, function(err, response) {
-            response.rows.forEach( function (row)
-            {
-              //forge.logging.info(row.doc.name);
-              var oNextTopic = new Topic(
-                row.doc._id,
-                row.doc.creationTime,
-                row.doc.updateTime,
-                row.doc.name,
-                row.doc.type,
-                row.doc.defaultValue,
-                row.doc.rangeStart,
-                row.doc.rangeEnd,
-                row.doc.step,
-                row.doc.topicNumber
-              );
-
-              newTopicList.push(oNextTopic);
-            });
-            bIsOfflineChangesForTopicsMade = 0;
-            aoCachedTopics = newTopicList;
-            reorderTopics();
-            fCallback(aoCachedTopics);
-          });
-
-        }).on('error',  function (err) {
-          // Handle error
-          forge.logging.error("OFFLINE Error while reading Topics on the server side (readTopicsAsyncDB): " + err);
-          aoCachedTopics = [];
-
-          // Read all docs into memory
-          dbTopics.allDocs({include_docs: true}, function(err, response) {
-            response.rows.forEach( function (row)
-            {
-              //forge.logging.info(row.doc.name);
-              var oNextTopic = new Topic(
-                row.doc._id,
-                row.doc.creationTime,
-                row.doc.updateTime,
-                row.doc.name,
-                row.doc.type,
-                row.doc.defaultValue,
-                row.doc.rangeStart,
-                row.doc.rangeEnd,
-                row.doc.step,
-                row.doc.topicNumber
-              );
-
-              aoCachedTopics.push(oNextTopic);
-            });
-            reorderTopics();
-            fCallback(aoCachedTopics);
-          });
-        });
-    }
-
-    /**
      * (Public) Sync Topics asynchronously
      */
     var syncTopicsAsyncDBMutex = false; // Prevents two simultaneous calls to syncTopicsAsyncDB
@@ -916,7 +853,8 @@ define([
       syncTopicsAsyncDBCallbacks = [];
       // Activate mutex to prevent other calls
       syncTopicsAsyncDBMutex = true;
-      forge.logging.info("Reading Topics from the server side (syncTopicsAsyncDB");
+      forge.logging.info("Reading Topics from the server side (syncTopicsAsyncDB)");
+      $rootScope.$broadcast('event:synchronizing-topics');
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
@@ -946,31 +884,45 @@ define([
               bIsOfflineChangesForTopicsMade = 0;
               callbackList.forEach(function(callback) { callback(aoCachedTopics); });
               $rootScope.$broadcast('event:topic-list-changed');
-              // Push Topic to the server
-              forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
+              // Push Topic to the server (if needed)
               var timeBeforeSync = new Date().getTime();
-              dbTopics.replicate.to(remoteCouchTopicsAddress)
-                .on('complete', function () {
-                  // Successfully synced
-                  forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
-                  notifyFluxtreamCaptureUpdater();
-                  // Update last sync time and broadcast sync event
-                  userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
-                  $rootScope.$broadcast('event:syncCompleted');
-                  // Release mutex
-                  syncTopicsAsyncDBMutex = false;
-                  // If pending sync, sync again now
-                  if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
-                }).on('error', function (err) {
-                  bIsOffline === 1;
-                  bIsOfflineChangesForTopicsMade = 1;
-                  forge.logging.error("Error while saving Topic on the server side (syncTopicsAsyncDB): " + err);
-                  $rootScope.$broadcast('event:offline');
-                  // Release mutex
-                  syncTopicsAsyncDBMutex = false;
-                  // If pending sync, sync again now
-                  if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
-                });
+              if (bUncommittedTopicChanges) {
+                forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
+                bUncommittedTopicChanges = false;
+                dbTopics.replicate.to(remoteCouchTopicsAddress)
+                  .on('complete', function () {
+                    // Successfully synced
+                    forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
+                    notifyFluxtreamCaptureUpdater();
+                    // Update last sync time and broadcast sync event
+                    userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
+                    $rootScope.$broadcast('event:syncCompleted');
+                    // Release mutex
+                    syncTopicsAsyncDBMutex = false;
+                    // If pending sync, sync again now
+                    if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
+                  }).on('error', function (err) {
+                    bIsOffline === 1;
+                    bIsOfflineChangesForTopicsMade = 1;
+                    bUncommittedTopicChanges = true;
+                    forge.logging.error("Error while saving Topic on the server side (syncTopicsAsyncDB): " + err);
+                    $rootScope.$broadcast('event:offline');
+                    // Release mutex
+                    syncTopicsAsyncDBMutex = false;
+                    // If pending sync, sync again now
+                    if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
+                  });
+              } else {
+                // No need for pushing topics to the server
+                forge.logging.info("Not saving Topics on the server side, no changes made (syncTopicsAsyncDB)");
+                // Update last sync time and broadcast sync event
+                userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
+                $rootScope.$broadcast('event:syncCompleted');
+                // Release mutex
+                syncTopicsAsyncDBMutex = false;
+                // If pending sync, sync again now
+                if (syncTopicsAsyncDBCallbacks.length) syncTopicsAsyncDB();
+              }
             });
           });
         }).on('error',  function (err) {
@@ -1452,10 +1404,9 @@ define([
      */
     return {
       //TODO create delete operations for the Topics and Observations
-      readTopicsAsyncDB: readTopicsAsyncDB,
       syncTopicsAsyncDB: syncTopicsAsyncDB,
       readObservationsAsync: readObservationsAsync,
-      readObservationsAsyncDB: readObservationsAsyncDB,
+      readObservationsAsyncDB: syncObservationsAsyncDB,
       syncObservationsAsyncDB: syncObservationsAsyncDB,
 
       Topic : Topic,

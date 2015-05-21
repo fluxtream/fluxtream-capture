@@ -91,7 +91,7 @@ define([
             $scope.status = 'loading';
             $scope.$$phase || $scope.$apply();
 
-            selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+            selfReportStorage.syncTopicsAsyncDB(function (aoTopics) {
               $scope.aoTopics = aoTopics;
               $scope.$$phase || $scope.$apply();
             });

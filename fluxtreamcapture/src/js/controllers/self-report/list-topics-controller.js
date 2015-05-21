@@ -102,7 +102,7 @@ define([
           $scope.status = 'loading';
           $scope.$$phase || $scope.$apply();
           
-          selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+          selfReportStorage.syncTopicsAsyncDB(function (aoTopics) {
             //Delete spinning wheel
             if ($scope.status == 'loading') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.loading = false;
@@ -120,7 +120,7 @@ define([
         $scope.status = 'offline';
         $scope.$$phase || $scope.$apply();
         
-        selfReportStorage.readTopicsAsyncDB(function (aoTopics) {
+        selfReportStorage.syncTopicsAsyncDB(function (aoTopics) {
           $scope.aoTopics = aoTopics;
           $scope.loading = false;
           $scope.$$phase || $scope.$apply();
@@ -144,6 +144,13 @@ define([
       
       // Listen to sync completed event to update view to show topics as synced
       $scope.$on('event:syncCompleted', function() {
+        $scope.status = 'none';
+        $scope.$$phase || $scope.$apply();
+      });
+      
+      // Listen to sync completed event to update view to show topics as synced
+      $scope.$on('event:synchronizing-topics', function() {
+        $scope.status = 'loading';
         $scope.$$phase || $scope.$apply();
       });
       
