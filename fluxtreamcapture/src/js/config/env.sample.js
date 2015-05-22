@@ -15,7 +15,8 @@ define(function() {
   return {
     // URL of the fluxtream server
     "fluxtream.home.url" : "http://fluxtream.org/",
-    // URL of the fluxtream couchDB server
+    // Protocol and URL of the fluxtream couchDB server
+    "fluxtream.couch.login.protocol" : "http://",
     "fluxtream.couch.login.url" : "@fluxtream.org:5984/",
     // URL of the web app (for redirection after authentication)
     "loggedIn.redirect_uri" : "",

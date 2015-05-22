@@ -244,8 +244,10 @@ define([
     function CreateLocalPouchDB () {
       // Create Local PouchDB
       if ((userLogin != '') && (userCouchDBToken != '')) {
-        remoteCouchTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
-        remoteCouchObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
+        var protocol = env['fluxtream.couch.login.protocol'];
+        if (!protocol) protocol = 'http://';
+        remoteCouchTopicsAddress = protocol + userLogin + ':' + userCouchDBToken + remoteCouchTopicsAddress;
+        remoteCouchObservationsAddress = protocol + userLogin + ':' + userCouchDBToken + remoteCouchObservationsAddress;
       }
     }
 
@@ -255,8 +257,10 @@ define([
     function CreateLocalDeletedPouchDB () {
       // Create Local PouchDB for deleted Topics and Observations
       if ((userLogin != '') && (userCouchDBToken != '')) {
-        remoteCouchDeletedTopicsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedTopicsAddress;
-        remoteCouchDeletedObservationsAddress = 'http://' + userLogin + ':' + userCouchDBToken + remoteCouchDeletedObservationsAddress;
+        var protocol = env['fluxtream.couch.login.protocol'];
+        if (!protocol) protocol = 'http://';
+        remoteCouchDeletedTopicsAddress = protocol + userLogin + ':' + userCouchDBToken + remoteCouchDeletedTopicsAddress;
+        remoteCouchDeletedObservationsAddress = protocol + userLogin + ':' + userCouchDBToken + remoteCouchDeletedObservationsAddress;
       }
     }
 
