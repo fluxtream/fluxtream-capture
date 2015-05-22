@@ -84,6 +84,72 @@ body {
 }
 
 /*******************************************
+ * TUTORIAL
+ *******************************************/
+
+.tutorial .box .img-wrapper {
+  padding: 0px;
+  position: absolute;
+  top: 40px;
+  left: 0px;
+  right: 0px;
+  bottom: 60px;
+  text-align: center;
+  background: white;
+}
+
+.tutorial .box .img-wrapper img {
+  max-width: 100%;
+  max-height: 100%;
+  border: 1px black solid;
+}
+
+.tutorial .box p {
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  background: #FFEEEE;
+  padding: 10px;
+  color: #DD0000;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.tutorial .box p.pos-top {
+  top: 100px;
+}
+
+.tutorial .box p.pos-center {
+  top: 50%;
+}
+
+.tutorial .box p.pos-bottom {
+  bottom: 100px;
+}
+
+.tutorial .box .skip-button {
+  position: absolute;
+  left: 15px;
+  bottom: 10px;
+  height: 30px;
+  border-color: #b2b2b2;
+  background-color: #f8f8f8;
+  color: #444;
+  margin: 0;
+  padding: 0 12px;
+  min-width: 75px;
+  min-height: 40px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 2px;
+  vertical-align: top;
+  text-align: center;
+  text-overflow: ellipsis;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/*******************************************
  * MENU
  *******************************************/
 

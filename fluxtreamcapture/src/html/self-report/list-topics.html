@@ -43,3 +43,37 @@
   </h1>
   <a id="footer-right" ui-sref="editTopics" class="button button-clear pull-right">Edit topics</a>
 </ion-footer-bar>
+
+<!-- Tutorial -->
+<script id="tutorial-modal" type="text/ng-template">
+  <ion-modal-view>
+    <ion-content>
+      <ion-slide-box style="background: white" class='tutorial'>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box blue">
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-01.png'>
+            </div>
+            <p class='pos-center'>Start by creating a topic</p>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box yellow">
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-02.png'>
+            </div>
+            <p class='pos-center'>Start by creating a topic</p>
+            <button class='skip-button btn btn-primary' ng-click="dismissTutorialModal()">Skip</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box pink">
+            <h1>Tutorial page 3</h1>
+            <button ng-click="dismissTutorialModal()">Start using the app</button>
+          </div>
+        </ion-slide>
+      </ion-slide-box>
+    </ion-content>
+  </ion-modal-view>
+</script>

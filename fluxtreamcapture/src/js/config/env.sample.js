@@ -22,6 +22,8 @@ define(function() {
     "loggedIn.redirect_uri" : "",
     // Whether this app is using Parse.com for push notifications
     "using_parse": true,
+    // Whether tutorial should be shown when first starting the app
+    "show_tutorial": true,
     // Debug mode (true/false)
     "debug": false,
     // Username and password for automatic authentication (useful for debugging)

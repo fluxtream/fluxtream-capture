@@ -1,16 +1,24 @@
 define([
+  'config/env',
   'app-modules',
-  'services/self-report-storage-service'
-], function(appModules) {
-
+  'services/self-report-storage-service',
+  'services/user-prefs-service'
+], function(env, appModules) {
+  
   /**
    * Controller
    *
    * Infinite scroll function
    * Fetch list of Topics
    */
-  appModules.controllers.controller('ListTopicsController', ['$scope', '$timeout', 'SelfReportStorageService', '$rootScope',
-    function ($scope, $timeout, selfReportStorage, $rootScope) {
+  appModules.controllers.controller('ListTopicsController', [
+    '$scope',
+    '$timeout',
+    'SelfReportStorageService',
+    '$rootScope',
+    'UserPrefsService',
+    '$ionicModal',
+    function ($scope, $timeout, selfReportStorage, $rootScope, userPrefs, $ionicModal) {
       document.title = "Self Report";
       
       // True as long as the topic list is loading
@@ -169,6 +177,34 @@ define([
 
         $rootScope.$broadcast('event:initialized');
       }
+      
+      // Tutorial modal
+      userPrefs.onReady(function() {
+        if (env['show_tutorial']) {
+          if (!userPrefs.get("tutorial-shown", false)) {
+            // Compute window height needed by modal
+            $scope.modalHeight = $(window).height();
+            // Initialize modal
+            $ionicModal.fromTemplateUrl('tutorial-modal', {
+              scope: $scope,
+              animation: 'slide-in-up'
+            }).then(function(modal) {
+              $scope.modal = modal;
+              $scope.modal.show();
+            });
+            // Cleanup the modal when we're done with it
+            $scope.$on('$destroy', function() {
+              $scope.modal.remove();
+            });
+            $scope.dismissTutorialModal = function() {
+              $scope.modal.hide();
+            };
+            // Disable tutorial for the next times
+//          userPrefs.set("tutorial-shown", true); // TODO uncomment
+          }
+        }
+      });
+      
     }
   ]);
 
