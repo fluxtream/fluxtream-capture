@@ -176,6 +176,10 @@ define([
               sObservationValue = null;
             } else {
               sObservationValue = document.getElementById('observation.value').value;
+              if ($scope.oTopic.type == "Numeric" && (sObservationValue === "" || isNaN(sObservationValue))) {
+                alert("Please enter a numeric value.");
+                return;
+              }
             }
 
             var tObservationTime = moment(document.getElementById('observation.observationDate').value + " "
