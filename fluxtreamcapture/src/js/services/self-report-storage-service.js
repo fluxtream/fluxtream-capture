@@ -142,6 +142,9 @@ define([
           forge.logging.info("Successfully created deleted observations PouchDB (initialize) " + dbTopics.adapter);
         }
         
+        // Initially load topics from local DB
+        readTopicsDB();
+        
         $.ajax({
           url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
           type: 'PUT',
