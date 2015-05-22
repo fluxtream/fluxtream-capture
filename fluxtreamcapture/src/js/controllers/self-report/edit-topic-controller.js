@@ -169,6 +169,15 @@ define([
               else if (selfReportStorage.getTopicWithName(document.getElementById('topic.name').value, $scope.oTopic.id)) {
                 alert("You can't have two topics with the same name. Please enter another name.");
               }
+              else if ((document.getElementById('topic.type').value === "Numeric" || document.getElementById('topic.type').value === "Range")
+                      && isNaN(document.getElementById('topic.defaultValue').value)) {
+                alert("The default value must be numeric.");
+              }
+              else if (document.getElementById('topic.type').value === "Range" &&
+                      (document.getElementById('topic.rangeStart').value === "" || isNaN(document.getElementById('topic.rangeStart').value) ||
+                       document.getElementById('topic.rangeEnd').value === "" || isNaN(document.getElementById('topic.rangeEnd').value))) {
+                alert("Range start and end must be numeric.")
+              }
               else if(document.getElementById('topic.type').value === "Range" &&
                 (document.getElementById('topic.rangeEnd').value <=
                   document.getElementById('topic.rangeStart').value)){
