@@ -164,29 +164,26 @@ body {
   margin: 0px;
 }
 
-.tutorial .pos-top {
-  top: 100px;
-}
-
-.tutorial .pos-center {
-  top: 50%;
-}
-
 .tutorial .pos-bottom {
-  bottom: 120px;
+  bottom: 20%;
 }
 
 .tutorial .pos-bottom-middle {
-  bottom: 180px;
+  bottom: 30%;
 }
 
 .slider-pager {
   width: 50%;
   margin: 0px 25%;
+  bottom: 25px;
 }
 
 .slider-pager .slider-pager-page {
-  width: 10px;
+  width: 6px;
+}
+
+.slider-pager .slider-pager-page .icon.ion-record {
+  font-size: 60%;
 }
 
 /*******************************************
