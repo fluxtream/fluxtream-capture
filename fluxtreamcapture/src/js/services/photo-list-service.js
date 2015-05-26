@@ -139,6 +139,21 @@ define([
       });
     });
     
+    // Reload photos on app resume
+    if (!forge.is.web()) {
+      forge.event.appResumed.addListener(
+        // Callback
+        function() {
+          // Request a photo reload to make sure the photo list is up to date
+          reloadPhotos();
+        },
+        // Error
+        function(content) {
+          forge.logging.error("Error on forge.event.appResumed.appListener: " + JSON.stringify(content));
+        }
+      );
+    }
+    
     // Public API
     return {
       isInitialized: function() { return initialized; },

@@ -163,13 +163,6 @@ define([
         }
       };
       
-      // Update the photo list when it changes
-      $scope.$on('photo-list-changed', function() {
-        forge.logging.info("Photo list changed");
-        $scope.setPhotoList(photoListService.getPhotoList());
-        $scope.updateAccessDeniedStatus();
-      }),
-      
       /**
        * Get the photos' upload status from the native module 
        */
@@ -300,25 +293,13 @@ define([
         });
       };
       
-      // Reload photos on resume
-      // TODO A new listener is being created each time this page is reloaded. This does no harm, but should be fixed.
-      forge.event.appResumed.addListener(
-        // Callback
-        function() {
-          if (!forge.is.web()) {
-            userPrefs.onReady(function() {
-              // Request a photo reload to make sure the photo list is up to date
-              photoListService.reloadPhotos();
-            });
-          }
-        },
-        // Error
-        function(content) {
-          forge.logging.error("Error on forge.event.appResumed.appListener: " + JSON.stringify(content));
-        }
-      );
-      
       // Add event listeners
+      
+      // Update the photo list when it changes
+      $scope.$on('photo-list-changed', function() {
+        $scope.setPhotoList(photoListService.getPhotoList());
+        $scope.updateAccessDeniedStatus();
+      });
       
       // Photo upload started
       $scope.$on("photoupload.started", function(event, data) {

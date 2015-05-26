@@ -52,7 +52,6 @@ define([
        * Updates the unuploaded photo count for each orientation
        */
       $scope.countUnuploadedPhotos = function() {
-        photoListService.reloadPhotos();
         photoListService.onReady(function() {
           if (forge.is.ios() && photoListService.photoAccessDenied()) {
             // Access to photos denied on iOS
@@ -91,19 +90,10 @@ define([
         });
       };
       
-      // Recount photos each time the application gets the focus back
-      forge.event.appResumed.addListener(
-        // Callback
-        function() {
-          if (!forge.is.web()) {
-            $scope.countUnuploadedPhotos();
-          }
-        },
-        // Error
-        function(content) {
-          forge.logging.error("Error on forge.event.appResumed.appListener: " + JSON.stringify(content));
-        }
-      );
+      // Recount photos if the photo list changes
+      $scope.$on('photo-list-changed', function() {
+        $scope.countUnuploadedPhotos();
+      });
       
       // Initially count unuploaded photos
       $scope.countUnuploadedPhotos();
