@@ -210,6 +210,12 @@ ion-side-menu .list ion-item button.button-clear.button-dark, ion-side-menu .lis
   color: #f6f6f6;
 }
 
+ion-side-menu ion-list ion-item .icon-left:before {
+  width: 30px;
+  text-align: center;
+  margin-right: 5px;
+}
+
 /*******************************************
  * LOADING SCREENS
  *******************************************/

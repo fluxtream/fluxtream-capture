@@ -2,9 +2,11 @@
  * Angular controller for the navigation menu
  */
 define([
+  'config/env',
   'app-modules',
-  'services/login-service'
-], function(appModules) {
+  'services/login-service',
+  'services/user-prefs-service'
+], function(env, appModules) {
   
   appModules.controllers.controller('NavController', [
     '$scope',
@@ -12,7 +14,10 @@ define([
     '$state',
     'LoginService',
     '$rootScope',
-    function($scope, $ionicSideMenuDelegate, $state, loginService, $rootScope) {
+    'UserPrefsService',
+    '$ionicModal',
+    '$ionicSlideBoxDelegate',
+    function($scope, $ionicSideMenuDelegate, $state, loginService, $rootScope, userPrefs, $ionicModal, $ionicSlideBoxDelegate) {
       
       $scope.navigateTo = function(route, params) {
         $state.go(route, params);
@@ -57,6 +62,46 @@ define([
           }
         );
       }
+      
+      // Tutorial modal
+      $scope.showTutorial = function() {
+        // Compute window height needed by modal
+        $scope.modalHeight = $(window).height();
+        // Initialize modal
+        $ionicModal.fromTemplateUrl('tutorial-modal', {
+          scope: $scope,
+          animation: 'slide-in-up'
+        }).then(function(modal) {
+          $scope.modal = modal;
+          $scope.modal.show();
+        });
+        // Cleanup the modal when we're done with it
+        $scope.$on('$destroy', function() {
+          $scope.modal.remove();
+        });
+        // Hides the tutorial modal and disable the tutorial
+        $scope.dismissTutorialModal = function() {
+          $scope.modal.hide();
+          // Disable tutorial for the next times
+          userPrefs.set('user.' + loginService.getUserId() + '.tutorial-shown', true);
+        };
+        // Shows the next tutorial page
+        $scope.tutorialNext = function() {
+          $ionicSlideBoxDelegate.next();
+        };
+      };
+      
+      // Show tutorial automatically when a new user logs in
+      $scope.$on("user-logged-in", function() {
+        if (env['show_tutorial']) {
+          if (!userPrefs.get('user.' + loginService.getUserId() + '.tutorial-shown' , false)) {
+            $scope.showTutorial();
+          }
+        } else {
+          // Tutorial disabled, remove menu item
+          $(".tutorial-menu-item").remove();
+        }
+      });
       
     }
   ]);

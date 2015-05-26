@@ -31,17 +31,128 @@
     <!-- Right menu -->
     <ion-side-menu side="right" ng-controller="NavController">
       <ion-list>
-        <ion-item ng-click="navigateTo('identity')"><button class="button icon-left ion-person button-clear button-dark">&nbsp;&nbsp;{{ userName }}</button></ion-item>
-        <ion-item ng-click="navigateTo('listTopics')"><button class="button icon-left ion-clipboard button-clear button-dark">&nbsp;&nbsp;Self Report</button></ion-item>
-        <!--<ion-item ng-click="navigateTo('selectCoach')"><button class="button icon-left ion-person-stalker button-clear button-dark">&nbsp;&nbsp;Buddies</button></ion-item>-->
-        <!--<ion-item ng-click="navigateTo('wall')"><button class="button icon-left ion-chatbubbles button-clear button-dark">&nbsp;&nbsp;Messages</button></ion-item>-->
-        <ion-item ng-if="!isWeb" ng-click="navigateTo('heartRate')"><button class="button icon-left ion-heart button-clear button-dark">&nbsp;&nbsp;Heart Rate</button></ion-item>
-        <ion-item ng-if="!isWeb" ng-click="navigateTo('photoUpload')"><button class="button icon-left ion-camera button-clear button-dark">&nbsp;&nbsp;Photo Upload</button></ion-item>
-        <ion-item ng-if="!isWeb" ng-click="navigateTo('settings')"><button class="button icon-left ion-settings button-clear button-dark">&nbsp;&nbsp;Settings</button></ion-item>
-        <ion-item ng-click="logout()"><button class="button icon-left ion-log-out button-clear button-dark">&nbsp;&nbsp;Log out</button></ion-item>
+        <ion-item ng-click="navigateTo('identity')"><button class="button icon-left ion-person button-clear button-dark">{{ userName }}</button></ion-item>
+        <ion-item ng-click="navigateTo('listTopics')"><button class="button icon-left ion-clipboard button-clear button-dark">Self Report</button></ion-item>
+        <!--<ion-item ng-click="navigateTo('selectCoach')"><button class="button icon-left ion-person-stalker button-clear button-dark">Buddies</button></ion-item>-->
+        <!--<ion-item ng-click="navigateTo('wall')"><button class="button icon-left ion-chatbubbles button-clear button-dark">Messages</button></ion-item>-->
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('heartRate')"><button class="button icon-left ion-heart button-clear button-dark">Heart Rate</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('photoUpload')"><button class="button icon-left ion-camera button-clear button-dark">Photo Upload</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="navigateTo('settings')"><button class="button icon-left ion-settings button-clear button-dark">Settings</button></ion-item>
+        <ion-item ng-if="!isWeb" ng-click="showTutorial()" class="tutorial-menu-item"><button class="button icon-left ion-help button-clear button-dark">Show tutorial</button></ion-item>
+        <ion-item ng-click="logout()"><button class="button icon-left ion-log-out button-clear button-dark">Log out</button></ion-item>
       </ion-list>
     </ion-side-menu>
   </ion-side-menus>
 
 </body>
 </html>
+
+<!-- Tutorial -->
+<script id="tutorial-modal" type="text/ng-template">
+  <ion-modal-view>
+    <ion-content>
+      <ion-slide-box style="background: white" class='tutorial'>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>1. Observations</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-01.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>Start by creating a topic</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>1. Observations</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-02.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>Enter topic name and select its type</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>1. Observations</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-03.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>Tap a topic to make a new observation</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>1. Observations</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-04.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>Each observation can be tuned</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>1. Observations</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-05.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>You can access the list of all the observations you've made</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>2. Photos</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-06.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>You can view all your photos and upload them to Fluxtream</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>2. Photos</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-07.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>Upload automatically all photos you take in a given orientation</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>2. Photos</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-08.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom'><p>View and edit photo metadata</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="tutorialNext()">Next</button>
+          </div>
+        </ion-slide>
+        <ion-slide style="height: {{ modalHeight }}px;">
+          <div class="box">
+            <div class='title'>3. Heart rate</div>
+            <div class='img-wrapper'>
+              <img src='img/tutorial/tutorial-10.png'>
+            </div>
+            <div class='tutorial-quote pos-bottom-middle'><p>Update your heart rate monitor data directly to Fluxtream</p></div>
+            <button class='skip-button' ng-click="dismissTutorialModal()">Skip</button>
+            <button class='next-button' ng-click="dismissTutorialModal()">Done</button>
+          </div>
+        </ion-slide>
+        </ion-slide>
+      </ion-slide-box>
+    </ion-content>
+  </ion-modal-view>
+</script>

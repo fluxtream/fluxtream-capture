@@ -16,11 +16,7 @@ define([
     '$timeout',
     'SelfReportStorageService',
     '$rootScope',
-    'UserPrefsService',
-    '$ionicModal',
-    '$ionicSlideBoxDelegate',
-    "LoginService",
-    function ($scope, $timeout, selfReportStorage, $rootScope, userPrefs, $ionicModal, $ionicSlideBoxDelegate, loginService) {
+    function ($scope, $timeout, selfReportStorage, $rootScope) {
       document.title = "Self Report";
       
       // True as long as the topic list is loading
@@ -179,38 +175,6 @@ define([
 
         $rootScope.$broadcast('event:initialized');
       }
-      
-      // Tutorial modal
-      userPrefs.onReady(function() {
-        if (env['show_tutorial']) {
-          if (!userPrefs.get('user.' + loginService.getUserId() + '.tutorial-shown' , false)) {
-            // Compute window height needed by modal
-            $scope.modalHeight = $(window).height();
-            // Initialize modal
-            $ionicModal.fromTemplateUrl('tutorial-modal', {
-              scope: $scope,
-              animation: 'slide-in-up'
-            }).then(function(modal) {
-              $scope.modal = modal;
-              $scope.modal.show();
-            });
-            // Cleanup the modal when we're done with it
-            $scope.$on('$destroy', function() {
-              $scope.modal.remove();
-            });
-            // Hides the tutorial modal and disable the tutorial
-            $scope.dismissTutorialModal = function() {
-              $scope.modal.hide();
-              // Disable tutorial for the next times
-              userPrefs.set('user.' + loginService.getUserId() + '.tutorial-shown', true);
-            };
-            // Shows the next tutorial page
-            $scope.tutorialNext = function() {
-              $ionicSlideBoxDelegate.next();
-            };
-          }
-        }
-      });
       
     }
   ]);
