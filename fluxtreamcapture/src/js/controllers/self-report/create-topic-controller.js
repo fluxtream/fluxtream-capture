@@ -159,9 +159,8 @@ define([
               alert("Range defined incorrectly.");
             }
             else if(document.getElementById('topic.type').value === "Range" &&
-              (document.getElementById('topic.step').value == 0 ||
-                document.getElementById('topic.step').value <= 0)){
-              alert("Step can not be less than 1.");
+              (document.getElementById('topic.step').value == 0 || document.getElementById('topic.step').value <= 0)) {
+              alert("Step can not be less than 0.");
             }
             else {
               $scope.oNewTopic = new selfReportStorage.Topic(

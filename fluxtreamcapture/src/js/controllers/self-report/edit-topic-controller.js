@@ -100,7 +100,6 @@ define([
                 document.getElementById('rangeStartItem').style.display = "";
                 document.getElementById('rangeEndItem').style.display = "";
                 document.getElementById('stepItem').style.display = "";
-                document.getElementById('topic.step').value = "1";
               }
             };
 
@@ -184,9 +183,8 @@ define([
                 alert("Range defined incorrectly.");
               }
               else if(document.getElementById('topic.type').value === "Range" &&
-                (document.getElementById('topic.step').value == 0 ||
-                  document.getElementById('topic.step').value <= 0)){
-                alert("Step can not be less than 1.");
+                (document.getElementById('topic.step').value == 0 || document.getElementById('topic.step').value <= 0)) {
+                alert("Step can not be less than 0.");
               }
               else {
                 //Note: we save rangeStart/rangeEnd if it was defined before, but then type was changed to none
