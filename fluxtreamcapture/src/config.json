@@ -135,6 +135,12 @@
 		},
 		"notification": {
 			"version": "2.7"
+		},
+		"geolocation": {
+			"version": "2.1",
+			"config": {
+				"ios": {}
+			}
 		}
 	},
 	"homepage": "https://fluxtream.org/"
