@@ -76,6 +76,11 @@ body {
 }
 .bar.bar-positive.bar-footer {
   background-image: linear-gradient(180deg, #148FCC, #148FCC 50%, transparent 50%);
+  border-top: 1px solid #44AADD;
+}
+
+.bar.bar-positive.bar-header {
+  border-bottom: 1px solid #2288BB;
 }
 
 .bar-positive .button, .button.button-positive {
