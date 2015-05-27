@@ -7,6 +7,7 @@ define([
   'controllers/login/login-controller',
   'controllers/login/identity-controller',
   'controllers/settings/settings-controller',
+  'controllers/settings/self-report-settings-controller',
   'controllers/self-report/list-topics-controller',
   'controllers/self-report/history-controller',
   'controllers/self-report/edit-topics-controller',
@@ -73,6 +74,11 @@ define([
           url: "/createTopic",
           templateUrl: "html/self-report/create-topic.html",
           controller: "CreateTopicController"
+      })
+      .state('selfReportSettings', {
+        url: "/self-report-settings",
+        templateUrl: "html/settings/self-report-settings.html",
+        controller: "SelfReportSettingsController"
       })
       .state('photoUpload', {
         url: "/photo-upload",

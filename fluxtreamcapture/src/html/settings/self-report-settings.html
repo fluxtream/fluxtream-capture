@@ -1,0 +1,31 @@
+<ion-view title="Self Report Settings">
+  
+  <ion-nav-bar class="nav-title-slide-ios7 bar-positive">
+    <a ui-sref="settings" class="button button-clear pull-left"><i class="ion-chevron-left"></i> Back</a>
+    <ion-nav-buttons side="right">
+      <button menu-toggle="right" class="button button-icon icon ion-navicon"></button>
+    </ion-nav-buttons>
+  </ion-nav-bar>
+  
+  <ion-content class="padding">
+    <div class="padding text-center">
+      Enable the following to attach geolocation position to your observations.
+    </div>
+    <li class="item item-checkbox">
+      <label class="checkbox">
+        <input type="checkbox" ng-model="settings.enable_geolocation" ng-change="save('enable_geolocation')">
+      </label>
+      Enable geolocation
+    </li>
+    <li class="item item-checkbox">
+      <label class="checkbox">
+        <input type="checkbox" ng-model="settings.enable_geolocation_warning" ng-change="save('enable_geolocation_warning')">
+      </label>
+      Warning when geolocation is missing
+    </li>
+  </ion-content>
+</ion-view>
+
+<!-- Footer -->
+<ion-footer-bar class="bar-positive">
+</ion-footer-bar>

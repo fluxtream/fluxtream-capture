@@ -87,7 +87,7 @@ define([
           document.getElementById('observation.observationTime').value  = $filter("date")(Date.now(), 'HH:mm:ss');
           var timezone = jstz.determine();
           document.getElementById('observation.timezone').value  = timezone.name();
-          $scope.geolocationStatus = "fetching";
+          $scope.geolocationStatus = "disabled";
           $scope.geolocationPermissionDenied = false;
           $scope.geolocationData = {};
 
@@ -174,7 +174,7 @@ define([
           // Called when the form is submitted
           $scope.createObservation = function () {
             // Check if geolocation data is present
-            if ($scope.geolocationStatus == "fetching" && !userPrefs.get('user.' + loginService.getUserId() + '.disable-geolocation-warning', false)) {
+            if ($scope.geolocationStatus == "fetching" && userPrefs.get('user.' + loginService.getUserId() + '.self-report.enable-geolocation-warning', true)) {
               // Ask user if they want to wait for the geolocation
               $ionicActionSheet.show({
                 titleText: 'Save observation without geolocation?',
@@ -189,7 +189,7 @@ define([
                 },
                 destructiveButtonClicked: function(index) {
                   // Disable future warnings
-                  userPrefs.set('user.' + loginService.getUserId() + '.disable-geolocation-warning', true);
+                  userPrefs.set('user.' + loginService.getUserId() + '.self-report.enable-geolocation-warning', false);
                   $scope.doCreateObservation();
                 }
               });
@@ -241,6 +241,11 @@ define([
           
           // Get geolocation data
           $scope.fetchGeolocationData = function() {
+            if (!userPrefs.get('user.' + loginService.getUserId() + '.self-report.enable-geolocation', true)) {
+              // Geolocation has been disabled by the user
+              forge.logging.info("Geolocation disabled by the user");
+              return;
+            }
             $scope.geolocationStatus = 'fetching';
             if ($scope.geolocationPermissionDenied) {
               alert("You might need to allow this app to use Location Services in you device's privacy settings.");

@@ -53,6 +53,9 @@
         <span ng-if="geolocationStatus == 'fetching'">
           <span class="geolocation-loading"></span>
         </span>
+        <span ng-if="geolocationStatus == 'disabled'">
+          Disabled
+        </span>
         <span ng-if="geolocationStatus == 'fetched'" >
           {{ geolocationData.coords.latitude.toFixed(6) + ", " + geolocationData.coords.longitude.toFixed(6) }}
         </span>
