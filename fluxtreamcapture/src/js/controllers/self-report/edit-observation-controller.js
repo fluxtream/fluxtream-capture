@@ -239,6 +239,9 @@ define([
               tObservationTime,
               tCreationDate,
               document.getElementById('observation.timezone').value,
+              $scope.oObservation.latitude,
+              $scope.oObservation.longitude,
+              $scope.oObservation.latLngAccuracy,
               document.getElementById('observation.comment').value
             );
 

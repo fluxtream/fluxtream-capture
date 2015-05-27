@@ -16,8 +16,10 @@ define([
      'SelfReportStorageService',
      '$rootScope',
      '$filter' ,
-
-      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter) {
+     '$ionicActionSheet',
+     'UserPrefsService',
+     "LoginService",
+      function($scope, $stateParams, $state, selfReportStorage, $rootScope, $filter, $ionicActionSheet, userPrefs, loginService) {
         var bIsTopicsSyncFinished = 0;
         var bIsObservationsSyncFinished = 0;
         var bIsOfflineChangesForTopicsMade = selfReportStorage.getOfflineChangesForTopicsMade();
@@ -85,6 +87,9 @@ define([
           document.getElementById('observation.observationTime').value  = $filter("date")(Date.now(), 'HH:mm:ss');
           var timezone = jstz.determine();
           document.getElementById('observation.timezone').value  = timezone.name();
+          $scope.geolocationStatus = "fetching";
+          $scope.geolocationPermissionDenied = false;
+          $scope.geolocationData = {};
 
           $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
 
@@ -168,7 +173,33 @@ define([
 
           // Called when the form is submitted
           $scope.createObservation = function () {
-
+            // Check if geolocation data is present
+            if ($scope.geolocationStatus == "fetching" && !userPrefs.get('user.' + loginService.getUserId() + '.disable-geolocation-warning', false)) {
+              // Ask user if they want to wait for the geolocation
+              $ionicActionSheet.show({
+                titleText: 'Save observation without geolocation?',
+                buttons: [{text: "Yes"}],
+                destructiveText: "Yes, and don't ask again",
+                cancelText: 'No, wait for geolocation',
+                cancel: function() {
+                  // Wait for geolocation
+                },
+                buttonClicked: function(index) {
+                  $scope.doCreateObservation();
+                },
+                destructiveButtonClicked: function(index) {
+                  // Disable future warnings
+                  userPrefs.set('user.' + loginService.getUserId() + '.disable-geolocation-warning', true);
+                  $scope.doCreateObservation();
+                }
+              });
+            } else {
+              // Geolocation present or not needed, create observation
+              $scope.doCreateObservation();
+            }
+          };
+          
+          $scope.doCreateObservation = function() {
             var tCreationDate = new Date();
             var sObservationValue;
 
@@ -195,6 +226,9 @@ define([
               tObservationTime,
               tCreationDate,
               document.getElementById('observation.timezone').value,
+              $scope.geolocationStatus == 'fetched' ? $scope.geolocationData.coords.latitude : null,
+              $scope.geolocationStatus == 'fetched' ? $scope.geolocationData.coords.longitude : null,
+              $scope.geolocationStatus == 'fetched' ? $scope.geolocationData.coords.accuracy : null,
               document.getElementById('observation.comment').value
             );
 
@@ -204,7 +238,35 @@ define([
 //            forge.internal.call('flx_toggle_keyboard.hideKeyboard');
             $state.go("listTopics");
           };
-
+          
+          // Get geolocation data
+          $scope.fetchGeolocationData = function() {
+            $scope.geolocationStatus = 'fetching';
+            if ($scope.geolocationPermissionDenied) {
+              alert("You might need to allow this app to use Location Services in you device's privacy settings.");
+            }
+            forge.geolocation.getCurrentPosition(
+              // Options
+              {"enableHighAccuracy": true},
+              // Success
+              function(position) {
+                $scope.geolocationStatus = "fetched";
+                $scope.geolocationData = position;
+                $scope.$$phase || $scope.$apply();
+              },
+              // Error
+              function(error) {
+                forge.logging.error("Geolocation fetching error: " + JSON.stringify(error));
+                if ($scope.geolocationStatus != 'fetched') {
+                  $scope.geolocationStatus = "error";
+                  $scope.geolocationPermissionDenied = error.message == "Permission denied";
+                  $scope.$$phase || $scope.$apply();
+                }
+              }
+            );
+          };
+          $scope.fetchGeolocationData();
+          
           // Go back to ListTopics
           $scope.goBack = function () {
             //Hide Keyboard

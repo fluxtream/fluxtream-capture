@@ -45,7 +45,22 @@
         </div>
         <input type="text" value="" disabled id="observation.timezone">
       </label>
-
+      
+      <label class="item item-input">
+        <div class="input-label">
+          Geolocation
+        </div>
+        <span ng-if="geolocationStatus == 'fetching'">
+          <span class="geolocation-loading"></span>
+        </span>
+        <span ng-if="geolocationStatus == 'fetched'" >
+          {{ geolocationData.coords.latitude.toFixed(6) + ", " + geolocationData.coords.longitude.toFixed(6) }}
+        </span>
+        <span ng-if="geolocationStatus == 'error'" >
+          Unknown <button ng-click="fetchGeolocationData()" class="button button-small geolocation-try-again">Try again</button>
+        </span>
+      </label>
+      
       <label class="item item-input item-stacked-label">
         <span class="input-label">Comment</span>
         <textarea rows="4" class="noResize" id="observation.comment"></textarea>

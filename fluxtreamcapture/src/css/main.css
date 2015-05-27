@@ -531,6 +531,19 @@ textarea.noResize { resize:none; }
   margin-right: -15px;
 }
 
+.geolocation-loading {
+  display: inline-block;
+  background: url("../img/loading.gif") no-repeat center;
+  background-size: 27px 27px;
+  width: 31px;
+  height: 27px;
+}
+
+.geolocation-try-again {
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
 /*******************************************
  * LOGIN SCREEN
  *******************************************/

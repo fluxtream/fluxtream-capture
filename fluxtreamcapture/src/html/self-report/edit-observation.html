@@ -35,7 +35,16 @@
         </div>
         <input type="text" value="" disabled id="observation.timezone">
       </label>
-
+      
+      <label class="item item-input">
+        <div class="input-label">
+          Geolocation
+        </div>
+        <span>
+          {{ oObservation.latitude ? oObservation.latitude.toFixed(6) + ", " + oObservation.longitude.toFixed(6) : "Unknown" }}
+        </span>
+      </label>
+      
       <label class="item item-input item-stacked-label">
         <span class="input-label">Comment</span>
         <textarea rows="4" class="noResize" id="observation.comment"></textarea>

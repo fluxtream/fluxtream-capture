@@ -278,7 +278,7 @@ define([
       this.topicNumber = topicNumber;
     }
 
-    function Observation (id, topicId, value, creationDate, creationTime, observationDate, observationTime, updateTime, timezone, comment){
+    function Observation (id, topicId, value, creationDate, creationTime, observationDate, observationTime, updateTime, timezone, latitude, longitude, latLngAccuracy, comment){
       this.id = id.toString();
       this.topicId = topicId;
       this.value = value;
@@ -288,6 +288,9 @@ define([
       this.observationTime = observationTime;
       this.updateTime = updateTime;
       this.timezone = timezone;
+      this.latitude = latitude;
+      this.longitude = longitude;
+      this.latLngAccuracy = latLngAccuracy;
       this.comment = comment;
     }
 
@@ -433,6 +436,9 @@ define([
                 row.doc.observationTime,
                 row.doc.updateTime,
                 row.doc.timezone,
+                row.doc.latitude,
+                row.doc.longitude,
+                row.doc.latLngAccurary,
                 row.doc.comment
               );
 
@@ -522,6 +528,9 @@ define([
           observationTime: oObservationToRemove.observationTime,
           updateTime: oObservationToRemove.updateTime,
           timezone: oObservationToRemove.timezone,
+          latitude: oObservationToRemove.latitude,
+          longitude: oObservationToRemove.longitude,
+          latLngAccuracy: oObservationToRemove.latLngAccuracy,
           comment: oObservationToRemove.comment },
 
         function callback(err, result) {
@@ -664,6 +673,9 @@ define([
               observationTime: oNextObservationToDelete.observationTime,
               updateTime: oNextObservationToDelete.updateTime,
               timezone: oNextObservationToDelete.timezone,
+              latitude: oNextObservationToDelete.latitude,
+              longitude: oNextObservationToDelete.longitude,
+              latLngAccuracy: oNextObservationToDelete.latLngAccuracy,
               comment: oNextObservationToDelete.comment },
 
               function callback(err, result) {
@@ -1035,6 +1047,9 @@ define([
                 row.doc.observationTime,
                 row.doc.updateTime,
                 row.doc.timezone,
+                row.doc.latitude,
+                row.doc.longitude,
+                row.doc.latLngAccuracy,
                 row.doc.comment
               );
               aoCachedObservations.push(oNextObservation);
@@ -1101,6 +1116,9 @@ define([
                 row.doc.observationTime,
                 row.doc.updateTime,
                 row.doc.timezone,
+                row.doc.latitude,
+                row.doc.longitude,
+                row.doc.latLngAccuracy,
                 row.doc.comment
               );
               aoCachedObservations.push(oNextObservation);
@@ -1160,6 +1178,9 @@ define([
           observationTime: oObservation.observationTime,
           updateTime: oObservation.updateTime.toISOString(),
           timezone: oObservation.timezone,
+          latitude: oObservation.latitude,
+          longitude: oObservation.longitude,
+          latLngAccuracy: oObservation.latLngAccuracy,
           comment: oObservation.comment},
 
         function callback(err, result) {
@@ -1204,6 +1225,9 @@ define([
             observationTime: oObservation.observationTime,
             updateTime: oObservation.updateTime.toISOString(),
             timezone: oObservation.timezone,
+            latitude: oObservation.latitude,
+            longitude: oObservation.longitude,
+            latLngAccuracy: oObservation.latLngAccuracy,
             comment: oObservation.comment},
 
           function callback(err, result) {
@@ -1326,6 +1350,9 @@ define([
               observationTime: oObservation.observationTime,
               updateTime: oObservation.updateTime.toISOString(),
               timezone: oObservation.timezone,
+              latitude: oObservation.latitude,
+              longitude: oObservation.longitude,
+              latLngAccuracy: oObservation.latLngAccuracy,
               comment: oObservation.comment
             });
           }, function(err, response) {
