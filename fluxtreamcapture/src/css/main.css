@@ -151,20 +151,20 @@ body {
 
 .tutorial .tutorial-quote {
   background: white;
-  padding: 10px;
+  padding: 3px;
   position: absolute;
   left: 60px;
   right: 60px;
-  padding: 5px;
-  border-radius: 15px;
-  border: 1px solid #ffcccc;
+  /*padding: 5px;*/
+  border-radius: 5px;
+  /*border: 1px solid #ffcccc;*/
 }
 
 .tutorial .tutorial-quote p {
-  background: #FFEEEE;
+  background: rgba(26, 180, 255, 0.22);
   padding: 10px;
-  color: #DD0000;
-  border-radius: 10px;
+  color: #148FCC;
+  border-radius: 3px;
   text-align: center;
   margin: 0px;
 }
