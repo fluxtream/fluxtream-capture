@@ -5,7 +5,7 @@ define([
   'app-modules'
 ], function(appModules) {
   
-  appModules.services.factory('UserPrefsService', function($http) {
+  appModules.services.factory('UserPrefsService', function($rootScope) {
     
     // The values stored in memory for synchronous access
     var values = {};
@@ -18,6 +18,9 @@ define([
     
     // The number of items to initialize
     var itemCount;
+    
+    // Id of the currently connected user
+    var currentUserId = null;
     
     // Initialize
     forge.prefs.keys(
@@ -56,6 +59,13 @@ define([
     );
     
     /**
+     * Sets the id of the current user to access their specific prefs
+     */
+    function setUserId(userId) {
+      currentUserId = userId;
+    }
+    
+    /**
      * Called when the initialization is done.
      * Executes all onReady functions.
      */
@@ -88,7 +98,18 @@ define([
       values["flx." + key] = value;
       forge.prefs.set("flx." + key, value);
     }
-
+    
+    function getValueForUser(key, defaultValue) {
+      return getValue('user.' + currentUserId + "." + key, defaultValue);
+    }
+    
+    /**
+     * (Public) Sets the value for the given key, with a prefix for the current user
+     */
+    function setValueForUser(key, value) {
+      setValue('user.' + currentUserId + "." + key, value);
+    }
+    
     /**
      * (Public) Registers a function to call when the initialization has been done
      */
@@ -101,13 +122,16 @@ define([
         }
       }
     }
-
+    
     // Public API
     return {
       //TODO create delete operations for the Topics and Observations
       isReady: function() { return initialized; },
-      get: getValue,
-      set: setValue,
+      setUserId: setUserId,
+      getGlobal: getValue,
+      setGlobal: setValue,
+      getForUser: getValueForUser,
+      setForUser: setValueForUser,
       onReady: onReady
     };
     

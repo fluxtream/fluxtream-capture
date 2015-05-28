@@ -42,11 +42,11 @@ define([
       $scope.settings = {};
       $scope.unuploadedCount = {};
       $scope.orientations.forEach(function(orientation) {
-        $scope.settings['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() + '.photos.autoupload_' + orientation, false);
-        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.get('user.' + loginService.getUserId() + '.photos.' + orientation + "_minimum_timestamp", 0);
+        $scope.settings['upload_' + orientation] = userPrefs.getForUser('photos.autoupload_' + orientation, false);
+        $scope.settings[orientation + "_minimum_timestamp"] = userPrefs.getForUser('photos.' + orientation + "_minimum_timestamp", 0);
         $scope.unuploadedCount[orientation] = 0;
       });
-      $scope.settings.upload_on_data_connection = userPrefs.get('user.' + loginService.getUserId() + '.photos.upload_on_data_connection', false);
+      $scope.settings.upload_on_data_connection = userPrefs.getForUser('photos.upload_on_data_connection', false);
       
       /**
        * Updates the unuploaded photo count for each orientation
@@ -147,11 +147,11 @@ define([
         // Save preferences
         var start = false;
         $scope.orientations.forEach(function(orientation) {
-          userPrefs.set('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, $scope.settings['upload_' + orientation]);
-          userPrefs.set('user.' + loginService.getUserId() +  '.photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
+          userPrefs.setForUser('photos.autoupload_' + orientation, $scope.settings['upload_' + orientation]);
+          userPrefs.setForUser('photos.' + orientation + '_minimum_timestamp', $scope.settings[orientation + '_minimum_timestamp']);
           if ($scope.settings['upload_' + orientation]) start = true;
         });
-        userPrefs.set('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', $scope.settings.upload_on_data_connection);
+        userPrefs.setForUser('photos.upload_on_data_connection', $scope.settings.upload_on_data_connection);
         // Update service
         $scope.startPhotoUploadService();
       };

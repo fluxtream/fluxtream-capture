@@ -62,10 +62,10 @@ define([
       // Load initial settings
       userPrefs.onReady(function() {
         $scope.signin.password = env["test.password"];
-        $scope.signin.username = userPrefs.get("login.username");
+        $scope.signin.username = userPrefs.getGlobal("login.username");
         if (!$scope.signin.username) $scope.signin.username = env["test.username"];
-        $scope.signin.target = userPrefs.get("login.target");
-        $scope.signup.target = userPrefs.get("login.target");
+        $scope.signin.target = userPrefs.getGlobal("login.target");
+        $scope.signup.target = userPrefs.getGlobal("login.target");
         $scope.currentScreen = 'home';
         $scope.$$phase || $scope.$apply();
       });
@@ -136,8 +136,8 @@ define([
         $scope.clearErrorMessages();
         // Save username and target to prefs
         userPrefs.onReady(function() {
-          userPrefs.set('login.username', $scope.signin.username);
-          userPrefs.set('login.target', $scope.signin.target);
+          userPrefs.setGlobal('login.username', $scope.signin.username);
+          userPrefs.setGlobal('login.target', $scope.signin.target);
         });
         // Check internet connection
         if (!forge.is.connection.connected()) {
@@ -191,7 +191,7 @@ define([
        */
       $scope.signUp = function() {
         // Save target to prefs
-        userPrefs.set('login.target', $scope.signup.target);
+        userPrefs.setGlobal('login.target', $scope.signup.target);
         // Check user input data
         if (!$scope.signup.email) {
           $scope.setFormErrorMessage("Missing e-mail address");

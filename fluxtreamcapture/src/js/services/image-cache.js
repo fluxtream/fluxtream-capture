@@ -25,7 +25,7 @@ define([
        */
       function cacheImage(url, success, error) {
         userPrefs.onReady(function() {
-          var json = userPrefs.get("cache.image." + url);
+          var json = userPrefs.getGlobal("cache.image." + url);
           if (json) {
             var existingImage = JSON.parse(json);
             if (now() - existingImage.timestamp < 3600000) {
@@ -54,7 +54,7 @@ define([
                       uri: uri
                     };
                     // Save to prefs
-                    userPrefs.set("cache.image." + url, JSON.stringify(data));
+                    userPrefs.setGlobal("cache.image." + url, JSON.stringify(data));
                     // Return URI
                     success(uri);
                   },
@@ -82,7 +82,7 @@ define([
        * @returns The URI or false if the image is not cached
        */
       function getCachedImageURI(url) {
-        var json = userPrefs.get("cache.image." + url);
+        var json = userPrefs.getGlobal("cache.image." + url);
         if (!json) return false;
         var image = JSON.parse(json);
         return image.uri;

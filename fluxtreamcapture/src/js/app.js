@@ -59,6 +59,7 @@ $(document).ready(function() {
               forge.launchimage.hide();
             }
             // Emit login event
+            userPrefs.setUserId(loginService.getUserId());
             $rootScope.$broadcast('user-logged-in');
           } else {
             // User is not authenticated, go to login page

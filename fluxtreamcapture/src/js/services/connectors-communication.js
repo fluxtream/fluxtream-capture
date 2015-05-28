@@ -18,14 +18,14 @@ define([
        * Cache the list of connectors for offline use
        */
       function cacheConnectors(connectors) {
-        userPrefs.set("connectors." + userPrefs.get('login.userId') + ".cache", JSON.stringify(connectors));
+        userPrefs.setForUser("connectors.cache", JSON.stringify(connectors));
       }
       
       /**
        * Returns the cached list of connectors
        */
       function getCachedConnectors() {
-        var connectors = userPrefs.get("connectors." + userPrefs.get('login.userId') + ".cache");
+        var connectors = userPrefs.getForUser("connectors.cache");
         if (connectors) return JSON.parse(connectors);
         return [];
       }

@@ -60,7 +60,7 @@ define([
             options.headers.Authorization = 'Basic ' + btoa(username + ":" + password);
           } else {
             if (typeof options.data === 'undefined') options.data = {};
-            options.data.access_token = userPrefs.get('login.fluxtream_access_token'),
+            options.data.access_token = userPrefs.getGlobal('login.fluxtream_access_token'),
             forge.request.ajax(options);
           }
         }
@@ -182,18 +182,18 @@ define([
       }
       
       function handleAuthSuccessResponse(guestModel, textStatus) {
-        userPrefs.set('login.username', guestModel.username);
-        userPrefs.set('login.userId', guestModel.id + "");
-        userPrefs.set('login.fullname', guestModel.fullname);
-        userPrefs.set('login.firstname', guestModel.firstname);
-        userPrefs.set('login.lastname', guestModel.lastname);
-        userPrefs.set('login.email', guestModel.email);
-        userPrefs.set('login.fluxtream_access_token', guestModel.access_token + "");
-        userPrefs.set('login.isAuthenticated', true);
-        if (!userPrefs.get('login.photoURL')) userPrefs.set('login.photoURL', guestModel.photoURL);
+        userPrefs.setGlobal('login.username', guestModel.username);
+        userPrefs.setGlobal('login.userId', guestModel.id + "");
+        userPrefs.setGlobal('login.fullname', guestModel.fullname);
+        userPrefs.setGlobal('login.firstname', guestModel.firstname);
+        userPrefs.setGlobal('login.lastname', guestModel.lastname);
+        userPrefs.setGlobal('login.email', guestModel.email);
+        userPrefs.setGlobal('login.fluxtream_access_token', guestModel.access_token + "");
+        userPrefs.setGlobal('login.isAuthenticated', true);
+        if (!userPrefs.getGlobal('login.photoURL')) userPrefs.setGlobal('login.photoURL', guestModel.photoURL);
         if (guestModel.photoURL) {
           imageCache.cacheImage(guestModel.photoURL, function(uri) {
-            userPrefs.set('login.photoURL', uri);
+            userPrefs.setGlobal('login.photoURL', uri);
           });
         }
         if (typeof (guestModel.username) !== "undefined") {
@@ -202,18 +202,20 @@ define([
           forge.logging.error("Error accessing " + getTargetServer() + "api/v1/guest: " + textStatus);
           alert("Error accessing " + getTargetServer() + "\nError code: " + textStatus);
         }
-        $rootScope.$broadcast('user-logged-in');
+        userPrefs.setUserId(guestModel.id);
+        $rootScope.$broadcast('user-logged-in', {'id': guestModel.id});
       }
       
       /**
        * (Public) Logs out the user
        */
       function logout() {
-        userPrefs.set('login.isAuthenticated', false);
-        userPrefs.set('login.userId', null);
-        userPrefs.set('login.firstname', null);
-        userPrefs.set('login.lastname', null);
-        userPrefs.set('login.photoURL', null);
+        userPrefs.setGlobal('login.isAuthenticated', false);
+        userPrefs.setGlobal('login.userId', null);
+        userPrefs.setGlobal('login.firstname', null);
+        userPrefs.setGlobal('login.lastname', null);
+        userPrefs.setGlobal('login.photoURL', null);
+        userPrefs.setUserId(null);
         $rootScope.$broadcast('user-logged-out');
         $state.go('login');
         
@@ -233,49 +235,49 @@ define([
        * (Public) Returns authentication status (true/false)
        */
       function isAuthenticated() {
-        return userPrefs.get('login.isAuthenticated');
+        return userPrefs.getGlobal('login.isAuthenticated');
       }
       
       /**
        * (Public) Returns username
        */
       function getUserName() {
-        return userPrefs.get('login.username');
+        return userPrefs.getGlobal('login.username');
       }
       
       /**
        * (Public) Returns user's full name
        */
       function getUserFullName() {
-        return userPrefs.get('login.fullname');
+        return userPrefs.getGlobal('login.fullname');
       }
       
       /**
        * (Public) Returns user's first name
        */
       function getUserFirstname() {
-        return userPrefs.get('login.firstname');
+        return userPrefs.getGlobal('login.firstname');
       }
       
       /**
        * (Public) Returns user's last name
        */
       function getUserLastname() {
-        return userPrefs.get('login.lastname');
+        return userPrefs.getGlobal('login.lastname');
       }
       
       /**
        * (Public) Returns user's e-mail address
        */
       function getUserEmailAddress() {
-        return userPrefs.get('login.email');
+        return userPrefs.getGlobal('login.email');
       }
       
       /**
        * (Public) Returns user's photo URL
        */
       function getUserPhotoURL() {
-        return userPrefs.get('login.photoURL');
+        return userPrefs.getGlobal('login.photoURL');
       }
       
       /**
@@ -283,7 +285,7 @@ define([
        */
       function getTargetServer() {
         // Read target from settings
-        var target = userPrefs.get('login.target');
+        var target = userPrefs.getGlobal('login.target');
         // If not in settings or web mode, use default target
         if (!target || forge.is.web()) target = env['fluxtream.home.url'];
         // Make sure the target has a protocol and a trailing slash
@@ -297,14 +299,14 @@ define([
        * (Public) Returns the user's id
        */
       function getUserId() {
-        return userPrefs.get('login.userId');
+        return userPrefs.getGlobal('login.userId');
       }
       
       /**
        * (Public) Returns the Fluxtream access token of the current user
        */
       function getAccessToken() {
-        return userPrefs.get('login.fluxtream_access_token');
+        return userPrefs.getGlobal('login.fluxtream_access_token');
       }
       
       return {

@@ -66,17 +66,17 @@ define([
       
       function setHeartRateServiceEnabled(enable) {
         if (enable) {
-          userPrefs.set('heartrate.' + loginService.getUserId() + ".serviceEnabled", true);
+          userPrefs.setForUser('heartrate.serviceEnabled', true);
           enableService();
         } else {
-          userPrefs.set('heartrate.' + loginService.getUserId() + ".serviceEnabled", false);
+          userPrefs.setForUser('heartrate.serviceEnabled', false);
           disableService();
         }
       }
       
       userPrefs.onReady(function() {
         if (loginService.isAuthenticated()) {
-          if (userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled")) {
+          if (userPrefs.getForUser('heartrate.serviceEnabled')) {
             enableService();
           }
         }
@@ -85,7 +85,7 @@ define([
       // Start service when a user connects and has enabled the heart rate service
       $rootScope.$on("user-logged-in", function() {
         uploadStatus = 'none';
-        if (userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled")) {
+        if (userPrefs.getForUser('heartrate.serviceEnabled')) {
           enableService();
         }
       });
@@ -106,12 +106,12 @@ define([
        */
       function unlockDevice() {
         forge.flx_polar_h7.unlockCurrentDevice();
-        userPrefs.set('heartRate.deviceLocked', false);
+        userPrefs.setForUser('heartRate.deviceLocked', false);
       }
       
       function saveDeviceName(name) {
         forge.logging.info("Device name is " + name);
-        userPrefs.set('heartRate.deviceName', name);
+        userPrefs.setForUser('heartRate.deviceName', name);
       }
       
       // Listen to internal event 'heartrate.data' and broadcast incoming data
@@ -156,7 +156,7 @@ define([
         $rootScope.$broadcast('heart-rate-upload-status', {status: uploadStatus});
       });
       forge.internal.addEventListener('heartrate.lockSuccess', function() {
-        userPrefs.set('heartRate.deviceLocked', true);
+        userPrefs.setForUser('heartRate.deviceLocked', true);
       });
       
       // Public API
@@ -167,8 +167,8 @@ define([
         getLastSyncTime: function() { return lastSyncTime; },
         lockDevice: lockDevice,
         unlockDevice: unlockDevice,
-        deviceIsLocked: function() { return userPrefs.get('heartRate.deviceLocked', false); },
-        getDeviceName: function() { return userPrefs.get('heartRate.deviceName', ""); }
+        deviceIsLocked: function() { return userPrefs.getForUser('heartRate.deviceLocked', false); },
+        getDeviceName: function() { return userPrefs.getForUser('heartRate.deviceName', ""); }
       };
       
     }

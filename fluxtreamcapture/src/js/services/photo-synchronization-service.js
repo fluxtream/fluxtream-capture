@@ -45,10 +45,10 @@ define([
             userId: loginService.getUserId(),
             upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
             authentication: '', // Authentication replaced with token
-            access_token: userPrefs.get('login.fluxtream_access_token'),
+            access_token: userPrefs.getGlobal('login.fluxtream_access_token'),
             access_token_expiration: 99999999999999, // No expiration
             access_token_update_url: "...", // No renewal needed
-            upload_on_data_connection: userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', false) ? true : false
+            upload_on_data_connection: userPrefs.getForUser('photos.upload_on_data_connection', false) ? true : false
           };
           var orientation = [];
           if (forge.is.android()) {
@@ -57,8 +57,8 @@ define([
             orientations = ['portrait', 'upside_down', 'landscape_left', 'landscape_right'];
           }
           orientations.forEach(function(orientation) {
-            options['upload_' + orientation] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.autoupload_' + orientation, false);
-            options[orientation + '_minimum_timestamp'] = userPrefs.get('user.' + loginService.getUserId() +  '.photos.' + orientation + "_minimum_timestamp", 0);
+            options['upload_' + orientation] = userPrefs.getForUser('photos.autoupload_' + orientation, false);
+            options[orientation + '_minimum_timestamp'] = userPrefs.getForUser('photos.' + orientation + "_minimum_timestamp", 0);
           });
           forge.flx_photoupload.setAutouploadOptions(options,
             // Success
@@ -85,16 +85,16 @@ define([
               userId: loginService.getUserId(),
               upload_url: loginService.getTargetServer() + "api/v1/bodytrack/photoUpload?connector_name=fluxtream_capture",
               authentication: '', // Authentication replaced with token
-              access_token: userPrefs.get('login.fluxtream_access_token'),
+              access_token: userPrefs.getGlobal('login.fluxtream_access_token'),
               access_token_expiration: 99999999999999, // No expiration
               access_token_update_url: "...", // No renewal needed
-              upload_on_data_connection: userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection', false) ? true : false
+              upload_on_data_connection: userPrefs.getForUser('photos.upload_on_data_connection', false) ? true : false
             },
             // Success
             function() {
               photoUploadModuleInitialized = true;
               // Upload all pending photos
-              var unuploadedPhotos = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.unuploaded", "[]"));
+              var unuploadedPhotos = JSON.parse(userPrefs.getForUser("photo.unuploaded", "[]"));
               unuploadedPhotos.forEach(function(photoId) {
                 forge.flx_photoupload.uploadPhoto(photoId);
               });
@@ -133,12 +133,12 @@ define([
        * @param {string} "metadata" or "photo"
        */
       function addToUnsynchronized(photoId, type) {
-        var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
-        var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
+        var pref = (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
+        var unsynchronized = JSON.parse(userPrefs.getForUser(pref, "[]"));
         if (unsynchronized.indexOf(photoId) === -1) {
           unsynchronized.push(photoId);
         }
-        userPrefs.set(pref, JSON.stringify(unsynchronized));
+        userPrefs.setForUser(pref, JSON.stringify(unsynchronized));
       }
       
       /**
@@ -148,12 +148,12 @@ define([
        * @param {string} "metadata" or "photo"
        */
       function removeFromUnsynchronized(photoId, type) {
-        var pref = "user." + loginService.getUserId() + "." + (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
-        var unsynchronized = JSON.parse(userPrefs.get(pref, "[]"));
+        var pref = (type === "metadata" ? "photo.metadata.unsynchronized" : "photo.unuploaded");
+        var unsynchronized = JSON.parse(userPrefs.getForUser(pref, "[]"));
         if (unsynchronized.indexOf(photoId) !== -1) {
           unsynchronized.splice(unsynchronized.indexOf(photoId), 1);
         }
-        userPrefs.set(pref, JSON.stringify(unsynchronized));
+        userPrefs.setForUser(pref, JSON.stringify(unsynchronized));
       }
       
       // When a photo is uploaded
@@ -176,12 +176,12 @@ define([
        */
       function getMetadata(photoId, preload, success, error, notUploaded) {
         // Get cached metadata
-        var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + photoId);
+        var metadata = userPrefs.getForUser("photo.metadata." + photoId);
         if (metadata) {
           preload(JSON.parse(metadata));
         }
         // Check if there is unsynchronized metadata for this photo
-        var unsynchronized = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.metadata.unsynchronized", "[]"));
+        var unsynchronized = JSON.parse(userPrefs.getForUser("photo.metadata.unsynchronized", "[]"));
         var metadataIsUnsynchronized = false;
         unsynchronized.forEach(function(unsyncPhotoId) {
           if (unsyncPhotoId == photoId) {
@@ -204,7 +204,7 @@ define([
                 type: "GET",
                 timeout: 10000,
                 success: function(response) {
-                  userPrefs.set("user." + loginService.getUserId() + ".photo.metadata." + photoId, response);
+                  userPrefs.setForUser("photo.metadata." + photoId, response);
                   success(JSON.parse(response));
                 },
                 error: function(response) {
@@ -232,7 +232,7 @@ define([
        */
       function synchronizeMetadataOfPhoto(photoId) {
         // Get metadata
-        var metadata = userPrefs.get("user." + loginService.getUserId() + ".photo.metadata." + photoId);
+        var metadata = userPrefs.getForUser("photo.metadata." + photoId);
         if (!metadata) {
           removeFromUnsynchronized(photoId, "metadata");
           return;
@@ -282,7 +282,7 @@ define([
           // Schedule next execution
           timeout = setTimeout(synchronizeNow, 300000); // Next try in 5 minutes
           // Synchronize all unsynchronized metadata
-          var unsynchronized = JSON.parse(userPrefs.get("user." + loginService.getUserId() + ".photo.metadata.unsynchronized", "[]"));
+          var unsynchronized = JSON.parse(userPrefs.getForUser("photo.metadata.unsynchronized", "[]"));
           unsynchronized.forEach(function(photoId) {
             synchronizeMetadataOfPhoto(photoId);
           });

@@ -57,7 +57,7 @@ define([
       $scope.isOnline = forge.is.connection.connected();
       
       // URL of the local user's photo
-      $scope.localUserPhotoURL = userPrefs.get('login.photoURL');
+      $scope.localUserPhotoURL = userPrefs.getGlobal('login.photoURL');
       
       // True when editing a new message for the coach (when coachFilter is on only)
       $scope.editNewMessage = false;
@@ -527,31 +527,6 @@ define([
       if ($scope.singlePost) {
         $scope.loadSinglePost();
       }
-      
-      // Tutorial modal
-//      userPrefs.onReady(function() {
-//        if (!userPrefs.get("tutorial-shown", false)) {
-//          // Compute window height needed by modal
-//          $scope.modalHeight = $(window).height();
-//          // Initialize modal
-//          $ionicModal.fromTemplateUrl('tutorial-modal', {
-//            scope: $scope,
-//            animation: 'slide-in-up'
-//          }).then(function(modal) {
-//            $scope.modal = modal;
-//            $scope.modal.show();
-//          });
-//          // Cleanup the modal when we're done with it
-//          $scope.$on('$destroy', function() {
-//            $scope.modal.remove();
-//          });
-//          $scope.dismissTutorialModal = function() {
-//            $scope.modal.hide();
-//          };
-//          // Disable tutorial for the next times
-//          userPrefs.set("tutorial-shown", true);
-//        }
-//      });
       
     }
   ]);

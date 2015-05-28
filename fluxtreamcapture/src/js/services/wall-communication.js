@@ -22,7 +22,7 @@ define([
       var posts = {
         posts: {},
         persistPosts: function() {
-          userPrefs.set("wall." + loginService.getUserId() + ".cache", JSON.stringify(this.posts));
+          userPrefs.setForUser("wall.cache", JSON.stringify(this.posts));
         },
         addPost: function(post) {
           this.posts["post" + post.id] = post;
@@ -75,7 +75,7 @@ define([
       };
       // Initially load cached list of posts
       userPrefs.onReady(function() {
-        var json = userPrefs.get("wall." + loginService.getUserId() + ".cache");
+        var json = userPrefs.getForUser("wall.cache");
         if (json) {
           posts.posts = JSON.parse(json);
           for (var index in posts.posts) {

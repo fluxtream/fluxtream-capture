@@ -23,7 +23,7 @@ define([
       if (forge.is.web()) return;
       
       // Whether the service is currently enabled
-      $scope.serviceEnabled = userPrefs.get('heartrate.' + loginService.getUserId() + ".serviceEnabled");
+      $scope.serviceEnabled = userPrefs.getForUser('heartrate.serviceEnabled');
       
       // True while determining whether BLE is supported on the device
       $scope.loading = true;

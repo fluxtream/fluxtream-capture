@@ -83,7 +83,7 @@ define([
         $scope.dismissTutorialModal = function() {
           $scope.modal.hide();
           // Disable tutorial for the next times
-          userPrefs.set('user.' + loginService.getUserId() + '.tutorial-shown', true);
+          userPrefs.setForUser('tutorial-shown', true);
         };
         // Shows the next tutorial page
         $scope.tutorialNext = function() {
@@ -94,7 +94,7 @@ define([
       // Show tutorial automatically when a new user logs in
       $scope.$on("user-logged-in", function() {
         if (env['show_tutorial']) {
-          if (!userPrefs.get('user.' + loginService.getUserId() + '.tutorial-shown' , false)) {
+          if (!userPrefs.getForUser('tutorial-shown' , false)) {
             $scope.showTutorial();
           }
         } else {

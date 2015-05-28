@@ -42,7 +42,7 @@ define([
       $scope.loaded = false;
       
       // Saved scroll position
-      $scope.lastScrollPosition = userPrefs.get('photos.scrollPosition', 0);
+      $scope.lastScrollPosition = userPrefs.getForUser('photos.scrollPosition', 0);
       
       // True once the initial scroll position has been applied and the new scroll positions can be saved
       $scope.initialScrollDone = false;
@@ -57,7 +57,7 @@ define([
       $scope.onScroll = function() {
         if (!$scope.initialScrollDone) return;
         $scope.lastScrollPosition = $ionicScrollDelegate.getScrollPosition().top;
-        userPrefs.set('photos.scrollPosition', $scope.lastScrollPosition);
+        userPrefs.setForUser('photos.scrollPosition', $scope.lastScrollPosition);
       };
       
       // Applies the scroll position from the last visit
@@ -116,7 +116,7 @@ define([
         // Add it to the photo list
         $scope.photos.unshift(photoObject);
         // Get photo upload status from user prefs
-        var status = userPrefs.get('photo-' + photoObject.id + '-status');
+        var status = userPrefs.getForUser('photo-' + photoObject.id + '-status');
         if (!status) status = 'none';
         if (status === 'uploading' || status === 'failed') status = 'pending'; // Upload failed in previous session
         photoObject.upload_status = status;
@@ -348,7 +348,7 @@ define([
       // Periodically check for internet connection
       $scope.updateConnectionStatus = function() {
         $scope.internetReachable = forge.is.connection.wifi() ||
-              (forge.is.connection.connected() && userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection'));
+              (forge.is.connection.connected() && userPrefs.getForUser('photos.upload_on_data_connection'));
         $scope.$$phase || $scope.$apply();
       };
       $scope.updateConnectionStatus();
@@ -360,7 +360,7 @@ define([
       // Show an alert telling why internet is not reachable
       $scope.showConnectionStatus = function() {
         if (!forge.is.connection.connected()) forge.notification.alert("Connection status", "You are currently offline.");
-        else if (!forge.is.connection.wifi() && !userPrefs.get('user.' + loginService.getUserId() +  '.photos.upload_on_data_connection'))
+        else if (!forge.is.connection.wifi() && !userPrefs.getForUser('photos.upload_on_data_connection'))
           forge.notification.alert("Connection status", "You are not connected over wifi. You can enable the upload using cellular data in the settings.");
         else $scope.updateConnectionStatus();
       };

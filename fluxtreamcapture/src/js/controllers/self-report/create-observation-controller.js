@@ -174,7 +174,7 @@ define([
           // Called when the form is submitted
           $scope.createObservation = function () {
             // Check if geolocation data is present
-            if ($scope.geolocationStatus == "fetching" && userPrefs.get('user.' + loginService.getUserId() + '.self-report.enable-geolocation-warning', true)) {
+            if ($scope.geolocationStatus == "fetching" && userPrefs.getForUser('self-report.enable-geolocation-warning', true)) {
               // Ask user if they want to wait for the geolocation
               $ionicActionSheet.show({
                 titleText: 'Save observation without geolocation?',
@@ -189,7 +189,7 @@ define([
                 },
                 destructiveButtonClicked: function(index) {
                   // Disable future warnings
-                  userPrefs.set('user.' + loginService.getUserId() + '.self-report.enable-geolocation-warning', false);
+                  userPrefs.setForUser('self-report.enable-geolocation-warning', false);
                   $scope.doCreateObservation();
                 }
               });
@@ -241,7 +241,7 @@ define([
           
           // Get geolocation data
           $scope.fetchGeolocationData = function() {
-            if (!userPrefs.get('user.' + loginService.getUserId() + '.self-report.enable-geolocation', true)) {
+            if (!userPrefs.getForUser('self-report.enable-geolocation', true)) {
               // Geolocation has been disabled by the user
               forge.logging.info("Geolocation disabled by the user");
               return;

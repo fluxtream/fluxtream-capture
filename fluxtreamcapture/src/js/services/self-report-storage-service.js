@@ -100,8 +100,8 @@ define([
         aoObservationsToSync = [];
         
         // Initialize last sync time
-        if (!userPrefs.get('self-report-last-topic-sync')) userPrefs.set('self-report-last-topic-sync', new Date().getTime());
-        if (!userPrefs.get('self-report-last-observation-sync')) userPrefs.set('self-report-last-observation-sync', new Date().getTime());
+        if (!userPrefs.getForUser('self-report-last-topic-sync')) userPrefs.setForUser('self-report-last-topic-sync', new Date().getTime());
+        if (!userPrefs.getForUser('self-report-last-observation-sync')) userPrefs.setForUser('self-report-last-observation-sync', new Date().getTime());
         
         // Main topics and observations names/links
         dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
@@ -139,7 +139,7 @@ define([
         readTopicsDB();
         
         $.ajax({
-          url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.get('login.fluxtream_access_token'),
+          url: backendLink + 'api/v1/couch/?access_token=' + userPrefs.getGlobal('login.fluxtream_access_token'),
           type: 'PUT',
           timeout: 20000, // 20 seconds
           xhrFields: {
@@ -846,7 +846,7 @@ define([
                     // Successfully synced
                     notifyFluxtreamCaptureUpdater();
                     // Update last sync time and broadcast sync event
-                    userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
+                    userPrefs.setForUser('self-report-last-topic-sync', timeBeforeSync);
                     $rootScope.$broadcast('event:topicSyncCompleted');
                     // Release mutex
                     syncTopicsAsyncDBMutex = false;
@@ -866,7 +866,7 @@ define([
               } else {
                 // No need for pushing topics to the server
                 // Update last sync time and broadcast sync event
-                userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
+                userPrefs.setForUser('self-report-last-topic-sync', timeBeforeSync);
                 $rootScope.$broadcast('event:topicSyncCompleted');
                 // Release mutex
                 syncTopicsAsyncDBMutex = false;
@@ -999,7 +999,7 @@ define([
                   // Successfully synced
                   notifyFluxtreamCaptureUpdater();
                   // Update last sync time and broadcast sync event
-                  userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
+                  userPrefs.setForUser('self-report-last-observation-sync', timeBeforeSync);
                   $rootScope.$broadcast('event:observationSyncCompleted');
                   // Release mutex
                   syncObservationsAsyncDBMutex = false;
@@ -1018,7 +1018,7 @@ define([
                 });
             } else {
               // Update last sync time and broadcast sync event
-              userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
+              userPrefs.setForUser('self-report-last-observation-sync', timeBeforeSync);
               $rootScope.$broadcast('event:observationSyncCompleted');
               // Release mutex
               syncObservationsAsyncDBMutex = false;
@@ -1325,8 +1325,8 @@ define([
       getOfflineChangesForTopicsMade: getOfflineChangesForTopicsMade,
       isOffline: function() { return bIsOffline; },
       
-      getTopicLastSyncTime: function() { return userPrefs.get('self-report-last-topic-sync', 0); },
-      getObservationLastSyncTime: function() { return userPrefs.get('self-report-last-observation-sync', 0); }
+      getTopicLastSyncTime: function() { return userPrefs.getForUser('self-report-last-topic-sync', 0); },
+      getObservationLastSyncTime: function() { return userPrefs.getForUser('self-report-last-observation-sync', 0); }
     };
 
   }]);

@@ -11,18 +11,6 @@ define([
   appModules.services.factory("DeviceIdService", ["UserPrefsService",
     function(userPrefs) {
       
-      /**
-       * Returns the device id (Warning: getDeviceIdAsync must have been run successfully before calling this)
-       */
-//      function getDeviceId() {
-//        var deviceId = userPrefs.get("deviceId");
-//        if (!deviceId) {
-//          deviceId = generateUUID();
-//          userPrefs.set("deviceId", deviceId);
-//        }
-//        return deviceId;
-//      }
-      
       var callbacks = [];
       var pendingRequest = false;
       
@@ -42,7 +30,7 @@ define([
       function getDeviceIdAsync(callback) {
         userPrefs.onReady(function() {
           // Get device id from local storage
-          var deviceId = userPrefs.get("login.deviceId");
+          var deviceId = userPrefs.getGlobal("login.deviceId");
           // Call callback directly if the device id is available
           if (deviceId) {
             callback(deviceId);
@@ -55,7 +43,7 @@ define([
             fetchDeviceId();
           } else {
             deviceId = generateUUID();
-            userPrefs.set("login.deviceId", deviceId);
+            userPrefs.setGlobal("login.deviceId", deviceId);
             // Execute callbacks
             callbacks.forEach(function(callback) {
               callback(deviceId);
@@ -75,7 +63,7 @@ define([
               // Success
               function(info) {
                 // Store device id
-                userPrefs.set("login.deviceId", info.id);
+                userPrefs.setGlobal("login.deviceId", info.id);
                 // Execute callbacks
                 callbacks.forEach(function(callback) {
                   callback(info.id);
@@ -92,7 +80,7 @@ define([
             );
           } else {
             var id = "web_" + forge.tools.UUID();
-            userPrefs.set("login.deviceId", id);
+            userPrefs.setGlobal("login.deviceId", id);
             // Execute callbacks
             callbacks.forEach(function(callback) {
               callback(id);
