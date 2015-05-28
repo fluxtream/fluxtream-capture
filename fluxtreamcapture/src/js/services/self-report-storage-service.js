@@ -56,10 +56,11 @@ define([
         type: "POST",
         data: { access_token: loginService.getAccessToken() },
         url: updateNotificationURL,
-        success: function() {forge.logging.info("FluxtreamCapture updater was notified");},
-        error: function(error) {forge.logging.info("Could not notify the FluxtreamCapture updater: " + JSON.stringify(error));}
+        success: function() {},
+        error: function(error) {
+          forge.logging.error("Could not notify the FluxtreamCapture updater: " + JSON.stringify(error));
+        }
 	    });
-	    forge.logging.info("sent sync notification to Fluxtream Capture updater @ " + updateNotificationURL );
 	  };
     
     $rootScope.$on("user-logged-out", function() {
@@ -119,27 +120,19 @@ define([
         dbTopics = new PouchDB(dbNameTopics, {adapter: 'websql'});
         if (dbTopics == null) {
           forge.logging.error("Didn't create PouchDB (initialize)");
-        } else {
-          forge.logging.info("Successfully created PouchDB (initialize) " + dbTopics.adapter);
         }
 
         dbObservations = new PouchDB(dbNameObservations, {adapter: 'websql'})
         if (dbObservations == null) {
           forge.logging.error("Didn't create observations PouchDB (initialize)");
-        } else {
-          forge.logging.info("Successfully created observations PouchDB (initialize) " + dbTopics.adapter);
         }
         dbDeleteTopics = new PouchDB(dbNameDeletedTopics, {adapter: 'websql'});
         if (dbDeleteTopics == null) {
           forge.logging.error("Didn't create PouchDB (initialize)");
-        } else {
-          forge.logging.info("Successfully deletedTopics created PouchDB (initialize) " + dbTopics.adapter);
         }
         dbDeleteObservations = new PouchDB(dbNameDeletedObservations, {adapter: 'websql'});
         if (dbDeleteObservations == null) {
           forge.logging.error("Didn't create deleted observations PouchDB (initialize)");
-        } else {
-          forge.logging.info("Successfully created deleted observations PouchDB (initialize) " + dbTopics.adapter);
         }
         
         // Initially load topics from local DB
@@ -153,7 +146,6 @@ define([
             withCredentials: true
           },
           success: function(result) {
-            forge.logging.info("Successfully created CouchDB (initialize)");
             // Get token and user name
             userLogin = result.user_login;
             userCouchDBToken = result.user_token;
@@ -181,13 +173,11 @@ define([
         });
       } else {
         $rootScope.$broadcast('event:initialized');
-        forge.logging.info("Already initialized (initialize)");
       }
     }
     
     function listenToServerChanges(db, seqNumber) {
       if (!bIsInitialized) {
-        forge.logging.info("Not initialized");
         return;
       } // Happens in case of logout while offline
       if (!forge.is.connection.connected()) {
@@ -196,12 +186,10 @@ define([
         }, 3000);
         return;
       }
-      forge.logging.info("Listening to changes (listenToServerChanges): seqNumber = " + seqNumber);
       var changeListener = db.changes({
         since: seqNumber ? seqNumber : 'now',
         live: true
       }).on('change', function(change) {
-        forge.logging.info("There was a change on the pouchdb server (listenToServerChanges)");
         seqNumber = change.seq;
         syncTopicsAsyncDB();
         syncObservationsAsyncDB();
@@ -212,11 +200,7 @@ define([
           listenToServerChanges(db, seqNumber);
         }, 3000);
       }).on('complete', function(resp) {
-        forge.logging.info("Listening to changes complete (listenToServerChanges)");
-        forge.logging.info(resp);
       }).on('paused', function(resp) {
-        forge.logging.info("Listening to changes paused (listenToServerChanges)");
-        forge.logging.info(resp);
       });
       $rootScope.$on('user-logged-out', function() {
         if (changeListener) changeListener.cancel();
@@ -307,7 +291,6 @@ define([
       aoCachedTopics.unshift(oTopic);
 
       // Save topic to client database
-      forge.logging.info("Saving Topic on the client side (createTopic)");
       dbTopics.put({
           _id: oTopic.id,
           creationTime: oTopic.creationTime.toISOString(),
@@ -321,9 +304,7 @@ define([
           topicNumber: oTopic.topicNumber
         },
         function (err, result) {
-          if (!err) {
-            forge.logging.info('Successfully saved a Topic on client side (createTopic)');
-          } else {
+          if (err) {
             forge.logging.error("Error while saving Topic on the client side (createTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
@@ -337,10 +318,6 @@ define([
      * (Public) Read Topic from the file
      */
     function readTopic(sTopicId){
-      if(!aoCachedTopics){
-        forge.logging.info("Reading from empty list of Topics (readTopic)");
-      }
-
       var oTopic = aoCachedTopics.filter(function(oEntry){
         return oEntry.id == sTopicId;
       })[0];
@@ -358,7 +335,6 @@ define([
         dbTopics.allDocs({include_docs: true}, function(err, response) {
           response.rows.forEach( function (row)
           {
-            //forge.logging.info(row.doc.name);
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -379,7 +355,7 @@ define([
           // get data from the server
 
           if(aoCachedTopics.length === 0) {
-            forge.logging.info("Accessing wrong link (readTopicsDB)");
+            forge.logging.error("Accessing wrong link (readTopicsDB)");
           }
 
           reorderTopics();
@@ -403,7 +379,6 @@ define([
         dbTopics.allDocs({include_docs: true}, function(err, response) {
           response.rows.forEach( function (row)
           {
-            //forge.logging.info(row.doc.name);
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -425,7 +400,6 @@ define([
           dbObservations.allDocs({include_docs: true}, function(err, response) {
             response.rows.forEach( function (row)
             {
-              //forge.logging.info(row.doc.name);
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -449,7 +423,7 @@ define([
           });
 
           if((aoCachedTopics.length === 0) || (aoCachedObservations.length === 0)){
-            forge.logging.info("Accessing wrong link (readDBState)");
+            forge.logging.error("Accessing wrong link (readDBState)");
           }
         });
 
@@ -501,22 +475,18 @@ define([
       // Remove Observation from Main Client DB
       dbObservations.get(oObservationToRemove.id, function(err, oObservation) {
         dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
-          if (!err) {
-            forge.logging.info('Successfully deleted Observation on client side (deleteObservation)');
-          } else {
+          if (err) {
             forge.logging.error("Error while deleting Observation on the client side (deleteObservation): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
       });
 
-      forge.logging.info("Deleting Observation on the server side (deleteObservation)");
       // Push Observation deletion to the server
       bUncommittedObservationChanges = true;
       syncObservationsAsyncDB();
       
       // Save observation to client delete database
-      forge.logging.info("Saving Observation on the client side (deleteObservation)");
       dbDeleteObservations.put({
           _id: oObservationToRemove.id + oObservationToRemove.creationDate + oObservationToRemove.creationTime,
           _rev: oObservationToRemove._rev,
@@ -534,22 +504,18 @@ define([
           comment: oObservationToRemove.comment },
 
         function callback(err, result) {
-          if (!err) {
-            forge.logging.info('Successfully saved a Observation on client side Delete DB (deleteObservation)');
-          } else {
+          if (err) {
             forge.logging.error("Error while saving Observation on the client side Delete DB (deleteObservation): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
-      forge.logging.info("Saving Topic on the server side (deleteObservation)");
       //Push Topic to the server
       //TODO maybe not replication, but just push changes
       dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          forge.logging.info("Successfully saved Deleted Observation on the server side Delete DB (deleteObservation)");
-		  notifyFluxtreamCaptureUpdater();
+          notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
@@ -580,23 +546,19 @@ define([
       // Remove Topic from Main Client DB
       dbTopics.get(oTopicToRemove.id, function(err, oTopic) {
         dbTopics.remove(oTopic._id, oTopic._rev, function(err, response) {
-          if (!err) {
-            forge.logging.info('Successfully deleted Topic on client side (deleteTopic)');
-          } else {
+          if (err) {
             forge.logging.error("Error while deleting Topic on the client side (deleteTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
       });
 
-      forge.logging.info("Deleting Topic on the server side (deleteTopic)");
       // Mark need for uploading topic changes to the server
       bUncommittedTopicChanges = true;
       // Push Topic deletion to the server
       syncTopicsAsyncDB();
 
       // Save topic to client delete database
-      forge.logging.info("Saving Topic on the client side (deleteTopic)");
       dbDeleteTopics.put({
           _id: oTopicToRemove.id + oTopicToRemove.creationTime,
           creationTime: oTopicToRemove.creationTime,
@@ -610,21 +572,17 @@ define([
           topicNumber: oTopicToRemove.topicNumber},
 
         function callback(err, result) {
-          if (!err) {
-            forge.logging.info('Successfully saved a Topic on client side Delete DB (deleteTopic)');
-          } else {
+          if (err) {
             forge.logging.error("Error while saving Topic on the client side Delete DB (deleteTopic): " + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
-      forge.logging.info("Saving Topic on the server side (deleteTopic)");
       //Push Topic to the server
       //TODO maybe not replication, but just push changes
       dbDeleteTopics.replicate.to(remoteCouchDeletedTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          forge.logging.info("Successfully saved Deleted Topic on the server side Delete DB (deleteTopic)");
           notifyFluxtreamCaptureUpdater();
         }).on('error', function (err) {
           bIsOffline === 1;
@@ -649,19 +607,14 @@ define([
             // Delete Observations from Main DB
             dbObservations.get(oNextObservationToDelete.id, function(err, oObservation) {
               dbObservations.remove(oObservation._id, oObservation._rev, function(err, response) {
-                if (!err) {
-                  forge.logging.info('Successfully deleted Observation on client side (deleteTopic)');
-                } else {
+                if (err) {
                   forge.logging.error("Error while deleting Observation on the client side (deleteTopic): " + err);
                   $rootScope.$broadcast('event:internalError');
                 }
               });
             });
 
-            forge.logging.info("oNextObservationToDelete:");
-            forge.logging.info(oNextObservationToDelete);
             // Add Observation for Deletion DB
-            forge.logging.info("Saving Observation on the client side (deleteTopic)");
             dbDeleteObservations.put({
               _id: oNextObservationToDelete.id + oNextObservationToDelete.creationDate + oNextObservationToDelete.creationTime,
               _rev: oNextObservationToDelete._rev,
@@ -679,9 +632,7 @@ define([
               comment: oNextObservationToDelete.comment },
 
               function callback(err, result) {
-                if (!err) {
-                  forge.logging.info('Successfully saved a Observation on client side Delete DB (deleteTopic)');
-                } else {
+                if (err) {
                   forge.logging.error("Error while saving Observation on the client side Delete DB (deleteTopic): " + err);
                   $rootScope.$broadcast('event:internalError');
                 }
@@ -691,17 +642,14 @@ define([
           }
         }
 
-        forge.logging.info("Deleting Observations on the server side (deleteTopic)");
         //Push Observations deletion to the server
         syncObservationsAsyncDB();
         
-        forge.logging.info("Saving Deleted Observations on the server side Delete DB (deleteTopic)");
         //Push deleted observations to the server
         //TODO maybe not replication, but just push changes
         dbDeleteObservations.replicate.to(remoteCouchDeletedObservationsAddress)
           .on('complete', function () {
             // Successfully synced
-            forge.logging.info("Successfully saved Deleted Observations on the server side Delete DB (deleteTopic)");
             notifyFluxtreamCaptureUpdater();
           }).on('error', function (err) {
             bIsOffline === 1;
@@ -735,7 +683,6 @@ define([
           aoCachedTopics[i] = oTopic;
 
           // Save topic to client database
-          forge.logging.info("Updating Topic on the client side (readObservationsToSync)");
           // TODO what kind of changes could happen???
 
           dbTopics.get(oTopic.id).then(function(oTopicDB) {
@@ -753,15 +700,12 @@ define([
               topicNumber: oTopic.topicNumber
             });
           }, function(err, response) {
-            if (!err) {
-              forge.logging.info('Successfully updated Topic on client side (readObservationsToSync)');
-            } else {
+            if (err) {
               forge.logging.error('Error while updating Topic on client side (readObservationsToSync): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
           });
 
-          forge.logging.info("Updating Topic on the server side (readObservationsToSync)");
           // Mark need for uploading topic changes to the server
           bUncommittedTopicChanges = true;
           //Push Observation to the server
@@ -803,9 +747,7 @@ define([
               topicNumber: aoCachedTopics[cntr].topicNumber
             });
           }, function (err, response) {
-            if (!err) {
-              forge.logging.info('Successfully updated Topic number on client side (updateTopicNumbers)');
-            } else {
+            if (err) {
               forge.logging.error('Error while updating Topic number on client side (updateTopicNumbers): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
@@ -813,8 +755,6 @@ define([
         })(i);
       }
 
-      forge.logging.info('Successfully updated Topics numbers on client side (updateTopicNumbers)');
-      forge.logging.info("Updating Topic on the server side (updateTopicNumbers)");
       // Mark need for uploading topic changes to the server
       bUncommittedTopicChanges = true;
       // Synchronize topics with the server
@@ -868,13 +808,11 @@ define([
       syncTopicsAsyncDBCallbacks = [];
       // Activate mutex to prevent other calls
       syncTopicsAsyncDBMutex = true;
-      forge.logging.info("Reading Topics from the server side (syncTopicsAsyncDB)");
       $rootScope.$broadcast('event:synchronizing-topics');
       // Get Topics from the server and save locally
       dbTopics.replicate.from(remoteCouchTopicsAddress)
         .on('complete', function () {
           // Successfully synced
-          forge.logging.info("Successfully read Topics from the server side (syncTopicsAsyncDB)");
           bIsTopicsSynced = 1;
           fixTopicDuplicateErrors(function(changesMade) {
             // Read all docs into memory
@@ -902,12 +840,10 @@ define([
               // Push Topic to the server (if needed)
               var timeBeforeSync = new Date().getTime();
               if (bUncommittedTopicChanges) {
-                forge.logging.info("Saving Topic on the server side (syncTopicsAsyncDB)");
                 bUncommittedTopicChanges = false;
                 dbTopics.replicate.to(remoteCouchTopicsAddress)
                   .on('complete', function () {
                     // Successfully synced
-                    forge.logging.info("Successfully saved Topic on the server side (syncTopicsAsyncDB)");
                     notifyFluxtreamCaptureUpdater();
                     // Update last sync time and broadcast sync event
                     userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
@@ -929,7 +865,6 @@ define([
                   });
               } else {
                 // No need for pushing topics to the server
-                forge.logging.info("Not saving Topics on the server side, no changes made (syncTopicsAsyncDB)");
                 // Update last sync time and broadcast sync event
                 userPrefs.set('self-report-last-topic-sync', timeBeforeSync);
                 $rootScope.$broadcast('event:topicSyncCompleted');
@@ -996,7 +931,6 @@ define([
                   forge.logging.error("Error while putting topic (fixTopicDuplicateErrors): " + err);
                   callback(true);
                 } else {
-                  forge.logging.info("dbTopics.put response (fixTopicDuplicateErrors) : " + JSON.stringify(response));
                   // Duplicate fixed, check for other duplicates
                   fixTopicDuplicateErrors(callback, true);
                 }
@@ -1030,7 +964,6 @@ define([
       dbObservations.replicate.from(remoteCouchObservationsAddress)
         .on('complete', function () {
           // Successfully synced
-          forge.logging.info("Successfully read Observations on the server side (syncObservationsAsyncDB)");
           bIsObservationsSynced = 1;
           bIsOfflineChangesForObservationsMade = 0;
           // Read all docs into memory
@@ -1060,12 +993,10 @@ define([
             //Push Observation to the server
             var timeBeforeSync = new Date().getTime();
             if (bUncommittedObservationChanges) {
-              forge.logging.info("Saving Observation on the server side (syncObservationsAsyncDB)");
               bUncommittedObservationChanges = false;
               dbObservations.replicate.to(remoteCouchObservationsAddress)
                 .on('complete', function () {
                   // Successfully synced
-                  forge.logging.info("Successfully saved Observation on the server side (syncObservationsAsyncDB)");
                   notifyFluxtreamCaptureUpdater();
                   // Update last sync time and broadcast sync event
                   userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
@@ -1086,7 +1017,6 @@ define([
                   if (syncObservationsAsyncDBCallbacks.length) syncObservationsAsyncDB();
                 });
             } else {
-              forge.logging.info("Not saving Observations on the server side, no changes made (syncObservationsAsyncDB)");
               // Update last sync time and broadcast sync event
               userPrefs.set('self-report-last-observation-sync', timeBeforeSync);
               $rootScope.$broadcast('event:observationSyncCompleted');
@@ -1105,7 +1035,6 @@ define([
           dbObservations.allDocs({include_docs: true}, function(err, response) {
             aoCachedObservations = [];
             response.rows.forEach(function(row) {
-              //forge.logging.info(row.doc.name);
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -1167,7 +1096,6 @@ define([
       aoCachedObservations.push(oObservation);
 
       // Save observation to client database
-      forge.logging.info("Saving Observation on the client side (createObservation)");
       dbObservations.put({
           _id: oObservation.id,
           topicId: oObservation.topicId,
@@ -1184,16 +1112,13 @@ define([
           comment: oObservation.comment},
 
         function callback(err, result) {
-          if (!err) {
-            forge.logging.info("Successfully saved Observation on client side (createObservation)");
-          } else {
+          if (err) {
             forge.logging.error("Error while saving Observation on client side (createObservation)" + err);
             $rootScope.$broadcast('event:internalError');
           }
         });
 
         // Save observation to server side
-        forge.logging.info("Saving Observation on the server side (createObservation)");
         bUncommittedObservationChanges = true;
         syncObservationsAsyncDB();
     }
@@ -1207,14 +1132,12 @@ define([
       var len = aoObservationsToSync.length;
 
       if (len === 0) {
-        forge.logging.info("No local observations to sync (syncObservationsDB)");
         $rootScope.$broadcast('event:observations-synced-with-db');
       }
 
       for (var i=0; i<len; i++) {
         var oObservation = aoObservationsToSync[i];
         // Save observation to client database
-        forge.logging.info("Saving Observation on the client side (syncObservationsDB)");
         dbObservations.put({
             _id: oObservation.id,
             topicId: oObservation.topicId,
@@ -1232,7 +1155,6 @@ define([
 
           function callback(err, result) {
             if (!err) {
-              forge.logging.info("Successfully saved Observation on client side (syncObservationsDB)");
               $rootScope.$broadcast('event:observations-synced-with-db');
             } else {
               forge.logging.error("Error while saving Observation on client side (syncObservationsDB)" + err);
@@ -1249,10 +1171,6 @@ define([
      * (Public) Read Observation by Id
      */
     function readObservation(sObservationId) {
-      if(!aoCachedObservations){
-        forge.logging.info("Reading from empty list of Observations (readObservation)");
-      }
-
       var oCachedObservation = aoCachedObservations.filter(function(entry){
         return entry.id == sObservationId;
       })[0];
@@ -1285,20 +1203,17 @@ define([
           var result = $.parseJSON(response);
 
           if(result.couchdb === "Welcome"){
-            forge.logging.info("You are online (pingCouch): ");
             bIsOffline = 0;
             // Synchronize topics and observations
             syncTopicsAsyncDB(fCallbackTopics);
             syncObservationsAsyncDB(fCallbackObservation);
           } else {
-            forge.logging.info("You are offline (pingCouch): ");
             bIsOffline = 1;
             $rootScope.$broadcast('event:offline');
           }
 
         },
         error: function(result) {
-          forge.logging.info("You are offline (pingCouch): ");
           bIsOffline = 1;
           $rootScope.$broadcast('event:offline');
         }
@@ -1336,8 +1251,6 @@ define([
           aoCachedObservations[i] = oObservation;
 
           // Save observation to client database
-          forge.logging.info("Updating Observation on the client side (updateObservation)");
-
           dbObservations.get(oObservation.id).then(function(oObservationDB) {
             return dbObservations.put({
               _id: oObservationDB._id,
@@ -1356,15 +1269,12 @@ define([
               comment: oObservation.comment
             });
           }, function(err, response) {
-            if (!err) {
-              forge.logging.info('Successfully updated Observation on client side (updateObservation)');
-            } else {
+            if (err) {
               forge.logging.error('Error while updating Observation on client side (updateObservation): ' + err);
               $rootScope.$broadcast('event:internalError');
             }
           });
 
-          forge.logging.info("Updating Observation on the server side (updateObservation)");
           // Push Observation to the server
           bUncommittedObservationChanges = true;
           syncObservationsAsyncDB();
