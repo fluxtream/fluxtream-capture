@@ -185,7 +185,10 @@ public class PhotoUploader {
 			currentPhoto = -1;
 			cancelCurrentUpload = true;
 			pendingPhotos.clear();
-			uploadThread.interrupt();
+			if (uploadThread != null && uploadThread.isAlive()) {
+				Log.i("flx_photoupload", "Interrupting upload thread");
+				uploadThread.interrupt();
+			}
 			Log.i("flx_photoupload", "User was logged out");
 		}
 	}
