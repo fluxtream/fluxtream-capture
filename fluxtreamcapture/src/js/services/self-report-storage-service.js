@@ -38,6 +38,7 @@ define([
     var userLogin;
     var userCouchDBToken;
     var bIsInitialized = 0;
+    var bIsInitializing = false; // True during the initialization process
     var bIsTopicsSynced = 0;
     var bIsObservationsSynced = 0;
     var bIsOffline = 0;
@@ -81,6 +82,7 @@ define([
       userLogin = null;
       userCouchDBToken = null;
       bIsInitialized = 0;
+      bIsInitializing = false;
       bIsTopicsSynced = 0;
       bIsObservationsSynced = 0;
       bIsOffline = 0;
@@ -93,8 +95,10 @@ define([
       aoObservationsToSync = null;
     });
     
-    function initialize(){
-      if(!bIsInitialized){
+    function initialize() {
+      if (!bIsInitialized && !bIsInitializing) {
+        bIsInitializing = true;
+        
         aoCachedTopics = [];
         aoCachedObservations = [];
         aoObservationsToSync = [];
@@ -157,6 +161,7 @@ define([
             CreateLocalDeletedPouchDB();
 
             bIsInitialized = 1;
+            bIsInitializing = false;
             $rootScope.$broadcast('event:initialized');
             
             // Long poll remote server to get updates
@@ -167,14 +172,20 @@ define([
             forge.logging.error("Error while creating CouchDB (initialize): ");
             console.dir(result);
             bIsOffline = 1;
+            bIsInitializing = false;
             $rootScope.$broadcast('event:initFailed');
             $rootScope.$broadcast('event:offline');
           }
         });
-      } else {
+      } else if (bIsInitialized) {
         $rootScope.$broadcast('event:initialized');
       }
     }
+    
+    // Initialize when a user logs in
+    $rootScope.$on("user-logged-in", function() {
+      initialize();
+    });
     
     function listenToServerChanges(db, seqNumber) {
       if (!bIsInitialized) {
@@ -330,11 +341,9 @@ define([
      */
     function readTopicsDB(){
       if(aoCachedTopics.length === 0){
-        aoCachedTopics = [];
-
         dbTopics.allDocs({include_docs: true}, function(err, response) {
-          response.rows.forEach( function (row)
-          {
+          aoCachedTopics = [];
+          response.rows.forEach( function (row) {
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -368,13 +377,11 @@ define([
     function readDBState(){
       // Check if the page was reloaded - aoCachedTopics.length === 0
       if(aoCachedTopics.length === 0){
-        aoCachedTopics = [];
-        aoCachedObservations = [];
 
         // Read all topics into memory
         dbTopics.allDocs({include_docs: true}, function(err, response) {
-          response.rows.forEach( function (row)
-          {
+          aoCachedTopics = [];
+          response.rows.forEach(function(row) {
             var oNextTopic = new Topic(
               row.doc._id,
               row.doc.creationTime,
@@ -394,8 +401,8 @@ define([
 
           // Read all observations into memory
           dbObservations.allDocs({include_docs: true}, function(err, response) {
-            response.rows.forEach( function (row)
-            {
+            aoCachedObservations = [];
+            response.rows.forEach(function(row) {
               var oNextObservation = new Observation(
                 row.doc._id,
                 row.doc.topicId,
@@ -446,7 +453,10 @@ define([
     /**
      * (Public) Read Topics from memory
      */
-    function readTopics(){
+    function readTopics() {
+      if (!aoCachedTopics) {
+        aoCachedTopics = [];
+      }
       return aoCachedTopics;
     }
 
@@ -1047,8 +1057,6 @@ define([
               );
               aoCachedObservations.push(oNextObservation);
             });
-            // Put pre-processing of data
-            fCallback(aoCachedObservations);
           });
           bIsOffline === 1;
           bIsOfflineChangesForObservationsMade = 1;
