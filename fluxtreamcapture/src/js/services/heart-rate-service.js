@@ -110,7 +110,6 @@ define([
       }
       
       function saveDeviceName(name) {
-        forge.logging.info("Device name is " + name);
         userPrefs.setForUser('heartRate.deviceName', name);
       }
       

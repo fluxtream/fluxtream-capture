@@ -29,7 +29,6 @@ define([
           bIsTopicsSyncFinished = 1;
 
           if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
-            forge.logging.info("Sync of topics is the last (doPing)");
             $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
@@ -39,7 +38,6 @@ define([
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-            forge.logging.info("Sync of topics finished and no need of sync detected (doPing)");
             if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }
@@ -48,7 +46,6 @@ define([
           bIsObservationsSyncFinished = 1;
 
           if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
-            forge.logging.info("Sync of observations is the last (doPing)");
             $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
             $scope.$$phase || $scope.$apply();
             setTimeout(function(){
@@ -58,7 +55,6 @@ define([
           }
 
           if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-            forge.logging.info("Sync of observations finished and no need of sync detected (doPing)");
             if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
             $scope.$$phase || $scope.$apply();
           }

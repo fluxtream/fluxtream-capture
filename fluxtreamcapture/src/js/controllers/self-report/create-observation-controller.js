@@ -31,45 +31,41 @@ define([
             bIsTopicsSyncFinished = 1;
 
             if (bIsObservationsSyncFinished  || (bIsOfflineChangesForObservationMade === 0)){
-              forge.logging.info("Sync of topics is the last");
               $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
-              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+              $scope.$$phase || $scope.$apply();
               setTimeout(function(){
                 if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-                $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+                $scope.$$phase || $scope.$apply();
               },1000);
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              forge.logging.info("Sync of topics finished and no need of sync detected");
               if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+              $scope.$$phase || $scope.$apply();
             }
           }, function (aoObservations) {
             $scope.aoObservations = aoObservations;
             bIsObservationsSyncFinished = 1;
 
             if (bIsTopicsSyncFinished || (bIsOfflineChangesForTopicsMade === 0)){
-              forge.logging.info("Sync of observations is the last");
               $scope.status = (!atStart) ? 'done' : ($scope.status = selfReportStorage.isOffline() ? 'offline' : 'none');
-              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+              $scope.$$phase || $scope.$apply();
               setTimeout(function(){
                 if ($scope.status == 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-                $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+                $scope.$$phase || $scope.$apply();
               },1000);
             }
 
             if ((bIsOfflineChangesForTopicsMade === 0) && (bIsOfflineChangesForTopicsMade === 0)){
-              forge.logging.info("Sync of observations finished and no need of sync detected");
               if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-              $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+              $scope.$$phase || $scope.$apply();
             }
           });
         };
 
         $scope.reconnectCouchDB = function () {
           $scope.status = 'loading';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
           
           $scope.doPing(false);
         };
@@ -77,7 +73,7 @@ define([
         $scope.$on('event:initialized', function() {
           // Delete status icon
           if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
 
           //TODO refactor screen - no two lines for the comment field - ask on the ionic forum
 
@@ -91,7 +87,7 @@ define([
           $scope.geolocationPermissionDenied = false;
           $scope.geolocationData = {};
 
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
 
           //TODO is the type is range check that default value is in range
           //Arrange DOM
@@ -151,21 +147,21 @@ define([
           $scope.$on('event:topics-read-finished', function () {
             // Delete status icon
             if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+            $scope.$$phase || $scope.$apply();
             $scope.oTopic = selfReportStorage.readTopic($stateParams.topicId);
             document.title = $scope.oTopic.name;
             $scope.readType();
-            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+            $scope.$$phase || $scope.$apply();
           });
 
           // Set status icon to spinning wheel
           $scope.status = 'loading';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
 
           // If can not reach couchDB
           $scope.$on('event:offline', function() {
             $scope.status = 'offline';
-            $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+            $scope.$$phase || $scope.$apply();
           });
           
           $scope.doPing(true);
@@ -243,7 +239,6 @@ define([
           $scope.fetchGeolocationData = function() {
             if (!userPrefs.getForUser('self-report.enable-geolocation', true)) {
               // Geolocation has been disabled by the user
-              forge.logging.info("Geolocation disabled by the user");
               return;
             }
             $scope.geolocationStatus = 'fetching';
@@ -284,7 +279,7 @@ define([
         $scope.$on('event:initFailed', function() {
           forge.logging.error("Init failed (create-observation-controller)");
           $scope.status = 'offline';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
           
           $rootScope.$broadcast('event:initialized');
         });
@@ -292,13 +287,13 @@ define([
         if(!selfReportStorage.isInitialized()) {
           // Set status icon to spinning wheel
           $scope.status = 'loading';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
 
           selfReportStorage.initialize();
         } else {
           // Delete status icon
           if ($scope.status != 'done') $scope.status = selfReportStorage.isOffline() ? 'offline' : 'none';
-          $scope.$$phase || $scope.$apply(); forge.logging.info("Status = " + $scope.status);
+          $scope.$$phase || $scope.$apply();
 
           $rootScope.$broadcast('event:initialized');
         }

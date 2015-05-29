@@ -354,10 +354,6 @@ define([
           // TODO in case cache was flushed and page was reloaded we need to
           // get data from the server
 
-          if(aoCachedTopics.length === 0) {
-            forge.logging.error("Accessing wrong link (readTopicsDB)");
-          }
-
           reorderTopics();
           $rootScope.$broadcast('event:topics-read-finished');
         });
@@ -922,7 +918,6 @@ define([
             var topic1 = response.rows[i].doc;
             var topic2 = response.rows[j].doc;
             if (topic1._id != topic2._id && topic1.name.toLowerCase() == topic2.name.toLowerCase()) {
-              forge.logging.info("There are two topics with the same name: " + topic1.name.toLowerCase());
               // Rename topic2
               topic2.name = topic2.name + " 2";
               topic2.updateTime = new Date().toISOString();
