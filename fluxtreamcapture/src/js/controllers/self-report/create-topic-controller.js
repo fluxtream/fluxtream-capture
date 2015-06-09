@@ -137,6 +137,9 @@ define([
             if(document.getElementById('topic.name').value == 0){
               alert("Please specify a topic name.");
             }
+            else if (!(/^[0-9a-zA-_]*$/.test(document.getElementById('topic.name').value))) {
+              alert("The topic name can only contain letters (a-z, A-Z), digits (0-9) and _.");
+            }
             else if (selfReportStorage.getTopicWithName(document.getElementById('topic.name').value)) {
               alert("You can't have two topics with the same name. Please enter another name.");
             }
