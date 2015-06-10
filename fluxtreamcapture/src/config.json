@@ -3,7 +3,7 @@
 	"name": "Fluxtream Capture",
 	"author": "julien.dupuis@gmail.com",
 	"version": "1.0.1",
-	"platform_version": "v2.2.11",
+	"platform_version": "v2.2.13",
 	"description": "Fluxtream Capture Mobile App",
 	"core": {
 		"general": {
