@@ -42,7 +42,7 @@ define([
       if (forge.is.android()) {
         // Add listener to go back when the back button is pressed
         forge.event.backPressed.addListener(
-          function(closeMe) {
+          function(closeMe, pauseMe) {
             if ($ionicSideMenuDelegate.isOpen()) {
               // The menu is open, close it
               $ionicSideMenuDelegate.toggleLeft(false);
@@ -56,7 +56,7 @@ define([
                 });
               } else {
                 // There is no back button, quit the app
-//                if (confirm("Leave this app?")) closeMe();
+                pauseMe();
               }
             }
           }
