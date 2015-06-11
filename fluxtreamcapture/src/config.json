@@ -3,7 +3,7 @@
 	"name": "Fluxtream Capture",
 	"author": "julien.dupuis@gmail.com",
 	"version": "1.0.1",
-	"platform_version": "v2.2.13",
+	"platform_version": "v2.2.12",
 	"description": "Fluxtream Capture Mobile App",
 	"core": {
 		"general": {
@@ -19,7 +19,7 @@
 		},
 		"ios": {
 			"minimum_version": "6.0",
-			"device_family": "any",
+			"device_family": "iphone",
 			"package_name": "org.fluxtream.app",
 			"webview": "UIWebView"
 		},
@@ -118,13 +118,6 @@
 					"ios7": "no-statusbar",
 					"ios": true
 				}
-			}
-		},
-		"parse": {
-			"version": "2.2",
-			"config": {
-				"clientKey": "M7NjOGuss30PR0pW5QfVhIKPzGdubjVbJQFuBbnh",
-				"applicationId": "niQCFuRYTf9l9h99ArCLWYXCZKEOdvcbmnRR6FRi"
 			}
 		},
 		"tabs": {
