@@ -94,7 +94,13 @@ define([
       aoCachedObservations = null;
       aoObservationsToSync = null;
     });
-    
+
+    function maybeHash(s) {
+      if (!(s.match(/^[a-z]([a-z0-9,_$()+\-/])*$/)))
+        return CryptoJS.MD5(s);
+      return s;
+    }
+
     function initialize() {
       if (!bIsInitialized && !bIsInitializing) {
         bIsInitializing = true;
@@ -108,14 +114,14 @@ define([
         if (!userPrefs.getForUser('self-report-last-observation-sync')) userPrefs.setForUser('self-report-last-observation-sync', new Date().getTime());
         
         // Main topics and observations names/links
-        dbNameTopics = "self_report_db_topics_" + loginService.getUserName();
-        dbNameObservations = "self_report_db_observations_" + loginService.getUserName();
+        dbNameTopics = "self_report_db_topics_" + maybeHash(loginService.getUserName());
+        dbNameObservations = "self_report_db_observations_" + maybeHash(loginService.getUserName());
         remoteCouchTopicsAddress = env['fluxtream.couch.login.url'] + dbNameTopics;
         remoteCouchObservationsAddress = env['fluxtream.couch.login.url'] + dbNameObservations;
 
         // Deleted topics and observations names/links
-        dbNameDeletedTopics = "self_report_db_deleted_topics_" + loginService.getUserName();
-        dbNameDeletedObservations = "self_report_db_deleted_observations_" + loginService.getUserName();
+        dbNameDeletedTopics = "self_report_db_deleted_topics_" + maybeHash(loginService.getUserName());
+        dbNameDeletedObservations = "self_report_db_deleted_observations_" + maybeHash(loginService.getUserName());
         remoteCouchDeletedTopicsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedTopics;
         remoteCouchDeletedObservationsAddress = env['fluxtream.couch.login.url'] + dbNameDeletedObservations;
         backendLink = env['fluxtream.home.url'];
@@ -181,12 +187,11 @@ define([
         $rootScope.$broadcast('event:initialized');
       }
     }
-    
     // Initialize when a user logs in
     $rootScope.$on("user-logged-in", function() {
       initialize();
     });
-    
+
     function listenToServerChanges(db, seqNumber) {
       if (!bIsInitialized) {
         return;
