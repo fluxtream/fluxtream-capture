@@ -1,0 +1,93 @@
+buildscript {
+	repositories {
+		jcenter()
+	}
+	dependencies {
+		classpath 'com.android.tools.build:gradle:2.1.2'
+	}
+	System.properties['com.android.build.gradle.overrideVersionCheck'] = 'true'
+}
+
+allprojects {
+	repositories {
+		jcenter()
+		maven {
+			url 'https://download.01.org/crosswalk/releases/crosswalk/android/maven2'
+		}
+		flatDir {
+			dirs 'ForgeModule/libs'
+		}
+	}
+}
+
+ext {
+	compileSdkVersion = 23
+	buildToolsVersion = "23.0.2"
+	supportLibraryVersion = "23.4.0" // TODO stuck here until pushwoosh update to 24.x
+	crosswalkVersion = "19.49.514.4"
+
+	minSdkVersion = 7
+	targetSdkVersion = 23
+
+	compileOptions = {
+		sourceCompatibility JavaVersion.VERSION_1_7
+		targetCompatibility JavaVersion.VERSION_1_7
+	}
+
+	debug = {
+		debuggable true
+		minifyEnabled false
+		shrinkResources false
+	}
+	release = {
+		debuggable false
+		minifyEnabled true
+		shrinkResources false
+	}
+}
+
+task getHomeDir << {
+	println gradle.gradleHomeDir
+}
+
+import groovy.json.JsonSlurper
+def moduleDependencies() {
+	def f = new File("ForgeInspector/gradle.json")
+	if (f.exists()) {
+		def jsonSlurper = new JsonSlurper()
+		def config = jsonSlurper.parseText(f.text)
+		config["dependencies"] ?: []
+	} else {
+		[]
+	}
+}
+
+def moduleExcludeJars() {
+	def f = new File("ForgeInspector/gradle.json")
+	if (f.exists()) {
+		def jsonSlurper = new JsonSlurper()
+		def config = jsonSlurper.parseText(f.text)
+		config["exclude_jars"] ?: []
+	} else {
+		[]
+	}
+}
+
+// pushwoosh is currently breaking on crosswalk because it overrides the support lib version
+// TODO get rid of this once everyone is on v24.0.0 or higher
+def versionOverrides = [
+	"com.android.support:design": rootProject.ext.supportLibraryVersion,
+	"com.android.support:support-v4": rootProject.ext.supportLibraryVersion,
+	"com.android.support:appcompat-v7": rootProject.ext.supportLibraryVersion
+]
+subprojects {
+	configurations.all {
+		resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+			def overrideVersion = versionOverrides[details.requested.group + ":" + details.requested.name]
+			if (overrideVersion != null && details.requested.version != overrideVersion) {
+				logger.info "Overriding dependency ${details.requested.group}:${details.requested.name} version ${details.requested.version} --> $overrideVersion"
+				details.useVersion overrideVersion
+			}
+		}
+	}
+}
