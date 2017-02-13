@@ -1,7 +1,7 @@
 {
 	"description": "Polar H7 module",
-	"min_platform_version": "v2.2.7",
+	"min_platform_version": "v2.5.1",
 	"namespace": "flx_polar_h7",
-	"platform_version": "v2.2.7",
-	"version": "0.1.21"
+	"platform_version": "v2.5.1",
+	"version": "0.1.24"
 }

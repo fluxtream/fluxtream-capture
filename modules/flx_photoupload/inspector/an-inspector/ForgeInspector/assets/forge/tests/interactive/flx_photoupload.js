@@ -30,25 +30,33 @@ asyncTest("Load photo list", 1, function() {
             // Add it to the photo list
             photos.unshift(photoObject);
           });
+          $("body").prepend("<img src='" + photos[0].src + "'>");
           // Load statuses
-          var photoIds = [];
-          photos.forEach(function(photo) {
-            photoIds.push(photo.id);
-          });
-          forge.flx_photoupload.getPhotoStatuses(photoIds,
-            // Success
-            function(photoStatuses) {
-              forge.logging.info("Photo statuses loaded");
-            },
-            // Error
-            function(error) {
-              forge.logging.error("Error while getting photo statuses: " + JSON.stringify(error));
-            }
-          );
-          // Load thumbnails
-          photos.forEach(function(photo) {
-            forge.flx_photoupload.getThumbnail(photo.id);
-          });
+//          var photoIds = [];
+//          photos.forEach(function(photo) {
+//            photoIds.push(photo.id);
+//          });
+//          var time = new Date().getTime();
+//          forge.flx_photoupload.getPhotoStatuses(photoIds,
+//            // Success
+//            function(photoStatuses) {
+//              forge.logging.info("Photo statuses loaded");
+//              var time2 = new Date().getTime();
+//              forge.logging.info("Photo status loading time: " + (time2 - time));
+//              // Load thumbnails
+//              var counter = 0;
+//              photos.forEach(function(photo) {
+//                counter++;
+//                if (counter <= 100) {
+//                  forge.flx_photoupload.getThumbnail(photo.id);
+//                }
+//              });
+//            },
+//            // Error
+//            function(error) {
+//              forge.logging.error("Error while getting photo statuses: " + JSON.stringify(error));
+//            }
+//          );
         }
       );
       ok(true, "User claims success");

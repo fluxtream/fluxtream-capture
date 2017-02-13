@@ -66,3 +66,7 @@ tasks.xml
 *.build
 fluxtreamcapture/IOS_certificates
 modules/*/inspector/ios-inspector/ForgeInspector.xcodeproj/project.xcworkspace/xcuserdata/
+/.metadata/
+/modules/flx_polar_h7/inspector/an-inspector/ForgeModule/build/
+/modules/flx_photoupload/inspector/an-inspector/ForgeModule/build/
+/modules/flx_toggle_keyboard/inspector/an-inspector/ForgeModule/build/
