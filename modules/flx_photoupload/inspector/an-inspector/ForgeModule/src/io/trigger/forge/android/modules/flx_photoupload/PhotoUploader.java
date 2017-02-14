@@ -16,11 +16,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
 
@@ -36,6 +31,10 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.android.internal.http.multipart.FilePart;
+import com.android.internal.http.multipart.MultipartEntity;
+import com.android.internal.http.multipart.Part;
+import com.android.internal.http.multipart.StringPart;
 import com.google.gson.JsonObject;
 
 /**
@@ -381,16 +380,17 @@ public class PhotoUploader {
 		Uri uri = Uri.parse("content://media/external/images/media/" + photoId);
 		Map<String, String> photoData = getPhotoData(uri);
 		
-		// Create file body
-		FileBody fileBody = new FileBody(new File(photoData.get("path")));
-		
-		// Create multipart body builder
-		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-		builder.addPart("photo", fileBody);
-		builder.addPart("metadata", new StringBody("{capture_time_secs_utc:"
-				+ photoData.get("timestamp") + "}", ContentType.TEXT_PLAIN));
-		
+//		// Create file body
+//		FileBody fileBody = new FileBody(new File(photoData.get("path")));
+//
+//		// Create multipart body builder
+//		MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+//		builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+//		builder.addPart("photo", fileBody);
+//		builder.addPart("metadata", new StringBody("{capture_time_secs_utc:"
+//				+ photoData.get("timestamp") + "}", ContentType.TEXT_PLAIN));
+
+
 		// Create post request
 		HttpClient httpClient = new DefaultHttpClient();
 		String uploadURL = PhotoUploader.uploadURL + (accessToken != null ? "&access_token=" + accessToken : "");
@@ -398,7 +398,13 @@ public class PhotoUploader {
 		if (accessToken == null) {
 			httpPost.setHeader("Authorization", "Basic " + authentication);
 		}
-		httpPost.setEntity(builder.build());
+		Part[] parts = {
+				new StringPart("metadata", "{capture_time_secs_utc:"
+						+ photoData.get("timestamp") + "}"),
+				new FilePart("photo", new File(photoData.get("path")))
+		};
+		MultipartEntity reqEntity = new MultipartEntity(parts, httpPost.getParams());
+		httpPost.setEntity(reqEntity);
 		
 		// Send request
 		ParseLog.logEvent("Uploading photo", "photo " + photoId);

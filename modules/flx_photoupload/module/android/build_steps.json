@@ -1,17 +1,24 @@
 [
   {
     "do": {
+      "android_add_gradle_exclude_jar": "org.apache.http.legacy.jar"
+    }
+  },
+  {
+    "do": {
       "android_add_permission": {
         "permission": "android.permission.READ_EXTERNAL_STORAGE"
       }
     }
-  }, {
+  },
+  {
     "do": {
       "android_add_permission": {
         "permission": "android.permission.RECEIVE_BOOT_COMPLETED"
       }
     }
-  }, {
+  },
+  {
     "do": {
       "android_add_to_application_manifest": {
         "element": {
@@ -22,7 +29,8 @@
         }
       }
     }
-  }, {
+  },
+  {
     "do": {
       "android_add_to_application_manifest": {
         "element": {
@@ -32,15 +40,19 @@
             "android:enabled": "true",
             "android:exported": "false"
           },
-          "children": [{
-            "tag": "intent-filter",
-            "children": [{
-              "tag": "action",
-              "attributes": {
-                "android:name": "android.intent.action.BOOT_COMPLETED"
-              }
-            }]
-          }]
+          "children": [
+            {
+              "tag": "intent-filter",
+              "children": [
+                {
+                  "tag": "action",
+                  "attributes": {
+                    "android:name": "android.intent.action.BOOT_COMPLETED"
+                  }
+                }
+              ]
+            }
+          ]
         }
       }
     }
